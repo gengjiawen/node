@@ -3,8 +3,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const h2 = require('http2');
 const { kSocket } = require('internal/http2/util');
@@ -36,27 +35,28 @@ function onStream(stream) {
 
 server.listen(0);
 
-server.on('listening', common.mustCall(() => {
-  const client = h2.connect(`http://localhost:${server.address().port}`);
-  // The client may have an ECONNRESET error here depending on the operating
-  // system, due mainly to differences in the timing of socket closing. Do
-  // not wrap this in a common mustCall.
-  client.on('error', (err) => {
-    if (err.code !== 'ECONNRESET')
-      throw err;
-  });
-  client.on('close', common.mustCall());
+server.on(
+  'listening',
+  common.mustCall(() => {
+    const client = h2.connect(`http://localhost:${server.address().port}`);
+    // The client may have an ECONNRESET error here depending on the operating
+    // system, due mainly to differences in the timing of socket closing. Do
+    // not wrap this in a common mustCall.
+    client.on('error', (err) => {
+      if (err.code !== 'ECONNRESET') throw err;
+    });
+    client.on('close', common.mustCall());
 
-  const req = client.request({ ':method': 'POST' });
-  // The client may have an ECONNRESET error here depending on the operating
-  // system, due mainly to differences in the timing of socket closing. Do
-  // not wrap this in a common mustCall.
-  req.on('error', (err) => {
-    if (err.code !== 'ECONNRESET')
-      throw err;
-  });
+    const req = client.request({ ':method': 'POST' });
+    // The client may have an ECONNRESET error here depending on the operating
+    // system, due mainly to differences in the timing of socket closing. Do
+    // not wrap this in a common mustCall.
+    req.on('error', (err) => {
+      if (err.code !== 'ECONNRESET') throw err;
+    });
 
-  req.on('aborted', common.mustCall());
-  req.resume();
-  req.on('end', common.mustCall());
-}));
+    req.on('aborted', common.mustCall());
+    req.resume();
+    req.on('end', common.mustCall());
+  })
+);

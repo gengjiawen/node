@@ -31,13 +31,19 @@ const testsubdir = path.join(testDir, 'testsubdir');
 const filepath = path.join(testsubdir, 'watch.txt');
 
 function cleanup() {
-  try { fs.unlinkSync(filepath); } catch { }
-  try { fs.rmdirSync(testsubdir); } catch { }
+  try {
+    fs.unlinkSync(filepath);
+  } catch {}
+  try {
+    fs.rmdirSync(testsubdir);
+  } catch {}
 }
 process.on('exit', cleanup);
 cleanup();
 
-try { fs.mkdirSync(testsubdir, 0o700); } catch {}
+try {
+  fs.mkdirSync(testsubdir, 0o700);
+} catch {}
 
 // Need a grace period, else the mkdirSync() above fires off an event.
 setTimeout(function() {

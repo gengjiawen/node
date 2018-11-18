@@ -14,8 +14,9 @@ const { test, assert_equals } = require('../common/wpt').harness;
 const fixtures = require('../common/fixtures');
 
 // TODO(joyeecheung): we should submit these to the upstream
-const additionalTestCases =
-  require(fixtures.path('url-setter-tests-additional.js'));
+const additionalTestCases = require(fixtures.path(
+  'url-setter-tests-additional.js'
+));
 
 {
   for (const attributeToBeSet in additionalTestCases) {
@@ -24,8 +25,9 @@ const additionalTestCases =
     }
     const testCases = additionalTestCases[attributeToBeSet];
     for (const testCase of testCases) {
-      let name = `Setting <${testCase.href}>.${attributeToBeSet}` +
-                 ` = "${testCase.new_value}"`;
+      let name =
+        `Setting <${testCase.href}>.${attributeToBeSet}` +
+        ` = "${testCase.new_value}"`;
       if ('comment' in testCase) {
         name += ` ${testCase.comment}`;
       }
@@ -43,19 +45,27 @@ const additionalTestCases =
 {
   const url = new URL('http://example.com/');
   const obj = {
-    toString() { throw new Error('toString'); },
-    valueOf() { throw new Error('valueOf'); }
+    toString() {
+      throw new Error('toString');
+    },
+    valueOf() {
+      throw new Error('valueOf');
+    }
   };
   const sym = Symbol();
   const props = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(url));
   for (const [name, { set }] of Object.entries(props)) {
     if (set) {
-      assert.throws(() => url[name] = obj,
-                    /^Error: toString$/,
-                    `url.${name} = { toString() { throw ... } }`);
-      assert.throws(() => url[name] = sym,
-                    /^TypeError: Cannot convert a Symbol value to a string$/,
-                    `url.${name} = ${String(sym)}`);
+      assert.throws(
+        () => (url[name] = obj),
+        /^Error: toString$/,
+        `url.${name} = { toString() { throw ... } }`
+      );
+      assert.throws(
+        () => (url[name] = sym),
+        /^TypeError: Cannot convert a Symbol value to a string$/,
+        `url.${name} = ${String(sym)}`
+      );
     }
   }
 }

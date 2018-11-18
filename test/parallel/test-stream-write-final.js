@@ -17,8 +17,11 @@ const w = new stream.Writable({
     process.nextTick(cb);
   }
 });
-w.on('finish', common.mustCall(function() {
-  assert(shutdown);
-}));
+w.on(
+  'finish',
+  common.mustCall(function() {
+    assert(shutdown);
+  })
+);
 w.write(Buffer.allocUnsafe(1));
 w.end(Buffer.allocUnsafe(0));

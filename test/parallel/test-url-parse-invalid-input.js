@@ -16,22 +16,28 @@ const url = require('url');
   [() => {}, 'function'],
   [Symbol('foo'), 'symbol']
 ].forEach(([val, type]) => {
-  common.expectsError(() => {
-    url.parse(val);
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError,
-    message: `The "url" argument must be of type string. Received type ${type}`
-  });
+  common.expectsError(
+    () => {
+      url.parse(val);
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError,
+      message: `The "url" argument must be of type string. Received type ${type}`
+    }
+  );
 });
 
-assert.throws(() => { url.parse('http://%E0%A4%A@fail'); },
-              (e) => {
-                // The error should be a URIError.
-                if (!(e instanceof URIError))
-                  return false;
+assert.throws(
+  () => {
+    url.parse('http://%E0%A4%A@fail');
+  },
+  (e) => {
+    // The error should be a URIError.
+    if (!(e instanceof URIError)) return false;
 
-                // The error should be from the JS engine and not from Node.js.
-                // JS engine errors do not have the `code` property.
-                return e.code === undefined;
-              });
+    // The error should be from the JS engine and not from Node.js.
+    // JS engine errors do not have the `code` property.
+    return e.code === undefined;
+  }
+);

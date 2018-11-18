@@ -38,7 +38,6 @@ const messageSent = common.mustCall(function messageSent(err, bytes) {
   client.close();
 });
 
-client.bind(0, () => client.send(buf, offset, len,
-                                 client.address().port,
-                                 '127.0.0.1',
-                                 messageSent));
+client.bind(0, () =>
+  client.send(buf, offset, len, client.address().port, '127.0.0.1', messageSent)
+);

@@ -41,10 +41,9 @@ function getSrc() {
     paused = false;
   };
 
-  const chunks = [ '', 'asdf', '', 'foo', '', 'bar', '' ];
+  const chunks = ['', 'asdf', '', 'foo', '', 'bar', ''];
   const interval = setInterval(function() {
-    if (paused)
-      return;
+    if (paused) return;
 
     const chunk = chunks.shift();
     if (chunk !== undefined) {
@@ -57,7 +56,6 @@ function getSrc() {
 
   return src;
 }
-
 
 const expect = 'asdffoobar';
 

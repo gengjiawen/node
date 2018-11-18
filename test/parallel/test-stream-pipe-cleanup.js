@@ -94,9 +94,9 @@ w = new Writable();
 const d = new Duplex();
 r.pipe(d); // pipeline A
 d.pipe(w); // pipeline B
-assert.strictEqual(r.listeners('end').length, 2);   // A.onend, A.cleanup
+assert.strictEqual(r.listeners('end').length, 2); // A.onend, A.cleanup
 assert.strictEqual(r.listeners('close').length, 2); // A.onclose, A.cleanup
-assert.strictEqual(d.listeners('end').length, 2);   // B.onend, B.cleanup
+assert.strictEqual(d.listeners('end').length, 2); // B.onend, B.cleanup
 // A.cleanup, B.onclose, B.cleanup
 assert.strictEqual(d.listeners('close').length, 3);
 assert.strictEqual(w.listeners('end').length, 0);
@@ -107,7 +107,7 @@ assert.strictEqual(d.endCalls, 1);
 assert.strictEqual(w.endCalls, 0);
 assert.strictEqual(r.listeners('end').length, 0);
 assert.strictEqual(r.listeners('close').length, 0);
-assert.strictEqual(d.listeners('end').length, 2);   // B.onend, B.cleanup
+assert.strictEqual(d.listeners('end').length, 2); // B.onend, B.cleanup
 assert.strictEqual(d.listeners('close').length, 2); // B.onclose, B.cleanup
 assert.strictEqual(w.listeners('end').length, 0);
 assert.strictEqual(w.listeners('close').length, 1); // B.cleanup

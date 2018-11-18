@@ -45,17 +45,17 @@ function nextdir() {
 assert.strictEqual(Object.keys(fs).includes('promises'), false);
 
 {
-  access(__filename, 'r')
-    .then(common.mustCall());
+  access(__filename, 'r').then(common.mustCall());
 
   access('this file does not exist', 'r')
     .then(common.mustNotCall())
-    .catch(common.expectsError({
-      code: 'ENOENT',
-      type: Error,
-      message:
-        /^ENOENT: no such file or directory, access/
-    }));
+    .catch(
+      common.expectsError({
+        code: 'ENOENT',
+        type: Error,
+        message: /^ENOENT: no such file or directory, access/
+      })
+    );
 }
 
 function verifyStatObject(stat) {
@@ -150,7 +150,7 @@ async function getHandle(dest) {
       await chmod(dest, 0o666);
       await handle.chmod(0o666);
 
-      await chmod(dest, (0o10777));
+      await chmod(dest, 0o10777);
       await handle.chmod(0o10777);
 
       if (!common.isWindows) {
@@ -165,9 +165,11 @@ async function getHandle(dest) {
         {
           code: 'ERR_OUT_OF_RANGE',
           name: 'RangeError [ERR_OUT_OF_RANGE]',
-          message: 'The value of "gid" is out of range. ' +
-                  'It must be >= 0 && < 4294967296. Received -1'
-        });
+          message:
+            'The value of "gid" is out of range. ' +
+            'It must be >= 0 && < 4294967296. Received -1'
+        }
+      );
 
       assert.rejects(
         async () => {
@@ -176,9 +178,11 @@ async function getHandle(dest) {
         {
           code: 'ERR_OUT_OF_RANGE',
           name: 'RangeError [ERR_OUT_OF_RANGE]',
-          message: 'The value of "gid" is out of range. ' +
-                    'It must be >= 0 && < 4294967296. Received -1'
-        });
+          message:
+            'The value of "gid" is out of range. ' +
+            'It must be >= 0 && < 4294967296. Received -1'
+        }
+      );
     }
 
     // set modification times
@@ -217,10 +221,14 @@ async function getHandle(dest) {
         stats = await lstat(newLink);
         verifyStatObject(stats);
 
-        assert.strictEqual(newPath.toLowerCase(),
-                           (await realpath(newLink)).toLowerCase());
-        assert.strictEqual(newPath.toLowerCase(),
-                           (await readlink(newLink)).toLowerCase());
+        assert.strictEqual(
+          newPath.toLowerCase(),
+          (await realpath(newLink)).toLowerCase()
+        );
+        assert.strictEqual(
+          newPath.toLowerCase(),
+          (await readlink(newLink)).toLowerCase()
+        );
 
         const newMode = 0o666;
         if (common.isOSX) {
@@ -337,7 +345,8 @@ async function getHandle(dest) {
           {
             code: 'ERR_INVALID_ARG_TYPE',
             name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-            message: 'The "recursive" argument must be of type boolean. ' +
+            message:
+              'The "recursive" argument must be of type boolean. ' +
               `Received type ${typeof recursive}`
           }
         );
@@ -356,7 +365,6 @@ async function getHandle(dest) {
         }
       );
     }
-
   }
 
   doTest().then(common.mustCall());

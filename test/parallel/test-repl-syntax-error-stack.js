@@ -17,16 +17,14 @@ ArrayStream.prototype.write = function(output) {
   // displays the line of code (`var foo bar;`) that is causing a problem.
   // ChakraCore does not display the line of code but includes `;` in the phrase
   // `Expected ';' `.
-  if (/;/.test(output))
-    found = true;
+  if (/;/.test(output)) found = true;
 };
 
 const putIn = new ArrayStream();
 repl.start('', putIn);
 let file = fixtures.path('syntax', 'bad_syntax');
 
-if (common.isWindows)
-  file = file.replace(/\\/g, '\\\\');
+if (common.isWindows) file = file.replace(/\\/g, '\\\\');
 
 putIn.run(['.clear']);
 putIn.run([`require('${file}');`]);

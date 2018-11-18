@@ -32,25 +32,21 @@ e.setMaxListeners(42);
 const throwsObjs = [NaN, -1, 'and even this'];
 
 for (const obj of throwsObjs) {
-  common.expectsError(
-    () => e.setMaxListeners(obj),
-    {
-      code: 'ERR_OUT_OF_RANGE',
-      type: RangeError,
-      message: 'The value of "n" is out of range. ' +
-               `It must be a non-negative number. Received ${obj}`
-    }
-  );
+  common.expectsError(() => e.setMaxListeners(obj), {
+    code: 'ERR_OUT_OF_RANGE',
+    type: RangeError,
+    message:
+      'The value of "n" is out of range. ' +
+      `It must be a non-negative number. Received ${obj}`
+  });
 
-  common.expectsError(
-    () => events.defaultMaxListeners = obj,
-    {
-      code: 'ERR_OUT_OF_RANGE',
-      type: RangeError,
-      message: 'The value of "defaultMaxListeners" is out of range. ' +
-               `It must be a non-negative number. Received ${obj}`
-    }
-  );
+  common.expectsError(() => (events.defaultMaxListeners = obj), {
+    code: 'ERR_OUT_OF_RANGE',
+    type: RangeError,
+    message:
+      'The value of "defaultMaxListeners" is out of range. ' +
+      `It must be a non-negative number. Received ${obj}`
+  });
 }
 
 e.emit('maxListeners');

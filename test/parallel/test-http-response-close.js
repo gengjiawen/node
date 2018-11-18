@@ -36,12 +36,18 @@ const http = require('http');
       http.get(
         { port: server.address().port },
         common.mustCall((res) => {
-          res.on('data', common.mustCall(() => {
-            res.destroy();
-          }));
-          res.on('close', common.mustCall(() => {
-            server.close();
-          }));
+          res.on(
+            'data',
+            common.mustCall(() => {
+              res.destroy();
+            })
+          );
+          res.on(
+            'close',
+            common.mustCall(() => {
+              server.close();
+            })
+          );
         })
       );
     })
@@ -61,9 +67,12 @@ const http = require('http');
       http.get(
         { port: server.address().port },
         common.mustCall((res) => {
-          res.on('close', common.mustCall(() => {
-            server.close();
-          }));
+          res.on(
+            'close',
+            common.mustCall(() => {
+              server.close();
+            })
+          );
           res.resume();
         })
       );

@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const spawn = require('child_process').spawn;
@@ -20,9 +19,12 @@ child.stderr.on('data', function(data) {
   actualUsageMessage += data.toString();
 });
 
-child.on('exit', common.mustCall(function(code) {
-  const outputLines = actualUsageMessage.split('\n');
-  assert.strictEqual(code, 1);
-  for (let i = 0; i < expectedLines.length; i++)
-    assert(expectedLines[i].test(outputLines[i]));
-}));
+child.on(
+  'exit',
+  common.mustCall(function(code) {
+    const outputLines = actualUsageMessage.split('\n');
+    assert.strictEqual(code, 1);
+    for (let i = 0; i < expectedLines.length; i++)
+      assert(expectedLines[i].test(outputLines[i]));
+  })
+);

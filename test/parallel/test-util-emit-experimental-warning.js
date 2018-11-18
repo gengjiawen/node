@@ -8,9 +8,12 @@ const { emitExperimentalWarning } = require('internal/util');
 // warning when passed an unsupported feature and that it simply returns
 // when passed the same feature multiple times.
 
-process.on('warning', common.mustCall((warning) => {
-  assert(/is an experimental feature/.test(warning.message));
-}, 2));
+process.on(
+  'warning',
+  common.mustCall((warning) => {
+    assert(/is an experimental feature/.test(warning.message));
+  }, 2)
+);
 
 emitExperimentalWarning('feature1');
 emitExperimentalWarning('feature1'); // should not warn

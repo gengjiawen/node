@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const fixtures = require('../common/fixtures');
 const http2 = require('http2');
 
@@ -26,75 +25,94 @@ const fname = fixtures.path('elipses.txt');
 
 const server = http2.createServer();
 
-server.on('stream', common.mustCall((stream) => {
-
-  // Check for all possible TypeError triggers on options
-  Object.keys(optionsWithTypeError).forEach((option) => {
-    Object.keys(types).forEach((type) => {
-      if (type === optionsWithTypeError[option]) {
-        return;
-      }
-
-      common.expectsError(
-        () => stream.respondWithFile(fname, {
-          'content-type': 'text/plain'
-        }, {
-          [option]: types[type]
-        }),
-        {
-          type: TypeError,
-          code: 'ERR_INVALID_OPT_VALUE',
-          message: `The value "${String(types[type])}" is invalid ` +
-                   `for option "${option}"`
+server.on(
+  'stream',
+  common.mustCall((stream) => {
+    // Check for all possible TypeError triggers on options
+    Object.keys(optionsWithTypeError).forEach((option) => {
+      Object.keys(types).forEach((type) => {
+        if (type === optionsWithTypeError[option]) {
+          return;
         }
-      );
+
+        common.expectsError(
+          () =>
+            stream.respondWithFile(
+              fname,
+              {
+                'content-type': 'text/plain'
+              },
+              {
+                [option]: types[type]
+              }
+            ),
+          {
+            type: TypeError,
+            code: 'ERR_INVALID_OPT_VALUE',
+            message:
+              `The value "${String(types[type])}" is invalid ` +
+              `for option "${option}"`
+          }
+        );
+      });
     });
-  });
 
-  // Should throw if :status 204, 205 or 304
-  [204, 205, 304].forEach((status) => common.expectsError(
-    () => stream.respondWithFile(fname, {
-      'content-type': 'text/plain',
-      ':status': status,
-    }),
-    {
-      code: 'ERR_HTTP2_PAYLOAD_FORBIDDEN',
-      message: `Responses with ${status} status must not have a payload`
-    }
-  ));
+    // Should throw if :status 204, 205 or 304
+    [204, 205, 304].forEach((status) =>
+      common.expectsError(
+        () =>
+          stream.respondWithFile(fname, {
+            'content-type': 'text/plain',
+            ':status': status
+          }),
+        {
+          code: 'ERR_HTTP2_PAYLOAD_FORBIDDEN',
+          message: `Responses with ${status} status must not have a payload`
+        }
+      )
+    );
 
-  // Should throw if headers already sent
-  stream.respond({ ':status': 200 });
-  common.expectsError(
-    () => stream.respondWithFile(fname, {
-      'content-type': 'text/plain'
-    }),
-    {
-      code: 'ERR_HTTP2_HEADERS_SENT',
-      message: 'Response has already been initiated.'
-    }
-  );
+    // Should throw if headers already sent
+    stream.respond({ ':status': 200 });
+    common.expectsError(
+      () =>
+        stream.respondWithFile(fname, {
+          'content-type': 'text/plain'
+        }),
+      {
+        code: 'ERR_HTTP2_HEADERS_SENT',
+        message: 'Response has already been initiated.'
+      }
+    );
 
-  // Should throw if stream already destroyed
-  stream.destroy();
-  common.expectsError(
-    () => stream.respondWithFile(fname, {
-      'content-type': 'text/plain'
-    }),
-    {
-      code: 'ERR_HTTP2_INVALID_STREAM',
-      message: 'The stream has been destroyed'
-    }
-  );
-}));
+    // Should throw if stream already destroyed
+    stream.destroy();
+    common.expectsError(
+      () =>
+        stream.respondWithFile(fname, {
+          'content-type': 'text/plain'
+        }),
+      {
+        code: 'ERR_HTTP2_INVALID_STREAM',
+        message: 'The stream has been destroyed'
+      }
+    );
+  })
+);
 
-server.listen(0, common.mustCall(() => {
-  const client = http2.connect(`http://localhost:${server.address().port}`);
-  const req = client.request();
+server.listen(
+  0,
+  common.mustCall(() => {
+    const client = http2.connect(`http://localhost:${server.address().port}`);
+    const req = client.request();
 
-  req.on('close', common.mustCall(() => {
-    client.close();
-    server.close();
-  }));
-  req.end();
-}));
+    req.on(
+      'close',
+      common.mustCall(() => {
+        client.close();
+        server.close();
+      })
+    );
+    req.end();
+  })
+);

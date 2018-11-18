@@ -19,10 +19,7 @@ assert.strictEqual(
 );
 
 // empty
-assert.strictEqual(
-  agent.getName({}),
-  'localhost::'
-);
+assert.strictEqual(agent.getName({}), 'localhost::');
 
 // pass all arguments
 assert.strictEqual(

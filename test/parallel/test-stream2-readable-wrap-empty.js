@@ -31,8 +31,6 @@ oldStream.resume = () => {};
 
 const newStream = new Readable().wrap(oldStream);
 
-newStream
-  .on('readable', () => {})
-  .on('end', common.mustCall());
+newStream.on('readable', () => {}).on('end', common.mustCall());
 
 oldStream.emit('end');

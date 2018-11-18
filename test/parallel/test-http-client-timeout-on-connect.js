@@ -11,20 +11,33 @@ const server = http.createServer((req, res) => {
   // This space is intentionally left blank.
 });
 
-server.listen(0, common.localhostIPv4, common.mustCall(() => {
-  const port = server.address().port;
-  const req = http.get(`http://${common.localhostIPv4}:${port}`);
+server.listen(
+  0,
+  common.localhostIPv4,
+  common.mustCall(() => {
+    const port = server.address().port;
+    const req = http.get(`http://${common.localhostIPv4}:${port}`);
 
-  req.setTimeout(1);
-  req.on('socket', common.mustCall((socket) => {
-    assert.strictEqual(socket[kTimeout], null);
-    socket.on('connect', common.mustCall(() => {
-      assert.strictEqual(socket[kTimeout]._idleTimeout, 1);
-    }));
-  }));
-  req.on('timeout', common.mustCall(() => req.abort()));
-  req.on('error', common.mustCall((err) => {
-    assert.strictEqual(err.message, 'socket hang up');
-    server.close();
-  }));
-}));
+    req.setTimeout(1);
+    req.on(
+      'socket',
+      common.mustCall((socket) => {
+        assert.strictEqual(socket[kTimeout], null);
+        socket.on(
+          'connect',
+          common.mustCall(() => {
+            assert.strictEqual(socket[kTimeout]._idleTimeout, 1);
+          })
+        );
+      })
+    );
+    req.on('timeout', common.mustCall(() => req.abort()));
+    req.on(
+      'error',
+      common.mustCall((err) => {
+        assert.strictEqual(err.message, 'socket hang up');
+        server.close();
+      })
+    );
+  })
+);

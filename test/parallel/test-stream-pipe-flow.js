@@ -8,8 +8,7 @@ const { Readable, Writable, PassThrough } = require('stream');
   const rs = new Readable({
     objectMode: true,
     read: () => {
-      if (ticks-- > 0)
-        return process.nextTick(() => rs.push({}));
+      if (ticks-- > 0) return process.nextTick(() => rs.push({}));
       rs.push({});
       rs.push(null);
     }

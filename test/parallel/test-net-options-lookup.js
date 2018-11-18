@@ -12,12 +12,15 @@ function connectThrows(input) {
     lookup: input
   };
 
-  common.expectsError(() => {
-    net.connect(opts);
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError
-  });
+  common.expectsError(
+    () => {
+      net.connect(opts);
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError
+    }
+  );
 }
 
 connectDoesNotThrow(() => {});

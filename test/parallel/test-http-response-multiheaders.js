@@ -48,24 +48,27 @@ const server = http.createServer(function(req, res) {
   res.end('ok');
 });
 
-server.listen(0, common.mustCall(function() {
-  const countdown = new Countdown(runCount, () => server.close());
-  for (let n = 1; n <= runCount; n++) {
-    // this runs twice, the first time, the server will use
-    // setHeader, the second time it uses writeHead. The
-    // result on the client side should be the same in
-    // either case -- only the first instance of the header
-    // value should be reported for the header fields listed
-    // in the norepeat array.
-    http.get(
-      { port: this.address().port, headers: { 'x-num': n } },
-      common.mustCall(function(res) {
-        countdown.dec();
-        for (const name of norepeat) {
-          assert.strictEqual(res.headers[name], 'A');
-        }
-        assert.strictEqual(res.headers['x-a'], 'A, B');
-      })
-    );
-  }
-}));
+server.listen(
+  0,
+  common.mustCall(function() {
+    const countdown = new Countdown(runCount, () => server.close());
+    for (let n = 1; n <= runCount; n++) {
+      // this runs twice, the first time, the server will use
+      // setHeader, the second time it uses writeHead. The
+      // result on the client side should be the same in
+      // either case -- only the first instance of the header
+      // value should be reported for the header fields listed
+      // in the norepeat array.
+      http.get(
+        { port: this.address().port, headers: { 'x-num': n } },
+        common.mustCall(function(res) {
+          countdown.dec();
+          for (const name of norepeat) {
+            assert.strictEqual(res.headers[name], 'A');
+          }
+          assert.strictEqual(res.headers['x-a'], 'A, B');
+        })
+      );
+    }
+  })
+);

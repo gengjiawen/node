@@ -11,10 +11,13 @@ if (process.argv[2] === undefined) {
     env: Object.assign({}, process.env, { foo: 'bar' })
   });
 
-  child.on('exit', common.mustCall((code, signal) => {
-    assert.strictEqual(code, 0);
-    assert.strictEqual(signal, null);
-  }));
+  child.on(
+    'exit',
+    common.mustCall((code, signal) => {
+      assert.strictEqual(code, 0);
+      assert.strictEqual(signal, null);
+    })
+  );
 } else {
   assert.strictEqual(process.argv[2], expected);
 }

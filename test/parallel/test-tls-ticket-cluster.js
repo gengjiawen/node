@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -41,21 +40,25 @@ if (cluster.isMaster) {
 
   function shoot() {
     console.error('[master] connecting', workerPort);
-    const c = tls.connect(workerPort, {
-      session: lastSession,
-      rejectUnauthorized: false
-    }, function() {
-      lastSession = c.getSession();
-      c.end();
+    const c = tls.connect(
+      workerPort,
+      {
+        session: lastSession,
+        rejectUnauthorized: false
+      },
+      function() {
+        lastSession = c.getSession();
+        c.end();
 
-      if (++reqCount === expectedReqCount) {
-        Object.keys(cluster.workers).forEach(function(id) {
-          cluster.workers[id].send('die');
-        });
-      } else {
-        shoot();
+        if (++reqCount === expectedReqCount) {
+          Object.keys(cluster.workers).forEach(function(id) {
+            cluster.workers[id].send('die');
+          });
+        } else {
+          shoot();
+        }
       }
-    });
+    );
   }
 
   function fork() {
@@ -104,7 +107,7 @@ server.listen(0, function() {
   const { port } = server.address();
   process.send({
     msg: 'listening',
-    port,
+    port
   });
 });
 

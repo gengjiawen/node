@@ -8,7 +8,6 @@ common.skipIfInspectorDisabled();
 checkForInspectSupport('--inspect');
 
 function checkForInspectSupport(flag) {
-
   const nodeOptions = JSON.stringify(flag);
   const numWorkers = 2;
   process.env.NODE_OPTIONS = flag;
@@ -22,9 +21,12 @@ function checkForInspectSupport(flag) {
       worker.disconnect();
     });
 
-    cluster.on('exit', common.mustCall((worker, code, signal) => {
-      const errMsg = `For NODE_OPTIONS ${nodeOptions}, failed to start cluster`;
-      assert.strictEqual(worker.exitedAfterDisconnect, true, errMsg);
-    }, numWorkers));
+    cluster.on(
+      'exit',
+      common.mustCall((worker, code, signal) => {
+        const errMsg = `For NODE_OPTIONS ${nodeOptions}, failed to start cluster`;
+        assert.strictEqual(worker.exitedAfterDisconnect, true, errMsg);
+      }, numWorkers)
+    );
   }
 }

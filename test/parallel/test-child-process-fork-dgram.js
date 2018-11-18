@@ -48,7 +48,6 @@ if (process.argv[2] === 'child') {
 
     process.send('handleReceived');
   });
-
 } else {
   const parentServer = dgram.createSocket('udp4');
   const client = dgram.createSocket('udp4');
@@ -70,7 +69,7 @@ if (process.argv[2] === 'child') {
     child.on('message', function(msg) {
       if (msg === 'gotMessage') {
         childGotMessage = true;
-      } else if (msg = 'handlReceived') {
+      } else if ((msg = 'handlReceived')) {
         sendMessages();
       }
     });
@@ -88,16 +87,9 @@ if (process.argv[2] === 'child') {
         clearInterval(timer);
         client.close();
       } else {
-        client.send(
-          msg,
-          0,
-          msg.length,
-          serverPort,
-          '127.0.0.1',
-          function(err) {
-            assert.ifError(err);
-          }
-        );
+        client.send(msg, 0, msg.length, serverPort, '127.0.0.1', function(err) {
+          assert.ifError(err);
+        });
       }
     }, 1);
   }

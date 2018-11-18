@@ -30,6 +30,9 @@ const cp = ch.spawn('python', ['-c', `print ${SIZE} * "C"`], {
   stdio: 'inherit'
 });
 
-cp.on('exit', common.mustCall(function(code) {
-  assert.strictEqual(code, 0);
-}));
+cp.on(
+  'exit',
+  common.mustCall(function(code) {
+    assert.strictEqual(code, 0);
+  })
+);

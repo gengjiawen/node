@@ -29,10 +29,13 @@ cat.stdout.on('end', common.mustCall());
 cat.stderr.on('data', common.mustNotCall());
 cat.stderr.on('end', common.mustCall());
 
-cat.on('exit', common.mustCall(function(code, signal) {
-  assert.strictEqual(code, null);
-  assert.strictEqual(signal, 'SIGTERM');
-}));
+cat.on(
+  'exit',
+  common.mustCall(function(code, signal) {
+    assert.strictEqual(code, null);
+    assert.strictEqual(signal, 'SIGTERM');
+  })
+);
 
 assert.strictEqual(cat.killed, false);
 cat.kill();

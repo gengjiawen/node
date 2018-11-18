@@ -21,8 +21,7 @@ deflater.write(chunk1, function() {
     deflater.end(chunk2, function() {
       const bufs = [];
       let buf;
-      while (buf = deflater.read())
-        bufs.push(buf);
+      while ((buf = deflater.read())) bufs.push(buf);
       actual = Buffer.concat(bufs);
     });
   });

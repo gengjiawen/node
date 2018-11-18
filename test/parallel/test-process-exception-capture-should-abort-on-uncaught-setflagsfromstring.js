@@ -7,7 +7,9 @@ assert.strictEqual(process.hasUncaughtExceptionCaptureCallback(), false);
 
 v8.setFlagsFromString('--abort-on-uncaught-exception');
 // This should make the process not crash even though the flag was passed.
-process.setUncaughtExceptionCaptureCallback(common.mustCall((err) => {
-  assert.strictEqual(err.message, 'foo');
-}));
+process.setUncaughtExceptionCaptureCallback(
+  common.mustCall((err) => {
+    assert.strictEqual(err.message, 'foo');
+  })
+);
 throw new Error('foo');

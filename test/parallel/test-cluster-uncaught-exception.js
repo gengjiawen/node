@@ -35,15 +35,22 @@ const isTestRunner = process.argv[2] !== 'child';
 
 if (isTestRunner) {
   const master = fork(__filename, ['child']);
-  master.on('exit', common.mustCall((code) => {
-    assert.strictEqual(code, MAGIC_EXIT_CODE);
-  }));
+  master.on(
+    'exit',
+    common.mustCall((code) => {
+      assert.strictEqual(code, MAGIC_EXIT_CODE);
+    })
+  );
 } else if (cluster.isMaster) {
-  process.on('uncaughtException', common.mustCall(() => {
-    process.nextTick(() => process.exit(MAGIC_EXIT_CODE));
-  }));
+  process.on(
+    'uncaughtException',
+    common.mustCall(() => {
+      process.nextTick(() => process.exit(MAGIC_EXIT_CODE));
+    })
+  );
   cluster.fork();
   throw new Error('kill master');
-} else { // worker
+} else {
+  // worker
   process.exit();
 }

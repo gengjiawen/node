@@ -10,10 +10,8 @@ const { ShutdownWrap } = internalBinding('stream_wrap');
 
 function testShutdown(callback) {
   const stream = new Duplex({
-    read: function() {
-    },
-    write: function() {
-    }
+    read: function() {},
+    write: function() {}
   });
 
   const wrap = new StreamWrap(stream);

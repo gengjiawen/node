@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (common.isWindows)
-  common.skip('Unix-specific test');
+if (common.isWindows) common.skip('Unix-specific test');
 
 const assert = require('assert');
 const net = require('net');
@@ -35,9 +34,12 @@ server.listen(common.PIPE, () => {
     throw err;
   });
 
-  client.on('data', common.mustCall((data) => {
-    assert.strictEqual(data.toString(), 'ping');
-  }));
+  client.on(
+    'data',
+    common.mustCall((data) => {
+      assert.strictEqual(data.toString(), 'ping');
+    })
+  );
 
   client.on('end', () => {
     server.close();

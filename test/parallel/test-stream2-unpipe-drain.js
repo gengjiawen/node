@@ -53,18 +53,15 @@ src1.pipe(dest);
 
 src1.once('readable', function() {
   process.nextTick(function() {
-
     src2.pipe(dest);
 
     src2.once('readable', function() {
       process.nextTick(function() {
-
         src1.unpipe(dest);
       });
     });
   });
 });
-
 
 process.on('exit', function() {
   assert.strictEqual(src1.reads, 2);

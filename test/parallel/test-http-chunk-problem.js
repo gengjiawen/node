@@ -1,8 +1,7 @@
 'use strict';
 // http://groups.google.com/group/nodejs/browse_thread/thread/f66cd3c960406919
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 
@@ -43,23 +42,27 @@ const filename = require('path').join(tmpdir.path, 'big');
 let server;
 
 function executeRequest(cb) {
-  cp.exec([`"${process.execPath}"`,
-           `"${__filename}"`,
-           'request',
-           server.address().port,
-           '|',
-           `"${process.execPath}"`,
-           `"${__filename}"`,
-           'shasum' ].join(' '),
-          (err, stdout, stderr) => {
-            assert.ifError(err);
-            assert.strictEqual(stdout.slice(0, 40),
-                               '8c206a1a87599f532ce68675536f0b1546900d7a');
-            cb();
-          }
+  cp.exec(
+    [
+      `"${process.execPath}"`,
+      `"${__filename}"`,
+      'request',
+      server.address().port,
+      '|',
+      `"${process.execPath}"`,
+      `"${__filename}"`,
+      'shasum'
+    ].join(' '),
+    (err, stdout, stderr) => {
+      assert.ifError(err);
+      assert.strictEqual(
+        stdout.slice(0, 40),
+        '8c206a1a87599f532ce68675536f0b1546900d7a'
+      );
+      cb();
+    }
   );
 }
-
 
 tmpdir.refresh();
 
@@ -85,7 +88,6 @@ server = http.createServer(function(req, res) {
       process.exit(1);
     }
   });
-
 });
 
 server.listen(0, () => {

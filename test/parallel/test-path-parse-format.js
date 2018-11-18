@@ -39,20 +39,20 @@ const winPaths = [
   ['C:..', 'C:'],
   ['C:abc', 'C:'],
   ['C:\\', 'C:\\'],
-  ['C:\\abc', 'C:\\' ],
+  ['C:\\abc', 'C:\\'],
   ['', ''],
 
   // unc
   ['\\\\server\\share\\file_path', '\\\\server\\share\\'],
-  ['\\\\server two\\shared folder\\file path.zip',
-   '\\\\server two\\shared folder\\'],
+  [
+    '\\\\server two\\shared folder\\file path.zip',
+    '\\\\server two\\shared folder\\'
+  ],
   ['\\\\teela\\admin$\\system32', '\\\\teela\\admin$\\'],
   ['\\\\?\\UNC\\server\\share', '\\\\?\\UNC\\']
 ];
 
-const winSpecialCaseParseTests = [
-  ['/foo/bar', { root: '/' }],
-];
+const winSpecialCaseParseTests = [['/foo/bar', { root: '/' }]];
 
 const winSpecialCaseFormatTests = [
   [{ dir: 'some\\dir' }, 'some\\dir\\'],
@@ -98,10 +98,13 @@ const unixSpecialCaseFormatTests = [
   [{}, '']
 ];
 
-const expectedMessage = common.expectsError({
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError
-}, 18);
+const expectedMessage = common.expectsError(
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  },
+  18
+);
 
 const errors = [
   { method: 'parse', input: [null], message: expectedMessage },
@@ -112,7 +115,7 @@ const errors = [
   { method: 'format', input: [null], message: expectedMessage },
   { method: 'format', input: [''], message: expectedMessage },
   { method: 'format', input: [true], message: expectedMessage },
-  { method: 'format', input: [1], message: expectedMessage },
+  { method: 'format', input: [1], message: expectedMessage }
 ];
 
 checkParseFormat(path.win32, winPaths);
@@ -125,30 +128,39 @@ checkFormat(path.posix, unixSpecialCaseFormatTests);
 
 // Test removal of trailing path separators
 const trailingTests = [
-  [ path.win32.parse,
-    [['.\\', { root: '', dir: '', base: '.', ext: '', name: '.' }],
-     ['\\\\', { root: '\\', dir: '\\', base: '', ext: '', name: '' }],
-     ['\\\\', { root: '\\', dir: '\\', base: '', ext: '', name: '' }],
-     ['c:\\foo\\\\\\',
-      { root: 'c:\\', dir: 'c:\\', base: 'foo', ext: '', name: 'foo' }],
-     ['D:\\foo\\\\\\bar.baz',
-      { root: 'D:\\',
-        dir: 'D:\\foo\\\\',
-        base: 'bar.baz',
-        ext: '.baz',
-        name: 'bar'
-      }
-     ]
+  [
+    path.win32.parse,
+    [
+      ['.\\', { root: '', dir: '', base: '.', ext: '', name: '.' }],
+      ['\\\\', { root: '\\', dir: '\\', base: '', ext: '', name: '' }],
+      ['\\\\', { root: '\\', dir: '\\', base: '', ext: '', name: '' }],
+      [
+        'c:\\foo\\\\\\',
+        { root: 'c:\\', dir: 'c:\\', base: 'foo', ext: '', name: 'foo' }
+      ],
+      [
+        'D:\\foo\\\\\\bar.baz',
+        {
+          root: 'D:\\',
+          dir: 'D:\\foo\\\\',
+          base: 'bar.baz',
+          ext: '.baz',
+          name: 'bar'
+        }
+      ]
     ]
   ],
-  [ path.posix.parse,
-    [['./', { root: '', dir: '', base: '.', ext: '', name: '.' }],
-     ['//', { root: '/', dir: '/', base: '', ext: '', name: '' }],
-     ['///', { root: '/', dir: '/', base: '', ext: '', name: '' }],
-     ['/foo///', { root: '/', dir: '/', base: 'foo', ext: '', name: 'foo' }],
-     ['/foo///bar.baz',
-      { root: '/', dir: '/foo//', base: 'bar.baz', ext: '.baz', name: 'bar' }
-     ]
+  [
+    path.posix.parse,
+    [
+      ['./', { root: '', dir: '', base: '.', ext: '', name: '.' }],
+      ['//', { root: '/', dir: '/', base: '', ext: '', name: '' }],
+      ['///', { root: '/', dir: '/', base: '', ext: '', name: '' }],
+      ['/foo///', { root: '/', dir: '/', base: 'foo', ext: '', name: 'foo' }],
+      [
+        '/foo///bar.baz',
+        { root: '/', dir: '/foo//', base: 'bar.baz', ext: '.baz', name: 'bar' }
+      ]
     ]
   ]
 ];
@@ -159,11 +171,14 @@ trailingTests.forEach(function(test) {
   test[1].forEach(function(test) {
     const actual = parse(test[0]);
     const expected = test[1];
-    const message = `path.${os}.parse(${JSON.stringify(test[0])})\n  expect=${
-      JSON.stringify(expected)}\n  actual=${JSON.stringify(actual)}`;
+    const message = `path.${os}.parse(${JSON.stringify(
+      test[0]
+    )})\n  expect=${JSON.stringify(expected)}\n  actual=${JSON.stringify(
+      actual
+    )}`;
     const actualKeys = Object.keys(actual);
     const expectedKeys = Object.keys(expected);
-    let failed = (actualKeys.length !== expectedKeys.length);
+    let failed = actualKeys.length !== expectedKeys.length;
     if (!failed) {
       for (let i = 0; i < actualKeys.length; ++i) {
         const key = actualKeys[i];
@@ -173,8 +188,7 @@ trailingTests.forEach(function(test) {
         }
       }
     }
-    if (failed)
-      failures.push(`\n${message}`);
+    if (failed) failures.push(`\n${message}`);
   });
 });
 assert.strictEqual(failures.length, 0, failures.join(''));
@@ -221,13 +235,17 @@ function checkFormat(path, testCases) {
   });
 
   [null, undefined, 1, true, false, 'string'].forEach((pathObject) => {
-    common.expectsError(() => {
-      path.format(pathObject);
-    }, {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The "pathObject" argument must be of type Object. ' +
-               `Received type ${typeof pathObject}`
-    });
+    common.expectsError(
+      () => {
+        path.format(pathObject);
+      },
+      {
+        code: 'ERR_INVALID_ARG_TYPE',
+        type: TypeError,
+        message:
+          'The "pathObject" argument must be of type Object. ' +
+          `Received type ${typeof pathObject}`
+      }
+    );
   });
 }

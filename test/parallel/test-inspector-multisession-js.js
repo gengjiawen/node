@@ -23,8 +23,8 @@ async function test() {
   let session1Paused = false;
   let session2Paused = false;
 
-  session1.on('Debugger.paused', () => session1Paused = true);
-  session2.on('Debugger.paused', () => session2Paused = true);
+  session1.on('Debugger.paused', () => (session1Paused = true));
+  session2.on('Debugger.paused', () => (session2Paused = true));
 
   console.log('Connected');
 
@@ -33,14 +33,18 @@ async function test() {
   console.log('Debugger was enabled');
 
   await new Promise((resolve, reject) => {
-    session1.post('Debugger.setBreakpointByUrl', {
-      'lineNumber': 12,
-      'url': pathToFileURL(path.resolve(__dirname, __filename)).toString(),
-      'columnNumber': 0,
-      'condition': ''
-    }, (error, result) => {
-      return error ? reject(error) : resolve(result);
-    });
+    session1.post(
+      'Debugger.setBreakpointByUrl',
+      {
+        lineNumber: 12,
+        url: pathToFileURL(path.resolve(__dirname, __filename)).toString(),
+        columnNumber: 0,
+        condition: ''
+      },
+      (error, result) => {
+        return error ? reject(error) : resolve(result);
+      }
+    );
   });
   console.log('Breakpoint was set');
 

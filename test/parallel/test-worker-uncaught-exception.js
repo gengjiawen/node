@@ -9,14 +9,20 @@ if (!process.env.HAS_STARTED_WORKER) {
   process.env.HAS_STARTED_WORKER = 1;
   const w = new Worker(__filename);
   w.on('message', common.mustNotCall());
-  w.on('error', common.mustCall((err) => {
-    console.log(err.message);
-    assert(/^Error: foo$/.test(err));
-  }));
-  w.on('exit', common.mustCall((code) => {
-    // uncaughtException is code 1
-    assert.strictEqual(code, 1);
-  }));
+  w.on(
+    'error',
+    common.mustCall((err) => {
+      console.log(err.message);
+      assert(/^Error: foo$/.test(err));
+    })
+  );
+  w.on(
+    'exit',
+    common.mustCall((code) => {
+      // uncaughtException is code 1
+      assert.strictEqual(code, 1);
+    })
+  );
 } else {
   // cannot use common.mustCall as it cannot catch this
   let called = false;
@@ -28,8 +34,10 @@ if (!process.env.HAS_STARTED_WORKER) {
     }
   });
 
-  setTimeout(() => assert.fail('Timeout executed after uncaughtException'),
-             2000);
+  setTimeout(
+    () => assert.fail('Timeout executed after uncaughtException'),
+    2000
+  );
 
   throw new Error('foo');
 }

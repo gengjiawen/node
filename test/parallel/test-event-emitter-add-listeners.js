@@ -34,8 +34,7 @@ const EventEmitter = require('events');
 
   ee.on('newListener', function(event, listener) {
     // Don't track newListener listeners.
-    if (event === 'newListener')
-      return;
+    if (event === 'newListener') return;
 
     events_new_listener_emitted.push(event);
     listeners_new_listener_emitted.push(listener);
@@ -86,12 +85,16 @@ const EventEmitter = require('events');
 }
 
 // Verify that the listener must be a function
-common.expectsError(() => {
-  const ee = new EventEmitter();
-  ee.on('foo', null);
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError,
-  message: 'The "listener" argument must be of type Function. ' +
-           'Received type object'
-});
+common.expectsError(
+  () => {
+    const ee = new EventEmitter();
+    ee.on('foo', null);
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "listener" argument must be of type Function. ' +
+      'Received type object'
+  }
+);

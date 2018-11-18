@@ -10,8 +10,7 @@
 // perf installed. It will skip if those criteria are not met.
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const { spawnSync } = require('child_process');
@@ -30,21 +29,18 @@ const perfArgs = [
   process.execPath,
   '--perf-basic-prof',
   '--interpreted-frames-native-stack',
-  '--no-turbo-inlining',  // Otherwise simple functions might get inlined.
-  fixtures.path('linux-perf.js'),
+  '--no-turbo-inlining', // Otherwise simple functions might get inlined.
+  fixtures.path('linux-perf.js')
 ];
 
-const perfScriptArgs = [
-  'script',
-];
+const perfScriptArgs = ['script'];
 
 const options = {
   cwd: tmpdir.path,
-  encoding: 'utf-8',
+  encoding: 'utf-8'
 };
 
-if (!common.isLinux)
-  common.skip('only testing Linux for now');
+if (!common.isLinux) common.skip('only testing Linux for now');
 
 const perf = spawnSync('perf', perfArgs, options);
 
@@ -57,8 +53,7 @@ if (perf.status !== 0) {
 
 const perfScript = spawnSync('perf', perfScriptArgs, options);
 
-if (perf.error)
-  common.skip(`perf script aborted: ${perf.error.errno}`);
+if (perf.error) common.skip(`perf script aborted: ${perf.error.errno}`);
 
 if (perfScript.status !== 0) {
   common.skip(`Failed to execute perf script: ${perfScript.stderr}`);
@@ -71,11 +66,19 @@ const compiledFunctionTwoRe = /LazyCompile:\*functionTwo/;
 
 const output = perfScript.stdout;
 
-assert.ok(output.match(interpretedFunctionOneRe),
-          "Couldn't find interpreted functionOne()");
-assert.ok(output.match(compiledFunctionOneRe),
-          "Couldn't find compiled functionOne()");
-assert.ok(output.match(interpretedFunctionTwoRe),
-          "Couldn't find interpreted functionTwo()");
-assert.ok(output.match(compiledFunctionTwoRe),
-          "Couldn't find compiled functionTwo");
+assert.ok(
+  output.match(interpretedFunctionOneRe),
+  "Couldn't find interpreted functionOne()"
+);
+assert.ok(
+  output.match(compiledFunctionOneRe),
+  "Couldn't find compiled functionOne()"
+);
+assert.ok(
+  output.match(interpretedFunctionTwoRe),
+  "Couldn't find interpreted functionTwo()"
+);
+assert.ok(
+  output.match(compiledFunctionTwoRe),
+  "Couldn't find compiled functionTwo"
+);

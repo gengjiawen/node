@@ -28,7 +28,6 @@ const fs = require('fs');
 
 const tmpdir = require('../common/tmpdir');
 
-
 const filepath = path.join(tmpdir.path, 'write.txt');
 
 const EXPECTED = '012345678910';
@@ -38,7 +37,6 @@ let cb_occurred = '';
 
 let countDrains = 0;
 
-
 process.on('exit', function() {
   removeTestFile();
   if (cb_occurred !== cb_expected) {
@@ -46,8 +44,10 @@ process.on('exit', function() {
     console.log(`    expected: ${cb_expected}`);
     console.log(`    occurred: ${cb_occurred}`);
     assert.strictEqual(
-      cb_occurred, cb_expected,
-      `events missing or out of order: "${cb_occurred}" !== "${cb_expected}"`);
+      cb_occurred,
+      cb_expected,
+      `events missing or out of order: "${cb_occurred}" !== "${cb_expected}"`
+    );
   } else {
     console.log('ok');
   }
@@ -58,7 +58,6 @@ function removeTestFile() {
     fs.unlinkSync(filepath);
   } catch {}
 }
-
 
 tmpdir.refresh();
 
@@ -95,12 +94,10 @@ file.on('close', function() {
   file.write('should not work anymore');
 });
 
-
 file.on('error', function(err) {
   cb_occurred += 'error ';
   assert.ok(err.message.includes('write after end'));
 });
-
 
 for (let i = 0; i < 11; i++) {
   const ret = file.write(String(i));

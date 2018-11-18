@@ -14,10 +14,8 @@ const session = new Session();
 function post(message, data) {
   return new Promise((resolve, reject) => {
     session.post(message, data, (err, result) => {
-      if (err)
-        reject(new Error(JSON.stringify(err)));
-      else
-        resolve(result);
+      if (err) reject(new Error(JSON.stringify(err)));
+      else resolve(result);
     });
   });
 }
@@ -29,9 +27,9 @@ async function test() {
   let tracingComplete = false;
   session.on('NodeTracing.dataCollected', (n) => {
     assert.ok(n && n.data && n.data.value);
-    events.push(...n.data.value);  // append the events.
+    events.push(...n.data.value); // append the events.
   });
-  session.on('NodeTracing.tracingComplete', () => tracingComplete = true);
+  session.on('NodeTracing.tracingComplete', () => (tracingComplete = true));
 
   // Generate a node.perf event before tracing is enabled.
   performance.mark('mark1');
@@ -51,7 +49,9 @@ async function test() {
 
   assert.ok(tracingComplete);
 
-  const marks = events.filter((t) => null !== /node\.perf\.usertim/.exec(t.cat));
+  const marks = events.filter(
+    (t) => null !== /node\.perf\.usertim/.exec(t.cat)
+  );
   assert.strictEqual(marks.length, 1);
   assert.strictEqual(marks[0].name, 'mark2');
 }

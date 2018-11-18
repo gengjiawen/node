@@ -12,10 +12,8 @@ const url = require('url');
 {
   const fileURL = url.pathToFileURL('test\\').href;
   assert.ok(fileURL.startsWith('file:///'));
-  if (isWindows)
-    assert.ok(fileURL.endsWith('/'));
-  else
-    assert.ok(fileURL.endsWith('%5C'));
+  if (isWindows) assert.ok(fileURL.endsWith('/'));
+  else assert.ok(fileURL.endsWith('%5C'));
 }
 
 {

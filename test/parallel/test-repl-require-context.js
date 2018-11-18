@@ -12,10 +12,13 @@ child.stdout.on('data', (data) => {
   output += data;
 });
 
-child.on('exit', common.mustCall(() => {
-  const results = output.replace(/^> /mg, '').split('\n');
-  assert.deepStrictEqual(results, ['undefined', 'true', 'true', '']);
-}));
+child.on(
+  'exit',
+  common.mustCall(() => {
+    const results = output.replace(/^> /gm, '').split('\n');
+    assert.deepStrictEqual(results, ['undefined', 'true', 'true', '']);
+  })
+);
 
 child.stdin.write('const isObject = (obj) => obj.constructor === Object;\n');
 child.stdin.write('isObject({});\n');

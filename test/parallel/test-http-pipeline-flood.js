@@ -52,13 +52,19 @@ function parent() {
     const spawn = require('child_process').spawn;
     const args = [__filename, 'child', this.address().port];
     const child = spawn(process.execPath, args, { stdio: 'inherit' });
-    child.on('close', common.mustCall(function() {
-      server.close();
-    }));
+    child.on(
+      'close',
+      common.mustCall(function() {
+        server.close();
+      })
+    );
 
-    server.setTimeout(200, common.mustCallAtLeast(function() {
-      child.kill();
-    }, 1));
+    server.setTimeout(
+      200,
+      common.mustCallAtLeast(function() {
+        child.kill();
+      }, 1)
+    );
   });
 }
 

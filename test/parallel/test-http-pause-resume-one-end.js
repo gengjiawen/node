@@ -29,20 +29,29 @@ const server = http.Server(function(req, res) {
   server.close();
 });
 
-server.listen(0, common.mustCall(function() {
-  const opts = {
-    port: this.address().port,
-    headers: { connection: 'close' }
-  };
+server.listen(
+  0,
+  common.mustCall(function() {
+    const opts = {
+      port: this.address().port,
+      headers: { connection: 'close' }
+    };
 
-  http.get(opts, common.mustCall(function(res) {
-    res.on('data', common.mustCall(function() {
-      res.pause();
-      setImmediate(function() {
-        res.resume();
-      });
-    }));
+    http.get(
+      opts,
+      common.mustCall(function(res) {
+        res.on(
+          'data',
+          common.mustCall(function() {
+            res.pause();
+            setImmediate(function() {
+              res.resume();
+            });
+          })
+        );
 
-    res.on('end', common.mustCall());
-  }));
-}));
+        res.on('end', common.mustCall());
+      })
+    );
+  })
+);

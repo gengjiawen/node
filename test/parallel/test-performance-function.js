@@ -3,25 +3,24 @@
 const common = require('../common');
 const assert = require('assert');
 
-const {
-  performance,
-  PerformanceObserver
-} = require('perf_hooks');
+const { performance, PerformanceObserver } = require('perf_hooks');
 
 {
   // Intentional non-op. Do not wrap in common.mustCall();
   const n = performance.timerify(() => {});
 
-  const obs = new PerformanceObserver(common.mustCall((list) => {
-    const entries = list.getEntries();
-    const entry = entries[0];
-    assert(entry);
-    assert.strictEqual(entry.name, 'performance.timerify');
-    assert.strictEqual(entry.entryType, 'function');
-    assert.strictEqual(typeof entry.duration, 'number');
-    assert.strictEqual(typeof entry.startTime, 'number');
-    obs.disconnect();
-  }));
+  const obs = new PerformanceObserver(
+    common.mustCall((list) => {
+      const entries = list.getEntries();
+      const entry = entries[0];
+      assert(entry);
+      assert.strictEqual(entry.name, 'performance.timerify');
+      assert.strictEqual(entry.entryType, 'function');
+      assert.strictEqual(typeof entry.duration, 'number');
+      assert.strictEqual(typeof entry.startTime, 'number');
+      obs.disconnect();
+    })
+  );
   obs.observe({ entryTypes: ['function'] });
   n();
 }
@@ -42,18 +41,20 @@ const {
   class N {}
   const n = performance.timerify(N);
 
-  const obs = new PerformanceObserver(common.mustCall((list) => {
-    const entries = list.getEntries();
-    const entry = entries[0];
-    assert.strictEqual(entry[0], 1);
-    assert.strictEqual(entry[1], 'abc');
-    assert(entry);
-    assert.strictEqual(entry.name, 'N');
-    assert.strictEqual(entry.entryType, 'function');
-    assert.strictEqual(typeof entry.duration, 'number');
-    assert.strictEqual(typeof entry.startTime, 'number');
-    obs.disconnect();
-  }));
+  const obs = new PerformanceObserver(
+    common.mustCall((list) => {
+      const entries = list.getEntries();
+      const entry = entries[0];
+      assert.strictEqual(entry[0], 1);
+      assert.strictEqual(entry[1], 'abc');
+      assert(entry);
+      assert.strictEqual(entry.name, 'N');
+      assert.strictEqual(entry.entryType, 'function');
+      assert.strictEqual(typeof entry.duration, 'number');
+      assert.strictEqual(typeof entry.startTime, 'number');
+      obs.disconnect();
+    })
+  );
   obs.observe({ entryTypes: ['function'] });
 
   new n(1, 'abc');
@@ -61,13 +62,13 @@ const {
 
 {
   [1, {}, [], null, undefined, Infinity].forEach((input) => {
-    common.expectsError(() => performance.timerify(input),
-                        {
-                          code: 'ERR_INVALID_ARG_TYPE',
-                          type: TypeError,
-                          message: 'The "fn" argument must be of type ' +
-                                   `Function. Received type ${typeof input}`
-                        });
+    common.expectsError(() => performance.timerify(input), {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError,
+      message:
+        'The "fn" argument must be of type ' +
+        `Function. Received type ${typeof input}`
+    });
   });
 }
 

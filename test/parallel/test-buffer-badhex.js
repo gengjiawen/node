@@ -37,8 +37,7 @@ const assert = require('assert');
 
 {
   const buf = Buffer.alloc(256);
-  for (let i = 0; i < 256; i++)
-    buf[i] = i;
+  for (let i = 0; i < 256; i++) buf[i] = i;
 
   const hex = buf.toString('hex');
   assert.deepStrictEqual(Buffer.from(hex, 'hex'), buf);

@@ -56,8 +56,12 @@ server.on('listening', function() {
       req2.end();
       req2.on('response', function(res2) {
         res2.setEncoding('utf8');
-        res2.on('data', function(chunk) { body2 += chunk; });
-        res2.on('end', function() { server.close(); });
+        res2.on('data', function(chunk) {
+          body2 += chunk;
+        });
+        res2.on('end', function() {
+          server.close();
+        });
       });
     });
   });

@@ -24,30 +24,38 @@ new RuleTester().run('prefer-assert-methods', rule, {
   invalid: [
     {
       code: 'assert(foo == bar);',
-      errors: [{
-        message: "'assert.equal' should be used instead of '=='"
-      }],
+      errors: [
+        {
+          message: "'assert.equal' should be used instead of '=='"
+        }
+      ],
       output: 'assert.equal(foo, bar);'
     },
     {
       code: 'assert(foo === bar);',
-      errors: [{
-        message: "'assert.strictEqual' should be used instead of '==='"
-      }],
+      errors: [
+        {
+          message: "'assert.strictEqual' should be used instead of '==='"
+        }
+      ],
       output: 'assert.strictEqual(foo, bar);'
     },
     {
       code: 'assert(foo != bar);',
-      errors: [{
-        message: "'assert.notEqual' should be used instead of '!='"
-      }],
+      errors: [
+        {
+          message: "'assert.notEqual' should be used instead of '!='"
+        }
+      ],
       output: 'assert.notEqual(foo, bar);'
     },
     {
       code: 'assert(foo !== bar);',
-      errors: [{
-        message: "'assert.notStrictEqual' should be used instead of '!=='"
-      }],
+      errors: [
+        {
+          message: "'assert.notStrictEqual' should be used instead of '!=='"
+        }
+      ],
       output: 'assert.notStrictEqual(foo, bar);'
     }
   ]

@@ -2,11 +2,10 @@
 
 // An exported class using classic prototype syntax.
 
-function Class() {
-}
+function Class() {}
 
-Class.classMethod = function() {}
-Class.prototype.instanceMethod = function() {}
+Class.classMethod = function() {};
+Class.prototype.instanceMethod = function() {};
 
 module.exports = {
   Class

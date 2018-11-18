@@ -27,13 +27,13 @@ const os = require('os');
 const spawn = require('child_process').spawn;
 
 const env = Object.assign({}, process.env, {
-  'HELLO': 'WORLD',
-  'UNDEFINED': undefined,
-  'NULL': null,
-  'EMPTY': ''
+  HELLO: 'WORLD',
+  UNDEFINED: undefined,
+  NULL: null,
+  EMPTY: ''
 });
 Object.setPrototypeOf(env, {
-  'FOO': 'BAR'
+  FOO: 'BAR'
 });
 
 let child;
@@ -42,7 +42,6 @@ if (common.isWindows) {
 } else {
   child = spawn('/usr/bin/env', [], { env });
 }
-
 
 let response = '';
 

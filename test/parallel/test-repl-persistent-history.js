@@ -48,7 +48,6 @@ class ActionStream extends stream.Stream {
 }
 ActionStream.prototype.readable = true;
 
-
 // Mock keys
 const UP = { name: 'up' };
 const ENTER = { name: 'enter' };
@@ -60,17 +59,22 @@ const historyPath = path.join(tmpdir.path, '.fixture_copy_repl_history');
 const historyPathFail = fixtures.path('nonexistent_folder', 'filename');
 const defaultHistoryPath = path.join(tmpdir.path, '.node_repl_history');
 const emptyHiddenHistoryPath = fixtures.path('.empty-hidden-repl-history-file');
-const devNullHistoryPath = path.join(tmpdir.path,
-                                     '.dev-null-repl-history-file');
+const devNullHistoryPath = path.join(
+  tmpdir.path,
+  '.dev-null-repl-history-file'
+);
 // Common message bits
 const prompt = '> ';
-const replDisabled = '\nPersistent history support disabled. Set the ' +
-                     'NODE_REPL_HISTORY environment\nvariable to a valid, ' +
-                     'user-writable path to enable.\n';
-const homedirErr = '\nError: Could not get the home directory.\n' +
-                   'REPL session history will not be persisted.\n';
-const replFailedRead = '\nError: Could not open history file.\n' +
-                       'REPL session history will not be persisted.\n';
+const replDisabled =
+  '\nPersistent history support disabled. Set the ' +
+  'NODE_REPL_HISTORY environment\nvariable to a valid, ' +
+  'user-writable path to enable.\n';
+const homedirErr =
+  '\nError: Could not get the home directory.\n' +
+  'REPL session history will not be persisted.\n';
+const replFailedRead =
+  '\nError: Could not open history file.\n' +
+  'REPL session history will not be persisted.\n';
 
 const tests = [
   {
@@ -90,32 +94,31 @@ const tests = [
   },
   {
     env: {},
-    test: [UP, '\'42\'', ENTER],
-    expected: [prompt, '\'', '4', '2', '\'', '\'42\'\n', prompt, prompt],
+    test: [UP, "'42'", ENTER],
+    expected: [prompt, "'", '4', '2', "'", "'42'\n", prompt, prompt],
     clean: false
   },
-  { // Requires the above test case
+  {
+    // Requires the above test case
     env: {},
     test: [UP, UP, ENTER],
-    expected: [prompt, `${prompt}'42'`, '\'42\'\n', prompt]
+    expected: [prompt, `${prompt}'42'`, "'42'\n", prompt]
   },
   {
-    env: { NODE_REPL_HISTORY: historyPath,
-           NODE_REPL_HISTORY_SIZE: 1 },
+    env: { NODE_REPL_HISTORY: historyPath, NODE_REPL_HISTORY_SIZE: 1 },
     test: [UP, UP, CLEAR],
     expected: [prompt, `${prompt}'you look fabulous today'`, prompt]
   },
   {
-    env: { NODE_REPL_HISTORY: historyPathFail,
-           NODE_REPL_HISTORY_SIZE: 1 },
+    env: { NODE_REPL_HISTORY: historyPathFail, NODE_REPL_HISTORY_SIZE: 1 },
     test: [UP],
     expected: [prompt, replFailedRead, prompt, replDisabled, prompt]
   },
-  { // Tests multiline history
+  {
+    // Tests multiline history
     env: {},
     test: ['{', '}', UP, CLEAR],
-    expected: [prompt, '{', '... ', '}', '{}\n',
-               prompt, `${prompt}{}`, prompt],
+    expected: [prompt, '{', '... ', '}', '{}\n', prompt, `${prompt}{}`, prompt],
     clean: false
   },
   {
@@ -133,14 +136,14 @@ const tests = [
   },
   {
     before: function before() {
-      if (!common.isWindows)
-        fs.symlinkSync('/dev/null', devNullHistoryPath);
+      if (!common.isWindows) fs.symlinkSync('/dev/null', devNullHistoryPath);
     },
     env: { NODE_REPL_HISTORY: devNullHistoryPath },
     test: [UP],
     expected: [prompt]
   },
-  { // Make sure this is always the last test, since we change os.homedir()
+  {
+    // Make sure this is always the last test, since we change os.homedir()
     before: function before() {
       // Mock os.homedir() failure
       os.homedir = function() {
@@ -153,7 +156,6 @@ const tests = [
   }
 ];
 const numtests = tests.length;
-
 
 function cleanupTmpFile() {
   try {
@@ -168,7 +170,8 @@ function cleanupTmpFile() {
 
 // Copy our fixture to the tmp directory
 fs.createReadStream(historyFixturePath)
-  .pipe(fs.createWriteStream(historyPath)).on('unpipe', () => runTest());
+  .pipe(fs.createWriteStream(historyPath))
+  .on('unpipe', () => runTest());
 
 const runTestWrap = common.mustCall(runTest, numtests);
 
@@ -195,56 +198,60 @@ function runTest(assertCleaned) {
 
   if (before) before();
 
-  REPL.createInternalRepl(env, {
-    input: new ActionStream(),
-    output: new stream.Writable({
-      write(chunk, _, next) {
-        const output = chunk.toString();
+  REPL.createInternalRepl(
+    env,
+    {
+      input: new ActionStream(),
+      output: new stream.Writable({
+        write(chunk, _, next) {
+          const output = chunk.toString();
 
-        // Ignore escapes and blank lines
-        if (output.charCodeAt(0) === 27 || /^[\r\n]+$/.test(output))
-          return next();
+          // Ignore escapes and blank lines
+          if (output.charCodeAt(0) === 27 || /^[\r\n]+$/.test(output))
+            return next();
+
+          try {
+            assert.strictEqual(output, expected.shift());
+          } catch (err) {
+            console.error(`Failed test # ${numtests - tests.length}`);
+            throw err;
+          }
+          next();
+        }
+      }),
+      prompt: prompt,
+      useColors: false,
+      terminal: true
+    },
+    function(err, repl) {
+      if (err) {
+        console.error(`Failed test # ${numtests - tests.length}`);
+        throw err;
+      }
+
+      repl.once('close', () => {
+        if (repl._flushing) {
+          repl.once('flushHistory', onClose);
+          return;
+        }
+
+        onClose();
+      });
+
+      function onClose() {
+        const cleaned = clean === false ? false : cleanupTmpFile();
 
         try {
-          assert.strictEqual(output, expected.shift());
+          // Ensure everything that we expected was output
+          assert.strictEqual(expected.length, 0);
+          setImmediate(runTestWrap, cleaned);
         } catch (err) {
           console.error(`Failed test # ${numtests - tests.length}`);
           throw err;
         }
-        next();
       }
-    }),
-    prompt: prompt,
-    useColors: false,
-    terminal: true
-  }, function(err, repl) {
-    if (err) {
-      console.error(`Failed test # ${numtests - tests.length}`);
-      throw err;
+
+      repl.inputStream.run(test);
     }
-
-    repl.once('close', () => {
-      if (repl._flushing) {
-        repl.once('flushHistory', onClose);
-        return;
-      }
-
-      onClose();
-    });
-
-    function onClose() {
-      const cleaned = clean === false ? false : cleanupTmpFile();
-
-      try {
-        // Ensure everything that we expected was output
-        assert.strictEqual(expected.length, 0);
-        setImmediate(runTestWrap, cleaned);
-      } catch (err) {
-        console.error(`Failed test # ${numtests - tests.length}`);
-        throw err;
-      }
-    }
-
-    repl.inputStream.run(test);
-  });
+  );
 }

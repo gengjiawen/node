@@ -23,8 +23,11 @@ function ontimeout() {
   if (iter === 0) {
     checkInvocations(t1, { init: 1, before: 1 }, 't1: when first timer fired');
   } else {
-    checkInvocations(t1, { init: 1, before: 2, after: 1 },
-                     't1: when first interval fired again');
+    checkInvocations(
+      t1,
+      { init: 1, before: 2, after: 1 },
+      't1: when first interval fired again'
+    );
     clearInterval(interval);
     return;
   }
@@ -33,14 +36,20 @@ function ontimeout() {
   throw new Error('setInterval Error');
 }
 
-process.once('uncaughtException', common.mustCall((err) => {
-  assert.strictEqual(err.message, 'setInterval Error');
-}));
+process.once(
+  'uncaughtException',
+  common.mustCall((err) => {
+    assert.strictEqual(err.message, 'setInterval Error');
+  })
+);
 
 process.on('exit', () => {
   hooks.disable();
   hooks.sanityCheck('Timeout');
 
-  checkInvocations(t1, { init: 1, before: 2, after: 2, destroy: 1 },
-                   't1: when process exits');
+  checkInvocations(
+    t1,
+    { init: 1, before: 2, after: 2, destroy: 1 },
+    't1: when process exits'
+  );
 });

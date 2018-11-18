@@ -2,8 +2,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -39,18 +38,28 @@ function runTest(tindex) {
 
   if (!tcase) return;
 
-  const server = tls.createServer(tcase.serverOpts, (s) => {
-    s.resume();
-  }).listen(0, common.mustCall(function() {
-    tcase.clientOpts.port = this.address().port;
-    const client = tls.connect(tcase.clientOpts);
-    client.on('error', common.mustCall((e) => {
-      assert.strictEqual(e.code, tcase.errorCode);
-      server.close(common.mustCall(() => {
-        runTest(tindex + 1);
-      }));
-    }));
-  }));
+  const server = tls
+    .createServer(tcase.serverOpts, (s) => {
+      s.resume();
+    })
+    .listen(
+      0,
+      common.mustCall(function() {
+        tcase.clientOpts.port = this.address().port;
+        const client = tls.connect(tcase.clientOpts);
+        client.on(
+          'error',
+          common.mustCall((e) => {
+            assert.strictEqual(e.code, tcase.errorCode);
+            server.close(
+              common.mustCall(() => {
+                runTest(tindex + 1);
+              })
+            );
+          })
+        );
+      })
+    );
 }
 
 runTest(0);

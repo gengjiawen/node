@@ -33,8 +33,11 @@ expect('--trace-event-categories node', 'B\n');
 // eslint-disable-next-line no-template-curly-in-string
 expect('--trace-event-file-pattern {pid}-${rotation}.trace_events', 'B\n');
 // eslint-disable-next-line no-template-curly-in-string
-expect('--trace-event-file-pattern {pid}-${rotation}.trace_events ' +
-       '--trace-event-categories node.async_hooks', 'B\n');
+expect(
+  '--trace-event-file-pattern {pid}-${rotation}.trace_events ' +
+    '--trace-event-categories node.async_hooks',
+  'B\n'
+);
 
 if (!common.isWindows) {
   expect('--perf-basic-prof', 'B\n');
@@ -54,28 +57,34 @@ if (common.hasCrypto) {
 // V8 options
 expect('--abort_on-uncaught_exception', 'B\n');
 expect('--max-old-space-size=0', 'B\n');
-expect('--stack-trace-limit=100',
-       /(\s*at f \(\[eval\]:1:\d*\)\r?\n){100}/,
-       '(function f() { f(); })();',
-       true);
+expect(
+  '--stack-trace-limit=100',
+  /(\s*at f \(\[eval\]:1:\d*\)\r?\n){100}/,
+  '(function f() { f(); })();',
+  true
+);
 
 function expect(opt, want, command = 'console.log("B")', wantsError = false) {
   const argv = ['-e', command];
   const opts = {
     env: Object.assign({}, process.env, { NODE_OPTIONS: opt }),
-    maxBuffer: 1e6,
+    maxBuffer: 1e6
   };
-  if (typeof want === 'string')
-    want = new RegExp(want);
-  exec(process.execPath, argv, opts, common.mustCall((err, stdout, stderr) => {
-    if (wantsError) {
-      stdout = stderr;
-    } else {
-      assert.ifError(err);
-    }
-    if (want.test(stdout)) return;
+  if (typeof want === 'string') want = new RegExp(want);
+  exec(
+    process.execPath,
+    argv,
+    opts,
+    common.mustCall((err, stdout, stderr) => {
+      if (wantsError) {
+        stdout = stderr;
+      } else {
+        assert.ifError(err);
+      }
+      if (want.test(stdout)) return;
 
-    const o = JSON.stringify(opt);
-    assert.fail(`For ${o}, failed to find ${want} in: <\n${stdout}\n>`);
-  }));
+      const o = JSON.stringify(opt);
+      assert.fail(`For ${o}, failed to find ${want} in: <\n${stdout}\n>`);
+    })
+  );
 }

@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 if (common.opensslCli === false)
   common.skip('node compiled without OpenSSL CLI.');
@@ -19,20 +18,21 @@ let stderr = '';
 
 server.listen(0, '127.0.0.1', function() {
   const address = `${this.address().address}:${this.address().port}`;
-  const args = ['s_client',
-                '-ssl3',
-                '-connect', address];
+  const args = ['s_client', '-ssl3', '-connect', address];
 
   const client = spawn(common.opensslCli, args, { stdio: 'pipe' });
   client.stdout.pipe(process.stdout);
   client.stderr.pipe(process.stderr);
   client.stderr.setEncoding('utf8');
-  client.stderr.on('data', (data) => stderr += data);
+  client.stderr.on('data', (data) => (stderr += data));
 
-  client.once('exit', common.mustCall(function(exitCode) {
-    assert.strictEqual(exitCode, 1);
-    server.close();
-  }));
+  client.once(
+    'exit',
+    common.mustCall(function(exitCode) {
+      assert.strictEqual(exitCode, 1);
+      server.close();
+    })
+  );
 });
 
 server.on('tlsClientError', (err) => errors.push(err));
@@ -43,7 +43,9 @@ process.on('exit', function() {
   } else {
     assert.strictEqual(errors.length, 1);
     // OpenSSL 1.0.x and 1.1.x report invalid client versions differently.
-    assert(/:wrong version number/.test(errors[0].message) ||
-           /:version too low/.test(errors[0].message));
+    assert(
+      /:wrong version number/.test(errors[0].message) ||
+        /:version too low/.test(errors[0].message)
+    );
   }
 });

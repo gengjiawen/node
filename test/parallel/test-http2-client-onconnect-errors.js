@@ -2,15 +2,12 @@
 // Flags: --expose-internals
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const { internalBinding } = require('internal/test/binding');
-const {
-  constants,
-  Http2Session,
-  nghttp2ErrorString
-} = internalBinding('http2');
+const { constants, Http2Session, nghttp2ErrorString } = internalBinding(
+  'http2'
+);
 const http2 = require('http2');
 const { NghttpError } = require('internal/http2/util');
 
@@ -30,8 +27,9 @@ const specificTests = [
     error: {
       code: 'ERR_HTTP2_OUT_OF_STREAMS',
       type: Error,
-      message: 'No stream ID is available because ' +
-               'maximum stream ID has been reached'
+      message:
+        'No stream ID is available because ' +
+        'maximum stream ID has been reached'
     },
     type: 'stream'
   },
@@ -43,13 +41,14 @@ const specificTests = [
       message: 'A stream cannot depend on itself'
     },
     type: 'stream'
-  },
+  }
 ];
 
 const genericTests = Object.getOwnPropertyNames(constants)
-  .filter((key) => (
-    key.indexOf('NGHTTP2_ERR') === 0 && specificTestKeys.indexOf(key) < 0
-  ))
+  .filter(
+    (key) =>
+      key.indexOf('NGHTTP2_ERR') === 0 && specificTestKeys.indexOf(key) < 0
+  )
   .map((key) => ({
     ngError: constants[key],
     error: {
@@ -103,13 +102,16 @@ function runTest(test) {
   }
 
   req.on('end', common.mustCall());
-  req.on('close', common.mustCall(() => {
-    client.destroy();
+  req.on(
+    'close',
+    common.mustCall(() => {
+      client.destroy();
 
-    if (!tests.length) {
-      server.close();
-    } else {
-      runTest(tests.shift());
-    }
-  }));
+      if (!tests.length) {
+        server.close();
+      } else {
+        runTest(tests.shift());
+      }
+    })
+  );
 }

@@ -10,7 +10,9 @@ const opts = { showProxy: true };
 
 const target = {};
 const handler = {
-  get: function() { throw new Error('Getter should not be called'); }
+  get: function() {
+    throw new Error('Getter should not be called');
+  }
 };
 const proxyObj = new Proxy(target, handler);
 
@@ -23,8 +25,10 @@ const details = processUtil.getProxyDetails(proxyObj);
 assert.strictEqual(target, details[0]);
 assert.strictEqual(handler, details[1]);
 
-assert.strictEqual(util.inspect(proxyObj, opts),
-                   'Proxy [ {}, { get: [Function: get] } ]');
+assert.strictEqual(
+  util.inspect(proxyObj, opts),
+  'Proxy [ {}, { get: [Function: get] } ]'
+);
 
 // Using getProxyDetails with non-proxy returns undefined
 assert.strictEqual(processUtil.getProxyDetails({}), undefined);
@@ -50,16 +54,19 @@ const expected1 = 'Proxy [ {}, {} ]';
 const expected2 = 'Proxy [ Proxy [ {}, {} ], {} ]';
 const expected3 = 'Proxy [ Proxy [ Proxy [ {}, {} ], {} ], Proxy [ {}, {} ] ]';
 const expected4 = 'Proxy [ Proxy [ {}, {} ], Proxy [ Proxy [ {}, {} ], {} ] ]';
-const expected5 = 'Proxy [ Proxy [ Proxy [ Proxy [Array], {} ],' +
-                  ' Proxy [ {}, {} ] ],\n  Proxy [ Proxy [ {}, {} ]' +
-                  ', Proxy [ Proxy [Array], {} ] ] ]';
-const expected6 = 'Proxy [ Proxy [ Proxy [ Proxy [Array], Proxy [Array]' +
-                  ' ],\n    Proxy [ Proxy [Array], Proxy [Array] ] ],\n' +
-                  '  Proxy [ Proxy [ Proxy [Array], Proxy [Array] ],\n' +
-                  '    Proxy [ Proxy [Array], Proxy [Array] ] ] ]';
+const expected5 =
+  'Proxy [ Proxy [ Proxy [ Proxy [Array], {} ],' +
+  ' Proxy [ {}, {} ] ],\n  Proxy [ Proxy [ {}, {} ]' +
+  ', Proxy [ Proxy [Array], {} ] ] ]';
+const expected6 =
+  'Proxy [ Proxy [ Proxy [ Proxy [Array], Proxy [Array]' +
+  ' ],\n    Proxy [ Proxy [Array], Proxy [Array] ] ],\n' +
+  '  Proxy [ Proxy [ Proxy [Array], Proxy [Array] ],\n' +
+  '    Proxy [ Proxy [Array], Proxy [Array] ] ] ]';
 assert.strictEqual(
   util.inspect(proxy1, { showProxy: true, depth: null }),
-  expected1);
+  expected1
+);
 assert.strictEqual(util.inspect(proxy2, opts), expected2);
 assert.strictEqual(util.inspect(proxy3, opts), expected3);
 assert.strictEqual(util.inspect(proxy4, opts), expected4);

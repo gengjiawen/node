@@ -28,7 +28,6 @@ const util = require('util');
 const net = require('net');
 const http = require('http');
 
-
 let requests_recv = 0;
 let requests_sent = 0;
 let request_upgradeHead = null;
@@ -51,10 +50,12 @@ function testServer() {
   });
 
   this.on('upgrade', function(req, socket, upgradeHead) {
-    socket.write('HTTP/1.1 101 Web Socket Protocol Handshake\r\n' +
-                 'Upgrade: WebSocket\r\n' +
-                 'Connection: Upgrade\r\n' +
-                 '\r\n\r\n');
+    socket.write(
+      'HTTP/1.1 101 Web Socket Protocol Handshake\r\n' +
+        'Upgrade: WebSocket\r\n' +
+        'Connection: Upgrade\r\n' +
+        '\r\n\r\n'
+    );
 
     request_upgradeHead = upgradeHead;
 
@@ -71,12 +72,10 @@ function testServer() {
 
 util.inherits(testServer, http.Server);
 
-
 function writeReq(socket, data, encoding) {
   requests_sent++;
   socket.write(data);
 }
-
 
 /*-----------------------------------------------
   connection: Upgrade with listener
@@ -87,12 +86,14 @@ function test_upgrade_with_listener() {
   let state = 0;
 
   conn.on('connect', function() {
-    writeReq(conn,
-             'GET / HTTP/1.1\r\n' +
-             'Upgrade: WebSocket\r\n' +
-             'Connection: Upgrade\r\n' +
-             '\r\n' +
-             'WjN}|M(6');
+    writeReq(
+      conn,
+      'GET / HTTP/1.1\r\n' +
+        'Upgrade: WebSocket\r\n' +
+        'Connection: Upgrade\r\n' +
+        '\r\n' +
+        'WjN}|M(6'
+    );
   });
 
   conn.on('data', function(data) {
@@ -126,11 +127,13 @@ function test_upgrade_no_listener() {
   conn.setEncoding('utf8');
 
   conn.on('connect', function() {
-    writeReq(conn,
-             'GET / HTTP/1.1\r\n' +
-             'Upgrade: WebSocket\r\n' +
-             'Connection: Upgrade\r\n' +
-             '\r\n');
+    writeReq(
+      conn,
+      'GET / HTTP/1.1\r\n' +
+        'Upgrade: WebSocket\r\n' +
+        'Connection: Upgrade\r\n' +
+        '\r\n'
+    );
   });
 
   conn.once('data', (data) => {
@@ -166,14 +169,12 @@ function test_standard_http() {
   });
 }
 
-
 const server = createTestServer();
 
 server.listen(0, function() {
   // All tests get chained after this:
   test_upgrade_with_listener();
 });
-
 
 /*-----------------------------------------------
   Fin.

@@ -13,7 +13,10 @@ out += `${'o'.repeat(24)}O`;
 
 // In AIX, the child exits even before the python parent
 // can setup the readloop. Provide a reasonable delay.
-setTimeout(function() {
-  process.stdout.write(out);
-  process.exit(0);
-}, common.isAIX ? 200 : 0);
+setTimeout(
+  function() {
+    process.stdout.write(out);
+    process.exit(0);
+  },
+  common.isAIX ? 200 : 0
+);

@@ -55,11 +55,17 @@ if (process.env.FORK) {
     execPath: copyPath,
     env: envCopy
   });
-  child.on('message', common.mustCall(function(recv) {
-    assert.deepStrictEqual(msg, recv);
-  }));
-  child.on('exit', common.mustCall(function(code) {
-    fs.unlinkSync(copyPath);
-    assert.strictEqual(code, 0);
-  }));
+  child.on(
+    'message',
+    common.mustCall(function(recv) {
+      assert.deepStrictEqual(msg, recv);
+    })
+  );
+  child.on(
+    'exit',
+    common.mustCall(function(code) {
+      fs.unlinkSync(copyPath);
+      assert.strictEqual(code, 0);
+    })
+  );
 }

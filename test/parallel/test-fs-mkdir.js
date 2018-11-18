@@ -37,20 +37,27 @@ function nextdir() {
 {
   const pathname = path.join(tmpdir.path, nextdir());
 
-  fs.mkdir(pathname, common.mustCall(function(err) {
-    assert.strictEqual(err, null);
-    assert.strictEqual(fs.existsSync(pathname), true);
-  }));
+  fs.mkdir(
+    pathname,
+    common.mustCall(function(err) {
+      assert.strictEqual(err, null);
+      assert.strictEqual(fs.existsSync(pathname), true);
+    })
+  );
 }
 
 // mkdir creates directory with assigned mode value
 {
   const pathname = path.join(tmpdir.path, nextdir());
 
-  fs.mkdir(pathname, 0o777, common.mustCall(function(err) {
-    assert.strictEqual(err, null);
-    assert.strictEqual(fs.existsSync(pathname), true);
-  }));
+  fs.mkdir(
+    pathname,
+    0o777,
+    common.mustCall(function(err) {
+      assert.strictEqual(err, null);
+      assert.strictEqual(fs.existsSync(pathname), true);
+    })
+  );
 }
 
 // mkdirSync successfully creates directory from given path
@@ -66,20 +73,14 @@ function nextdir() {
 // mkdirSync and mkdir require path to be a string, buffer or url.
 // Anything else generates an error.
 [false, 1, {}, [], null, undefined].forEach((i) => {
-  common.expectsError(
-    () => fs.mkdir(i, common.mustNotCall()),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
-  common.expectsError(
-    () => fs.mkdirSync(i),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
+  common.expectsError(() => fs.mkdir(i, common.mustNotCall()), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
+  common.expectsError(() => fs.mkdirSync(i), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
 });
 
 // mkdirpSync when both top-level, and sub-folders do not exist.
@@ -136,11 +137,15 @@ function nextdir() {
 {
   const pathname = path.join(tmpdir.path, nextdir(), nextdir());
 
-  fs.mkdir(pathname, { recursive: true }, common.mustCall(function(err) {
-    assert.strictEqual(err, null);
-    assert.strictEqual(fs.existsSync(pathname), true);
-    assert.strictEqual(fs.statSync(pathname).isDirectory(), true);
-  }));
+  fs.mkdir(
+    pathname,
+    { recursive: true },
+    common.mustCall(function(err) {
+      assert.strictEqual(err, null);
+      assert.strictEqual(fs.existsSync(pathname), true);
+      assert.strictEqual(fs.statSync(pathname).isDirectory(), true);
+    })
+  );
 }
 
 // mkdirp when path is a file.
@@ -187,19 +192,18 @@ if (common.isMainThread && (common.isLinux || common.isOSX)) {
       {
         code: 'ERR_INVALID_ARG_TYPE',
         type: TypeError,
-        message: 'The "recursive" argument must be of type boolean. Received ' +
+        message:
+          'The "recursive" argument must be of type boolean. Received ' +
           `type ${typeof recursive}`
       }
     );
-    common.expectsError(
-      () => fs.mkdirSync(pathname, { recursive }),
-      {
-        code: 'ERR_INVALID_ARG_TYPE',
-        type: TypeError,
-        message: 'The "recursive" argument must be of type boolean. Received ' +
-          `type ${typeof recursive}`
-      }
-    );
+    common.expectsError(() => fs.mkdirSync(pathname, { recursive }), {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError,
+      message:
+        'The "recursive" argument must be of type boolean. Received ' +
+        `type ${typeof recursive}`
+    });
   });
 }
 

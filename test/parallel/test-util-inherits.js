@@ -8,7 +8,9 @@ const { inherits } = require('util');
 function A() {
   this._a = 'a';
 }
-A.prototype.a = function() { return this._a; };
+A.prototype.a = function() {
+  return this._a;
+};
 
 // One level of inheritance
 function B(value) {
@@ -16,17 +18,16 @@ function B(value) {
   this._b = value;
 }
 inherits(B, A);
-B.prototype.b = function() { return this._b; };
+B.prototype.b = function() {
+  return this._b;
+};
 
-assert.deepStrictEqual(
-  Object.getOwnPropertyDescriptor(B, 'super_'),
-  {
-    value: A,
-    enumerable: false,
-    configurable: true,
-    writable: true
-  }
-);
+assert.deepStrictEqual(Object.getOwnPropertyDescriptor(B, 'super_'), {
+  value: A,
+  enumerable: false,
+  configurable: true,
+  writable: true
+});
 
 const b = new B('b');
 assert.strictEqual(b.a(), 'a');
@@ -39,8 +40,12 @@ function C() {
   this._c = 'c';
 }
 inherits(C, B);
-C.prototype.c = function() { return this._c; };
-C.prototype.getValue = function() { return this.a() + this.b() + this.c(); };
+C.prototype.c = function() {
+  return this._c;
+};
+C.prototype.getValue = function() {
+  return this.a() + this.b() + this.c();
+};
 
 assert.strictEqual(C.super_, B);
 
@@ -54,7 +59,9 @@ function D() {
   this._d = 'd';
 }
 
-D.prototype.d = function() { return this._d; };
+D.prototype.d = function() {
+  return this._d;
+};
 inherits(D, C);
 
 assert.strictEqual(D.super_, C);
@@ -70,7 +77,9 @@ class E {
     D.call(this);
     this._e = 'e';
   }
-  e() { return this._e; }
+  e() {
+    return this._e;
+  }
 }
 inherits(E, D);
 
@@ -83,28 +92,40 @@ assert.strictEqual(e.e(), 'e');
 assert.strictEqual(e.constructor, E);
 
 // Should throw with invalid arguments
-common.expectsError(function() {
-  inherits(A, {});
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError,
-  message: 'The "superCtor.prototype" property must be of type Function. ' +
-           'Received type undefined'
-});
+common.expectsError(
+  function() {
+    inherits(A, {});
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "superCtor.prototype" property must be of type Function. ' +
+      'Received type undefined'
+  }
+);
 
-common.expectsError(function() {
-  inherits(A, null);
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError,
-  message: 'The "superCtor" argument must be of type Function. ' +
-           'Received type object'
-});
+common.expectsError(
+  function() {
+    inherits(A, null);
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "superCtor" argument must be of type Function. ' +
+      'Received type object'
+  }
+);
 
-common.expectsError(function() {
-  inherits(null, A);
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError,
-  message: 'The "ctor" argument must be of type Function. Received type object'
-});
+common.expectsError(
+  function() {
+    inherits(null, A);
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "ctor" argument must be of type Function. Received type object'
+  }
+);

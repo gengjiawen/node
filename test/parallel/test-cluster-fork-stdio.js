@@ -15,10 +15,13 @@ if (cluster.isMaster) {
   const channel = worker.process.stdio[4];
   let response = '';
 
-  worker.on('exit', common.mustCall((code, signal) => {
-    assert.strictEqual(code, 0);
-    assert.strictEqual(signal, null);
-  }));
+  worker.on(
+    'exit',
+    common.mustCall((code, signal) => {
+      assert.strictEqual(code, 0);
+      assert.strictEqual(signal, null);
+    })
+  );
 
   channel.setEncoding('utf8');
   channel.on('data', (data) => {

@@ -27,30 +27,39 @@ const fixtures = require('../common/fixtures');
 
 const emptyFile = fixtures.path('empty.txt');
 
-fs.open(emptyFile, 'r', common.mustCall((error, fd) => {
+fs.open(
+  emptyFile,
+  'r',
+  common.mustCall((error, fd) => {
+    assert.ifError(error);
 
-  assert.ifError(error);
+    const read = fs.createReadStream(emptyFile, { fd });
 
-  const read = fs.createReadStream(emptyFile, { fd });
+    read.once('data', common.mustNotCall('data event should not emit'));
 
-  read.once('data', common.mustNotCall('data event should not emit'));
+    read.once('end', common.mustCall());
+  })
+);
 
-  read.once('end', common.mustCall());
-}));
+fs.open(
+  emptyFile,
+  'r',
+  common.mustCall((error, fd) => {
+    assert.ifError(error);
 
-fs.open(emptyFile, 'r', common.mustCall((error, fd) => {
+    const read = fs.createReadStream(emptyFile, { fd });
 
-  assert.ifError(error);
+    read.pause();
 
-  const read = fs.createReadStream(emptyFile, { fd });
+    read.once('data', common.mustNotCall('data event should not emit'));
 
-  read.pause();
+    read.once('end', common.mustNotCall('end event should not emit'));
 
-  read.once('data', common.mustNotCall('data event should not emit'));
-
-  read.once('end', common.mustNotCall('end event should not emit'));
-
-  setTimeout(common.mustCall(() => {
-    assert.strictEqual(read.isPaused(), true);
-  }), common.platformTimeout(50));
-}));
+    setTimeout(
+      common.mustCall(() => {
+        assert.strictEqual(read.isPaused(), true);
+      }),
+      common.platformTimeout(50)
+    );
+  })
+);

@@ -25,7 +25,7 @@ buffer[1] = 0xff;
 buffer[2] = 0x7f;
 buffer[3] = 0x7f;
 assert.ok(Number.isNaN(buffer.readFloatBE(0)));
-assert.strictEqual(buffer.readFloatLE(0), 3.4028234663852886e+38);
+assert.strictEqual(buffer.readFloatLE(0), 3.4028234663852886e38);
 
 buffer[0] = 0xab;
 buffer[1] = 0xaa;
@@ -62,45 +62,37 @@ assert.strictEqual(buffer.readFloatBE(0), 4.627507918739843e-41);
 assert.strictEqual(buffer.readFloatLE(0), -Infinity);
 
 ['readFloatLE', 'readFloatBE'].forEach((fn) => {
-
   // Verify that default offset works fine.
   buffer[fn](undefined);
   buffer[fn]();
 
   ['', '0', null, {}, [], () => {}, true, false].forEach((off) => {
-    assert.throws(
-      () => buffer[fn](off),
-      { code: 'ERR_INVALID_ARG_TYPE' }
-    );
+    assert.throws(() => buffer[fn](off), { code: 'ERR_INVALID_ARG_TYPE' });
   });
 
   [Infinity, -1, 1].forEach((offset) => {
-    assert.throws(
-      () => buffer[fn](offset),
-      {
-        code: 'ERR_OUT_OF_RANGE',
-        name: 'RangeError [ERR_OUT_OF_RANGE]',
-        message: 'The value of "offset" is out of range. ' +
-                 `It must be >= 0 and <= 0. Received ${offset}`
-      });
+    assert.throws(() => buffer[fn](offset), {
+      code: 'ERR_OUT_OF_RANGE',
+      name: 'RangeError [ERR_OUT_OF_RANGE]',
+      message:
+        'The value of "offset" is out of range. ' +
+        `It must be >= 0 and <= 0. Received ${offset}`
+    });
   });
 
-  assert.throws(
-    () => Buffer.alloc(1)[fn](1),
-    {
-      code: 'ERR_BUFFER_OUT_OF_BOUNDS',
-      name: 'RangeError [ERR_BUFFER_OUT_OF_BOUNDS]',
-      message: 'Attempt to write outside buffer bounds'
-    });
+  assert.throws(() => Buffer.alloc(1)[fn](1), {
+    code: 'ERR_BUFFER_OUT_OF_BOUNDS',
+    name: 'RangeError [ERR_BUFFER_OUT_OF_BOUNDS]',
+    message: 'Attempt to write outside buffer bounds'
+  });
 
   [NaN, 1.01].forEach((offset) => {
-    assert.throws(
-      () => buffer[fn](offset),
-      {
-        code: 'ERR_OUT_OF_RANGE',
-        name: 'RangeError [ERR_OUT_OF_RANGE]',
-        message: 'The value of "offset" is out of range. ' +
-                 `It must be an integer. Received ${offset}`
-      });
+    assert.throws(() => buffer[fn](offset), {
+      code: 'ERR_OUT_OF_RANGE',
+      name: 'RangeError [ERR_OUT_OF_RANGE]',
+      message:
+        'The value of "offset" is out of range. ' +
+        `It must be an integer. Received ${offset}`
+    });
   });
 });

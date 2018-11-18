@@ -22,13 +22,19 @@ const server = http2.createServer({ maxSessionMemory: 1 });
 
 server.on('session', function(session) {
   session.on('stream', function(stream) {
-    stream.on('end', common.mustCall(function() {
-      this.respond({
-        ':status': 200
-      }, {
-        endStream: true
-      });
-    }));
+    stream.on(
+      'end',
+      common.mustCall(function() {
+        this.respond(
+          {
+            ':status': 200
+          },
+          {
+            endStream: true
+          }
+        );
+      })
+    );
     stream.resume();
   });
 });
@@ -42,10 +48,13 @@ server.listen(0, function() {
       return server.close();
     }
     const stream = client.request({ ':method': 'POST' });
-    stream.on('response', common.mustCall(function(headers) {
-      assert.strictEqual(headers[':status'], 200);
-      this.on('close', common.mustCall(() => next(i + 1)));
-    }));
+    stream.on(
+      'response',
+      common.mustCall(function(headers) {
+        assert.strictEqual(headers[':status'], 200);
+        this.on('close', common.mustCall(() => next(i + 1)));
+      })
+    );
     stream.end();
   }
 

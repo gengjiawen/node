@@ -13,7 +13,7 @@ const foo1 = test_symbol.New('foo');
 const foo2 = test_symbol.New('foo');
 const object = {
   [foo1]: 1,
-  [foo2]: 2,
+  [foo2]: 2
 };
 assert.strictEqual(object[foo1], 1);
 assert.strictEqual(object[foo2], 2);

@@ -31,9 +31,12 @@ gz.on('data', function(c) {
   received += c.length;
 });
 
-gz.on('end', common.mustCall(function() {
-  assert.strictEqual(received, 20);
-}));
+gz.on(
+  'end',
+  common.mustCall(function() {
+    assert.strictEqual(received, 20);
+  })
+);
 gz.on('finish', common.mustCall());
 gz.write(emptyBuffer);
 gz.end();

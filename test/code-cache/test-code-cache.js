@@ -11,21 +11,16 @@ const {
   cachableBuiltins,
   cannotUseCache
 } = require('internal/bootstrap/cache');
-const {
-  isMainThread
-} = require('worker_threads');
+const { isMainThread } = require('worker_threads');
 
-const {
-  internalBinding
-} = require('internal/test/binding');
-const {
-  compiledWithoutCache,
-  compiledWithCache
-} = internalBinding('native_module');
+const { internalBinding } = require('internal/test/binding');
+const { compiledWithoutCache, compiledWithCache } = internalBinding(
+  'native_module'
+);
 
 for (const key of cachableBuiltins) {
   if (!isMainThread && key === 'trace_events') {
-    continue;  // Cannot load trace_events in workers
+    continue; // Cannot load trace_events in workers
   }
   require(key);
 }
@@ -49,11 +44,15 @@ if (process.config.variables.node_code_cache_path === undefined) {
 
   for (const key of loadedModules) {
     if (cannotUseCache.includes(key)) {
-      assert(compiledWithoutCache.has(key),
-             `"${key}" should've been compiled without code cache`);
+      assert(
+        compiledWithoutCache.has(key),
+        `"${key}" should've been compiled without code cache`
+      );
     } else {
-      assert(compiledWithCache.has(key),
-             `"${key}" should've been compiled with code cache`);
+      assert(
+        compiledWithCache.has(key),
+        `"${key}" should've been compiled with code cache`
+      );
     }
   }
 }

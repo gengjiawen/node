@@ -31,7 +31,6 @@ const testFileName = require('path').join(tmpdir.path, 'GH-814_test.txt');
 const testFD = fs.openSync(testFileName, 'w');
 console.error(`${testFileName}\n`);
 
-
 const tailProc = require('child_process').spawn('tail', ['-f', testFileName]);
 tailProc.stdout.on('data', tailCB);
 
@@ -46,7 +45,6 @@ function tailCB(data) {
   }
 }
 
-
 let PASS = true;
 const bufPool = [];
 const kBufSize = 16 * 1024 * 1024;
@@ -56,7 +54,6 @@ const timeToQuit = Date.now() + 5e3; // Test should last no more than this.
 writer();
 
 function writer() {
-
   if (PASS) {
     if (Date.now() > timeToQuit) {
       setTimeout(function() {
@@ -79,16 +76,13 @@ function writer() {
       process.nextTick(writer);
     }
   }
-
 }
 
 function writerCB(err, written) {
   assert.ifError(err);
 }
 
-
 // ******************* UTILITIES
-
 
 function newBuffer(size, value) {
   const buffer = Buffer.allocUnsafe(size);

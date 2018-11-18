@@ -29,21 +29,27 @@ const server = net.createServer(function(s) {
   s.end();
 });
 
-server.listen(0, common.mustCall(function() {
-  const c = net.createConnection(this.address().port);
-  c.on('close', common.mustCall(function() {
-    console.error('connection closed');
-    assert.strictEqual(c._handle, null);
-    // Calling functions / accessing properties of a closed socket should not
-    // throw.
-    c.setNoDelay();
-    c.setKeepAlive();
-    c.bufferSize;
-    c.pause();
-    c.resume();
-    c.address();
-    c.remoteAddress;
-    c.remotePort;
-    server.close();
-  }));
-}));
+server.listen(
+  0,
+  common.mustCall(function() {
+    const c = net.createConnection(this.address().port);
+    c.on(
+      'close',
+      common.mustCall(function() {
+        console.error('connection closed');
+        assert.strictEqual(c._handle, null);
+        // Calling functions / accessing properties of a closed socket should not
+        // throw.
+        c.setNoDelay();
+        c.setKeepAlive();
+        c.bufferSize;
+        c.pause();
+        c.resume();
+        c.address();
+        c.remoteAddress;
+        c.remotePort;
+        server.close();
+      })
+    );
+  })
+);

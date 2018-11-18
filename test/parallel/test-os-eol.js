@@ -10,7 +10,9 @@ assert.strictEqual(os.EOL, eol);
 
 // Test that the `Error` is a `TypeError` but do not check the message as it
 // varies between different JavaScript engines.
-assert.throws(function() { os.EOL = 123; }, TypeError);
+assert.throws(function() {
+  os.EOL = 123;
+}, TypeError);
 
 const foo = 'foo';
 Object.defineProperties(os, {

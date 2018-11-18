@@ -21,15 +21,18 @@ const deprecatedModules = [
 
 // Newly added deps that do not have a deprecation wrapper around it would
 // throw an error, but no warning would be emitted.
-const deps = [
-  'acorn/dist/acorn',
-  'acorn/dist/walk'
-];
+const deps = ['acorn/dist/acorn', 'acorn/dist/walk'];
 
-common.expectWarning('DeprecationWarning', deprecatedModules.map((m) => {
-  return [`Requiring Node.js-bundled '${m}' module is deprecated. ` +
-         'Please install the necessary module locally.', 'DEP0084'];
-}));
+common.expectWarning(
+  'DeprecationWarning',
+  deprecatedModules.map((m) => {
+    return [
+      `Requiring Node.js-bundled '${m}' module is deprecated. ` +
+        'Please install the necessary module locally.',
+      'DEP0084'
+    ];
+  })
+);
 
 for (const m of deprecatedModules) {
   try {

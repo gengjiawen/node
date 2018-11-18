@@ -11,53 +11,67 @@ common.expectWarning(
 );
 
 // Two args only, operator defaults to '!='
-assert.throws(() => {
-  assert.fail('first', 'second');
-}, {
-  code: 'ERR_ASSERTION',
-  name: 'AssertionError [ERR_ASSERTION]',
-  message: '\'first\' != \'second\'',
-  operator: '!=',
-  actual: 'first',
-  expected: 'second',
-  generatedMessage: true
-});
+assert.throws(
+  () => {
+    assert.fail('first', 'second');
+  },
+  {
+    code: 'ERR_ASSERTION',
+    name: 'AssertionError [ERR_ASSERTION]',
+    message: "'first' != 'second'",
+    operator: '!=',
+    actual: 'first',
+    expected: 'second',
+    generatedMessage: true
+  }
+);
 
 // Three args
-assert.throws(() => {
-  assert.fail('ignored', 'ignored', 'another custom message');
-}, {
-  code: 'ERR_ASSERTION',
-  name: 'AssertionError [ERR_ASSERTION]',
-  message: 'another custom message',
-  operator: 'fail',
-  actual: 'ignored',
-  expected: 'ignored',
-  generatedMessage: false
-});
+assert.throws(
+  () => {
+    assert.fail('ignored', 'ignored', 'another custom message');
+  },
+  {
+    code: 'ERR_ASSERTION',
+    name: 'AssertionError [ERR_ASSERTION]',
+    message: 'another custom message',
+    operator: 'fail',
+    actual: 'ignored',
+    expected: 'ignored',
+    generatedMessage: false
+  }
+);
 
 // Three args with custom Error
-assert.throws(() => {
-  assert.fail(typeof 1, 'object', new TypeError('another custom message'));
-}, {
-  name: 'TypeError',
-  message: 'another custom message'
-});
+assert.throws(
+  () => {
+    assert.fail(typeof 1, 'object', new TypeError('another custom message'));
+  },
+  {
+    name: 'TypeError',
+    message: 'another custom message'
+  }
+);
 
 // No third arg (but a fourth arg)
-assert.throws(() => {
-  assert.fail('first', 'second', undefined, 'operator');
-}, {
-  code: 'ERR_ASSERTION',
-  name: 'AssertionError [ERR_ASSERTION]',
-  message: '\'first\' operator \'second\'',
-  operator: 'operator',
-  actual: 'first',
-  expected: 'second'
-});
+assert.throws(
+  () => {
+    assert.fail('first', 'second', undefined, 'operator');
+  },
+  {
+    code: 'ERR_ASSERTION',
+    name: 'AssertionError [ERR_ASSERTION]',
+    message: "'first' operator 'second'",
+    operator: 'operator',
+    actual: 'first',
+    expected: 'second'
+  }
+);
 
 // The stackFrameFunction should exclude the foo frame
 assert.throws(
-  function foo() { assert.fail('first', 'second', 'message', '!==', foo); },
+  function foo() {
+    assert.fail('first', 'second', 'message', '!==', foo);
+  },
   (err) => !/^\s*at\sfoo\b/m.test(err.stack)
 );

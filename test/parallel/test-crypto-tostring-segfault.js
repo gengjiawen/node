@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 // This test ensures that node doesn't SEGFAULT when either of
 // `crypto.createHash` or `crypto.createHmac` are given an object that defines
@@ -21,7 +20,11 @@ const scripts = [
 scripts.forEach((script) => {
   const node = process.execPath;
   const code = `${setup};${script}`;
-  execFile(node, [ '-e', code ], common.mustCall((err, stdout, stderr) => {
-    assert(stderr.includes('Error: xyz'), 'digest crashes');
-  }));
+  execFile(
+    node,
+    ['-e', code],
+    common.mustCall((err, stdout, stderr) => {
+      assert(stderr.includes('Error: xyz'), 'digest crashes');
+    })
+  );
 });

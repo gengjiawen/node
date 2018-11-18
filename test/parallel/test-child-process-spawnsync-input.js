@@ -33,13 +33,9 @@ const msgErr = 'this is stderr';
 const msgOutBuf = Buffer.from(`${msgOut}\n`);
 const msgErrBuf = Buffer.from(`${msgErr}\n`);
 
-const args = [
-  '-e',
-  `console.log("${msgOut}"); console.error("${msgErr}");`
-];
+const args = ['-e', `console.log("${msgOut}"); console.error("${msgErr}");`];
 
 let ret;
-
 
 function checkSpawnSyncRet(ret) {
   assert.strictEqual(ret.status, 0);
@@ -76,9 +72,10 @@ let options = {
   input: 1234
 };
 
-common.expectsError(
-  () => spawnSync('cat', [], options),
-  { code: 'ERR_INVALID_ARG_TYPE', type: TypeError });
+common.expectsError(() => spawnSync('cat', [], options), {
+  code: 'ERR_INVALID_ARG_TYPE',
+  type: TypeError
+});
 
 options = {
   input: 'hello world'

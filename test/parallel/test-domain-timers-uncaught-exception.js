@@ -10,16 +10,25 @@ const assert = require('assert');
 let first = false;
 
 domain.run(function() {
-  setTimeout(() => { throw new Error('FAIL'); }, 1);
-  setTimeout(() => { first = true; }, 1);
-  setTimeout(() => { assert.strictEqual(first, true); }, 2);
+  setTimeout(() => {
+    throw new Error('FAIL');
+  }, 1);
+  setTimeout(() => {
+    first = true;
+  }, 1);
+  setTimeout(() => {
+    assert.strictEqual(first, true);
+  }, 2);
 
   // Ensure that 2 ms have really passed
   let i = 1e6;
   while (i--);
 });
 
-domain.once('error', common.mustCall((err) => {
-  assert(err);
-  assert.strictEqual(err.message, 'FAIL');
-}));
+domain.once(
+  'error',
+  common.mustCall((err) => {
+    assert(err);
+    assert.strictEqual(err.message, 'FAIL');
+  })
+);

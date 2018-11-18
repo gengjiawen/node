@@ -37,7 +37,6 @@ if (cluster.isWorker) {
 
   assert.strictEqual(result, true);
 } else if (cluster.isMaster) {
-
   const checks = {
     using: false,
     overwrite: false
@@ -49,14 +48,14 @@ if (cluster.isWorker) {
 
   // Fork worker
   const worker = cluster.fork({
-    'cluster_test_prop': 'custom',
-    'cluster_test_overwrite': 'new'
+    cluster_test_prop: 'custom',
+    cluster_test_overwrite: 'new'
   });
 
   // Checks worker env
   worker.on('message', function(data) {
-    checks.using = (data.prop === 'custom');
-    checks.overwrite = (data.overwrite === 'new');
+    checks.using = data.prop === 'custom';
+    checks.overwrite = data.overwrite === 'new';
     process.exit(0);
   });
 
@@ -64,7 +63,7 @@ if (cluster.isWorker) {
     assert.ok(checks.using, 'The worker did not receive the correct env.');
     assert.ok(
       checks.overwrite,
-      'The custom environment did not overwrite the existing environment.');
+      'The custom environment did not overwrite the existing environment.'
+    );
   });
-
 }

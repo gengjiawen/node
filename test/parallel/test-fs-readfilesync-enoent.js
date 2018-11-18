@@ -2,8 +2,7 @@
 const common = require('../common');
 
 // This test is only relevant on Windows.
-if (!common.isWindows)
-  common.skip('Windows specific test.');
+if (!common.isWindows) common.skip('Windows specific test.');
 
 // This test ensures fs.realpathSync works on properly on Windows without
 // throwing ENOENT when the path involves a fileserver.
@@ -18,10 +17,13 @@ function test(p) {
   const result = fs.realpathSync(p);
   assert.strictEqual(result.toLowerCase(), path.resolve(p).toLowerCase());
 
-  fs.realpath(p, common.mustCall(function(err, result) {
-    assert.ok(!err);
-    assert.strictEqual(result.toLowerCase(), path.resolve(p).toLowerCase());
-  }));
+  fs.realpath(
+    p,
+    common.mustCall(function(err, result) {
+      assert.ok(!err);
+      assert.strictEqual(result.toLowerCase(), path.resolve(p).toLowerCase());
+    })
+  );
 }
 
 test(`//${os.hostname()}/c$/Windows/System32`);

@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const fixtures = require('../common/fixtures');
 
 // This test ensures that Node.js doesn't incur a segfault while accessing
@@ -16,18 +15,23 @@ const options = {
   cert: fixtures.readKey('agent1-cert.pem')
 };
 
-const server = tls.createServer(options, function(s) {
-  s.end('hello');
-}).listen(0, function() {
-  const opts = {
-    port: this.address().port,
-    rejectUnauthorized: false
-  };
-  const client = tls.connect(opts, function() {
-    putImmediate(client);
+const server = tls
+  .createServer(options, function(s) {
+    s.end('hello');
+  })
+  .listen(0, function() {
+    const opts = {
+      port: this.address().port,
+      rejectUnauthorized: false
+    };
+    const client = tls.connect(
+      opts,
+      function() {
+        putImmediate(client);
+      }
+    );
+    client.resume();
   });
-  client.resume();
-});
 
 function putImmediate(client) {
   setImmediate(function() {

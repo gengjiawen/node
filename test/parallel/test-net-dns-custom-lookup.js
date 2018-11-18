@@ -11,18 +11,27 @@ function check(addressType, cb) {
   });
 
   const address = addressType === 4 ? common.localhostIPv4 : '::1';
-  server.listen(0, address, common.mustCall(function() {
-    net.connect({
-      port: this.address().port,
-      host: 'localhost',
-      family: addressType,
-      lookup: lookup
-    }).on('lookup', common.mustCall(function(err, ip, type) {
-      assert.strictEqual(err, null);
-      assert.strictEqual(address, ip);
-      assert.strictEqual(type, addressType);
-    }));
-  }));
+  server.listen(
+    0,
+    address,
+    common.mustCall(function() {
+      net
+        .connect({
+          port: this.address().port,
+          host: 'localhost',
+          family: addressType,
+          lookup: lookup
+        })
+        .on(
+          'lookup',
+          common.mustCall(function(err, ip, type) {
+            assert.strictEqual(err, null);
+            assert.strictEqual(address, ip);
+            assert.strictEqual(type, addressType);
+          })
+        );
+    })
+  );
 
   function lookup(host, dnsopts, cb) {
     dnsopts.family = addressType;

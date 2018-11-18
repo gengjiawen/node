@@ -7,11 +7,16 @@ const assert = require('assert');
 // being rescheduled even if it throws.
 
 let count = 2;
-const interval = setInterval(() => { throw new Error('IntervalError'); }, 1);
+const interval = setInterval(() => {
+  throw new Error('IntervalError');
+}, 1);
 
-process.on('uncaughtException', common.mustCall((err) => {
-  assert.strictEqual(err.message, 'IntervalError');
-  if (--count === 0) {
-    clearInterval(interval);
-  }
-}, 2));
+process.on(
+  'uncaughtException',
+  common.mustCall((err) => {
+    assert.strictEqual(err.message, 'IntervalError');
+    if (--count === 0) {
+      clearInterval(interval);
+    }
+  }, 2)
+);

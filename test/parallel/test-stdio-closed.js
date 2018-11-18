@@ -15,9 +15,12 @@ if (common.isWindows) {
   const python = process.env.PYTHON || 'python';
   const script = fixtures.path('spawn_closed_stdio.py');
   const proc = spawn(python, [script, process.execPath, __filename, 'child']);
-  proc.on('exit', common.mustCall(function(exitCode) {
-    assert.strictEqual(exitCode, 0);
-  }));
+  proc.on(
+    'exit',
+    common.mustCall(function(exitCode) {
+      assert.strictEqual(exitCode, 0);
+    })
+  );
   return;
 }
 
@@ -30,6 +33,9 @@ if (process.argv[2] === 'child') {
 const cmd = `"${process.execPath}" "${__filename}" child 1>&- 2>&-`;
 const proc = spawn('/bin/sh', ['-c', cmd], { stdio: 'inherit' });
 
-proc.on('exit', common.mustCall(function(exitCode) {
-  assert.strictEqual(exitCode, 0);
-}));
+proc.on(
+  'exit',
+  common.mustCall(function(exitCode) {
+    assert.strictEqual(exitCode, 0);
+  })
+);

@@ -3,10 +3,7 @@
 
 const common = require('../common');
 const assert = require('assert');
-const {
-  PerformanceObserver,
-  constants
-} = require('perf_hooks');
+const { PerformanceObserver, constants } = require('perf_hooks');
 
 const {
   NODE_PERFORMANCE_GC_MAJOR,
@@ -24,16 +21,18 @@ const kinds = [
 
 // Adding an observer should force at least one gc to appear
 {
-  const obs = new PerformanceObserver(common.mustCallAtLeast((list) => {
-    const entry = list.getEntries()[0];
-    assert(entry);
-    assert.strictEqual(entry.name, 'gc');
-    assert.strictEqual(entry.entryType, 'gc');
-    assert(kinds.includes(entry.kind));
-    assert.strictEqual(typeof entry.startTime, 'number');
-    assert.strictEqual(typeof entry.duration, 'number');
-    obs.disconnect();
-  }));
+  const obs = new PerformanceObserver(
+    common.mustCallAtLeast((list) => {
+      const entry = list.getEntries()[0];
+      assert(entry);
+      assert.strictEqual(entry.name, 'gc');
+      assert.strictEqual(entry.entryType, 'gc');
+      assert(kinds.includes(entry.kind));
+      assert.strictEqual(typeof entry.startTime, 'number');
+      assert.strictEqual(typeof entry.duration, 'number');
+      obs.disconnect();
+    })
+  );
   obs.observe({ entryTypes: ['gc'] });
   global.gc();
   // Keep the event loop alive to witness the GC async callback happen.

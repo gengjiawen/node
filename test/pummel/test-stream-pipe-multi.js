@@ -63,7 +63,6 @@ FakeStream.prototype.close = function() {
   this.emit('close');
 };
 
-
 // expect all streams to close properly.
 process.on('exit', function() {
   assert.strictEqual(cnt, wclosed);

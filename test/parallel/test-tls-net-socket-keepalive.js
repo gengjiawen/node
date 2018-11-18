@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 const tls = require('tls');
@@ -16,38 +15,49 @@ const ca = fixtures.readKey('ca1-cert.pem');
 const options = {
   key,
   cert,
-  ca: [ca],
+  ca: [ca]
 };
 
-const server = tls.createServer(options, common.mustCall((conn) => {
-  conn.write('hello');
-  conn.on('data', common.mustCall());
-  conn.end();
-})).listen(0, common.mustCall(() => {
-  const netSocket = new net.Socket({
-    allowHalfOpen: true,
-  });
+const server = tls
+  .createServer(
+    options,
+    common.mustCall((conn) => {
+      conn.write('hello');
+      conn.on('data', common.mustCall());
+      conn.end();
+    })
+  )
+  .listen(
+    0,
+    common.mustCall(() => {
+      const netSocket = new net.Socket({
+        allowHalfOpen: true
+      });
 
-  const socket = tls.connect({
-    socket: netSocket,
-    rejectUnauthorized: false,
-  });
+      const socket = tls.connect({
+        socket: netSocket,
+        rejectUnauthorized: false
+      });
 
-  const { port, address } = server.address();
+      const { port, address } = server.address();
 
-  // Doing `net.Socket.connect()` after `tls.connect()` will make tls module
-  // wrap the socket in StreamWrap.
-  netSocket.connect({
-    port,
-    address,
-  });
+      // Doing `net.Socket.connect()` after `tls.connect()` will make tls module
+      // wrap the socket in StreamWrap.
+      netSocket.connect({
+        port,
+        address
+      });
 
-  socket.on('end', common.mustCall());
-  socket.on('data', common.mustCall());
-  socket.on('close', common.mustCall(() => {
-    server.close();
-  }));
+      socket.on('end', common.mustCall());
+      socket.on('data', common.mustCall());
+      socket.on(
+        'close',
+        common.mustCall(() => {
+          server.close();
+        })
+      );
 
-  socket.write('hello');
-  socket.end();
-}));
+      socket.write('hello');
+      socket.end();
+    })
+  );

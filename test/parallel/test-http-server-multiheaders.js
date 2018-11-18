@@ -36,8 +36,10 @@ const srv = http.createServer(function(req, res) {
   assert.strictEqual(req.headers['x-foo'], 'bingo');
   assert.strictEqual(req.headers['x-bar'], 'banjo, bango');
   assert.strictEqual(req.headers['sec-websocket-protocol'], 'chat, share');
-  assert.strictEqual(req.headers['sec-websocket-extensions'],
-                     'foo; 1, bar; 2, baz');
+  assert.strictEqual(
+    req.headers['sec-websocket-extensions'],
+    'foo; 1, bar; 2, baz'
+  );
   assert.strictEqual(req.headers.constructor, 'foo, bar, baz');
 
   res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -74,7 +76,7 @@ srv.listen(0, function() {
       ['sec-websocket-extensions', 'baz'],
       ['constructor', 'foo'],
       ['constructor', 'bar'],
-      ['constructor', 'baz'],
+      ['constructor', 'baz']
     ]
   });
 });

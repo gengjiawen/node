@@ -9,8 +9,11 @@ const path = require('path');
 const os = require('os');
 
 const bindingPath = require.resolve(`./build/${common.buildType}/binding`);
-process.dlopen(module, bindingPath,
-               os.constants.dlopen.RTLD_NOW | os.constants.dlopen.RTLD_GLOBAL);
+process.dlopen(
+  module,
+  bindingPath,
+  os.constants.dlopen.RTLD_NOW | os.constants.dlopen.RTLD_GLOBAL
+);
 module.exports.load(`${path.dirname(bindingPath)}/ping.so`);
 assert.strictEqual(module.exports.ping(), 'pong');
 

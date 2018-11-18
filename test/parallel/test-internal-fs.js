@@ -8,7 +8,7 @@ const fs = require('internal/fs/utils');
 fs.assertEncoding();
 fs.assertEncoding('utf8');
 
-common.expectsError(
-  () => fs.assertEncoding('foo'),
-  { code: 'ERR_INVALID_OPT_VALUE_ENCODING', type: TypeError }
-);
+common.expectsError(() => fs.assertEncoding('foo'), {
+  code: 'ERR_INVALID_OPT_VALUE_ENCODING',
+  type: TypeError
+});

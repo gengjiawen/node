@@ -15,7 +15,8 @@ const html = require('../../tools/doc/html.js');
 const path = require('path');
 
 module.paths.unshift(
-  path.join(__dirname, '..', '..', 'tools', 'doc', 'node_modules'));
+  path.join(__dirname, '..', '..', 'tools', 'doc', 'node_modules')
+);
 const unified = require('unified');
 const markdown = require('remark-parse');
 const remark2rehype = require('remark-rehype');
@@ -34,10 +35,7 @@ function toHTML({ input, filename, nodeVersion }, cb) {
     .use(htmlStringify)
     .processSync(input);
 
-  html.toHTML(
-    { input, content, filename, nodeVersion },
-    cb
-  );
+  html.toHTML({ input, content, filename, nodeVersion }, cb);
 }
 
 // Test data is a list of objects with two properties.
@@ -48,12 +46,14 @@ function toHTML({ input, filename, nodeVersion }, cb) {
 const testData = [
   {
     file: fixtures.path('sample_document.md'),
-    html: '<ol><li>fish</li><li>fish</li></ol>' +
+    html:
+      '<ol><li>fish</li><li>fish</li></ol>' +
       '<ul><li>Redfish</li><li>Bluefish</li></ul>'
   },
   {
     file: fixtures.path('order_of_end_tags_5873.md'),
-    html: '<h3>ClassMethod: Buffer.from(array) <span> ' +
+    html:
+      '<h3>ClassMethod: Buffer.from(array) <span> ' +
       '<a class="mark" href="#foo_class_method_buffer_from_array" ' +
       'id="foo_class_method_buffer_from_array">#</a> </span> </h3>' +
       '<ul><li><code>array</code><a ' +
@@ -62,7 +62,8 @@ const testData = [
   },
   {
     file: fixtures.path('doc_with_yaml.md'),
-    html: '<h1>Sample Markdown with YAML info' +
+    html:
+      '<h1>Sample Markdown with YAML info' +
       '<span><a class="mark" href="#foo_sample_markdown_with_yaml_info" ' +
       ' id="foo_sample_markdown_with_yaml_info">#</a></span></h1>' +
       '<h2>Foobar<span><a class="mark" href="#foo_foobar" ' +
@@ -92,9 +93,10 @@ const testData = [
   },
   {
     file: fixtures.path('sample_document.md'),
-    html: '<ol><li>fish</li><li>fish</li></ol>' +
-      '<ul><li>Red fish</li><li>Blue fish</li></ul>',
-  },
+    html:
+      '<ol><li>fish</li><li>fish</li></ol>' +
+      '<ul><li>Red fish</li><li>Blue fish</li></ul>'
+  }
 ];
 
 const spaces = /\s/g;
@@ -103,22 +105,26 @@ testData.forEach(({ file, html }) => {
   // Normalize expected data by stripping whitespace.
   const expected = html.replace(spaces, '');
 
-  readFile(file, 'utf8', common.mustCall((err, input) => {
-    assert.ifError(err);
-    toHTML(
-      {
-        input: input,
-        filename: 'foo',
-        nodeVersion: process.version,
-      },
-      common.mustCall((err, output) => {
-        assert.ifError(err);
+  readFile(
+    file,
+    'utf8',
+    common.mustCall((err, input) => {
+      assert.ifError(err);
+      toHTML(
+        {
+          input: input,
+          filename: 'foo',
+          nodeVersion: process.version
+        },
+        common.mustCall((err, output) => {
+          assert.ifError(err);
 
-        const actual = output.replace(spaces, '');
-        // Assert that the input stripped of all whitespace contains the
-        // expected markup.
-        assert(actual.includes(expected));
-      })
-    );
-  }));
+          const actual = output.replace(spaces, '');
+          // Assert that the input stripped of all whitespace contains the
+          // expected markup.
+          assert(actual.includes(expected));
+        })
+      );
+    })
+  );
 });

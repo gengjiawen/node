@@ -48,15 +48,26 @@ try {
   common.skip('insufficient privileges for symlinks');
 }
 
-fs.writeFileSync(path.join(moduleA, 'package.json'),
-                 JSON.stringify({ name: 'moduleA', main: 'index.js' }), 'utf8');
-fs.writeFileSync(path.join(moduleA, 'index.js'),
-                 'module.exports = require(\'moduleB\');', 'utf8');
-fs.writeFileSync(path.join(app, 'index.js'),
-                 '\'use strict\'; require(\'moduleA\');', 'utf8');
-fs.writeFileSync(path.join(moduleB, 'package.json'),
-                 JSON.stringify({ name: 'moduleB', main: 'index.js' }), 'utf8');
-fs.writeFileSync(path.join(moduleB, 'index.js'),
-                 'module.exports = 1;', 'utf8');
+fs.writeFileSync(
+  path.join(moduleA, 'package.json'),
+  JSON.stringify({ name: 'moduleA', main: 'index.js' }),
+  'utf8'
+);
+fs.writeFileSync(
+  path.join(moduleA, 'index.js'),
+  "module.exports = require('moduleB');",
+  'utf8'
+);
+fs.writeFileSync(
+  path.join(app, 'index.js'),
+  "'use strict'; require('moduleA');",
+  'utf8'
+);
+fs.writeFileSync(
+  path.join(moduleB, 'package.json'),
+  JSON.stringify({ name: 'moduleB', main: 'index.js' }),
+  'utf8'
+);
+fs.writeFileSync(path.join(moduleB, 'index.js'), 'module.exports = 1;', 'utf8');
 
 require(path.join(app, 'index')); // Should not throw.

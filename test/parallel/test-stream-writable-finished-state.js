@@ -13,10 +13,16 @@ writable._write = (chunk, encoding, cb) => {
   cb();
 };
 
-writable.on('finish', common.mustCall(() => {
-  assert.strictEqual(writable._writableState.finished, true);
-}));
+writable.on(
+  'finish',
+  common.mustCall(() => {
+    assert.strictEqual(writable._writableState.finished, true);
+  })
+);
 
-writable.end('testing finished state', common.mustCall(() => {
-  assert.strictEqual(writable._writableState.finished, true);
-}));
+writable.end(
+  'testing finished state',
+  common.mustCall(() => {
+    assert.strictEqual(writable._writableState.finished, true);
+  })
+);

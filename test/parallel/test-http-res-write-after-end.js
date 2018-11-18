@@ -24,19 +24,24 @@ const common = require('../common');
 const assert = require('assert');
 const http = require('http');
 
-const server = http.Server(common.mustCall(function(req, res) {
-  res.on('error', common.expectsError({
-    code: 'ERR_STREAM_WRITE_AFTER_END',
-    type: Error
-  }));
+const server = http.Server(
+  common.mustCall(function(req, res) {
+    res.on(
+      'error',
+      common.expectsError({
+        code: 'ERR_STREAM_WRITE_AFTER_END',
+        type: Error
+      })
+    );
 
-  res.write('This should write.');
-  res.end();
+    res.write('This should write.');
+    res.end();
 
-  const r = res.write('This should raise an error.');
-  // write after end should return true
-  assert.strictEqual(r, true);
-}));
+    const r = res.write('This should raise an error.');
+    // write after end should return true
+    assert.strictEqual(r, true);
+  })
+);
 
 server.listen(0, function() {
   http.get({ port: this.address().port }, function(res) {

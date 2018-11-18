@@ -22,14 +22,16 @@ const { _checkIsHttpToken, _checkInvalidHeaderChar } = require('_http_common');
   '$et-Cookie',
   '%%Test%%',
   'Test&123',
-  'It\'s_fun',
+  "It's_fun",
   '2*3',
   '4+2',
   '3.14159265359'
 ].forEach(function(str) {
   assert.strictEqual(
-    _checkIsHttpToken(str), true,
-    `_checkIsHttpToken(${inspect(str)}) unexpectedly failed`);
+    _checkIsHttpToken(str),
+    true,
+    `_checkIsHttpToken(${inspect(str)}) unexpectedly failed`
+  );
 });
 // Bad header field names
 [
@@ -54,10 +56,11 @@ const { _checkIsHttpToken, _checkInvalidHeaderChar } = require('_http_common');
   'This,That'
 ].forEach(function(str) {
   assert.strictEqual(
-    _checkIsHttpToken(str), false,
-    `_checkIsHttpToken(${inspect(str)}) unexpectedly succeeded`);
+    _checkIsHttpToken(str),
+    false,
+    `_checkIsHttpToken(${inspect(str)}) unexpectedly succeeded`
+  );
 });
-
 
 // Good header field values
 [
@@ -67,8 +70,10 @@ const { _checkIsHttpToken, _checkInvalidHeaderChar } = require('_http_common');
   '!@#$%^&*()-_=+\\;\':"[]{}<>,./?|~`'
 ].forEach(function(str) {
   assert.strictEqual(
-    _checkInvalidHeaderChar(str), false,
-    `_checkInvalidHeaderChar(${inspect(str)}) unexpectedly failed`);
+    _checkInvalidHeaderChar(str),
+    false,
+    `_checkInvalidHeaderChar(${inspect(str)}) unexpectedly failed`
+  );
 });
 
 // Bad header field values
@@ -83,6 +88,8 @@ const { _checkIsHttpToken, _checkInvalidHeaderChar } = require('_http_common');
   'Ding!\x07'
 ].forEach(function(str) {
   assert.strictEqual(
-    _checkInvalidHeaderChar(str), true,
-    `_checkInvalidHeaderChar(${inspect(str)}) unexpectedly succeeded`);
+    _checkInvalidHeaderChar(str),
+    true,
+    `_checkInvalidHeaderChar(${inspect(str)}) unexpectedly succeeded`
+  );
 });

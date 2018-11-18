@@ -15,7 +15,10 @@ const err = '__This is some stderr__';
 
 // In AIX, the child exits even before the python parent
 // can setup the readloop. Provide a reasonable delay.
-setTimeout(function() {
-  process.stdout.write(out);
-  process.stderr.write(err);
-}, common.isAIX ? 200 : 0);
+setTimeout(
+  function() {
+    process.stdout.write(out);
+    process.stderr.write(err);
+  },
+  common.isAIX ? 200 : 0
+);

@@ -36,11 +36,11 @@ const SERVER_RESPONSES = [
 ];
 const SHOULD_KEEP_ALIVE = [
   false, // HTTP/1.0, default
-  true,  // HTTP/1.0, Connection: keep-alive
+  true, // HTTP/1.0, Connection: keep-alive
   false, // HTTP/1.0, Connection: close
-  true,  // HTTP/1.1, default
-  true,  // HTTP/1.1, Connection: keep-alive
-  false  // HTTP/1.1, Connection: close
+  true, // HTTP/1.1, default
+  true, // HTTP/1.1, Connection: keep-alive
+  false // HTTP/1.1, Connection: close
 ];
 http.globalAgent.maxSockets = 5;
 
@@ -48,21 +48,26 @@ const countdown = new Countdown(SHOULD_KEEP_ALIVE.length, () => server.close());
 
 const getCountdownIndex = () => SERVER_RESPONSES.length - countdown.remaining;
 
-const server = net.createServer(function(socket) {
-  socket.write(SERVER_RESPONSES[getCountdownIndex()]);
-}).listen(0, function() {
-  function makeRequest() {
-    const req = http.get({ port: server.address().port }, function(res) {
-      assert.strictEqual(
-        req.shouldKeepAlive, SHOULD_KEEP_ALIVE[getCountdownIndex()],
-        `${SERVER_RESPONSES[getCountdownIndex()]} should ${
-          SHOULD_KEEP_ALIVE[getCountdownIndex()] ? '' : 'not '}Keep-Alive`);
-      countdown.dec();
-      if (countdown.remaining) {
-        makeRequest();
-      }
-      res.resume();
-    });
-  }
-  makeRequest();
-});
+const server = net
+  .createServer(function(socket) {
+    socket.write(SERVER_RESPONSES[getCountdownIndex()]);
+  })
+  .listen(0, function() {
+    function makeRequest() {
+      const req = http.get({ port: server.address().port }, function(res) {
+        assert.strictEqual(
+          req.shouldKeepAlive,
+          SHOULD_KEEP_ALIVE[getCountdownIndex()],
+          `${SERVER_RESPONSES[getCountdownIndex()]} should ${
+            SHOULD_KEEP_ALIVE[getCountdownIndex()] ? '' : 'not '
+          }Keep-Alive`
+        );
+        countdown.dec();
+        if (countdown.remaining) {
+          makeRequest();
+        }
+        res.resume();
+      });
+    }
+    makeRequest();
+  });

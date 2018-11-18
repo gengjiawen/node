@@ -8,11 +8,15 @@ const { join } = require('path');
 
 const buildDir = join(__dirname, 'build');
 
-copyFileSync(join(buildDir, common.buildType, 'binding.node'),
-             join(buildDir, 'binding.node'));
+copyFileSync(
+  join(buildDir, common.buildType, 'binding.node'),
+  join(buildDir, 'binding.node')
+);
 
-const result = spawnSync(process.execPath,
-                         ['--experimental-modules', `${__dirname}/test.mjs`]);
+const result = spawnSync(process.execPath, [
+  '--experimental-modules',
+  `${__dirname}/test.mjs`
+]);
 
 assert.ifError(result.error);
 // TODO: Uncomment this once ESM is no longer experimental.

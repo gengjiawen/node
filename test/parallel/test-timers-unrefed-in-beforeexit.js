@@ -2,6 +2,9 @@
 
 const common = require('../common');
 
-process.on('beforeExit', common.mustCall(() => {
-  setTimeout(common.mustNotCall(), 1).unref();
-}));
+process.on(
+  'beforeExit',
+  common.mustCall(() => {
+    setTimeout(common.mustNotCall(), 1).unref();
+  })
+);

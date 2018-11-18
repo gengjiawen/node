@@ -39,9 +39,14 @@ const server = http.createServer(function(req, res) {
 
   let body;
   switch (pathname) {
-    case '/1': body = body1_s; break;
-    case '/2': body = body2_s; break;
-    default: body = body3_s;
+    case '/1':
+      body = body1_s;
+      break;
+    case '/2':
+      body = body2_s;
+      break;
+    default:
+      body = body3_s;
   }
 
   res.writeHead(200, {
@@ -85,9 +90,10 @@ server.on('listening', function() {
         const req2 = http.get({ port: server.address().port, path: '/2' });
         req2.on('response', function(res2) {
           res2.setEncoding('utf8');
-          res2.on('data', function(chunk) { body2 += chunk; });
+          res2.on('data', function(chunk) {
+            body2 += chunk;
+          });
           res2.on('end', function() {
-
             //
             // Just to be really sure we've covered all our bases, execute a
             // request using client2.
@@ -95,8 +101,12 @@ server.on('listening', function() {
             const req3 = http.get({ port: server.address().port, path: '/3' });
             req3.on('response', function(res3) {
               res3.setEncoding('utf8');
-              res3.on('data', function(chunk) { body3 += chunk; });
-              res3.on('end', function() { server.close(); });
+              res3.on('data', function(chunk) {
+                body3 += chunk;
+              });
+              res3.on('end', function() {
+                server.close();
+              });
             });
           });
         });

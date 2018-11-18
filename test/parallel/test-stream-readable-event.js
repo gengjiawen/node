@@ -92,7 +92,7 @@ const Readable = require('stream').Readable;
   const result = [];
 
   const r = new Readable({
-    encoding: 'utf8',
+    encoding: 'utf8'
   });
   r._read = function() {
     process.nextTick(() => {
@@ -109,9 +109,12 @@ const Readable = require('stream').Readable;
     if (data !== null) result.push(data);
   });
 
-  r.on('end', common.mustCall(() => {
-    assert.deepStrictEqual(result, expected);
-  }));
+  r.on(
+    'end',
+    common.mustCall(() => {
+      assert.deepStrictEqual(result, expected);
+    })
+  );
 }
 
 {

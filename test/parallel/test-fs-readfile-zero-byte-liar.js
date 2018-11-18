@@ -50,6 +50,10 @@ fs.fstatSync = (fd) => {
 const d = fs.readFileSync(__filename, 'utf8');
 assert.strictEqual(d, dataExpected);
 
-fs.readFile(__filename, 'utf8', common.mustCall((er, d) => {
-  assert.strictEqual(d, dataExpected);
-}));
+fs.readFile(
+  __filename,
+  'utf8',
+  common.mustCall((er, d) => {
+    assert.strictEqual(d, dataExpected);
+  })
+);

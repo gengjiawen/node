@@ -9,7 +9,7 @@ const fs = require('fs');
 const hooks = initHooks();
 hooks.enable();
 
-function onchange() { }
+function onchange() {}
 // install first file watcher
 fs.watchFile(__filename, onchange);
 
@@ -26,9 +26,8 @@ process.on('exit', onexit);
 
 function onexit() {
   hooks.disable();
-  verifyGraph(
-    hooks,
-    [ { type: 'STATWATCHER', id: 'statwatcher:1', triggerAsyncId: null },
-      { type: 'STATWATCHER', id: 'statwatcher:2', triggerAsyncId: null } ]
-  );
+  verifyGraph(hooks, [
+    { type: 'STATWATCHER', id: 'statwatcher:1', triggerAsyncId: null },
+    { type: 'STATWATCHER', id: 'statwatcher:2', triggerAsyncId: null }
+  ]);
 }

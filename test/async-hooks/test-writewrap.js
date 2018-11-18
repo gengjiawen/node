@@ -12,7 +12,8 @@ hooks.enable();
 //
 // Creating server and listening on port
 //
-const server = net.createServer()
+const server = net
+  .createServer()
   .on('listening', common.mustCall(onlistening))
   .on('connection', common.mustCall(onconnection))
   .listen(0);
@@ -24,17 +25,18 @@ function onlistening() {
   //
   // Creating client and connecting it to server
   //
-  net
-    .connect(server.address().port)
-    .on('connect', common.mustCall(onconnect));
+  net.connect(server.address().port).on('connect', common.mustCall(onconnect));
 
   assert.strictEqual(hooks.activitiesOfTypes('WRITEWRAP').length, 0);
 }
 
 function checkDestroyedWriteWraps(n, stage) {
   const as = hooks.activitiesOfTypes('WRITEWRAP');
-  assert.strictEqual(as.length, n,
-                     `${as.length} out of ${n} WRITEWRAPs when ${stage}`);
+  assert.strictEqual(
+    as.length,
+    n,
+    `${as.length} out of ${n} WRITEWRAPs when ${stage}`
+  );
 
   function checkValidWriteWrap(w) {
     assert.strictEqual(w.type, 'WRITEWRAP');
@@ -47,7 +49,7 @@ function checkDestroyedWriteWraps(n, stage) {
 }
 
 function onconnection(conn) {
-  conn.write('hi');  // Let the client know we're ready.
+  conn.write('hi'); // Let the client know we're ready.
   conn.resume();
   //
   // Server received client connection

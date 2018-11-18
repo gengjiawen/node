@@ -31,15 +31,20 @@ const c = net.createConnection(common.PORT);
 
 c.on('connect', common.mustNotCall('client should not have connected'));
 
-c.on('error', common.mustCall((e) => {
-  client_error_count++;
-  assert.strictEqual(e.code, 'ECONNREFUSED');
-}, N + 1));
+c.on(
+  'error',
+  common.mustCall((e) => {
+    client_error_count++;
+    assert.strictEqual(e.code, 'ECONNREFUSED');
+  }, N + 1)
+);
 
-c.on('close', common.mustCall(() => {
-  if (disconnect_count++ < N)
-    c.connect(common.PORT); // reconnect
-}, N + 1));
+c.on(
+  'close',
+  common.mustCall(() => {
+    if (disconnect_count++ < N) c.connect(common.PORT); // reconnect
+  }, N + 1)
+);
 
 process.on('exit', function() {
   assert.strictEqual(disconnect_count, N + 1);

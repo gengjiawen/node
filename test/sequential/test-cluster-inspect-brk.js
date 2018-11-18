@@ -11,7 +11,6 @@ const debuggerPort = common.PORT;
 
 if (cluster.isMaster) {
   function test(execArgv) {
-
     cluster.setupMaster({
       execArgv: execArgv,
       stdio: ['pipe', 'pipe', 'pipe', 'ipc', 'pipe']
@@ -20,13 +19,19 @@ if (cluster.isMaster) {
     const worker = cluster.fork();
 
     // Debugger listening on port [port].
-    worker.process.stderr.once('data', common.mustCall(function() {
-      worker.process.kill('SIGTERM');
-    }));
+    worker.process.stderr.once(
+      'data',
+      common.mustCall(function() {
+        worker.process.kill('SIGTERM');
+      })
+    );
 
-    worker.process.on('exit', common.mustCall(function(code, signal) {
-      assert.strictEqual(signal, 'SIGTERM');
-    }));
+    worker.process.on(
+      'exit',
+      common.mustCall(function(code, signal) {
+        assert.strictEqual(signal, 'SIGTERM');
+      })
+    );
   }
 
   test(['--inspect-brk']);

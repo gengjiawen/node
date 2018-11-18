@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const { Stream, Writable, Readable, Transform, pipeline } = require('stream');
 const assert = require('assert');
 const http = require('http');
@@ -12,11 +11,7 @@ const { promisify } = require('util');
 {
   let finished = false;
   const processed = [];
-  const expected = [
-    Buffer.from('a'),
-    Buffer.from('b'),
-    Buffer.from('c')
-  ];
+  const expected = [Buffer.from('a'), Buffer.from('b'), Buffer.from('c')];
 
   const read = new Readable({
     read() {}
@@ -38,11 +33,15 @@ const { promisify } = require('util');
   }
   read.push(null);
 
-  pipeline(read, write, common.mustCall((err) => {
-    assert.ok(!err, 'no error');
-    assert.ok(finished);
-    assert.deepStrictEqual(processed, expected);
-  }));
+  pipeline(
+    read,
+    write,
+    common.mustCall((err) => {
+      assert.ok(!err, 'no error');
+      assert.ok(finished);
+      assert.deepStrictEqual(processed, expected);
+    })
+  );
 }
 
 {
@@ -75,9 +74,13 @@ const { promisify } = require('util');
   read.push('data');
   setImmediate(() => read.destroy());
 
-  pipeline(read, write, common.mustCall((err) => {
-    assert.ok(err, 'should have an error');
-  }));
+  pipeline(
+    read,
+    write,
+    common.mustCall((err) => {
+      assert.ok(err, 'should have an error');
+    })
+  );
 }
 
 {
@@ -94,9 +97,13 @@ const { promisify } = require('util');
   read.push('data');
   setImmediate(() => read.destroy(new Error('kaboom')));
 
-  const dst = pipeline(read, write, common.mustCall((err) => {
-    assert.deepStrictEqual(err, new Error('kaboom'));
-  }));
+  const dst = pipeline(
+    read,
+    write,
+    common.mustCall((err) => {
+      assert.deepStrictEqual(err, new Error('kaboom'));
+    })
+  );
 
   assert.strictEqual(dst, write);
 }
@@ -122,9 +129,14 @@ const { promisify } = require('util');
   transform.on('close', common.mustCall());
   write.on('close', common.mustCall());
 
-  const dst = pipeline(read, transform, write, common.mustCall((err) => {
-    assert.deepStrictEqual(err, new Error('kaboom'));
-  }));
+  const dst = pipeline(
+    read,
+    transform,
+    write,
+    common.mustCall((err) => {
+      assert.deepStrictEqual(err, new Error('kaboom'));
+    })
+  );
 
   assert.strictEqual(dst, write);
 
@@ -152,13 +164,13 @@ const { promisify } = require('util');
     req.on('response', (res) => {
       const buf = [];
       res.on('data', (data) => buf.push(data));
-      res.on('end', common.mustCall(() => {
-        assert.deepStrictEqual(
-          Buffer.concat(buf),
-          Buffer.from('hello')
-        );
-        server.close();
-      }));
+      res.on(
+        'end',
+        common.mustCall(() => {
+          assert.deepStrictEqual(Buffer.concat(buf), Buffer.from('hello'));
+          server.close();
+        })
+      );
     });
   });
 }
@@ -233,10 +245,14 @@ const { promisify } = require('util');
 
     req.end();
     req.on('response', (res) => {
-      pipeline(res, badSink, common.mustCall((err) => {
-        assert.deepStrictEqual(err, new Error('kaboom'));
-        server.close();
-      }));
+      pipeline(
+        res,
+        badSink,
+        common.mustCall((err) => {
+          assert.deepStrictEqual(err, new Error('kaboom'));
+          server.close();
+        })
+      );
     });
   });
 }
@@ -261,9 +277,13 @@ const { promisify } = require('util');
       }
     });
 
-    pipeline(rs, req, common.mustCall(() => {
-      server.close();
-    }));
+    pipeline(
+      rs,
+      req,
+      common.mustCall(() => {
+        server.close();
+      })
+    );
 
     req.on('response', (res) => {
       let cnt = 10;
@@ -291,10 +311,14 @@ const { promisify } = require('util');
       }
     });
 
-    pipeline(rs, req, common.mustCall((err) => {
-      server.close();
-      client.close();
-    }));
+    pipeline(
+      rs,
+      req,
+      common.mustCall((err) => {
+        server.close();
+        client.close();
+      })
+    );
 
     let cnt = 10;
     req.on('data', (data) => {
@@ -362,10 +386,7 @@ const { promisify } = require('util');
     oldStream.emit('end');
   };
 
-  const expected = [
-    Buffer.from('hello'),
-    Buffer.from('world')
-  ];
+  const expected = [Buffer.from('hello'), Buffer.from('world')];
 
   const rs = new Readable({
     read() {
@@ -504,8 +525,7 @@ const { promisify } = require('util');
     }
   });
 
-  assert.throws(
-    () => pipeline(read, transform, write),
-    { code: 'ERR_INVALID_CALLBACK' }
-  );
+  assert.throws(() => pipeline(read, transform, write), {
+    code: 'ERR_INVALID_CALLBACK'
+  });
 }

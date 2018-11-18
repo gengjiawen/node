@@ -24,7 +24,7 @@ let accum = '';
 const inputStream = new ArrayStream();
 const outputStream = new ArrayStream();
 
-outputStream.write = (data) => accum += data.replace('\r', '');
+outputStream.write = (data) => (accum += data.replace('\r', ''));
 
 const r = repl.start({
   prompt: '',

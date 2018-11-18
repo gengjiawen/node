@@ -42,9 +42,12 @@ const server = net
     });
 
     function send(callback) {
-      const s = net.connect(server.address().port, function() {
-        worker.send({}, s, callback);
-      });
+      const s = net.connect(
+        server.address().port,
+        function() {
+          worker.send({}, s, callback);
+        }
+      );
 
       // https://github.com/nodejs/node/issues/3635#issuecomment-157714683
       // ECONNREFUSED or ECONNRESET errors can happen if this connection is
@@ -76,10 +79,13 @@ const server = net
         send(function(err) {
           // Ignore errors when sending the second handle because the worker
           // may already have exited.
-          if (err && err.code !== 'ERR_IPC_CHANNEL_CLOSED' &&
-                     err.code !== 'ECONNRESET' &&
-                     err.code !== 'ECONNREFUSED' &&
-                     err.code !== 'EMFILE') {
+          if (
+            err &&
+            err.code !== 'ERR_IPC_CHANNEL_CLOSED' &&
+            err.code !== 'ECONNRESET' &&
+            err.code !== 'ECONNREFUSED' &&
+            err.code !== 'EMFILE'
+          ) {
             throw err;
           }
         });

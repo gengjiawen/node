@@ -9,19 +9,24 @@ const fs = require('fs');
 if (isMainThread) {
   const w = new Worker(__filename);
   let fd = null;
-  w.on('message', common.mustCall((fd_) => {
-    assert.strictEqual(typeof fd_, 'number');
-    fd = fd_;
-  }));
-  w.on('exit', common.mustCall((code) => {
-    if (fd === -1) {
-      // This happens when server sockets don’t have file descriptors,
-      // i.e. on Windows.
-      return;
-    }
-    common.expectsError(() => fs.fstatSync(fd),
-                        { code: 'EBADF' });
-  }));
+  w.on(
+    'message',
+    common.mustCall((fd_) => {
+      assert.strictEqual(typeof fd_, 'number');
+      fd = fd_;
+    })
+  );
+  w.on(
+    'exit',
+    common.mustCall((code) => {
+      if (fd === -1) {
+        // This happens when server sockets don’t have file descriptors,
+        // i.e. on Windows.
+        return;
+      }
+      common.expectsError(() => fs.fstatSync(fd), { code: 'EBADF' });
+    })
+  );
 } else {
   const server = new Server();
   server.listen(0);

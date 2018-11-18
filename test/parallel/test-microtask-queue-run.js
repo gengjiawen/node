@@ -40,7 +40,6 @@ setTimeout(function() {
   });
 }, 0);
 
-
 // no nextTick, microtask with nextTick
 setTimeout(function() {
   let called = false;
@@ -52,8 +51,6 @@ setTimeout(function() {
   });
 
   setTimeout(function() {
-    if (called)
-      done++;
+    if (called) done++;
   }, 0);
-
 }, 0);

@@ -29,12 +29,17 @@ const stream = fs.createReadStream(__filename, {
 });
 const err = new Error('BAM');
 
-stream.on('error', common.mustCall((err_) => {
-  process.nextTick(common.mustCall(() => {
-    assert.strictEqual(stream.fd, null);
-    assert.strictEqual(err_, err);
-  }));
-}));
+stream.on(
+  'error',
+  common.mustCall((err_) => {
+    process.nextTick(
+      common.mustCall(() => {
+        assert.strictEqual(stream.fd, null);
+        assert.strictEqual(err_, err);
+      })
+    );
+  })
+);
 
 fs.close = common.mustCall((fd_, cb) => {
   assert.strictEqual(fd_, stream.fd);

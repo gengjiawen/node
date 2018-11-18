@@ -33,20 +33,29 @@ function test(headers) {
     server.close();
   });
 
-  server.listen(0, common.mustCall(function() {
-    const request = http.request({
-      port: this.address().port,
-      method: 'HEAD',
-      path: '/'
-    }, common.mustCall(function(response) {
-      console.error('response start');
-      response.on('end', common.mustCall(function() {
-        console.error('response end');
-      }));
-      response.resume();
-    }));
-    request.end();
-  }));
+  server.listen(
+    0,
+    common.mustCall(function() {
+      const request = http.request(
+        {
+          port: this.address().port,
+          method: 'HEAD',
+          path: '/'
+        },
+        common.mustCall(function(response) {
+          console.error('response start');
+          response.on(
+            'end',
+            common.mustCall(function() {
+              console.error('response end');
+            })
+          );
+          response.resume();
+        })
+      );
+      request.end();
+    })
+  );
 }
 
 test({

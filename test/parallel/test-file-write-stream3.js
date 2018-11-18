@@ -27,9 +27,7 @@ const fs = require('fs');
 
 const tmpdir = require('../common/tmpdir');
 
-
 const filepath = path.join(tmpdir.path, 'write_pos.txt');
-
 
 const cb_expected = 'write open close write open close write open close ';
 let cb_occurred = '';
@@ -40,21 +38,20 @@ const fileDataExpected_1 = 'abcdefghijklmnopqrstuvwxyz';
 const fileDataExpected_2 = 'abcdefghij123456qrstuvwxyz';
 const fileDataExpected_3 = 'abcdefghij\u2026\u2026qrstuvwxyz';
 
-
 process.on('exit', function() {
   if (cb_occurred !== cb_expected) {
     console.log('  Test callback events missing or out of order:');
     console.log(`    expected: ${cb_expected}`);
     console.log(`    occurred: ${cb_occurred}`);
     assert.strictEqual(
-      cb_occurred, cb_expected,
-      `events missing or out of order: "${cb_occurred}" !== "${cb_expected}"`);
+      cb_occurred,
+      cb_expected,
+      `events missing or out of order: "${cb_occurred}" !== "${cb_expected}"`
+    );
   }
 });
 
-
 tmpdir.refresh();
-
 
 function run_test_1() {
   const options = {};
@@ -93,13 +90,10 @@ function run_test_1() {
   file.end();
 }
 
-
 function run_test_2() {
-
   const buffer = Buffer.from('123456');
 
-  const options = { start: 10,
-                    flags: 'r+' };
+  const options = { start: 10, flags: 'r+' };
   const file = fs.createWriteStream(filepath, options);
   console.log('    (debug: start         ', file.start);
   console.log('    (debug: pos           ', file.pos);
@@ -134,13 +128,10 @@ function run_test_2() {
   file.end();
 }
 
-
 function run_test_3() {
+  const data = '\u2026\u2026'; // 3 bytes * 2 = 6 bytes in UTF-8
 
-  const data = '\u2026\u2026';    // 3 bytes * 2 = 6 bytes in UTF-8
-
-  const options = { start: 10,
-                    flags: 'r+' };
+  const options = { start: 10, flags: 'r+' };
   const file = fs.createWriteStream(filepath, options);
   console.log('    (debug: start         ', file.start);
   console.log('    (debug: pos           ', file.pos);
@@ -175,7 +166,6 @@ function run_test_3() {
   file.end();
 }
 
-
 const run_test_4 = common.mustCall(function() {
   //  Error: start must be >= zero
   const fn = () => {
@@ -183,8 +173,9 @@ const run_test_4 = common.mustCall(function() {
   };
   const err = {
     code: 'ERR_OUT_OF_RANGE',
-    message: 'The value of "start" is out of range. ' +
-             'It must be >= 0. Received {start: -5}',
+    message:
+      'The value of "start" is out of range. ' +
+      'It must be >= 0. Received {start: -5}',
     type: RangeError
   };
   common.expectsError(fn, err);

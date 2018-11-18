@@ -46,7 +46,6 @@ assert.deepStrictEqual(ret_err.spawnargs, ['bar']);
   assert.strictEqual(response.stdout.toString().trim(), cwd);
 }
 
-
 {
   // Assert Buffer is the default encoding
   const retDefault = spawnSync(...common.pwdCommand);

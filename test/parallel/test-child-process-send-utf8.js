@@ -29,7 +29,10 @@ if (process.argv[2] === 'child') {
   process.send(expected);
 } else {
   const child = fork(process.argv[1], ['child']);
-  child.on('message', common.mustCall((actual) => {
-    assert.strictEqual(actual, expected);
-  }));
+  child.on(
+    'message',
+    common.mustCall((actual) => {
+      assert.strictEqual(actual, expected);
+    })
+  );
 }

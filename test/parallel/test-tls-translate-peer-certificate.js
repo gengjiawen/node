@@ -2,8 +2,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const { strictEqual, deepStrictEqual } = require('assert');
 const { translatePeerCertificate } = require('_tls_common');
@@ -23,27 +22,32 @@ strictEqual(translatePeerCertificate(1), 1);
 
 deepStrictEqual(translatePeerCertificate({}), {});
 
-deepStrictEqual(translatePeerCertificate({ issuer: '' }),
-                { issuer: Object.create(null) });
-deepStrictEqual(translatePeerCertificate({ issuer: null }),
-                { issuer: null });
-deepStrictEqual(translatePeerCertificate({ issuer: certString }),
-                { issuer: certObject });
+deepStrictEqual(translatePeerCertificate({ issuer: '' }), {
+  issuer: Object.create(null)
+});
+deepStrictEqual(translatePeerCertificate({ issuer: null }), { issuer: null });
+deepStrictEqual(translatePeerCertificate({ issuer: certString }), {
+  issuer: certObject
+});
 
-deepStrictEqual(translatePeerCertificate({ subject: '' }),
-                { subject: Object.create(null) });
-deepStrictEqual(translatePeerCertificate({ subject: null }),
-                { subject: null });
-deepStrictEqual(translatePeerCertificate({ subject: certString }),
-                { subject: certObject });
+deepStrictEqual(translatePeerCertificate({ subject: '' }), {
+  subject: Object.create(null)
+});
+deepStrictEqual(translatePeerCertificate({ subject: null }), { subject: null });
+deepStrictEqual(translatePeerCertificate({ subject: certString }), {
+  subject: certObject
+});
 
-deepStrictEqual(translatePeerCertificate({ issuerCertificate: '' }),
-                { issuerCertificate: null });
-deepStrictEqual(translatePeerCertificate({ issuerCertificate: null }),
-                { issuerCertificate: null });
+deepStrictEqual(translatePeerCertificate({ issuerCertificate: '' }), {
+  issuerCertificate: null
+});
+deepStrictEqual(translatePeerCertificate({ issuerCertificate: null }), {
+  issuerCertificate: null
+});
 deepStrictEqual(
   translatePeerCertificate({ issuerCertificate: { subject: certString } }),
-  { issuerCertificate: { subject: certObject } });
+  { issuerCertificate: { subject: certObject } }
+);
 
 {
   const cert = {};
@@ -51,19 +55,22 @@ deepStrictEqual(
   deepStrictEqual(translatePeerCertificate(cert), { issuerCertificate: cert });
 }
 
-deepStrictEqual(translatePeerCertificate({ infoAccess: '' }),
-                { infoAccess: Object.create(null) });
-deepStrictEqual(translatePeerCertificate({ infoAccess: null }),
-                { infoAccess: null });
+deepStrictEqual(translatePeerCertificate({ infoAccess: '' }), {
+  infoAccess: Object.create(null)
+});
+deepStrictEqual(translatePeerCertificate({ infoAccess: null }), {
+  infoAccess: null
+});
 {
   const input =
-      '__proto__:mostly harmless\n' +
-      'hasOwnProperty:not a function\n' +
-      'OCSP - URI:file:///etc/passwd\n';
+    '__proto__:mostly harmless\n' +
+    'hasOwnProperty:not a function\n' +
+    'OCSP - URI:file:///etc/passwd\n';
   const expected = Object.create(null);
   expected.__proto__ = ['mostly harmless'];
   expected.hasOwnProperty = ['not a function'];
   expected['OCSP - URI'] = ['file:///etc/passwd'];
-  deepStrictEqual(translatePeerCertificate({ infoAccess: input }),
-                  { infoAccess: expected });
+  deepStrictEqual(translatePeerCertificate({ infoAccess: input }), {
+    infoAccess: expected
+  });
 }

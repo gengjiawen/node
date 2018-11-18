@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.isMainThread)
-  common.skip('execArgv does not affect Workers');
+if (!common.isMainThread) common.skip('execArgv does not affect Workers');
 
 // This test ensures that no asynchronous operations are performed in the 'exit'
 // handler.
@@ -10,5 +9,5 @@ if (!common.isMainThread)
 
 process.on('exit', () => {
   setTimeout(() => process.abort(), 0); // Should not run.
-  for (const start = Date.now(); Date.now() - start < 10;);
+  for (const start = Date.now(); Date.now() - start < 10; );
 });

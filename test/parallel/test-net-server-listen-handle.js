@@ -53,10 +53,14 @@ function randomHandle(type) {
     assert.fail(`unable to bind ${handleName}: ${getSystemErrorName(errno)}`);
   }
 
-  if (!common.isWindows) {  // fd doesn't work on windows
+  if (!common.isWindows) {
+    // fd doesn't work on windows
     // err >= 0 but fd = -1, should not happen
-    assert.notStrictEqual(handle.fd, -1,
-                          `Bound ${handleName} has fd -1 and errno ${errno}`);
+    assert.notStrictEqual(
+      handle.fd,
+      -1,
+      `Bound ${handleName} has fd -1 and errno ${errno}`
+    );
   }
   return handle;
 }
@@ -64,12 +68,12 @@ function randomHandle(type) {
 // Not a public API, used by child_process
 {
   // Test listen(tcp)
-  net.createServer()
+  net
+    .createServer()
     .listen(randomHandle('tcp'))
     .on('listening', closeServer());
   // Test listen(tcp, cb)
-  net.createServer()
-    .listen(randomHandle('tcp'), closeServer());
+  net.createServer().listen(randomHandle('tcp'), closeServer());
 }
 
 function randomPipes(number) {
@@ -81,76 +85,91 @@ function randomPipes(number) {
 }
 
 // Not a public API, used by child_process
-if (!common.isWindows) {  // Windows doesn't support {fd: <n>}
-  const handles = randomPipes(2);  // generate pipes in advance
+if (!common.isWindows) {
+  // Windows doesn't support {fd: <n>}
+  const handles = randomPipes(2); // generate pipes in advance
   // Test listen(pipe)
-  net.createServer()
+  net
+    .createServer()
     .listen(handles[0])
     .on('listening', closePipeServer(handles[0]));
   // Test listen(pipe, cb)
-  net.createServer()
-    .listen(handles[1], closePipeServer(handles[1]));
+  net.createServer().listen(handles[1], closePipeServer(handles[1]));
 }
 
 {
   // Test listen({handle: tcp}, cb)
-  net.createServer()
-    .listen({ handle: randomHandle('tcp') }, closeServer());
+  net.createServer().listen({ handle: randomHandle('tcp') }, closeServer());
   // Test listen({handle: tcp})
-  net.createServer()
+  net
+    .createServer()
     .listen({ handle: randomHandle('tcp') })
     .on('listening', closeServer());
   // Test listen({_handle: tcp}, cb)
-  net.createServer()
-    .listen({ _handle: randomHandle('tcp') }, closeServer());
+  net.createServer().listen({ _handle: randomHandle('tcp') }, closeServer());
   // Test listen({_handle: tcp})
-  net.createServer()
+  net
+    .createServer()
     .listen({ _handle: randomHandle('tcp') })
     .on('listening', closeServer());
 }
 
-if (!common.isWindows) {  // Windows doesn't support {fd: <n>}
+if (!common.isWindows) {
+  // Windows doesn't support {fd: <n>}
   // Test listen({fd: tcp.fd}, cb)
-  net.createServer()
-    .listen({ fd: randomHandle('tcp').fd }, closeServer());
+  net.createServer().listen({ fd: randomHandle('tcp').fd }, closeServer());
   // Test listen({fd: tcp.fd})
-  net.createServer()
+  net
+    .createServer()
     .listen({ fd: randomHandle('tcp').fd })
     .on('listening', closeServer());
 }
 
-if (!common.isWindows) {  // Windows doesn't support {fd: <n>}
-  const handles = randomPipes(6);  // generate pipes in advance
+if (!common.isWindows) {
+  // Windows doesn't support {fd: <n>}
+  const handles = randomPipes(6); // generate pipes in advance
   // Test listen({handle: pipe}, cb)
-  net.createServer()
+  net
+    .createServer()
     .listen({ handle: handles[0] }, closePipeServer(handles[0]));
   // Test listen({handle: pipe})
-  net.createServer()
+  net
+    .createServer()
     .listen({ handle: handles[1] })
     .on('listening', closePipeServer(handles[1]));
   // Test listen({_handle: pipe}, cb)
-  net.createServer()
+  net
+    .createServer()
     .listen({ _handle: handles[2] }, closePipeServer(handles[2]));
   // Test listen({_handle: pipe})
-  net.createServer()
+  net
+    .createServer()
     .listen({ _handle: handles[3] })
     .on('listening', closePipeServer(handles[3]));
   // Test listen({fd: pipe.fd}, cb)
-  net.createServer()
-    .listen({ fd: handles[4].fd }, closePipeServer(handles[4]));
+  net.createServer().listen({ fd: handles[4].fd }, closePipeServer(handles[4]));
   // Test listen({fd: pipe.fd})
-  net.createServer()
+  net
+    .createServer()
     .listen({ fd: handles[5].fd })
     .on('listening', closePipeServer(handles[5]));
 }
 
-if (!common.isWindows) {  // Windows doesn't support {fd: <n>}
+if (!common.isWindows) {
+  // Windows doesn't support {fd: <n>}
   // Test invalid fd
   const fd = fs.openSync(__filename, 'r');
-  net.createServer()
+  net
+    .createServer()
     .listen({ fd }, common.mustNotCall())
-    .on('error', common.mustCall(function(err) {
-      assert.strictEqual(String(err), 'Error: listen EINVAL: invalid argument');
-      this.close();
-    }));
+    .on(
+      'error',
+      common.mustCall(function(err) {
+        assert.strictEqual(
+          String(err),
+          'Error: listen EINVAL: invalid argument'
+        );
+        this.close();
+      })
+    );
 }

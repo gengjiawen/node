@@ -33,16 +33,26 @@ if (process.argv[2] === 'child') {
   let outData = Buffer.from('');
 
   const child = spawn(process.execPath, args);
-  child.stderr.on('data', (d) => { errData = Buffer.concat([ errData, d ]); });
-  child.stdout.on('data', (d) => { outData = Buffer.concat([ outData, d ]); });
+  child.stderr.on('data', (d) => {
+    errData = Buffer.concat([errData, d]);
+  });
+  child.stdout.on('data', (d) => {
+    outData = Buffer.concat([outData, d]);
+  });
 
-  child.on('close', common.mustCall((code) => {
-    assert.strictEqual(code, 1);
-    assert.ok(heartbeatMsg.test(outData.toString()),
-              'did not crash until we reached offending line of code ' +
-              `(found ${outData})`);
-    assert.ok(corruptedMsg.test(errData.toString()),
-              'printed error contains corrupted message ' +
-              `(found ${errData})`);
-  }));
+  child.on(
+    'close',
+    common.mustCall((code) => {
+      assert.strictEqual(code, 1);
+      assert.ok(
+        heartbeatMsg.test(outData.toString()),
+        'did not crash until we reached offending line of code ' +
+          `(found ${outData})`
+      );
+      assert.ok(
+        corruptedMsg.test(errData.toString()),
+        'printed error contains corrupted message ' + `(found ${errData})`
+      );
+    })
+  );
 }

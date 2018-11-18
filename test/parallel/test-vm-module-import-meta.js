@@ -24,16 +24,25 @@ async function testBasic() {
 
 async function testInvalid() {
   for (const invalidValue of [
-    null, {}, 0, Symbol.iterator, [], 'string', false
+    null,
+    {},
+    0,
+    Symbol.iterator,
+    [],
+    'string',
+    false
   ]) {
-    common.expectsError(() => {
-      new SourceTextModule('', {
-        initializeImportMeta: invalidValue
-      });
-    }, {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    });
+    common.expectsError(
+      () => {
+        new SourceTextModule('', {
+          initializeImportMeta: invalidValue
+        });
+      },
+      {
+        code: 'ERR_INVALID_ARG_TYPE',
+        type: TypeError
+      }
+    );
   }
 }
 

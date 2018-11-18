@@ -9,14 +9,16 @@ const nestedHook = async_hooks.createHook({
 });
 let nestedCall = false;
 
-async_hooks.createHook({
-  init: common.mustCall(function(id, type) {
-    nestedHook.enable();
-    if (!nestedCall) {
-      nestedCall = true;
-      fs.access(__filename, common.mustCall());
-    }
-  }, 2)
-}).enable();
+async_hooks
+  .createHook({
+    init: common.mustCall(function(id, type) {
+      nestedHook.enable();
+      if (!nestedCall) {
+        nestedCall = true;
+        fs.access(__filename, common.mustCall());
+      }
+    }, 2)
+  })
+  .enable();
 
 fs.access(__filename, common.mustCall());

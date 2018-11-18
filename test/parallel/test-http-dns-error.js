@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const http = require('http');
@@ -33,36 +32,44 @@ const host = '*'.repeat(64);
 const MAX_TRIES = 5;
 
 let errCode = 'ENOTFOUND';
-if (common.isOpenBSD)
-  errCode = 'EAI_FAIL';
+if (common.isOpenBSD) errCode = 'EAI_FAIL';
 
 function tryGet(mod, tries) {
   // Bad host name should not throw an uncatchable exception.
   // Ensure that there is time to attach an error listener.
   const req = mod.get({ host: host, port: 42 }, common.mustNotCall());
-  req.on('error', common.mustCall(function(err) {
-    if (err.code === 'EAGAIN' && tries < MAX_TRIES) {
-      tryGet(mod, ++tries);
-      return;
-    }
-    assert.strictEqual(err.code, errCode);
-  }));
+  req.on(
+    'error',
+    common.mustCall(function(err) {
+      if (err.code === 'EAGAIN' && tries < MAX_TRIES) {
+        tryGet(mod, ++tries);
+        return;
+      }
+      assert.strictEqual(err.code, errCode);
+    })
+  );
   // http.get() called req1.end() for us
 }
 
 function tryRequest(mod, tries) {
-  const req = mod.request({
-    method: 'GET',
-    host: host,
-    port: 42
-  }, common.mustNotCall());
-  req.on('error', common.mustCall(function(err) {
-    if (err.code === 'EAGAIN' && tries < MAX_TRIES) {
-      tryRequest(mod, ++tries);
-      return;
-    }
-    assert.strictEqual(err.code, errCode);
-  }));
+  const req = mod.request(
+    {
+      method: 'GET',
+      host: host,
+      port: 42
+    },
+    common.mustNotCall()
+  );
+  req.on(
+    'error',
+    common.mustCall(function(err) {
+      if (err.code === 'EAGAIN' && tries < MAX_TRIES) {
+        tryRequest(mod, ++tries);
+        return;
+      }
+      assert.strictEqual(err.code, errCode);
+    })
+  );
   req.end();
 }
 

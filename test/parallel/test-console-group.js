@@ -34,13 +34,13 @@ function teardown() {
 // Basic group() functionality
 {
   setup();
-  const expectedOut = 'This is the outer level\n' +
-                      '  Level 2\n' +
-                      '    Level 3\n' +
-                      '  Back to level 2\n' +
-                      'Back to the outer level\n' +
-                      'Still at the outer level\n';
-
+  const expectedOut =
+    'This is the outer level\n' +
+    '  Level 2\n' +
+    '    Level 3\n' +
+    '  Back to level 2\n' +
+    'Back to the outer level\n' +
+    'Still at the outer level\n';
 
   const expectedErr = '    More of level 3\n';
 
@@ -65,10 +65,11 @@ function teardown() {
 // Group indentation is tracked per Console instance.
 {
   setup();
-  const expectedOut = 'No indentation\n' +
-                      'None here either\n' +
-                      '  Now the first console is indenting\n' +
-                      'But the second one does not\n';
+  const expectedOut =
+    'No indentation\n' +
+    'None here either\n' +
+    '  Now the first console is indenting\n' +
+    'But the second one does not\n';
   const expectedErr = '';
 
   const c2 = new Console(process.stdout, process.stderr);
@@ -86,8 +87,8 @@ function teardown() {
 // Make sure labels work.
 {
   setup();
-  const expectedOut = 'This is a label\n' +
-                      '  And this is the data for that label\n';
+  const expectedOut =
+    'This is a label\n' + '  And this is the data for that label\n';
   const expectedErr = '';
 
   c.group('This is a label');
@@ -101,9 +102,7 @@ function teardown() {
 // Check that console.groupCollapsed() is an alias of console.group()
 {
   setup();
-  const expectedOut = 'Label\n' +
-                      '  Level 2\n' +
-                      '    Level 3\n';
+  const expectedOut = 'Label\n' + '  Level 2\n' + '    Level 3\n';
   const expectedErr = '';
 
   c.groupCollapsed('Label');
@@ -119,24 +118,27 @@ function teardown() {
 // Check that multiline strings and object output are indented properly.
 {
   setup();
-  const expectedOut = 'not indented\n' +
-                      '  indented\n' +
-                      '  also indented\n' +
-                      "  { also: 'a',\n" +
-                      "    multiline: 'object',\n" +
-                      "    should: 'be',\n" +
-                      "    indented: 'properly',\n" +
-                      "    kthx: 'bai' }\n";
+  const expectedOut =
+    'not indented\n' +
+    '  indented\n' +
+    '  also indented\n' +
+    "  { also: 'a',\n" +
+    "    multiline: 'object',\n" +
+    "    should: 'be',\n" +
+    "    indented: 'properly',\n" +
+    "    kthx: 'bai' }\n";
   const expectedErr = '';
 
   c.log('not indented');
   c.group();
   c.log('indented\nalso indented');
-  c.log({ also: 'a',
-          multiline: 'object',
-          should: 'be',
-          indented: 'properly',
-          kthx: 'bai' });
+  c.log({
+    also: 'a',
+    multiline: 'object',
+    should: 'be',
+    indented: 'properly',
+    kthx: 'bai'
+  });
 
   assert.strictEqual(stdout, expectedOut);
   assert.strictEqual(stderr, expectedErr);
@@ -146,8 +148,10 @@ function teardown() {
 // Check that the kGroupIndent symbol property is not enumerable
 {
   const keys = Reflect.ownKeys(console)
-                      .filter((val) => console.propertyIsEnumerable(val))
-                      .map((val) => val.toString());
-  assert(!keys.includes('Symbol(groupIndent)'),
-         'groupIndent should not be enumerable');
+    .filter((val) => console.propertyIsEnumerable(val))
+    .map((val) => val.toString());
+  assert(
+    !keys.includes('Symbol(groupIndent)'),
+    'groupIndent should not be enumerable'
+  );
 }

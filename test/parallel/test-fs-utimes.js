@@ -38,8 +38,7 @@ function stat_resource(resource) {
     const stats = fs.fstatSync(resource);
     // ensure mtime has been written to disk
     // except for directories on AIX where it cannot be synced
-    if (common.isAIX && stats.isDirectory())
-      return stats;
+    if (common.isAIX && stats.isDirectory()) return stats;
     fs.fsyncSync(resource);
     return fs.fstatSync(resource);
   }
@@ -63,8 +62,10 @@ function expect_errno(syscall, resource, err, errno) {
 }
 
 function expect_ok(syscall, resource, err, atime, mtime) {
-  if (!err && check_mtime(resource, mtime) ||
-      err && err.code === 'ENOSYS') {
+  if (
+    (!err && check_mtime(resource, mtime)) ||
+    (err && err.code === 'ENOSYS')
+  ) {
     tests_ok++;
   } else {
     console.log('FAILED:', 'expect_ok', util.inspect(arguments));
@@ -72,7 +73,6 @@ function expect_ok(syscall, resource, err, atime, mtime) {
 }
 
 function testIt(atime, mtime, callback) {
-
   let fd;
   //
   // test synchronized code paths, these functions throw on failure
@@ -102,55 +102,69 @@ function testIt(atime, mtime, callback) {
     tests_run++;
 
     err = undefined;
-    common.expectsError(
-      () => fs.futimesSync(-1, atime, mtime),
-      {
-        code: 'ERR_OUT_OF_RANGE',
-        type: RangeError,
-        message: 'The value of "fd" is out of range. ' +
-                'It must be >= 0 && < 4294967296. Received -1'
-      }
-    );
+    common.expectsError(() => fs.futimesSync(-1, atime, mtime), {
+      code: 'ERR_OUT_OF_RANGE',
+      type: RangeError,
+      message:
+        'The value of "fd" is out of range. ' +
+        'It must be >= 0 && < 4294967296. Received -1'
+    });
     tests_run++;
   }
 
   //
   // test async code paths
   //
-  fs.utimes(tmpdir.path, atime, mtime, common.mustCall((err) => {
-    expect_ok('utimes', tmpdir.path, err, atime, mtime);
+  fs.utimes(
+    tmpdir.path,
+    atime,
+    mtime,
+    common.mustCall((err) => {
+      expect_ok('utimes', tmpdir.path, err, atime, mtime);
 
-    fs.utimes('foobarbaz', atime, mtime, common.mustCall((err) => {
-      expect_errno('utimes', 'foobarbaz', err, 'ENOENT');
+      fs.utimes(
+        'foobarbaz',
+        atime,
+        mtime,
+        common.mustCall((err) => {
+          expect_errno('utimes', 'foobarbaz', err, 'ENOENT');
 
-      // don't close this fd
-      if (common.isWindows) {
-        fd = fs.openSync(tmpdir.path, 'r+');
-      } else {
-        fd = fs.openSync(tmpdir.path, 'r');
-      }
-
-      fs.futimes(fd, atime, mtime, common.mustCall((err) => {
-        expect_ok('futimes', fd, err, atime, mtime);
-
-        common.expectsError(
-          () => fs.futimes(-1, atime, mtime, common.mustNotCall()),
-          {
-            code: 'ERR_OUT_OF_RANGE',
-            type: RangeError,
-            message: 'The value of "fd" is out of range. ' +
-                    'It must be >= 0 && < 4294967296. Received -1'
+          // don't close this fd
+          if (common.isWindows) {
+            fd = fs.openSync(tmpdir.path, 'r+');
+          } else {
+            fd = fs.openSync(tmpdir.path, 'r');
           }
-        );
 
-        syncTests();
+          fs.futimes(
+            fd,
+            atime,
+            mtime,
+            common.mustCall((err) => {
+              expect_ok('futimes', fd, err, atime, mtime);
 
-        tests_run++;
-      }));
+              common.expectsError(
+                () => fs.futimes(-1, atime, mtime, common.mustNotCall()),
+                {
+                  code: 'ERR_OUT_OF_RANGE',
+                  type: RangeError,
+                  message:
+                    'The value of "fd" is out of range. ' +
+                    'It must be >= 0 && < 4294967296. Received -1'
+                }
+              );
+
+              syncTests();
+
+              tests_run++;
+            })
+          );
+          tests_run++;
+        })
+      );
       tests_run++;
-    }));
-    tests_run++;
-  }));
+    })
+  );
   tests_run++;
 }
 
@@ -181,7 +195,6 @@ process.on('exit', () => {
   assert.strictEqual(tests_ok, tests_run - 2);
 });
 
-
 // Ref: https://github.com/nodejs/node/issues/13255
 const path = `${tmpdir.path}/test-utimes-precision`;
 fs.writeFileSync(path, '');
@@ -190,7 +203,7 @@ fs.writeFileSync(path, '');
 if (!process.arch.includes('arm') && !common.isOpenBSD && !common.isSunOS) {
   // because 2 ** 31 doesn't look right
   // eslint-disable-next-line space-infix-ops
-  const Y2K38_mtime = 2**31;
+  const Y2K38_mtime = 2 ** 31;
   fs.utimesSync(path, Y2K38_mtime, Y2K38_mtime);
   const Y2K38_stats = fs.statSync(path);
   assert.strictEqual(Y2K38_mtime, Y2K38_stats.mtime.getTime() / 1000);
@@ -222,11 +235,8 @@ if (common.isWindows) {
       type: TypeError
     }
   );
-  common.expectsError(
-    () => fs.utimesSync(i, new Date(), new Date()),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
+  common.expectsError(() => fs.utimesSync(i, new Date(), new Date()), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
 });

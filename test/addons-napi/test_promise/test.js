@@ -15,19 +15,21 @@ const test_promise = require(`./build/${common.buildType}/test_promise`);
     common.mustCall(function(result) {
       assert.strictEqual(result, expected_result);
     }),
-    common.mustNotCall());
+    common.mustNotCall()
+  );
   test_promise.concludeCurrentPromise(expected_result, true);
 }
 
 // A rejection
 {
-  const expected_result = 'It\'s not you, it\'s me.';
+  const expected_result = "It's not you, it's me.";
   const promise = test_promise.createPromise();
   promise.then(
     common.mustNotCall(),
     common.mustCall(function(result) {
       assert.strictEqual(result, expected_result);
-    }));
+    })
+  );
   test_promise.concludeCurrentPromise(expected_result, false);
 }
 
@@ -39,7 +41,8 @@ const test_promise = require(`./build/${common.buildType}/test_promise`);
     common.mustCall(function(result) {
       assert.strictEqual(result, expected_result);
     }),
-    common.mustNotCall());
+    common.mustNotCall()
+  );
   test_promise.concludeCurrentPromise(Promise.resolve('chained answer'), true);
 }
 

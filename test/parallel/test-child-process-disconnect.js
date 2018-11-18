@@ -27,7 +27,6 @@ const net = require('net');
 
 // child
 if (process.argv[2] === 'child') {
-
   // Check that the 'disconnect' event is deferred to the next event loop tick.
   const disconnect = process.disconnect;
   process.disconnect = function() {
@@ -41,11 +40,10 @@ if (process.argv[2] === 'child') {
   const server = net.createServer();
 
   server.on('connection', function(socket) {
-
     socket.resume();
 
     process.on('disconnect', function() {
-      socket.end((process.connected).toString());
+      socket.end(process.connected.toString());
     });
 
     // when the socket is closed, we will close the server
@@ -63,7 +61,6 @@ if (process.argv[2] === 'child') {
   });
 
   server.listen(0);
-
 } else {
   // testcase
   const child = fork(process.argv[1], ['child']);
@@ -73,9 +70,12 @@ if (process.argv[2] === 'child') {
 
   // when calling .disconnect the event should emit
   // and the disconnected flag should be true.
-  child.on('disconnect', common.mustCall(function() {
-    parentFlag = child.connected;
-  }));
+  child.on(
+    'disconnect',
+    common.mustCall(function() {
+      parentFlag = child.connected;
+    })
+  );
 
   // the process should also self terminate without using signals
   child.on('exit', common.mustCall());
@@ -83,7 +83,6 @@ if (process.argv[2] === 'child') {
   // when child is listening
   child.on('message', function(obj) {
     if (obj && obj.msg === 'ready') {
-
       // connect to child using TCP to know if disconnect was emitted
       const socket = net.connect(obj.port);
 
@@ -93,18 +92,15 @@ if (process.argv[2] === 'child') {
         // ready to be disconnected
         if (data === 'ready') {
           child.disconnect();
-          assert.throws(
-            child.disconnect.bind(child),
-            {
-              code: 'ERR_IPC_DISCONNECTED'
-            });
+          assert.throws(child.disconnect.bind(child), {
+            code: 'ERR_IPC_DISCONNECTED'
+          });
           return;
         }
 
         // disconnect is emitted
-        childFlag = (data === 'true');
+        childFlag = data === 'true';
       });
-
     }
   });
 

@@ -38,7 +38,9 @@ handle.init(
   constants.Z_DEFAULT_MEMLEVEL,
   constants.Z_DEFAULT_STRATEGY,
   buffers.writeResult,
-  function processCallback() { this.cb(); },
+  function processCallback() {
+    this.cb();
+  },
   buffers.dictionary
 );
 checkInvocations(hdl, { init: 1 }, 'when initialized handle');
@@ -51,13 +53,19 @@ checkInvocations(hdl, { init: 1 }, 'when invoked write() on handle');
 function onwritten() {
   if (--count) {
     // first write
-    checkInvocations(hdl, { init: 1, before: 1 },
-                     'when wrote to handle the first time');
+    checkInvocations(
+      hdl,
+      { init: 1, before: 1 },
+      'when wrote to handle the first time'
+    );
     handle.write(true, buffers.inBuf, 0, 1, buffers.outBuf, 0, 1);
   } else {
     // second write
-    checkInvocations(hdl, { init: 1, before: 2, after: 1 },
-                     'when wrote to handle the second time');
+    checkInvocations(
+      hdl,
+      { init: 1, before: 2, after: 1 },
+      'when wrote to handle the second time'
+    );
   }
 }
 

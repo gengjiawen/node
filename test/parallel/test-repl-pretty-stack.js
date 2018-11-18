@@ -5,14 +5,13 @@ const fixtures = require('../common/fixtures');
 const assert = require('assert');
 const repl = require('repl');
 
-
 function run({ command, expected }) {
   let accum = '';
 
   const inputStream = new ArrayStream();
   const outputStream = new ArrayStream();
 
-  outputStream.write = (data) => accum += data.replace('\r', '');
+  outputStream.write = (data) => (accum += data.replace('\r', ''));
 
   const r = repl.start({
     prompt: '',
@@ -31,15 +30,16 @@ const tests = [
   {
     // test .load for a file that throws
     command: `.load ${fixtures.path('repl-pretty-stack.js')}`,
-    expected: 'Error: Whoops!\n    at repl:9:24\n    at d (repl:12:3)\n    ' +
-              'at c (repl:9:3)\n    at b (repl:6:3)\n    at a (repl:3:3)\n'
+    expected:
+      'Error: Whoops!\n    at repl:9:24\n    at d (repl:12:3)\n    ' +
+      'at c (repl:9:3)\n    at b (repl:6:3)\n    at a (repl:3:3)\n'
   },
   {
     command: 'let x y;',
     expected: 'let x y;\n      ^\n\nSyntaxError: Unexpected identifier\n\n'
   },
   {
-    command: 'throw new Error(\'Whoops!\')',
+    command: "throw new Error('Whoops!')",
     expected: 'Error: Whoops!\n'
   },
   {
@@ -48,7 +48,7 @@ const tests = [
   },
   // test anonymous IIFE
   {
-    command: '(function() { throw new Error(\'Whoops!\'); })()',
+    command: "(function() { throw new Error('Whoops!'); })()",
     expected: 'Error: Whoops!\n    at repl:1:21\n'
   }
 ];

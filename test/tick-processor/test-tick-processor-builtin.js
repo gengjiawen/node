@@ -2,8 +2,7 @@
 const common = require('../common');
 const { isCPPSymbolsNotMapped } = require('./util');
 
-if (!common.enoughTestCpu)
-  common.skip('test is CPU-intensive');
+if (!common.enoughTestCpu) common.skip('test is CPU-intensive');
 
 if (isCPPSymbolsNotMapped) {
   common.skip('C++ symbols are not mapped for this os.');

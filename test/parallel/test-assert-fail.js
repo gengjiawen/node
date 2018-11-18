@@ -5,7 +5,9 @@ const assert = require('assert');
 
 // No args
 assert.throws(
-  () => { assert.fail(); },
+  () => {
+    assert.fail();
+  },
   {
     code: 'ERR_ASSERTION',
     name: 'AssertionError [ERR_ASSERTION]',
@@ -18,22 +20,28 @@ assert.throws(
 );
 
 // One arg = message
-assert.throws(() => {
-  assert.fail('custom message');
-}, {
-  code: 'ERR_ASSERTION',
-  name: 'AssertionError [ERR_ASSERTION]',
-  message: 'custom message',
-  operator: 'fail',
-  actual: undefined,
-  expected: undefined,
-  generatedMessage: false
-});
+assert.throws(
+  () => {
+    assert.fail('custom message');
+  },
+  {
+    code: 'ERR_ASSERTION',
+    name: 'AssertionError [ERR_ASSERTION]',
+    message: 'custom message',
+    operator: 'fail',
+    actual: undefined,
+    expected: undefined,
+    generatedMessage: false
+  }
+);
 
 // One arg = Error
-assert.throws(() => {
-  assert.fail(new TypeError('custom message'));
-}, {
-  name: 'TypeError',
-  message: 'custom message'
-});
+assert.throws(
+  () => {
+    assert.fail(new TypeError('custom message'));
+  },
+  {
+    name: 'TypeError',
+    message: 'custom message'
+  }
+);

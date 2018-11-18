@@ -21,8 +21,11 @@ const methods = [
 methods.forEach(function(method) {
   const d = domain.create();
   d.run(function() {
-    dns[method](addresses.INET_HOST, common.mustCall(() => {
-      assert.strictEqual(process.domain, d, `${method} retains domain`);
-    }));
+    dns[method](
+      addresses.INET_HOST,
+      common.mustCall(() => {
+        assert.strictEqual(process.domain, d, `${method} retains domain`);
+      })
+    );
   });
 });

@@ -10,7 +10,7 @@ const fs = require('fs');
 
 // Refs: https://github.com/nodejs/node/issues/21967
 
-const filename = fixtures.path('loop.js');  // Some small non-homogeneous file.
+const filename = fixtures.path('loop.js'); // Some small non-homogeneous file.
 const content = fs.readFileSync(filename);
 
 const N = 1000;
@@ -26,22 +26,26 @@ function startRead() {
     .on('data', (chunk) => {
       chunks.push(chunk);
       arrayBuffers.add(chunk.buffer);
-      if (started < N)
-        startRead();
+      if (started < N) startRead();
     })
-    .on('end', common.mustCall(() => {
-      assert.deepStrictEqual(Buffer.concat(chunks), content);
-      if (++done === N) {
-        const retainedMemory =
-          [...arrayBuffers].map((ab) => ab.byteLength).reduce((a, b) => a + b);
-        assert(retainedMemory / (N * content.length) <= 3,
-               `Retaining ${retainedMemory} bytes in ABs for ${N} ` +
-               `chunks of size ${content.length}`);
-      }
-    }));
+    .on(
+      'end',
+      common.mustCall(() => {
+        assert.deepStrictEqual(Buffer.concat(chunks), content);
+        if (++done === N) {
+          const retainedMemory = [...arrayBuffers]
+            .map((ab) => ab.byteLength)
+            .reduce((a, b) => a + b);
+          assert(
+            retainedMemory / (N * content.length) <= 3,
+            `Retaining ${retainedMemory} bytes in ABs for ${N} ` +
+              `chunks of size ${content.length}`
+          );
+        }
+      })
+    );
 }
 
 // Don’t start the reads all at once – that way we would have to allocate
 // a large amount of memory upfront.
-for (let i = 0; i < 4; ++i)
-  startRead();
+for (let i = 0; i < 4; ++i) startRead();

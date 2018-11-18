@@ -9,18 +9,17 @@ assert.strictEqual(
   binding.getExecutionAsyncId(),
   async_hooks.executionAsyncId()
 );
-assert.strictEqual(
-  binding.getTriggerAsyncId(),
-  async_hooks.triggerAsyncId()
-);
+assert.strictEqual(binding.getTriggerAsyncId(), async_hooks.triggerAsyncId());
 
-process.nextTick(common.mustCall(function() {
-  assert.strictEqual(
-    binding.getExecutionAsyncId(),
-    async_hooks.executionAsyncId()
-  );
-  assert.strictEqual(
-    binding.getTriggerAsyncId(),
-    async_hooks.triggerAsyncId()
-  );
-}));
+process.nextTick(
+  common.mustCall(function() {
+    assert.strictEqual(
+      binding.getExecutionAsyncId(),
+      async_hooks.executionAsyncId()
+    );
+    assert.strictEqual(
+      binding.getTriggerAsyncId(),
+      async_hooks.triggerAsyncId()
+    );
+  })
+);

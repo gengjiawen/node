@@ -26,8 +26,9 @@ const client = dgram.createSocket('udp4').bind(0, () => {
     const expectedError = {
       code: 'ERR_INVALID_ARG_TYPE',
       name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-      message: 'The "address" argument must be one of type string or falsy. ' +
-               `Received type ${typeof invalidInput}`
+      message:
+        'The "address" argument must be one of type string or falsy. ' +
+        `Received type ${typeof invalidInput}`
     };
     assert.throws(() => client.send(buf, port, invalidInput), expectedError);
   });

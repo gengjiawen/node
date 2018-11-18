@@ -29,9 +29,12 @@ const assert = require('assert');
   transform.on('end', common.mustNotCall());
   transform.on('finish', common.mustNotCall());
   transform.on('close', common.mustCall());
-  transform.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  transform.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   transform.destroy(expected);
 }
@@ -50,9 +53,12 @@ const assert = require('assert');
 
   transform.on('finish', common.mustNotCall('no finish event'));
   transform.on('close', common.mustCall());
-  transform.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  transform.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   transform.destroy(expected);
 }
@@ -135,9 +141,12 @@ const assert = require('assert');
   transform.on('close', common.mustCall());
   transform.on('finish', common.mustNotCall('no finish event'));
   transform.on('end', common.mustNotCall('no end event'));
-  transform.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  transform.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   transform.destroy();
 }

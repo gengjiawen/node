@@ -15,8 +15,10 @@ const execOpts = { encoding: 'utf8', shell: true };
     [fixture, 42],
     common.mustCall((e) => {
       // Check that arguments are included in message
-      assert.strictEqual(e.message.trim(),
-                         `Command failed: ${process.execPath} ${fixture} 42`);
+      assert.strictEqual(
+        e.message.trim(),
+        `Command failed: ${process.execPath} ${fixture} 42`
+      );
       assert.strictEqual(e.code, 42);
     })
   );
@@ -43,7 +45,12 @@ const execOpts = { encoding: 'utf8', shell: true };
 
 {
   // Verify the shell option works properly
-  execFile(process.execPath, [fixture, 0], execOpts, common.mustCall((err) => {
-    assert.ifError(err);
-  }));
+  execFile(
+    process.execPath,
+    [fixture, 0],
+    execOpts,
+    common.mustCall((err) => {
+      assert.ifError(err);
+    })
+  );
 }

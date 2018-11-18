@@ -26,7 +26,6 @@ const fork = require('child_process').fork;
 const net = require('net');
 
 if (process.argv[2] === 'child') {
-
   process.on('message', function onSocket(msg, socket) {
     if (msg.what !== 'socket') return;
     process.removeListener('message', onSocket);
@@ -36,17 +35,18 @@ if (process.argv[2] === 'child') {
 
   process.send({ what: 'ready' });
 } else {
-
   const child = fork(process.argv[1], ['child']);
 
-  child.on('exit', common.mustCall(function(code, signal) {
-    const message = `CHILD: died with ${code}, ${signal}`;
-    assert.strictEqual(code, 0, message);
-  }));
+  child.on(
+    'exit',
+    common.mustCall(function(code, signal) {
+      const message = `CHILD: died with ${code}, ${signal}`;
+      assert.strictEqual(code, 0, message);
+    })
+  );
 
   // Send net.Socket to child.
   function testSocket(callback) {
-
     // Create a new server and connect to it,
     // but the socket will be handled by the child.
     const server = net.createServer();

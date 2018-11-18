@@ -29,45 +29,48 @@ const assert = require('assert');
 const SD = require('string_decoder').StringDecoder;
 const encodings = ['base64', 'hex', 'utf8', 'utf16le', 'ucs2'];
 
-const bufs = [ '☃💩', 'asdf' ].map((b) => Buffer.from(b));
+const bufs = ['☃💩', 'asdf'].map((b) => Buffer.from(b));
 
 // also test just arbitrary bytes from 0-15.
 for (let i = 1; i <= 16; i++) {
-  const bytes = '.'.repeat(i - 1).split('.').map((_, j) => j + 0x78);
+  const bytes = '.'
+    .repeat(i - 1)
+    .split('.')
+    .map((_, j) => j + 0x78);
   bufs.push(Buffer.from(bytes));
 }
 
 encodings.forEach(testEncoding);
 
-testEnd('utf8', Buffer.of(0xE2), Buffer.of(0x61), '\uFFFDa');
-testEnd('utf8', Buffer.of(0xE2), Buffer.of(0x82), '\uFFFD\uFFFD');
-testEnd('utf8', Buffer.of(0xE2), Buffer.of(0xE2), '\uFFFD\uFFFD');
-testEnd('utf8', Buffer.of(0xE2, 0x82), Buffer.of(0x61), '\uFFFDa');
-testEnd('utf8', Buffer.of(0xE2, 0x82), Buffer.of(0xAC), '\uFFFD\uFFFD');
-testEnd('utf8', Buffer.of(0xE2, 0x82), Buffer.of(0xE2), '\uFFFD\uFFFD');
-testEnd('utf8', Buffer.of(0xE2, 0x82, 0xAC), Buffer.of(0x61), '€a');
+testEnd('utf8', Buffer.of(0xe2), Buffer.of(0x61), '\uFFFDa');
+testEnd('utf8', Buffer.of(0xe2), Buffer.of(0x82), '\uFFFD\uFFFD');
+testEnd('utf8', Buffer.of(0xe2), Buffer.of(0xe2), '\uFFFD\uFFFD');
+testEnd('utf8', Buffer.of(0xe2, 0x82), Buffer.of(0x61), '\uFFFDa');
+testEnd('utf8', Buffer.of(0xe2, 0x82), Buffer.of(0xac), '\uFFFD\uFFFD');
+testEnd('utf8', Buffer.of(0xe2, 0x82), Buffer.of(0xe2), '\uFFFD\uFFFD');
+testEnd('utf8', Buffer.of(0xe2, 0x82, 0xac), Buffer.of(0x61), '€a');
 
-testEnd('utf16le', Buffer.of(0x3D), Buffer.of(0x61, 0x00), 'a');
-testEnd('utf16le', Buffer.of(0x3D), Buffer.of(0xD8, 0x4D, 0xDC), '\u4DD8');
-testEnd('utf16le', Buffer.of(0x3D, 0xD8), Buffer.of(), '\uD83D');
-testEnd('utf16le', Buffer.of(0x3D, 0xD8), Buffer.of(0x61, 0x00), '\uD83Da');
+testEnd('utf16le', Buffer.of(0x3d), Buffer.of(0x61, 0x00), 'a');
+testEnd('utf16le', Buffer.of(0x3d), Buffer.of(0xd8, 0x4d, 0xdc), '\u4DD8');
+testEnd('utf16le', Buffer.of(0x3d, 0xd8), Buffer.of(), '\uD83D');
+testEnd('utf16le', Buffer.of(0x3d, 0xd8), Buffer.of(0x61, 0x00), '\uD83Da');
 testEnd(
   'utf16le',
-  Buffer.of(0x3D, 0xD8),
-  Buffer.of(0x4D, 0xDC),
+  Buffer.of(0x3d, 0xd8),
+  Buffer.of(0x4d, 0xdc),
   '\uD83D\uDC4D'
 );
-testEnd('utf16le', Buffer.of(0x3D, 0xD8, 0x4D), Buffer.of(), '\uD83D');
+testEnd('utf16le', Buffer.of(0x3d, 0xd8, 0x4d), Buffer.of(), '\uD83D');
 testEnd(
   'utf16le',
-  Buffer.of(0x3D, 0xD8, 0x4D),
+  Buffer.of(0x3d, 0xd8, 0x4d),
   Buffer.of(0x61, 0x00),
   '\uD83Da'
 );
-testEnd('utf16le', Buffer.of(0x3D, 0xD8, 0x4D), Buffer.of(0xDC), '\uD83D');
+testEnd('utf16le', Buffer.of(0x3d, 0xd8, 0x4d), Buffer.of(0xdc), '\uD83D');
 testEnd(
   'utf16le',
-  Buffer.of(0x3D, 0xD8, 0x4D, 0xDC),
+  Buffer.of(0x3d, 0xd8, 0x4d, 0xdc),
   Buffer.of(0x61, 0x00),
   '👍a'
 );

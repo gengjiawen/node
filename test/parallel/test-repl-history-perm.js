@@ -7,9 +7,11 @@
 const common = require('../common');
 
 if (common.isWindows) {
-  common.skip('Win32 uses ACLs for file permissions, ' +
-              'modes are always 0666 and says nothing about group/other ' +
-              'read access.');
+  common.skip(
+    'Win32 uses ACLs for file permissions, ' +
+      'modes are always 0666 and says nothing about group/other ' +
+      'read access.'
+  );
 }
 
 const assert = require('assert');
@@ -42,8 +44,10 @@ const checkResults = common.mustCall(function(err, r) {
   const stat = fs.statSync(replHistoryPath);
   const fileMode = stat.mode & 0o777;
   assert.strictEqual(
-    fileMode, 0o600,
-    `REPL history file should be mode 0600 but was 0${fileMode.toString(8)}`);
+    fileMode,
+    0o600,
+    `REPL history file should be mode 0600 but was 0${fileMode.toString(8)}`
+  );
 });
 
 repl.createInternalRepl(

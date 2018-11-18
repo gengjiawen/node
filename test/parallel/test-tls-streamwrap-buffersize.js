@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const fixtures = require('../common/fixtures');
 const makeDuplexPair = require('../common/duplexpair');
@@ -18,55 +17,75 @@ const net = require('net');
     const { clientSide, serverSide } = makeDuplexPair();
 
     return new Promise((resolve, reject) => {
-      const socket = net.connect({
-        port,
-      }, common.mustCall(() => {
-        clientSide.pipe(socket);
-        socket.pipe(clientSide);
-        clientSide.on('close', common.mustCall(() => socket.destroy()));
-        socket.on('close', common.mustCall(() => clientSide.destroy()));
+      const socket = net.connect(
+        {
+          port
+        },
+        common.mustCall(() => {
+          clientSide.pipe(socket);
+          socket.pipe(clientSide);
+          clientSide.on('close', common.mustCall(() => socket.destroy()));
+          socket.on('close', common.mustCall(() => clientSide.destroy()));
 
-        resolve(serverSide);
-      }));
+          resolve(serverSide);
+        })
+      );
     });
   }
 
-  const server = tls.createServer({
-    key: fixtures.readKey('agent2-key.pem'),
-    cert: fixtures.readKey('agent2-cert.pem')
-  }, common.mustCall((socket) => {
-    let str = '';
-    socket.setEncoding('utf-8');
-    socket.on('data', (chunk) => { str += chunk; });
+  const server = tls.createServer(
+    {
+      key: fixtures.readKey('agent2-key.pem'),
+      cert: fixtures.readKey('agent2-cert.pem')
+    },
+    common.mustCall((socket) => {
+      let str = '';
+      socket.setEncoding('utf-8');
+      socket.on('data', (chunk) => {
+        str += chunk;
+      });
 
-    socket.on('end', common.mustCall(() => {
-      assert.strictEqual(str, 'a'.repeat(iter - 1));
-      server.close();
-    }));
-  }));
+      socket.on(
+        'end',
+        common.mustCall(() => {
+          assert.strictEqual(str, 'a'.repeat(iter - 1));
+          server.close();
+        })
+      );
+    })
+  );
 
-  server.listen(0, common.mustCall(() => {
-    const { port } = server.address();
-    createDuplex(port).then((socket) => {
-      const client = tls.connect({
-        socket,
-        rejectUnauthorized: false,
-      }, common.mustCall(() => {
-        assert.strictEqual(client.bufferSize, 0);
+  server.listen(
+    0,
+    common.mustCall(() => {
+      const { port } = server.address();
+      createDuplex(port).then((socket) => {
+        const client = tls.connect(
+          {
+            socket,
+            rejectUnauthorized: false
+          },
+          common.mustCall(() => {
+            assert.strictEqual(client.bufferSize, 0);
 
-        for (let i = 1; i < iter; i++) {
-          client.write('a');
-          assert.strictEqual(client.bufferSize, i + 1);
-        }
+            for (let i = 1; i < iter; i++) {
+              client.write('a');
+              assert.strictEqual(client.bufferSize, i + 1);
+            }
 
-        // It seems that tlsSockets created from sockets of `Duplex` emit no
-        // "finish" events. We use "end" event instead.
-        client.on('end', common.mustCall(() => {
-          assert.strictEqual(client.bufferSize, undefined);
-        }));
+            // It seems that tlsSockets created from sockets of `Duplex` emit no
+            // "finish" events. We use "end" event instead.
+            client.on(
+              'end',
+              common.mustCall(() => {
+                assert.strictEqual(client.bufferSize, undefined);
+              })
+            );
 
-        client.end();
-      }));
-    });
-  }));
+            client.end();
+          })
+        );
+      });
+    })
+  );
 }

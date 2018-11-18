@@ -25,7 +25,7 @@ const {
   hijackStdout,
   hijackStderr,
   restoreStdout,
-  restoreStderr,
+  restoreStderr
 } = require('../common/hijackstdio');
 const assert = require('assert');
 const util = require('util');

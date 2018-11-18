@@ -42,8 +42,11 @@ server.listen(0, options.host, common.mustCall(onListen));
 function onListen() {
   options.port = this.address().port;
   const req = http.request(options, common.mustNotCall());
-  req.on('error', common.mustCall(function(err) {
-    assert.strictEqual(err.code, 'ECONNRESET');
-  }));
+  req.on(
+    'error',
+    common.mustCall(function(err) {
+      assert.strictEqual(err.code, 'ECONNRESET');
+    })
+  );
   req.end();
 }

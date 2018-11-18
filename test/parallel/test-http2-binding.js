@@ -2,8 +2,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const { internalBinding } = require('internal/test/binding');
 
@@ -19,8 +18,10 @@ assert.strictEqual(settings.enablePush, true);
 assert.strictEqual(settings.initialWindowSize, 65535);
 assert.strictEqual(settings.maxFrameSize, 16384);
 
-assert.strictEqual(binding.nghttp2ErrorString(-517),
-                   'GOAWAY has already been sent');
+assert.strictEqual(
+  binding.nghttp2ErrorString(-517),
+  'GOAWAY has already been sent'
+);
 
 // assert constants are present
 assert(binding.constants);
@@ -106,7 +107,8 @@ const expectedHeaderNames = {
   HTTP2_HEADER_ACCEPT_LANGUAGE: 'accept-language',
   HTTP2_HEADER_ACCEPT_RANGES: 'accept-ranges',
   HTTP2_HEADER_ACCEPT: 'accept',
-  HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS: 'access-control-allow-credentials', // eslint-disable-line max-len
+  HTTP2_HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS:
+    'access-control-allow-credentials', // eslint-disable-line max-len
   HTTP2_HEADER_ACCESS_CONTROL_ALLOW_HEADERS: 'access-control-allow-headers',
   HTTP2_HEADER_ACCESS_CONTROL_ALLOW_METHODS: 'access-control-allow-methods',
   HTTP2_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN: 'access-control-allow-origin',
@@ -233,16 +235,28 @@ const defaultSettings = {
 
 for (const name of Object.keys(constants)) {
   if (name.startsWith('HTTP_STATUS_')) {
-    assert.strictEqual(expectedStatusCodes[name], constants[name],
-                       `Expected status code match for ${name}`);
+    assert.strictEqual(
+      expectedStatusCodes[name],
+      constants[name],
+      `Expected status code match for ${name}`
+    );
   } else if (name.startsWith('HTTP2_HEADER_')) {
-    assert.strictEqual(expectedHeaderNames[name], constants[name],
-                       `Expected header name match for ${name}`);
+    assert.strictEqual(
+      expectedHeaderNames[name],
+      constants[name],
+      `Expected header name match for ${name}`
+    );
   } else if (name.startsWith('NGHTTP2_')) {
-    assert.strictEqual(expectedNGConstants[name], constants[name],
-                       `Expected ng constant match for ${name}`);
+    assert.strictEqual(
+      expectedNGConstants[name],
+      constants[name],
+      `Expected ng constant match for ${name}`
+    );
   } else if (name.startsWith('DEFAULT_SETTINGS_')) {
-    assert.strictEqual(defaultSettings[name], constants[name],
-                       `Expected default setting match for ${name}`);
+    assert.strictEqual(
+      defaultSettings[name],
+      constants[name],
+      `Expected default setting match for ${name}`
+    );
   }
 }

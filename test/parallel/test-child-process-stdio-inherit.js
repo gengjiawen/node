@@ -24,10 +24,8 @@ require('../common');
 const assert = require('assert');
 const spawn = require('child_process').spawn;
 
-if (process.argv[2] === 'parent')
-  parent();
-else
-  grandparent();
+if (process.argv[2] === 'parent') parent();
+else grandparent();
 
 function grandparent() {
   const child = spawn(process.execPath, [__filename, 'parent']);

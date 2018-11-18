@@ -8,9 +8,7 @@ const { validateSnapshotNodes } = require('../common/heap');
 const inspector = require('inspector');
 
 const snapshotNode = {
-  children: [
-    { node_name: 'Node / InspectorSession', edge_name: 'session' }
-  ]
+  children: [{ node_name: 'Node / InspectorSession', edge_name: 'session' }]
 };
 
 // starts with no JSBindingsConnection (or 1 if coverage enabled).
@@ -31,9 +29,10 @@ const snapshotNode = {
       children: [
         { node_name: 'Node / InspectorSession', edge_name: 'session' },
         { node_name: 'Connection', edge_name: 'wrapped' },
-        (edge) => edge.name === 'callback' &&
+        (edge) =>
+          edge.name === 'callback' &&
           (edge.to.type === undefined || // embedded graph
-           edge.to.type === 'closure') // snapshot
+            edge.to.type === 'closure') // snapshot
       ]
     }
   ];

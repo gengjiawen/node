@@ -12,9 +12,12 @@ const { Readable, Writable, Transform } = require('stream');
     })
   });
 
-  stream.on('data', common.mustCall((chunk) => {
-    assert.strictEqual(chunk, undefined);
-  }));
+  stream.on(
+    'data',
+    common.mustCall((chunk) => {
+      assert.strictEqual(chunk, undefined);
+    })
+  );
 }
 
 {
@@ -36,9 +39,12 @@ const { Readable, Writable, Transform } = require('stream');
     })
   });
 
-  stream.on('data', common.mustCall((chunk) => {
-    assert.strictEqual(chunk, undefined);
-  }));
+  stream.on(
+    'data',
+    common.mustCall((chunk) => {
+      assert.strictEqual(chunk, undefined);
+    })
+  );
 
   stream.write(undefined);
 }

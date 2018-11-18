@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -42,21 +41,20 @@ const CIPHER_NAME = 'aes-128-cbc';
 // openssl enc -aes-128-cbc -e -K 5333632e722e652e742e4b2e652e5921 \
 // -iv 626c616846697a7a3230313142757a7a | xxd -p -c256
 const ODD_LENGTH_ENCRYPTED =
-    '7f57859550d4d2fdb9806da2a750461a9fe77253cd1cbd4b07beee4e070d561f';
+  '7f57859550d4d2fdb9806da2a750461a9fe77253cd1cbd4b07beee4e070d561f';
 
 // echo -n 'Hello node world!AbC09876dDeFgHi' | \
 // openssl enc -aes-128-cbc -e -K 5333632e722e652e742e4b2e652e5921 \
 // -iv 626c616846697a7a3230313142757a7a | xxd -p -c256
 const EVEN_LENGTH_ENCRYPTED =
-    '7f57859550d4d2fdb9806da2a750461ab46e71b3d78ebe2d9684dfc87f7575b988' +
-    '6119866912cb8c7bcaf76c5ebc2378';
+  '7f57859550d4d2fdb9806da2a750461ab46e71b3d78ebe2d9684dfc87f7575b988' +
+  '6119866912cb8c7bcaf76c5ebc2378';
 
 // echo -n 'Hello node world!AbC09876dDeFgHi' | \
 // openssl enc -aes-128-cbc -e -K 5333632e722e652e742e4b2e652e5921 \
 // -iv 626c616846697a7a3230313142757a7a -nopad | xxd -p -c256
 const EVEN_LENGTH_ENCRYPTED_NOPAD =
-    '7f57859550d4d2fdb9806da2a750461ab46e71b3d78ebe2d9684dfc87f7575b9';
-
+  '7f57859550d4d2fdb9806da2a750461ab46e71b3d78ebe2d9684dfc87f7575b9';
 
 // Helper wrappers.
 function enc(plain, pad) {
@@ -84,9 +82,7 @@ assert.throws(function() {
   enc(ODD_LENGTH_PLAIN, false);
 }, /data not multiple of block length/);
 
-assert.strictEqual(
-  enc(EVEN_LENGTH_PLAIN, false), EVEN_LENGTH_ENCRYPTED_NOPAD
-);
+assert.strictEqual(enc(EVEN_LENGTH_PLAIN, false), EVEN_LENGTH_ENCRYPTED_NOPAD);
 
 // Test decryption.
 assert.strictEqual(dec(ODD_LENGTH_ENCRYPTED, true), ODD_LENGTH_PLAIN);
@@ -102,6 +98,4 @@ assert.throws(function() {
 }, /bad decrypt/);
 
 // No-pad encrypted string should return the same:
-assert.strictEqual(
-  dec(EVEN_LENGTH_ENCRYPTED_NOPAD, false), EVEN_LENGTH_PLAIN
-);
+assert.strictEqual(dec(EVEN_LENGTH_ENCRYPTED_NOPAD, false), EVEN_LENGTH_PLAIN);

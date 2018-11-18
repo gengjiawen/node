@@ -27,52 +27,57 @@ const http = require('http');
 // Verify that ServerResponse.writeHead() works as setHeader.
 // Issue 5036 on github.
 
-const s = http.createServer(common.mustCall((req, res) => {
-  res.setHeader('test', '1');
+const s = http.createServer(
+  common.mustCall((req, res) => {
+    res.setHeader('test', '1');
 
-  // toLowerCase() is used on the name argument, so it must be a string.
-  // Non-String header names should throw
-  common.expectsError(
-    () => res.setHeader(0xf00, 'bar'),
-    {
+    // toLowerCase() is used on the name argument, so it must be a string.
+    // Non-String header names should throw
+    common.expectsError(() => res.setHeader(0xf00, 'bar'), {
       code: 'ERR_INVALID_HTTP_TOKEN',
       type: TypeError,
       message: 'Header name must be a valid HTTP token ["3840"]'
-    }
-  );
+    });
 
-  // undefined value should throw, via 979d0ca8
-  common.expectsError(
-    () => res.setHeader('foo', undefined),
-    {
+    // undefined value should throw, via 979d0ca8
+    common.expectsError(() => res.setHeader('foo', undefined), {
       code: 'ERR_HTTP_INVALID_HEADER_VALUE',
       type: TypeError,
       message: 'Invalid value "undefined" for header "foo"'
-    }
-  );
+    });
 
-  res.writeHead(200, { Test: '2' });
+    res.writeHead(200, { Test: '2' });
 
-  common.expectsError(() => {
-    res.writeHead(100, {});
-  }, {
-    code: 'ERR_HTTP_HEADERS_SENT',
-    type: Error,
-    message: 'Cannot render headers after they are sent to the client'
-  });
+    common.expectsError(
+      () => {
+        res.writeHead(100, {});
+      },
+      {
+        code: 'ERR_HTTP_HEADERS_SENT',
+        type: Error,
+        message: 'Cannot render headers after they are sent to the client'
+      }
+    );
 
-  res.end();
-}));
+    res.end();
+  })
+);
 
 s.listen(0, common.mustCall(runTest));
 
 function runTest() {
-  http.get({ port: this.address().port }, common.mustCall((response) => {
-    response.on('end', common.mustCall(() => {
-      assert.strictEqual(response.headers.test, '2');
-      assert(response.rawHeaders.includes('Test'));
-      s.close();
-    }));
-    response.resume();
-  }));
+  http.get(
+    { port: this.address().port },
+    common.mustCall((response) => {
+      response.on(
+        'end',
+        common.mustCall(() => {
+          assert.strictEqual(response.headers.test, '2');
+          assert(response.rawHeaders.includes('Test'));
+          s.close();
+        })
+      );
+      response.resume();
+    })
+  );
 }

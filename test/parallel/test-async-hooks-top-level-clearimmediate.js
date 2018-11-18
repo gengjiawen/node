@@ -11,19 +11,21 @@ if (!common.isMainThread)
 
 let seenId, seenResource;
 
-async_hooks.createHook({
-  init: common.mustCall((id, provider, triggerAsyncId, resource) => {
-    seenId = id;
-    seenResource = resource;
-    assert.strictEqual(provider, 'Immediate');
-    assert.strictEqual(triggerAsyncId, 1);
-  }),
-  before: common.mustNotCall(),
-  after: common.mustNotCall(),
-  destroy: common.mustCall((id) => {
-    assert.strictEqual(seenId, id);
+async_hooks
+  .createHook({
+    init: common.mustCall((id, provider, triggerAsyncId, resource) => {
+      seenId = id;
+      seenResource = resource;
+      assert.strictEqual(provider, 'Immediate');
+      assert.strictEqual(triggerAsyncId, 1);
+    }),
+    before: common.mustNotCall(),
+    after: common.mustNotCall(),
+    destroy: common.mustCall((id) => {
+      assert.strictEqual(seenId, id);
+    })
   })
-}).enable();
+  .enable();
 
 const immediate = setImmediate(common.mustNotCall());
 assert.strictEqual(immediate, seenResource);

@@ -22,8 +22,7 @@
 // Flags: --expose-internals
 'use strict';
 const common = require('../common');
-if (!common.hasMultiLocalhost())
-  common.skip('platform-specific test.');
+if (!common.hasMultiLocalhost()) common.skip('platform-specific test.');
 
 const http = require('http');
 const assert = require('assert');
@@ -40,11 +39,13 @@ const server = http.createServer(function(req, res) {
 });
 
 server.listen(0, '127.0.0.1', function() {
-  const options = { host: 'localhost',
-                    port: this.address().port,
-                    path: '/',
-                    method: 'GET',
-                    localAddress: '127.0.0.2' };
+  const options = {
+    host: 'localhost',
+    port: this.address().port,
+    path: '/',
+    method: 'GET',
+    localAddress: '127.0.0.2'
+  };
 
   const req = http.request(options, function(res) {
     res.on('end', function() {

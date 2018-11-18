@@ -31,8 +31,7 @@ for (const [key, value] of sb.entries()) {
 // should work with edge cases
 assert.strictEqual(SlowBuffer(0).length, 0);
 try {
-  assert.strictEqual(
-    SlowBuffer(buffer.kMaxLength).length, buffer.kMaxLength);
+  assert.strictEqual(SlowBuffer(buffer.kMaxLength).length, buffer.kMaxLength);
 } catch (e) {
   // Don't match on message as it is from the JavaScript engine. V8 and
   // ChakraCore provide different messages.
@@ -50,21 +49,27 @@ assert.strictEqual(SlowBuffer({}).length, 0);
 assert.strictEqual(SlowBuffer('string').length, 0);
 
 // should throw with invalid length
-const bufferMaxSizeMsg = common.expectsError({
-  code: 'ERR_INVALID_OPT_VALUE',
-  type: RangeError,
-  message: /^The value "[^"]*" is invalid for option "size"$/
-}, 2);
+const bufferMaxSizeMsg = common.expectsError(
+  {
+    code: 'ERR_INVALID_OPT_VALUE',
+    type: RangeError,
+    message: /^The value "[^"]*" is invalid for option "size"$/
+  },
+  2
+);
 assert.throws(function() {
   SlowBuffer(Infinity);
 }, bufferMaxSizeMsg);
-common.expectsError(function() {
-  SlowBuffer(-1);
-}, {
-  code: 'ERR_INVALID_OPT_VALUE',
-  type: RangeError,
-  message: 'The value "-1" is invalid for option "size"'
-});
+common.expectsError(
+  function() {
+    SlowBuffer(-1);
+  },
+  {
+    code: 'ERR_INVALID_OPT_VALUE',
+    type: RangeError,
+    message: 'The value "-1" is invalid for option "size"'
+  }
+);
 
 assert.throws(function() {
   SlowBuffer(buffer.kMaxLength + 1);

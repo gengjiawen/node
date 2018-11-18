@@ -16,26 +16,32 @@ class MyIncomingMessage extends http.IncomingMessage {
   }
 }
 
-const server = http.createServer({
-  IncomingMessage: MyIncomingMessage
-}, common.mustCall(function(req, res) {
-  assert.strictEqual(req.getUserAgent(), 'node-test');
-  res.statusCode = 200;
-  res.end();
-}));
+const server = http.createServer(
+  {
+    IncomingMessage: MyIncomingMessage
+  },
+  common.mustCall(function(req, res) {
+    assert.strictEqual(req.getUserAgent(), 'node-test');
+    res.statusCode = 200;
+    res.end();
+  })
+);
 server.listen();
 
 server.on('listening', function makeRequest() {
-  http.get({
-    port: this.address().port,
-    headers: {
-      'User-Agent': 'node-test'
+  http.get(
+    {
+      port: this.address().port,
+      headers: {
+        'User-Agent': 'node-test'
+      }
+    },
+    (res) => {
+      assert.strictEqual(res.statusCode, 200);
+      res.on('end', () => {
+        server.close();
+      });
+      res.resume();
     }
-  }, (res) => {
-    assert.strictEqual(res.statusCode, 200);
-    res.on('end', () => {
-      server.close();
-    });
-    res.resume();
-  });
+  );
 });

@@ -22,11 +22,9 @@
 'use strict';
 const common = require('../common');
 
-if (!common.opensslCli)
-  common.skip('node compiled without OpenSSL CLI.');
+if (!common.opensslCli) common.skip('node compiled without OpenSSL CLI.');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tls = require('tls');
 const fixtures = require('../common/fixtures');
@@ -38,7 +36,6 @@ const SSL_OP_NO_TICKET = require('crypto').constants.SSL_OP_NO_TICKET;
 const pfx = fixtures.readKey('agent1.pfx');
 
 function test(testOptions, cb) {
-
   const key = fixtures.readKey('agent1-key.pem');
   const cert = fixtures.readKey('agent1-cert.pem');
   const ca = fixtures.readKey('ca1-cert.pem');
@@ -64,8 +61,7 @@ function test(testOptions, cb) {
       // We're ok with getting ECONNRESET in this test, but it's
       // timing-dependent, and thus unreliable. Any other errors
       // are just failures, though.
-      if (er.code !== 'ECONNRESET')
-        throw er;
+      if (er.code !== 'ECONNRESET') throw er;
     });
     ++requestCount;
     cleartext.end();
@@ -77,24 +73,27 @@ function test(testOptions, cb) {
 
     // Just to check that async really works there
     setTimeout(function() {
-      callback(null,
-               testOptions.response ? Buffer.from(testOptions.response) : null);
+      callback(
+        null,
+        testOptions.response ? Buffer.from(testOptions.response) : null
+      );
     }, 100);
   });
   server.listen(0, function() {
-    const client = tls.connect({
-      port: this.address().port,
-      requestOCSP: testOptions.ocsp !== false,
-      secureOptions: testOptions.ocsp === false ?
-        SSL_OP_NO_TICKET : 0,
-      rejectUnauthorized: false
-    }, function() {
-      clientSecure++;
-    });
+    const client = tls.connect(
+      {
+        port: this.address().port,
+        requestOCSP: testOptions.ocsp !== false,
+        secureOptions: testOptions.ocsp === false ? SSL_OP_NO_TICKET : 0,
+        rejectUnauthorized: false
+      },
+      function() {
+        clientSecure++;
+      }
+    );
     client.on('OCSPResponse', function(resp) {
       ocspResponse = resp;
-      if (resp)
-        client.destroy();
+      if (resp) client.destroy();
     });
     client.on('close', function() {
       server.close(cb);
@@ -132,9 +131,12 @@ if (!common.hasFipsCrypto) {
 function runTests(i) {
   if (i === tests.length) return;
 
-  test(tests[i], common.mustCall(function() {
-    runTests(i + 1);
-  }));
+  test(
+    tests[i],
+    common.mustCall(function() {
+      runTests(i + 1);
+    })
+  );
 }
 
 runTests(0);

@@ -27,7 +27,8 @@ common.expectsError(
   }
 );
 
-{ // Should not throw.
+{
+  // Should not throw.
   const m = new MyWritable({ objectMode: true }).on('error', assert);
   m.write(null, assert);
 }
@@ -43,17 +44,20 @@ common.expectsError(
   }
 );
 
-{ // Should not throw.
+{
+  // Should not throw.
   const m = new MyWritable().on('error', assert);
   m.write(false, assert);
 }
 
-{ // Should not throw.
+{
+  // Should not throw.
   const m = new MyWritable({ objectMode: true });
   m.write(false, assert.ifError);
 }
 
-{ // Should not throw.
+{
+  // Should not throw.
   const m = new MyWritable({ objectMode: true }).on('error', (e) => {
     assert.ifError(e || new Error('should not get here'));
   });

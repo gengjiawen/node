@@ -23,12 +23,13 @@ if (process.argv[2] === 'child') {
       type: TypeError
     });
   });
-
 } else {
   const args = process.argv.slice(1).concat('child');
-  spawn(process.execPath, args)
-    .on('close', common.mustCall((code) => {
+  spawn(process.execPath, args).on(
+    'close',
+    common.mustCall((code) => {
       // No error because the type was defaulted
       assert.strictEqual(code, 0);
-    }));
+    })
+  );
 }

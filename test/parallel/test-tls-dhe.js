@@ -22,11 +22,9 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
-if (!common.opensslCli)
-  common.skip('missing openssl-cli');
+if (!common.opensslCli) common.skip('missing openssl-cli');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -40,14 +38,15 @@ let ntests = 0;
 const ciphers = 'DHE-RSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256';
 
 // Test will emit a warning because the DH parameter size is < 2048 bits
-common.expectWarning('SecurityWarning',
-                     'DH parameter is less than 2048 bits',
-                     common.noWarnCode);
+common.expectWarning(
+  'SecurityWarning',
+  'DH parameter is less than 2048 bits',
+  common.noWarnCode
+);
 
 function loadDHParam(n) {
   const params = [`dh${n}.pem`];
-  if (n !== 'error')
-    params.unshift('keys');
+  if (n !== 'error') params.unshift('keys');
   return fixtures.readSync(params);
 }
 
@@ -69,8 +68,13 @@ function test(keylen, expectedCipher, cb) {
   });
 
   server.listen(0, '127.0.0.1', function() {
-    const args = ['s_client', '-connect', `127.0.0.1:${this.address().port}`,
-                  '-cipher', ciphers];
+    const args = [
+      's_client',
+      '-connect',
+      `127.0.0.1:${this.address().port}`,
+      '-cipher',
+      ciphers
+    ];
 
     const client = spawn(common.opensslCli, args);
     let out = '';

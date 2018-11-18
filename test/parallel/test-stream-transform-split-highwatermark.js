@@ -17,7 +17,7 @@ testTransform(666, DEFAULT, { readableHighWaterMark: 666 });
 testTransform(DEFAULT, 777, { writableHighWaterMark: 777 });
 testTransform(666, 777, {
   readableHighWaterMark: 666,
-  writableHighWaterMark: 777,
+  writableHighWaterMark: 777
 });
 
 // test 0 overriding defaultHwm
@@ -27,31 +27,31 @@ testTransform(DEFAULT, 0, { writableHighWaterMark: 0 });
 // test highWaterMark overriding
 testTransform(555, 555, {
   highWaterMark: 555,
-  readableHighWaterMark: 666,
+  readableHighWaterMark: 666
 });
 testTransform(555, 555, {
   highWaterMark: 555,
-  writableHighWaterMark: 777,
+  writableHighWaterMark: 777
 });
 testTransform(555, 555, {
   highWaterMark: 555,
   readableHighWaterMark: 666,
-  writableHighWaterMark: 777,
+  writableHighWaterMark: 777
 });
 
 // test highWaterMark = 0 overriding
 testTransform(0, 0, {
   highWaterMark: 0,
-  readableHighWaterMark: 666,
+  readableHighWaterMark: 666
 });
 testTransform(0, 0, {
   highWaterMark: 0,
-  writableHighWaterMark: 777,
+  writableHighWaterMark: 777
 });
 testTransform(0, 0, {
   highWaterMark: 0,
   readableHighWaterMark: 666,
-  writableHighWaterMark: 777,
+  writableHighWaterMark: 777
 });
 
 // test undefined, null
@@ -64,21 +64,27 @@ testTransform(0, 0, {
 
 // test NaN
 {
-  common.expectsError(() => {
-    new Transform({ readableHighWaterMark: NaN });
-  }, {
-    type: TypeError,
-    code: 'ERR_INVALID_OPT_VALUE',
-    message: 'The value "NaN" is invalid for option "readableHighWaterMark"'
-  });
+  common.expectsError(
+    () => {
+      new Transform({ readableHighWaterMark: NaN });
+    },
+    {
+      type: TypeError,
+      code: 'ERR_INVALID_OPT_VALUE',
+      message: 'The value "NaN" is invalid for option "readableHighWaterMark"'
+    }
+  );
 
-  common.expectsError(() => {
-    new Transform({ writableHighWaterMark: NaN });
-  }, {
-    type: TypeError,
-    code: 'ERR_INVALID_OPT_VALUE',
-    message: 'The value "NaN" is invalid for option "writableHighWaterMark"'
-  });
+  common.expectsError(
+    () => {
+      new Transform({ writableHighWaterMark: NaN });
+    },
+    {
+      type: TypeError,
+      code: 'ERR_INVALID_OPT_VALUE',
+      message: 'The value "NaN" is invalid for option "writableHighWaterMark"'
+    }
+  );
 }
 
 // test non Duplex streams ignore the options

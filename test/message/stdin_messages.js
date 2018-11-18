@@ -36,12 +36,13 @@ function run(cmd, strict, cb) {
   child.on('close', cb);
 }
 
-const queue =
-  [ 'with(this){__filename}',
-    '42',
-    'throw new Error("hello")',
-    'var x = 100; y = x;',
-    'var ______________________________________________; throw 10' ];
+const queue = [
+  'with(this){__filename}',
+  '42',
+  'throw new Error("hello")',
+  'var x = 100; y = x;',
+  'var ______________________________________________; throw 10'
+];
 
 function go() {
   const c = queue.shift();

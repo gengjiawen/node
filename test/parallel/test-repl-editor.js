@@ -15,11 +15,12 @@ function run({ input, output, event, checkTerminalCodes = true }) {
   const stream = new ArrayStream();
   let found = '';
 
-  stream.write = (msg) => found += msg.replace('\r', '');
+  stream.write = (msg) => (found += msg.replace('\r', ''));
 
-  let expected = `${terminalCode}.editor\n` +
-                 '// Entering editor mode (^D to finish, ^C to cancel)\n' +
-                 `${input}${output}\n${terminalCode}`;
+  let expected =
+    `${terminalCode}.editor\n` +
+    '// Entering editor mode (^D to finish, ^C to cancel)\n' +
+    `${input}${output}\n${terminalCode}`;
 
   const replServer = repl.start({
     prompt: '> ',
@@ -67,7 +68,7 @@ const tests = [
     input: '',
     output: '',
     checkTerminalCodes: false,
-    event: null,
+    event: null
   }
 ];
 
@@ -78,7 +79,9 @@ function testCodeAlignment({ input, cursor = 0, line = '' }) {
   const stream = new ArrayStream();
   const outputStream = new ArrayStream();
 
-  stream.write = () => { throw new Error('Writing not allowed!'); };
+  stream.write = () => {
+    throw new Error('Writing not allowed!');
+  };
 
   const replServer = repl.start({
     prompt: '> ',

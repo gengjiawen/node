@@ -22,17 +22,16 @@
 'use strict';
 const common = require('../common');
 const fixtures = require('../common/fixtures');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 // disable strict server certificate validation by the client
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 common.expectWarning(
   'Warning',
-  'Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to \'0\' ' +
-  'makes TLS connections and HTTPS requests insecure by disabling ' +
-  'certificate verification.',
+  "Setting the NODE_TLS_REJECT_UNAUTHORIZED environment variable to '0' " +
+    'makes TLS connections and HTTPS requests insecure by disabling ' +
+    'certificate verification.',
   common.noWarnCode
 );
 
@@ -93,7 +92,6 @@ server3.listen(0, listening());
 const responseErrors = {};
 let pending = 0;
 
-
 function server(options) {
   const s = https.createServer(options, handler);
   s.requests = [];
@@ -141,24 +139,31 @@ function makeReq(path, port, error, host, ca) {
     options.headers = { host };
   }
   const req = https.get(options);
-  const server = port === server1.address().port ? server1 :
-    port === server2.address().port ? server2 :
-      port === server3.address().port ? server3 :
-        null;
+  const server =
+    port === server1.address().port
+      ? server1
+      : port === server2.address().port
+      ? server2
+      : port === server3.address().port
+      ? server3
+      : null;
   if (!server) throw new Error(`invalid port: ${port}`);
   server.expectCount++;
 
-  req.on('response', common.mustCall((res) => {
-    assert.strictEqual(res.connection.authorizationError, error);
-    responseErrors[path] = res.connection.authorizationError;
-    pending--;
-    if (pending === 0) {
-      server1.close();
-      server2.close();
-      server3.close();
-    }
-    res.resume();
-  }));
+  req.on(
+    'response',
+    common.mustCall((res) => {
+      assert.strictEqual(res.connection.authorizationError, error);
+      responseErrors[path] = res.connection.authorizationError;
+      pending--;
+      if (pending === 0) {
+        server1.close();
+        server2.close();
+        server3.close();
+      }
+      res.resume();
+    })
+  );
 }
 
 function allListening() {
@@ -169,33 +174,34 @@ function allListening() {
 
   // server1: host 'agent1', signed by ca1
   makeReq('/inv1', port1, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE');
-  makeReq('/inv1-ca1', port1, 'ERR_TLS_CERT_ALTNAME_INVALID',
-          null, ca1);
-  makeReq('/inv1-ca1ca2', port1, 'ERR_TLS_CERT_ALTNAME_INVALID',
-          null, [ca1, ca2]);
+  makeReq('/inv1-ca1', port1, 'ERR_TLS_CERT_ALTNAME_INVALID', null, ca1);
+  makeReq('/inv1-ca1ca2', port1, 'ERR_TLS_CERT_ALTNAME_INVALID', null, [
+    ca1,
+    ca2
+  ]);
   makeReq('/val1-ca1', port1, null, 'agent1', ca1);
   makeReq('/val1-ca1ca2', port1, null, 'agent1', [ca1, ca2]);
-  makeReq('/inv1-ca2', port1,
-          'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'agent1', ca2);
+  makeReq('/inv1-ca2', port1, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'agent1', ca2);
 
   // server2: self-signed, host = 'agent2'
   // doesn't matter that thename matches, all of these will error.
   makeReq('/inv2', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT');
-  makeReq('/inv2-ca1', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT',
-          'agent2', ca1);
-  makeReq('/inv2-ca1ca2', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT',
-          'agent2', [ca1, ca2]);
+  makeReq('/inv2-ca1', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT', 'agent2', ca1);
+  makeReq('/inv2-ca1ca2', port2, 'DEPTH_ZERO_SELF_SIGNED_CERT', 'agent2', [
+    ca1,
+    ca2
+  ]);
 
   // server3: host 'agent3', signed by ca2
   makeReq('/inv3', port3, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE');
   makeReq('/inv3-ca2', port3, 'ERR_TLS_CERT_ALTNAME_INVALID', null, ca2);
-  makeReq('/inv3-ca1ca2', port3, 'ERR_TLS_CERT_ALTNAME_INVALID',
-          null, [ca1, ca2]);
+  makeReq('/inv3-ca1ca2', port3, 'ERR_TLS_CERT_ALTNAME_INVALID', null, [
+    ca1,
+    ca2
+  ]);
   makeReq('/val3-ca2', port3, null, 'agent3', ca2);
   makeReq('/val3-ca1ca2', port3, null, 'agent3', [ca1, ca2]);
-  makeReq('/inv3-ca1', port3,
-          'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'agent1', ca1);
-
+  makeReq('/inv3-ca1', port3, 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'agent1', ca1);
 }
 
 process.on('exit', () => {

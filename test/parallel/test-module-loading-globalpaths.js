@@ -33,9 +33,11 @@ if (process.argv[2] === 'child') {
   fs.chmodSync(testExecPath, mode);
 
   const runTest = (expectedString, env) => {
-    const child = child_process.execFileSync(testExecPath,
-                                             [ __filename, 'child' ],
-                                             { encoding: 'utf8', env: env });
+    const child = child_process.execFileSync(
+      testExecPath,
+      [__filename, 'child'],
+      { encoding: 'utf8', env: env }
+    );
     assert.strictEqual(child.trim(), expectedString);
   };
 
@@ -49,12 +51,12 @@ if (process.argv[2] === 'child') {
   const noPkgHomeDir = path.join(tmpdir.path, 'home-no-pkg');
   fs.mkdirSync(noPkgHomeDir);
   env.HOME = env.USERPROFILE = noPkgHomeDir;
-  assert.throws(
-    () => {
-      child_process.execFileSync(testExecPath, [ __filename, 'child' ],
-                                 { encoding: 'utf8', env: env });
-    },
-    new RegExp(`Cannot find module '${pkgName}'`));
+  assert.throws(() => {
+    child_process.execFileSync(testExecPath, [__filename, 'child'], {
+      encoding: 'utf8',
+      env: env
+    });
+  }, new RegExp(`Cannot find module '${pkgName}'`));
 
   // Test module in $HOME/.node_modules.
   const modHomeDir = path.join(testFixturesDir, 'home-pkg-in-node_modules');
@@ -97,8 +99,10 @@ if (process.argv[2] === 'child') {
   const localDir = path.join(testFixturesDir, 'local-pkg');
   env.HOME = env.USERPROFILE = bothHomeDir;
   env.NODE_PATH = path.join(testFixturesDir, 'node_path');
-  const child = child_process.execFileSync(testExecPath,
-                                           [ path.join(localDir, 'test.js') ],
-                                           { encoding: 'utf8', env: env });
+  const child = child_process.execFileSync(
+    testExecPath,
+    [path.join(localDir, 'test.js')],
+    { encoding: 'utf8', env: env }
+  );
   assert.strictEqual(child.trim(), 'local');
 }

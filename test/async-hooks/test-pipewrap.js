@@ -16,7 +16,7 @@ if (!common.isMainThread)
 const hooks = initHooks();
 
 hooks.enable();
-const nodeVersionSpawn = spawn(process.execPath, [ '--version' ]);
+const nodeVersionSpawn = spawn(process.execPath, ['--version']);
 
 nodeVersionSpawn
   .on('exit', common.mustCall(onsleepExit))
@@ -36,18 +36,24 @@ const pipe3 = pipes[2];
 
 assert.strictEqual(processwrap.type, 'PROCESSWRAP');
 assert.strictEqual(processwrap.triggerAsyncId, 1);
-checkInvocations(processwrap, { init: 1 },
-                 'processwrap when sleep.spawn was called');
+checkInvocations(
+  processwrap,
+  { init: 1 },
+  'processwrap when sleep.spawn was called'
+);
 
-[ pipe1, pipe2, pipe3 ].forEach((x) => {
+[pipe1, pipe2, pipe3].forEach((x) => {
   assert.strictEqual(x.type, 'PIPEWRAP');
   assert.strictEqual(x.triggerAsyncId, 1);
   checkInvocations(x, { init: 1 }, 'pipe wrap when sleep.spawn was called');
 });
 
 function onsleepExit() {
-  checkInvocations(processwrap, { init: 1, before: 1 },
-                   'processwrap while in onsleepExit callback');
+  checkInvocations(
+    processwrap,
+    { init: 1, before: 1 },
+    'processwrap while in onsleepExit callback'
+  );
 }
 
 function onsleepClose() {
@@ -55,7 +61,8 @@ function onsleepClose() {
     checkInvocations(
       processwrap,
       { init: 1, before: 1, after: 1 },
-      'processwrap while in onsleepClose callback')
+      'processwrap while in onsleepClose callback'
+    )
   );
 }
 
@@ -69,9 +76,10 @@ function onexit() {
   checkInvocations(
     processwrap,
     { init: 1, before: 1, after: 1 },
-    'processwrap while in onsleepClose callback');
+    'processwrap while in onsleepClose callback'
+  );
 
-  [ pipe1, pipe2, pipe3 ].forEach((x) => {
+  [pipe1, pipe2, pipe3].forEach((x) => {
     assert.strictEqual(x.type, 'PIPEWRAP');
     assert.strictEqual(x.triggerAsyncId, 1);
   });
@@ -81,10 +89,19 @@ function onexit() {
   // Usually it is just one event, but it can be more.
   assert.ok(ioEvents >= 3, `at least 3 stdout io events, got ${ioEvents}`);
 
-  checkInvocations(pipe1, { init: 1, before: 1, after: 1 },
-                   'pipe wrap when sleep.spawn was called');
-  checkInvocations(pipe2, { init: 1, before: ioEvents, after: ioEvents },
-                   'pipe wrap when sleep.spawn was called');
-  checkInvocations(pipe3, { init: 1, before: 2, after: 2 },
-                   'pipe wrap when sleep.spawn was called');
+  checkInvocations(
+    pipe1,
+    { init: 1, before: 1, after: 1 },
+    'pipe wrap when sleep.spawn was called'
+  );
+  checkInvocations(
+    pipe2,
+    { init: 1, before: ioEvents, after: ioEvents },
+    'pipe wrap when sleep.spawn was called'
+  );
+  checkInvocations(
+    pipe3,
+    { init: 1, before: 2, after: 2 },
+    'pipe wrap when sleep.spawn was called'
+  );
 }

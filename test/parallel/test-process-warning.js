@@ -1,10 +1,7 @@
 'use strict';
 
 const common = require('../common');
-const {
-  hijackStderr,
-  restoreStderr
-} = require('../common/hijackstdio');
+const { hijackStderr, restoreStderr } = require('../common/hijackstdio');
 const assert = require('assert');
 
 function test1() {
@@ -28,9 +25,12 @@ function test3() {
   restoreStderr();
   // Type defaults to warning when the second argument is an object
   process.emitWarning('test', {});
-  process.once('warning', common.mustCall((warning) => {
-    assert.strictEqual(warning.name, 'Warning');
-  }));
+  process.once(
+    'warning',
+    common.mustCall((warning) => {
+      assert.strictEqual(warning.name, 'Warning');
+    })
+  );
   setImmediate(test4);
 }
 
@@ -40,7 +40,8 @@ function test4() {
   process.throwDeprecation = true;
   assert.throws(
     () => process.emitWarning('test', 'DeprecationWarning'),
-    /^DeprecationWarning: test$/);
+    /^DeprecationWarning: test$/
+  );
   process.throwDeprecation = false;
   setImmediate(test5);
 }

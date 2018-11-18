@@ -5,7 +5,10 @@ const assert = require('assert');
 const zlib = require('zlib');
 
 const {
-  Z_PARTIAL_FLUSH, Z_SYNC_FLUSH, Z_FULL_FLUSH, Z_FINISH
+  Z_PARTIAL_FLUSH,
+  Z_SYNC_FLUSH,
+  Z_FULL_FLUSH,
+  Z_FINISH
 } = zlib.constants;
 
 async function getOutput(...sequenceOfFlushes) {
@@ -19,21 +22,32 @@ async function getOutput(...sequenceOfFlushes) {
   const data = [];
 
   return new Promise((resolve) => {
-    zipper.on('data', common.mustCall((d) => {
-      data.push(d);
-      if (data.length === 2) resolve(Buffer.concat(data));
-    }, 2));
+    zipper.on(
+      'data',
+      common.mustCall((d) => {
+        data.push(d);
+        if (data.length === 2) resolve(Buffer.concat(data));
+      }, 2)
+    );
   });
 }
 
 (async function() {
-  assert.deepStrictEqual(await getOutput(Z_SYNC_FLUSH),
-                         await getOutput(Z_SYNC_FLUSH, Z_PARTIAL_FLUSH));
-  assert.deepStrictEqual(await getOutput(Z_SYNC_FLUSH),
-                         await getOutput(Z_PARTIAL_FLUSH, Z_SYNC_FLUSH));
+  assert.deepStrictEqual(
+    await getOutput(Z_SYNC_FLUSH),
+    await getOutput(Z_SYNC_FLUSH, Z_PARTIAL_FLUSH)
+  );
+  assert.deepStrictEqual(
+    await getOutput(Z_SYNC_FLUSH),
+    await getOutput(Z_PARTIAL_FLUSH, Z_SYNC_FLUSH)
+  );
 
-  assert.deepStrictEqual(await getOutput(Z_FINISH),
-                         await getOutput(Z_FULL_FLUSH, Z_FINISH));
-  assert.deepStrictEqual(await getOutput(Z_FINISH),
-                         await getOutput(Z_SYNC_FLUSH, Z_FINISH));
+  assert.deepStrictEqual(
+    await getOutput(Z_FINISH),
+    await getOutput(Z_FULL_FLUSH, Z_FINISH)
+  );
+  assert.deepStrictEqual(
+    await getOutput(Z_FINISH),
+    await getOutput(Z_SYNC_FLUSH, Z_FINISH)
+  );
 })();

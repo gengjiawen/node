@@ -36,8 +36,9 @@ function checkStack(stack) {
   assert.ok(/\n/g.test(stack));
 }
 let err;
-const badSyntaxPath =
-  fixtures.path('syntax', 'bad_syntax').replace(/\\/g, '\\\\');
+const badSyntaxPath = fixtures
+  .path('syntax', 'bad_syntax')
+  .replace(/\\/g, '\\\\');
 
 try {
   require(badSyntaxPath);
@@ -54,10 +55,7 @@ decorateErrorStack(err);
 checkStack(err.stack);
 
 // Verify that the stack is only decorated once for uncaught exceptions.
-const args = [
-  '-e',
-  `require('${badSyntaxPath}')`
-];
+const args = ['-e', `require('${badSyntaxPath}')`];
 const result = spawnSync(process.argv[0], args, { encoding: 'utf8' });
 checkStack(result.stderr);
 
@@ -78,4 +76,6 @@ decorateErrorStack(err);
 
 assert.strictEqual(err.stack, `${arrowMessage}${originalStack}`);
 assert.strictEqual(
-  binding.getHiddenValue(err, kDecoratedPrivateSymbolIndex), true);
+  binding.getHiddenValue(err, kDecoratedPrivateSymbolIndex),
+  true
+);

@@ -1,11 +1,9 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
-if (!common.opensslCli)
-  common.skip('node compiled without OpenSSL CLI');
+if (!common.opensslCli) common.skip('node compiled without OpenSSL CLI');
 
 const net = require('net');
 const tls = require('tls');
@@ -31,50 +29,64 @@ let iter = 0;
 
 const errorHandler = common.mustCall(() => {
   errorReceived = true;
-  if (canCloseServer())
-    server.close();
+  if (canCloseServer()) server.close();
 });
-const server = tls.createServer(opts, common.mustCall(function(s) {
-  s.pipe(s);
-  s.on('error', errorHandler);
-}, 2));
+const server = tls.createServer(
+  opts,
+  common.mustCall(function(s) {
+    s.pipe(s);
+    s.on('error', errorHandler);
+  }, 2)
+);
 
-server.listen(0, common.mustCall(function() {
-  sendClient();
-}));
-
+server.listen(
+  0,
+  common.mustCall(function() {
+    sendClient();
+  })
+);
 
 function sendClient() {
-  const client = tls.connect(server.address().port, {
-    rejectUnauthorized: false
-  });
-  client.on('data', common.mustCall(function() {
-    if (iter++ === 2) sendBADTLSRecord();
-    if (iter < max_iter) {
-      client.write('a');
-      return;
+  const client = tls.connect(
+    server.address().port,
+    {
+      rejectUnauthorized: false
     }
-    client.end();
-  }, max_iter));
+  );
+  client.on(
+    'data',
+    common.mustCall(function() {
+      if (iter++ === 2) sendBADTLSRecord();
+      if (iter < max_iter) {
+        client.write('a');
+        return;
+      }
+      client.end();
+    }, max_iter)
+  );
   client.write('a');
   client.on('error', common.mustNotCall());
-  client.on('close', common.mustCall(function() {
-    clientClosed = true;
-    if (canCloseServer())
-      server.close();
-  }));
+  client.on(
+    'close',
+    common.mustCall(function() {
+      clientClosed = true;
+      if (canCloseServer()) server.close();
+    })
+  );
 }
-
 
 function sendBADTLSRecord() {
   const BAD_RECORD = Buffer.from([0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
   const socket = net.connect(server.address().port);
-  const client = tls.connect({
-    socket: socket,
-    rejectUnauthorized: false
-  }, common.mustCall(function() {
-    socket.write(BAD_RECORD);
-    socket.end();
-  }));
+  const client = tls.connect(
+    {
+      socket: socket,
+      rejectUnauthorized: false
+    },
+    common.mustCall(function() {
+      socket.write(BAD_RECORD);
+      socket.end();
+    })
+  );
   client.on('error', common.mustCall());
 }

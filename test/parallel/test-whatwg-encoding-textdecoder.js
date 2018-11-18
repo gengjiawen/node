@@ -6,8 +6,18 @@ const common = require('../common');
 const assert = require('assert');
 const { customInspectSymbol: inspect } = require('internal/util');
 
-const buf = Buffer.from([0xef, 0xbb, 0xbf, 0x74, 0x65,
-                         0x73, 0x74, 0xe2, 0x82, 0xac]);
+const buf = Buffer.from([
+  0xef,
+  0xbb,
+  0xbf,
+  0x74,
+  0x65,
+  0x73,
+  0x74,
+  0xe2,
+  0x82,
+  0xac
+]);
 
 // Make Sure TextDecoder exist
 assert(TextDecoder);
@@ -51,13 +61,11 @@ assert(TextDecoder);
 if (common.hasIntl) {
   ['unicode-1-1-utf-8', 'utf8', 'utf-8'].forEach((i) => {
     const dec = new TextDecoder(i, { fatal: true });
-    common.expectsError(() => dec.decode(buf.slice(0, 8)),
-                        {
-                          code: 'ERR_ENCODING_INVALID_ENCODED_DATA',
-                          type: TypeError,
-                          message: 'The encoded data was not valid ' +
-                          'for encoding utf-8'
-                        });
+    common.expectsError(() => dec.decode(buf.slice(0, 8)), {
+      code: 'ERR_ENCODING_INVALID_ENCODED_DATA',
+      type: TypeError,
+      message: 'The encoded data was not valid ' + 'for encoding utf-8'
+    });
   });
 
   ['unicode-1-1-utf-8', 'utf8', 'utf-8'].forEach((i) => {
@@ -66,13 +74,11 @@ if (common.hasIntl) {
     dec.decode(buf.slice(8));
   });
 } else {
-  common.expectsError(
-    () => new TextDecoder('utf-8', { fatal: true }),
-    {
-      code: 'ERR_NO_ICU',
-      type: TypeError,
-      message: '"fatal" option is not supported on Node.js compiled without ICU'
-    });
+  common.expectsError(() => new TextDecoder('utf-8', { fatal: true }), {
+    code: 'ERR_NO_ICU',
+    type: TypeError,
+    message: '"fatal" option is not supported on Node.js compiled without ICU'
+  });
 }
 
 // Test TextDecoder, label undefined, options null
@@ -103,7 +109,7 @@ if (common.hasIntl) {
   const {
     encoding: { get: encodingGetter },
     fatal: { get: fatalGetter },
-    ignoreBOM: { get: ignoreBOMGetter },
+    ignoreBOM: { get: ignoreBOMGetter }
   } = Object.getOwnPropertyDescriptors(TextDecoder.prototype);
 
   const instance = new TextDecoder();
@@ -134,10 +140,12 @@ if (common.hasIntl) {
 function testDecodeSample(encoding, string, bytes) {
   assert.strictEqual(
     new TextDecoder(encoding).decode(new Uint8Array(bytes)),
-    string);
+    string
+  );
   assert.strictEqual(
     new TextDecoder(encoding).decode(new Uint8Array(bytes).buffer),
-    string);
+    string
+  );
 }
 
 // z (ASCII U+007A), cent (Latin-1 U+00A2), CJK water (BMP U+6C34),
@@ -149,52 +157,103 @@ const sample = 'z\xA2\u6C34\uD834\uDD1E\uF8FF\uDBFF\uDFFD\uFFFE';
   const encoding = 'utf-8';
   const string = sample;
   const bytes = [
-    0x7A, 0xC2, 0xA2, 0xE6, 0xB0, 0xB4,
-    0xF0, 0x9D, 0x84, 0x9E, 0xEF, 0xA3,
-    0xBF, 0xF4, 0x8F, 0xBF, 0xBD, 0xEF,
-    0xBF, 0xBE
+    0x7a,
+    0xc2,
+    0xa2,
+    0xe6,
+    0xb0,
+    0xb4,
+    0xf0,
+    0x9d,
+    0x84,
+    0x9e,
+    0xef,
+    0xa3,
+    0xbf,
+    0xf4,
+    0x8f,
+    0xbf,
+    0xbd,
+    0xef,
+    0xbf,
+    0xbe
   ];
   const encoded = new TextEncoder().encode(string);
   assert.deepStrictEqual([].slice.call(encoded), bytes);
   assert.strictEqual(
     new TextDecoder(encoding).decode(new Uint8Array(bytes)),
-    string);
+    string
+  );
   assert.strictEqual(
     new TextDecoder(encoding).decode(new Uint8Array(bytes).buffer),
-    string);
-}
-
-testDecodeSample(
-  'utf-16le',
-  sample,
-  [
-    0x7A, 0x00, 0xA2, 0x00, 0x34, 0x6C,
-    0x34, 0xD8, 0x1E, 0xDD, 0xFF, 0xF8,
-    0xFF, 0xDB, 0xFD, 0xDF, 0xFE, 0xFF
-  ]
-);
-
-if (common.hasIntl) {
-  testDecodeSample(
-    'utf-16be',
-    sample,
-    [
-      0x00, 0x7A, 0x00, 0xA2, 0x6C, 0x34,
-      0xD8, 0x34, 0xDD, 0x1E, 0xF8, 0xFF,
-      0xDB, 0xFF, 0xDF, 0xFD, 0xFF, 0xFE
-    ]
+    string
   );
 }
 
-testDecodeSample(
-  'utf-16',
-  sample,
-  [
-    0x7A, 0x00, 0xA2, 0x00, 0x34, 0x6C,
-    0x34, 0xD8, 0x1E, 0xDD, 0xFF, 0xF8,
-    0xFF, 0xDB, 0xFD, 0xDF, 0xFE, 0xFF
-  ]
-);
+testDecodeSample('utf-16le', sample, [
+  0x7a,
+  0x00,
+  0xa2,
+  0x00,
+  0x34,
+  0x6c,
+  0x34,
+  0xd8,
+  0x1e,
+  0xdd,
+  0xff,
+  0xf8,
+  0xff,
+  0xdb,
+  0xfd,
+  0xdf,
+  0xfe,
+  0xff
+]);
+
+if (common.hasIntl) {
+  testDecodeSample('utf-16be', sample, [
+    0x00,
+    0x7a,
+    0x00,
+    0xa2,
+    0x6c,
+    0x34,
+    0xd8,
+    0x34,
+    0xdd,
+    0x1e,
+    0xf8,
+    0xff,
+    0xdb,
+    0xff,
+    0xdf,
+    0xfd,
+    0xff,
+    0xfe
+  ]);
+}
+
+testDecodeSample('utf-16', sample, [
+  0x7a,
+  0x00,
+  0xa2,
+  0x00,
+  0x34,
+  0x6c,
+  0x34,
+  0xd8,
+  0x1e,
+  0xdd,
+  0xff,
+  0xf8,
+  0xff,
+  0xdb,
+  0xfd,
+  0xdf,
+  0xfe,
+  0xff
+]);
 
 // From: https://github.com/w3c/web-platform-tests/blob/master/encoding/api-invalid-label.html
 [
@@ -206,28 +265,19 @@ testDecodeSample(
   'utf-16'
 ].forEach((i) => {
   ['\u0000', '\u000b', '\u00a0', '\u2028', '\u2029'].forEach((ws) => {
-    common.expectsError(
-      () => new TextDecoder(`${ws}${i}`),
-      {
-        code: 'ERR_ENCODING_NOT_SUPPORTED',
-        type: RangeError
-      }
-    );
+    common.expectsError(() => new TextDecoder(`${ws}${i}`), {
+      code: 'ERR_ENCODING_NOT_SUPPORTED',
+      type: RangeError
+    });
 
-    common.expectsError(
-      () => new TextDecoder(`${i}${ws}`),
-      {
-        code: 'ERR_ENCODING_NOT_SUPPORTED',
-        type: RangeError
-      }
-    );
+    common.expectsError(() => new TextDecoder(`${i}${ws}`), {
+      code: 'ERR_ENCODING_NOT_SUPPORTED',
+      type: RangeError
+    });
 
-    common.expectsError(
-      () => new TextDecoder(`${ws}${i}${ws}`),
-      {
-        code: 'ERR_ENCODING_NOT_SUPPORTED',
-        type: RangeError
-      }
-    );
+    common.expectsError(() => new TextDecoder(`${ws}${i}${ws}`), {
+      code: 'ERR_ENCODING_NOT_SUPPORTED',
+      type: RangeError
+    });
   });
 });

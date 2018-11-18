@@ -32,11 +32,14 @@ gzip.pipe(gunz);
 let output = '';
 const input = 'A line of data\n';
 gunz.setEncoding('utf8');
-gunz.on('data', (c) => output += c);
-gunz.on('end', common.mustCall(() => {
-  assert.strictEqual(output, input);
-  assert.strictEqual(gzip._nextFlush, -1);
-}));
+gunz.on('data', (c) => (output += c));
+gunz.on(
+  'end',
+  common.mustCall(() => {
+    assert.strictEqual(output, input);
+    assert.strictEqual(gzip._nextFlush, -1);
+  })
+);
 
 // make sure that flush/write doesn't trigger an assert failure
 gzip.flush();

@@ -22,8 +22,7 @@ const UDP = internalBinding('udp_wrap').UDP;
   assert(handle instanceof UDP);
   assert.strictEqual(typeof handle.fd, 'number');
 
-  if (!common.isWindows)
-    assert(handle.fd > 0);
+  if (!common.isWindows) assert(handle.fd > 0);
 }
 
 {

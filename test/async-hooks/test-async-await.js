@@ -21,7 +21,7 @@ const hooks = initHooks({
   oninit,
   onbefore,
   onafter,
-  ondestroy: null,  // Intentionally not tested, since it will be removed soon
+  ondestroy: null, // Intentionally not tested, since it will be removed soon
   onpromiseResolve
 });
 hooks.enable();
@@ -44,18 +44,24 @@ function onafter(asyncId) {
     return;
   }
 
-  assert.strictEqual(promisesExecutionState.get(asyncId), 'before',
-                     'after hook called for promise without prior call' +
-                     'to before hook');
-  assert.strictEqual(promisesInitState.get(asyncId), 'resolved',
-                     'after hook called for promise without prior call' +
-                     'to resolve hook');
+  assert.strictEqual(
+    promisesExecutionState.get(asyncId),
+    'before',
+    'after hook called for promise without prior call' + 'to before hook'
+  );
+  assert.strictEqual(
+    promisesInitState.get(asyncId),
+    'resolved',
+    'after hook called for promise without prior call' + 'to resolve hook'
+  );
   promisesExecutionState.set(asyncId, 'after');
 }
 
 function onpromiseResolve(asyncId) {
-  assert(promisesInitState.has(asyncId),
-         'resolve hook called for promise without prior call to init hook');
+  assert(
+    promisesInitState.has(asyncId),
+    'resolve hook called for promise without prior call to init hook'
+  );
 
   promisesInitState.set(asyncId, 'resolved');
 }
@@ -76,13 +82,16 @@ function checkPromisesExecutionState() {
   }
 }
 
-process.on('beforeExit', common.mustCall(() => {
-  hooks.disable();
-  hooks.sanityCheck('PROMISE');
+process.on(
+  'beforeExit',
+  common.mustCall(() => {
+    hooks.disable();
+    hooks.sanityCheck('PROMISE');
 
-  checkPromisesInitState();
-  checkPromisesExecutionState();
-}));
+    checkPromisesInitState();
+    checkPromisesExecutionState();
+  })
+);
 
 async function asyncFunc() {
   await sleep(timeout);

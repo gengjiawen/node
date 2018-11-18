@@ -13,11 +13,17 @@ clearImmediate(immediate);
 
 // This immediate should execute as it was unrefed and refed again.
 // It also confirms that unref/ref are chainable.
-setImmediate(common.mustCall(firstStep)).ref().unref().unref().ref();
+setImmediate(common.mustCall(firstStep))
+  .ref()
+  .unref()
+  .unref()
+  .ref();
 
 function firstStep() {
-  const countdown =
-    new Countdown(2, common.mustCall(() => setImmediate(secondStep)));
+  const countdown = new Countdown(
+    2,
+    common.mustCall(() => setImmediate(secondStep))
+  );
   // Unrefed setImmediate executes if it was unrefed but something else keeps
   // the loop open
   setImmediate(() => countdown.dec()).unref();

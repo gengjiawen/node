@@ -11,9 +11,12 @@ const { promisify } = require('util');
     read() {}
   });
 
-  finished(rs, common.mustCall((err) => {
-    assert(!err, 'no error');
-  }));
+  finished(
+    rs,
+    common.mustCall((err) => {
+      assert(!err, 'no error');
+    })
+  );
 
   rs.push(null);
   rs.resume();
@@ -26,9 +29,12 @@ const { promisify } = require('util');
     }
   });
 
-  finished(ws, common.mustCall((err) => {
-    assert(!err, 'no error');
-  }));
+  finished(
+    ws,
+    common.mustCall((err) => {
+      assert(!err, 'no error');
+    })
+  );
 
   ws.end();
 }
@@ -51,11 +57,14 @@ const { promisify } = require('util');
     finish = true;
   });
 
-  finished(tr, common.mustCall((err) => {
-    assert(!err, 'no error');
-    assert(finish);
-    assert(ended);
-  }));
+  finished(
+    tr,
+    common.mustCall((err) => {
+      assert(!err, 'no error');
+      assert(finish);
+      assert(ended);
+    })
+  );
 
   tr.end();
   tr.resume();
@@ -91,17 +100,23 @@ const { promisify } = require('util');
 {
   const rs = fs.createReadStream('file-does-not-exist');
 
-  finished(rs, common.expectsError({
-    code: 'ENOENT'
-  }));
+  finished(
+    rs,
+    common.expectsError({
+      code: 'ENOENT'
+    })
+  );
 }
 
 {
   const rs = new Readable();
 
-  finished(rs, common.mustCall((err) => {
-    assert(!err, 'no error');
-  }));
+  finished(
+    rs,
+    common.mustCall((err) => {
+      assert(!err, 'no error');
+    })
+  );
 
   rs.push(null);
   rs.emit('close'); // should not trigger an error
@@ -111,9 +126,12 @@ const { promisify } = require('util');
 {
   const rs = new Readable();
 
-  finished(rs, common.mustCall((err) => {
-    assert(err, 'premature close error');
-  }));
+  finished(
+    rs,
+    common.mustCall((err) => {
+      assert(err, 'premature close error');
+    })
+  );
 
   rs.emit('close'); // should trigger error
   rs.push(null);
@@ -126,27 +144,18 @@ const { promisify } = require('util');
     read() {}
   });
 
-  assert.throws(
-    () => finished(rs, 'foo'),
-    {
-      name: /ERR_INVALID_ARG_TYPE/,
-      message: /callback/
-    }
-  );
-  assert.throws(
-    () => finished(rs, 'foo', () => {}),
-    {
-      name: /ERR_INVALID_ARG_TYPE/,
-      message: /opts/
-    }
-  );
-  assert.throws(
-    () => finished(rs, {}, 'foo'),
-    {
-      name: /ERR_INVALID_ARG_TYPE/,
-      message: /callback/
-    }
-  );
+  assert.throws(() => finished(rs, 'foo'), {
+    name: /ERR_INVALID_ARG_TYPE/,
+    message: /callback/
+  });
+  assert.throws(() => finished(rs, 'foo', () => {}), {
+    name: /ERR_INVALID_ARG_TYPE/,
+    message: /opts/
+  });
+  assert.throws(() => finished(rs, {}, 'foo'), {
+    name: /ERR_INVALID_ARG_TYPE/,
+    message: /callback/
+  });
 
   finished(rs, null, common.mustCall());
 

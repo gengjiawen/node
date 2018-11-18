@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const path = require('path');
 const exec = require('child_process').exec;
@@ -40,13 +39,17 @@ const env = Object.assign({}, process.env, {
   PATH: path.dirname(process.execPath),
   NPM_CONFIG_PREFIX: path.join(npmSandbox, 'npm-prefix'),
   NPM_CONFIG_TMP: path.join(npmSandbox, 'npm-tmp'),
-  HOME: path.join(npmSandbox, 'home'),
+  HOME: path.join(npmSandbox, 'home')
 });
 
-exec(`${process.execPath} ${npmPath} install`, {
-  cwd: installDir,
-  env: env
-}, common.mustCall(handleExit));
+exec(
+  `${process.execPath} ${npmPath} install`,
+  {
+    cwd: installDir,
+    env: env
+  },
+  common.mustCall(handleExit)
+);
 
 function handleExit(error, stdout, stderr) {
   const code = error ? error.code : 0;

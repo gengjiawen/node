@@ -33,13 +33,11 @@ assert(inited < 15000);
   });
 
   [undefined, null, 'foo', 1].forEach((i) => {
-    common.expectsError(
-      () => performance.measure('test', 'A', i),
-      {
-        code: 'ERR_INVALID_PERFORMANCE_MARK',
-        type: Error,
-        message: `The "${i}" performance mark has not been set`
-      });
+    common.expectsError(() => performance.measure('test', 'A', i), {
+      code: 'ERR_INVALID_PERFORMANCE_MARK',
+      type: Error,
+      message: `The "${i}" performance mark has not been set`
+    });
   });
 
   performance.clearMarks();
@@ -78,7 +76,7 @@ function checkDelay(cb) {
 
 function getTime() {
   const ts = process.hrtime();
-  return Math.ceil((ts[0] * 1e3) + (ts[1] / 1e6));
+  return Math.ceil(ts[0] * 1e3 + ts[1] / 1e6);
 }
 
 function checkNodeTiming(props) {
@@ -94,9 +92,12 @@ function checkNodeTiming(props) {
         `${prop}: ${Math.abs(delta)} >= ${delay}`
       );
     } else {
-      assert.strictEqual(performance.nodeTiming[prop], props[prop],
-                         `mismatch for performance property ${prop}: ` +
-                         `${performance.nodeTiming[prop]} vs ${props[prop]}`);
+      assert.strictEqual(
+        performance.nodeTiming[prop],
+        props[prop],
+        `mismatch for performance property ${prop}: ` +
+          `${performance.nodeTiming[prop]} vs ${props[prop]}`
+      );
     }
   }
 }

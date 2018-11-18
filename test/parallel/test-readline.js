@@ -11,9 +11,12 @@ const assert = require('assert');
     input: input
   });
 
-  rl.on('line', common.mustCall((data) => {
-    assert.strictEqual(data, 'abc');
-  }));
+  rl.on(
+    'line',
+    common.mustCall((data) => {
+      assert.strictEqual(data, 'abc');
+    })
+  );
 
   input.end('abc');
 }
@@ -37,9 +40,12 @@ const assert = require('assert');
     input: input
   });
 
-  rl.on('line', common.mustCall((data) => {
-    assert.strictEqual(data, 'abc');
-  }));
+  rl.on(
+    'line',
+    common.mustCall((data) => {
+      assert.strictEqual(data, 'abc');
+    })
+  );
 
   input.write('abc\n');
 }
@@ -57,7 +63,7 @@ const assert = require('assert');
   const key = {
     xterm: {
       home: ['\x1b[H', { ctrl: true, name: 'a' }],
-      end: ['\x1b[F', { ctrl: true, name: 'e' }],
+      end: ['\x1b[F', { ctrl: true, name: 'e' }]
     },
     gnome: {
       home: ['\x1bOH', { ctrl: true, name: 'a' }],
@@ -79,7 +85,6 @@ const assert = require('assert');
     rl.write.apply(rl, key.end);
     assert.strictEqual(rl.cursor, 3);
   });
-
 }
 
 {
@@ -93,7 +98,7 @@ const assert = require('assert');
     xterm: {
       home: ['\x1b[H', { ctrl: true, name: 'a' }],
       metab: ['\x1bb', { meta: true, name: 'b' }],
-      metaf: ['\x1bf', { meta: true, name: 'f' }],
+      metaf: ['\x1bf', { meta: true, name: 'f' }]
     }
   };
 
@@ -111,7 +116,7 @@ const assert = require('assert');
     { cursor: 8, key: key.xterm.metab },
     { cursor: 7, key: key.xterm.metab },
     { cursor: 4, key: key.xterm.metab },
-    { cursor: 0, key: key.xterm.metab },
+    { cursor: 0, key: key.xterm.metab }
   ].forEach(function(action) {
     rl.write.apply(rl, action.key);
     assert.strictEqual(rl.cursor, action.cursor);
@@ -134,14 +139,9 @@ const assert = require('assert');
 
   rl.write('foo bar.hop/zoo');
   rl.write.apply(rl, key.xterm.home);
-  [
-    'bar.hop/zoo',
-    '.hop/zoo',
-    'hop/zoo',
-    '/zoo',
-    'zoo',
-    ''
-  ].forEach(function(expectedLine) {
+  ['bar.hop/zoo', '.hop/zoo', 'hop/zoo', '/zoo', 'zoo', ''].forEach(function(
+    expectedLine
+  ) {
     rl.write.apply(rl, key.xterm.metad);
     assert.strictEqual(rl.cursor, 0);
     assert.strictEqual(rl.line, expectedLine);

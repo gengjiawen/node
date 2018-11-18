@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 const https = require('https');
@@ -44,15 +43,17 @@ const server_http = http.createServer(function(req, res) {
   res.end(body);
 });
 
-
 server_http.listen(0, function() {
-  const req = http.request({
-    port: this.address().port,
-    rejectUnauthorized: false
-  }, function(res) {
-    server_http.close();
-    res.resume();
-  });
+  const req = http.request(
+    {
+      port: this.address().port,
+      rejectUnauthorized: false
+    },
+    function(res) {
+      server_http.close();
+      res.resume();
+    }
+  );
   // These methods should exist on the request and get passed down to the socket
   req.setNoDelay(true);
   req.setTimeout(1000, () => {});
@@ -70,13 +71,16 @@ const server_https = https.createServer(options, function(req, res) {
 });
 
 server_https.listen(0, function() {
-  const req = https.request({
-    port: this.address().port,
-    rejectUnauthorized: false
-  }, function(res) {
-    server_https.close();
-    res.resume();
-  });
+  const req = https.request(
+    {
+      port: this.address().port,
+      rejectUnauthorized: false
+    },
+    function(res) {
+      server_https.close();
+      res.resume();
+    }
+  );
   // These methods should exist on the request and get passed down to the socket
   req.setNoDelay(true);
   req.setTimeout(1000, () => {});

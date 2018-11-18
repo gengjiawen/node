@@ -3,8 +3,7 @@ const common = require('../common');
 
 common.skipIfInspectorDisabled();
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const https = require('https');
@@ -14,24 +13,31 @@ const stderr = child.stderr.toString();
 const helpUrl = stderr.match(/For help, see: (.+)/)[1];
 
 function check(url, cb) {
-  https.get(url, common.mustCall((res) => {
-    assert(res.statusCode >= 200 && res.statusCode < 400);
+  https
+    .get(
+      url,
+      common.mustCall((res) => {
+        assert(res.statusCode >= 200 && res.statusCode < 400);
 
-    if (res.statusCode >= 300)
-      return check(res.headers.location, cb);
+        if (res.statusCode >= 300) return check(res.headers.location, cb);
 
-    let result = '';
+        let result = '';
 
-    res.setEncoding('utf8');
-    res.on('data', (data) => {
-      result += data;
-    });
+        res.setEncoding('utf8');
+        res.on('data', (data) => {
+          result += data;
+        });
 
-    res.on('end', common.mustCall(() => {
-      assert(/>Debugging Guide</.test(result));
-      cb();
-    }));
-  })).on('error', common.mustNotCall);
+        res.on(
+          'end',
+          common.mustCall(() => {
+            assert(/>Debugging Guide</.test(result));
+            cb();
+          })
+        );
+      })
+    )
+    .on('error', common.mustNotCall);
 }
 
 check(helpUrl, common.mustCall());

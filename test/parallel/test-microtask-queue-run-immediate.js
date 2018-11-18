@@ -40,7 +40,6 @@ setImmediate(function() {
   });
 });
 
-
 // no nextTick, microtask with nextTick
 setImmediate(function() {
   let called = false;
@@ -52,8 +51,6 @@ setImmediate(function() {
   });
 
   setImmediate(function() {
-    if (called)
-      done++;
+    if (called) done++;
   });
-
 });

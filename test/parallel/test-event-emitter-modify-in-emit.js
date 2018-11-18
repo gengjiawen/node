@@ -54,13 +54,17 @@ assert.deepStrictEqual(['callback1'], callbacks_called);
 
 e.emit('foo');
 assert.strictEqual(e.listeners('foo').length, 0);
-assert.deepStrictEqual(['callback1', 'callback2', 'callback3'],
-                       callbacks_called);
+assert.deepStrictEqual(
+  ['callback1', 'callback2', 'callback3'],
+  callbacks_called
+);
 
 e.emit('foo');
 assert.strictEqual(e.listeners('foo').length, 0);
-assert.deepStrictEqual(['callback1', 'callback2', 'callback3'],
-                       callbacks_called);
+assert.deepStrictEqual(
+  ['callback1', 'callback2', 'callback3'],
+  callbacks_called
+);
 
 e.on('foo', callback1);
 e.on('foo', callback2);

@@ -12,31 +12,20 @@ const array = [
   13493,
   9459324,
   { name: 'hello' },
-  [
-    'world',
-    'node',
-    'abi'
-  ]
+  ['world', 'node', 'abi']
 ];
 
-assert.throws(
-  () => {
-    test_array.TestGetElement(array, array.length + 1);
-  },
-  /^Error: assertion \(\(\(uint32_t\)index < length\)\) failed: Index out of bounds!$/
-);
+assert.throws(() => {
+  test_array.TestGetElement(array, array.length + 1);
+}, /^Error: assertion \(\(\(uint32_t\)index < length\)\) failed: Index out of bounds!$/);
 
-assert.throws(
-  () => {
-    test_array.TestGetElement(array, -2);
-  },
-  /^Error: assertion \(index >= 0\) failed: Invalid index\. Expects a positive integer\.$/
-);
+assert.throws(() => {
+  test_array.TestGetElement(array, -2);
+}, /^Error: assertion \(index >= 0\) failed: Invalid index\. Expects a positive integer\.$/);
 
 array.forEach(function(element, index) {
   assert.strictEqual(test_array.TestGetElement(array, index), element);
 });
-
 
 assert.deepStrictEqual(test_array.New(array), array);
 

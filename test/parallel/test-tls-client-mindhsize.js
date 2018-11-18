@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -38,14 +37,17 @@ function test(size, err, next) {
     // client set minimum DH parameter size to 2048 bits so that
     // it fails when it make a connection to the tls server where
     // dhparams is 1024 bits
-    const client = tls.connect({
-      minDHSize: 2048,
-      port: this.address().port,
-      rejectUnauthorized: false
-    }, function() {
-      nsuccess++;
-      server.close();
-    });
+    const client = tls.connect(
+      {
+        minDHSize: 2048,
+        port: this.address().port,
+        rejectUnauthorized: false
+      },
+      function() {
+        nsuccess++;
+        server.close();
+      }
+    );
     if (err) {
       client.on('error', function(e) {
         nerror++;
@@ -70,13 +72,14 @@ function testDHE2048() {
 
 testDHE1024();
 
-assert.throws(() => test(512, true, common.mustNotCall()),
-              /DH parameter is less than 1024 bits/);
+assert.throws(
+  () => test(512, true, common.mustNotCall()),
+  /DH parameter is less than 1024 bits/
+);
 
 let errMessage = /minDHSize is not a positive number/;
 [0, -1, -Infinity, NaN].forEach((minDHSize) => {
-  assert.throws(() => tls.connect({ minDHSize }),
-                errMessage);
+  assert.throws(() => tls.connect({ minDHSize }), errMessage);
 });
 
 errMessage = /minDHSize is not a number/;

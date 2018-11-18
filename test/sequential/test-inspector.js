@@ -16,19 +16,20 @@ function checkListResponse(response) {
   );
   assert.ok(response[0].devtoolsFrontendUrl);
   assert.ok(
-    /ws:\/\/localhost:\d+\/[0-9A-Fa-f]{8}-/
-      .test(response[0].webSocketDebuggerUrl),
-    response[0].webSocketDebuggerUrl);
+    /ws:\/\/localhost:\d+\/[0-9A-Fa-f]{8}-/.test(
+      response[0].webSocketDebuggerUrl
+    ),
+    response[0].webSocketDebuggerUrl
+  );
 }
 
 function checkVersion(response) {
   assert.ok(response);
   const expected = {
-    'Browser': `node.js/${process.version}`,
-    'Protocol-Version': '1.1',
+    Browser: `node.js/${process.version}`,
+    'Protocol-Version': '1.1'
   };
-  assert.strictEqual(JSON.stringify(response),
-                     JSON.stringify(expected));
+  assert.strictEqual(JSON.stringify(response), JSON.stringify(expected));
 }
 
 function checkBadPath(err) {
@@ -54,26 +55,23 @@ function assertScopeValues({ result }, expected) {
       unmatched.delete(actual.name);
     }
   }
-  if (unmatched.size)
-    assert.fail(Array.from(unmatched.values()));
+  if (unmatched.size) assert.fail(Array.from(unmatched.values()));
 }
 
 async function testBreakpointOnStart(session) {
-  console.log('[test]',
-              'Verifying debugger stops on start (--inspect-brk option)');
+  console.log(
+    '[test]',
+    'Verifying debugger stops on start (--inspect-brk option)'
+  );
   const commands = [
-    { 'method': 'Runtime.enable' },
-    { 'method': 'Debugger.enable' },
-    { 'method': 'Debugger.setPauseOnExceptions',
-      'params': { 'state': 'none' } },
-    { 'method': 'Debugger.setAsyncCallStackDepth',
-      'params': { 'maxDepth': 0 } },
-    { 'method': 'Profiler.enable' },
-    { 'method': 'Profiler.setSamplingInterval',
-      'params': { 'interval': 100 } },
-    { 'method': 'Debugger.setBlackboxPatterns',
-      'params': { 'patterns': [] } },
-    { 'method': 'Runtime.runIfWaitingForDebugger' }
+    { method: 'Runtime.enable' },
+    { method: 'Debugger.enable' },
+    { method: 'Debugger.setPauseOnExceptions', params: { state: 'none' } },
+    { method: 'Debugger.setAsyncCallStackDepth', params: { maxDepth: 0 } },
+    { method: 'Profiler.enable' },
+    { method: 'Profiler.setSamplingInterval', params: { interval: 100 } },
+    { method: 'Debugger.setBlackboxPatterns', params: { patterns: [] } },
+    { method: 'Runtime.runIfWaitingForDebugger' }
   ];
 
   await session.send(commands);
@@ -83,21 +81,26 @@ async function testBreakpointOnStart(session) {
 async function testBreakpoint(session) {
   console.log('[test]', 'Setting a breakpoint and verifying it is hit');
   const commands = [
-    { 'method': 'Debugger.setBreakpointByUrl',
-      'params': { 'lineNumber': 5,
-                  'url': session.scriptURL(),
-                  'columnNumber': 0,
-                  'condition': ''
+    {
+      method: 'Debugger.setBreakpointByUrl',
+      params: {
+        lineNumber: 5,
+        url: session.scriptURL(),
+        columnNumber: 0,
+        condition: ''
       }
     },
-    { 'method': 'Debugger.resume' },
+    { method: 'Debugger.resume' }
   ];
   await session.send(commands);
   const { scriptSource } = await session.send({
-    'method': 'Debugger.getScriptSource',
-    'params': { 'scriptId': session.mainScriptId } });
-  assert(scriptSource && (scriptSource.includes(session.script())),
-         `Script source is wrong: ${scriptSource}`);
+    method: 'Debugger.getScriptSource',
+    params: { scriptId: session.mainScriptId }
+  });
+  assert(
+    scriptSource && scriptSource.includes(session.script()),
+    `Script source is wrong: ${scriptSource}`
+  );
 
   await session.waitForConsoleOutput('log', ['A message', 5]);
   const paused = await session.waitForBreakOnLine(5, session.scriptURL());
@@ -105,25 +108,26 @@ async function testBreakpoint(session) {
 
   console.log('[test]', 'Verify we can read current application state');
   const response = await session.send({
-    'method': 'Runtime.getProperties',
-    'params': {
-      'objectId': scopeId,
-      'ownProperties': false,
-      'accessorPropertiesOnly': false,
-      'generatePreview': true
+    method: 'Runtime.getProperties',
+    params: {
+      objectId: scopeId,
+      ownProperties: false,
+      accessorPropertiesOnly: false,
+      generatePreview: true
     }
   });
   assertScopeValues(response, { t: 1001, k: 1 });
 
   let { result } = await session.send({
-    'method': 'Debugger.evaluateOnCallFrame', 'params': {
-      'callFrameId': '{"ordinal":0,"injectedScriptId":1}',
-      'expression': 'k + t',
-      'objectGroup': 'console',
-      'includeCommandLineAPI': true,
-      'silent': false,
-      'returnByValue': false,
-      'generatePreview': true
+    method: 'Debugger.evaluateOnCallFrame',
+    params: {
+      callFrameId: '{"ordinal":0,"injectedScriptId":1}',
+      expression: 'k + t',
+      objectGroup: 'console',
+      includeCommandLineAPI: true,
+      silent: false,
+      returnByValue: false,
+      generatePreview: true
     }
   });
   const expectedEvaluation = 1002;
@@ -134,8 +138,9 @@ async function testBreakpoint(session) {
   );
 
   result = (await session.send({
-    'method': 'Runtime.evaluate', 'params': {
-      'expression': '5 * 5'
+    method: 'Runtime.evaluate',
+    params: {
+      expression: '5 * 5'
     }
   })).result;
   const expectedResult = 25;
@@ -150,14 +155,15 @@ async function testI18NCharacters(session) {
   console.log('[test]', 'Verify sending and receiving UTF8 characters');
   const chars = 'טֶ字и';
   session.send({
-    'method': 'Debugger.evaluateOnCallFrame', 'params': {
-      'callFrameId': '{"ordinal":0,"injectedScriptId":1}',
-      'expression': `console.log("${chars}")`,
-      'objectGroup': 'console',
-      'includeCommandLineAPI': true,
-      'silent': false,
-      'returnByValue': false,
-      'generatePreview': true
+    method: 'Debugger.evaluateOnCallFrame',
+    params: {
+      callFrameId: '{"ordinal":0,"injectedScriptId":1}',
+      expression: `console.log("${chars}")`,
+      objectGroup: 'console',
+      includeCommandLineAPI: true,
+      silent: false,
+      returnByValue: false,
+      generatePreview: true
     }
   });
   await session.waitForConsoleOutput('log', [chars]);
@@ -172,122 +178,120 @@ async function testCommandLineAPI(session) {
   const printBModuleStr = JSON.stringify(printBModulePath);
 
   // we can use `require` outside of a callframe with require in scope
-  let result = await session.send(
-    {
-      'method': 'Runtime.evaluate', 'params': {
-        'expression': 'typeof require("fs").readFile === "function"',
-        'includeCommandLineAPI': true
-      }
-    });
+  let result = await session.send({
+    method: 'Runtime.evaluate',
+    params: {
+      expression: 'typeof require("fs").readFile === "function"',
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
   assert.strictEqual(result.result.value, true);
 
   // the global require has the same properties as a normal `require`
-  result = await session.send(
-    {
-      'method': 'Runtime.evaluate', 'params': {
-        'expression': [
-          'typeof require.resolve === "function"',
-          'typeof require.extensions === "object"',
-          'typeof require.cache === "object"'
-        ].join(' && '),
-        'includeCommandLineAPI': true
-      }
-    });
+  result = await session.send({
+    method: 'Runtime.evaluate',
+    params: {
+      expression: [
+        'typeof require.resolve === "function"',
+        'typeof require.extensions === "object"',
+        'typeof require.cache === "object"'
+      ].join(' && '),
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
   assert.strictEqual(result.result.value, true);
   // `require` twice returns the same value
-  result = await session.send(
-    {
-      'method': 'Runtime.evaluate', 'params': {
-        // 1. We require the same module twice
-        // 2. We mutate the exports so we can compare it later on
-        'expression': `
+  result = await session.send({
+    method: 'Runtime.evaluate',
+    params: {
+      // 1. We require the same module twice
+      // 2. We mutate the exports so we can compare it later on
+      expression: `
           Object.assign(
             require(${testModuleStr}),
             { old: 'yes' }
           ) === require(${testModuleStr})`,
-        'includeCommandLineAPI': true
-      }
-    });
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
   assert.strictEqual(result.result.value, true);
   // after require the module appears in require.cache
-  result = await session.send(
-    {
-      'method': 'Runtime.evaluate', 'params': {
-        'expression': `JSON.stringify(
+  result = await session.send({
+    method: 'Runtime.evaluate',
+    params: {
+      expression: `JSON.stringify(
           require.cache[${testModuleStr}].exports
         )`,
-        'includeCommandLineAPI': true
-      }
-    });
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
-  assert.deepStrictEqual(JSON.parse(result.result.value),
-                         { old: 'yes' });
+  assert.deepStrictEqual(JSON.parse(result.result.value), { old: 'yes' });
   // remove module from require.cache
-  result = await session.send(
-    {
-      'method': 'Runtime.evaluate', 'params': {
-        'expression': `delete require.cache[${testModuleStr}]`,
-        'includeCommandLineAPI': true
-      }
-    });
+  result = await session.send({
+    method: 'Runtime.evaluate',
+    params: {
+      expression: `delete require.cache[${testModuleStr}]`,
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
   assert.strictEqual(result.result.value, true);
   // require again, should get fresh (empty) exports
-  result = await session.send(
-    {
-      'method': 'Runtime.evaluate', 'params': {
-        'expression': `JSON.stringify(require(${testModuleStr}))`,
-        'includeCommandLineAPI': true
-      }
-    });
+  result = await session.send({
+    method: 'Runtime.evaluate',
+    params: {
+      expression: `JSON.stringify(require(${testModuleStr}))`,
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
   assert.deepStrictEqual(JSON.parse(result.result.value), {});
   // require 2nd module, exports an empty object
-  result = await session.send(
-    {
-      'method': 'Runtime.evaluate', 'params': {
-        'expression': `JSON.stringify(require(${printAModuleStr}))`,
-        'includeCommandLineAPI': true
-      }
-    });
+  result = await session.send({
+    method: 'Runtime.evaluate',
+    params: {
+      expression: `JSON.stringify(require(${printAModuleStr}))`,
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
   assert.deepStrictEqual(JSON.parse(result.result.value), {});
   // both modules end up with the same module.parent
-  result = await session.send(
-    {
-      'method': 'Runtime.evaluate', 'params': {
-        'expression': `JSON.stringify({
+  result = await session.send({
+    method: 'Runtime.evaluate',
+    params: {
+      expression: `JSON.stringify({
           parentsEqual:
             require.cache[${testModuleStr}].parent ===
             require.cache[${printAModuleStr}].parent,
           parentId: require.cache[${testModuleStr}].parent.id,
         })`,
-        'includeCommandLineAPI': true
-      }
-    });
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
   assert.deepStrictEqual(JSON.parse(result.result.value), {
     parentsEqual: true,
     parentId: '<inspector console>'
   });
   // the `require` in the module shadows the command line API's `require`
-  result = await session.send(
-    {
-      'method': 'Debugger.evaluateOnCallFrame', 'params': {
-        'callFrameId': '{"ordinal":0,"injectedScriptId":1}',
-        'expression': `(
+  result = await session.send({
+    method: 'Debugger.evaluateOnCallFrame',
+    params: {
+      callFrameId: '{"ordinal":0,"injectedScriptId":1}',
+      expression: `(
           require(${printBModuleStr}),
           require.cache[${printBModuleStr}].parent.id
         )`,
-        'includeCommandLineAPI': true
-      }
-    });
+      includeCommandLineAPI: true
+    }
+  });
   checkException(result);
-  assert.notStrictEqual(result.result.value,
-                        '<inspector console>');
+  assert.notStrictEqual(result.result.value, '<inspector console>');
 }
 
 async function runTest() {

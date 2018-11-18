@@ -40,22 +40,24 @@ const image = fixtures.readSync('/person.jpg');
 console.log(`image.length = ${image.length}`);
 
 const total = 10;
-const responseCountdown = new Countdown(total, common.mustCall(() => {
-  checkFiles();
-  server.close();
-}));
+const responseCountdown = new Countdown(
+  total,
+  common.mustCall(() => {
+    checkFiles();
+    server.close();
+  })
+);
 
 const server = http.Server(function(req, res) {
   setTimeout(function() {
     res.writeHead(200, {
       'content-type': 'image/jpeg',
-      'connection': 'close',
+      connection: 'close',
       'content-length': image.length
     });
     res.end(image);
   }, 1);
 });
-
 
 server.listen(0, function() {
   for (let i = 0; i < total; i++) {
@@ -67,19 +69,21 @@ server.listen(0, function() {
         headers: { connection: 'close' }
       };
 
-      http.get(opts, function(res) {
-        console.error(`recv ${x}`);
-        const s = fs.createWriteStream(`${tmpdir.path}/${x}.jpg`);
-        res.pipe(s);
+      http
+        .get(opts, function(res) {
+          console.error(`recv ${x}`);
+          const s = fs.createWriteStream(`${tmpdir.path}/${x}.jpg`);
+          res.pipe(s);
 
-        s.on('finish', function() {
-          console.error(`done ${x}`);
-          responseCountdown.dec();
+          s.on('finish', function() {
+            console.error(`done ${x}`);
+            responseCountdown.dec();
+          });
+        })
+        .on('error', function(e) {
+          console.error('error! ', e.message);
+          throw e;
         });
-      }).on('error', function(e) {
-        console.error('error! ', e.message);
-        throw e;
-      });
     })();
   }
 });
@@ -94,7 +98,9 @@ function checkFiles() {
     assert.ok(files.includes(fn), `couldn't find '${fn}'`);
     const stat = fs.statSync(`${tmpdir.path}/${fn}`);
     assert.strictEqual(
-      image.length, stat.size,
-      `size doesn't match on '${fn}'. Got ${stat.size} bytes`);
+      image.length,
+      stat.size,
+      `size doesn't match on '${fn}'. Got ${stat.size} bytes`
+    );
   }
 }

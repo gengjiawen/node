@@ -28,14 +28,12 @@ const childProcess = require('child_process');
 if (process.argv[2] === 'pipe') {
   process.stdout.write('stdout message');
   process.stderr.write('stderr message');
-
 } else if (process.argv[2] === 'ipc') {
   // Child IPC test
   process.send('message from child');
   process.on('message', function() {
     process.send('got message from master');
   });
-
 } else if (process.argv[2] === 'parent') {
   // Parent | start child pipe test
 
@@ -48,7 +46,6 @@ if (process.argv[2] === 'pipe') {
   child.on('exit', function() {
     process.exit(0);
   });
-
 } else {
   // testcase | start parent && child IPC test
 
@@ -70,18 +67,24 @@ if (process.argv[2] === 'pipe') {
   const child = childProcess.fork(process.argv[1], ['ipc'], { silent: true });
 
   // Manual pipe so we will get errors
-  child.stderr.pipe(process.stderr, { end: false });
-  child.stdout.pipe(process.stdout, { end: false });
+  child.stderr.pipe(
+    process.stderr,
+    { end: false }
+  );
+  child.stdout.pipe(
+    process.stdout,
+    { end: false }
+  );
 
   let childSending = false;
   let childReceiving = false;
   child.on('message', function(message) {
     if (childSending === false) {
-      childSending = (message === 'message from child');
+      childSending = message === 'message from child';
     }
 
     if (childReceiving === false) {
-      childReceiving = (message === 'got message from master');
+      childReceiving = message === 'got message from master';
     }
 
     if (childReceiving === true) {

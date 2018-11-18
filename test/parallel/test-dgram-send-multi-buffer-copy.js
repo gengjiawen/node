@@ -19,10 +19,13 @@ client.on('listening', function() {
   toSend.splice(0, 2);
 });
 
-client.on('message', common.mustCall(function onMessage(buf, info) {
-  const expected = Buffer.concat([buf1, buf2]);
-  assert.ok(buf.equals(expected), 'message was received correctly');
-  client.close();
-}));
+client.on(
+  'message',
+  common.mustCall(function onMessage(buf, info) {
+    const expected = Buffer.concat([buf1, buf2]);
+    assert.ok(buf.equals(expected), 'message was received correctly');
+    client.close();
+  })
+);
 
 client.bind(0);

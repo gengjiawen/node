@@ -27,8 +27,9 @@ interfacer.on('line', function(line) {
   const pid = interfacer.pid;
   switch (++lineCount) {
     case 1:
-      expected =
-        new RegExp(`^\\(node:${pid}\\) \\[DEP0068\\] DeprecationWarning: `);
+      expected = new RegExp(
+        `^\\(node:${pid}\\) \\[DEP0068\\] DeprecationWarning: `
+      );
       assert.ok(expected.test(line), `expected regexp match for ${line}`);
       break;
     case 2:
@@ -40,8 +41,7 @@ interfacer.on('line', function(line) {
       break;
 
     default:
-      if (!common.isWindows)
-        assert.fail(`unexpected line received: ${line}`);
+      if (!common.isWindows) assert.fail(`unexpected line received: ${line}`);
   }
 });
 

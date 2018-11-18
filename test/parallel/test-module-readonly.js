@@ -25,7 +25,8 @@ fs.writeFileSync(readOnlyModFullPath, 'module.exports = 42;');
 // Removed any inherited ACEs, and any explicitly granted ACEs for the
 // current user
 cp.execSync(
-  `icacls.exe "${readOnlyModFullPath}" /inheritance:r /remove "%USERNAME%"`);
+  `icacls.exe "${readOnlyModFullPath}" /inheritance:r /remove "%USERNAME%"`
+);
 
 // Grant the current user read & execute only
 cp.execSync(`icacls.exe "${readOnlyModFullPath}" /grant "%USERNAME%":RX`);
@@ -40,7 +41,8 @@ try {
 
 // Remove the explicitly granted rights, and re-enable inheritance
 cp.execSync(
-  `icacls.exe "${readOnlyModFullPath}" /remove "%USERNAME%" /inheritance:e`);
+  `icacls.exe "${readOnlyModFullPath}" /remove "%USERNAME%" /inheritance:e`
+);
 
 // Delete the test module (note: tmpdir should get cleaned anyway)
 fs.unlinkSync(readOnlyModFullPath);

@@ -46,9 +46,12 @@ const Transform = require('_stream_transform');
   assert.strictEqual(tx.readableLength, 10);
   assert.strictEqual(transformed, 10);
   assert.strictEqual(tx._transformState.writechunk.length, 5);
-  assert.deepStrictEqual(tx.writableBuffer.map(function(c) {
-    return c.chunk.length;
-  }), [6, 7, 8, 9, 10]);
+  assert.deepStrictEqual(
+    tx.writableBuffer.map(function(c) {
+      return c.chunk.length;
+    }),
+    [6, 7, 8, 9, 10]
+  );
 }
 
 {
@@ -166,12 +169,15 @@ const Transform = require('_stream_transform');
   pt.write(Buffer.from('kuel'));
   pt.end();
 
-  pt.on('finish', common.mustCall(function() {
-    assert.strictEqual(pt.read(5).toString(), 'foogb');
-    assert.strictEqual(pt.read(5).toString(), 'arkba');
-    assert.strictEqual(pt.read(5).toString(), 'zykue');
-    assert.strictEqual(pt.read(5).toString(), 'l');
-  }));
+  pt.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(pt.read(5).toString(), 'foogb');
+      assert.strictEqual(pt.read(5).toString(), 'arkba');
+      assert.strictEqual(pt.read(5).toString(), 'zykue');
+      assert.strictEqual(pt.read(5).toString(), 'l');
+    })
+  );
 }
 
 {
@@ -195,15 +201,18 @@ const Transform = require('_stream_transform');
   pt.write(Buffer.from('kuel'));
   pt.end();
 
-  pt.on('finish', common.mustCall(function() {
-    assert.strictEqual(pt.read(5).toString(), 'foogf');
-    assert.strictEqual(pt.read(5).toString(), 'oogba');
-    assert.strictEqual(pt.read(5).toString(), 'rkbar');
-    assert.strictEqual(pt.read(5).toString(), 'kbazy');
-    assert.strictEqual(pt.read(5).toString(), 'bazyk');
-    assert.strictEqual(pt.read(5).toString(), 'uelku');
-    assert.strictEqual(pt.read(5).toString(), 'el');
-  }));
+  pt.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(pt.read(5).toString(), 'foogf');
+      assert.strictEqual(pt.read(5).toString(), 'oogba');
+      assert.strictEqual(pt.read(5).toString(), 'rkbar');
+      assert.strictEqual(pt.read(5).toString(), 'kbazy');
+      assert.strictEqual(pt.read(5).toString(), 'bazyk');
+      assert.strictEqual(pt.read(5).toString(), 'uelku');
+      assert.strictEqual(pt.read(5).toString(), 'el');
+    })
+  );
 }
 
 {
@@ -215,8 +224,7 @@ const Transform = require('_stream_transform');
   pt.state = '';
 
   pt._transform = function(chunk, encoding, cb) {
-    if (!chunk)
-      chunk = '';
+    if (!chunk) chunk = '';
     const s = chunk.toString();
     setTimeout(() => {
       this.state += s.charAt(0);
@@ -252,11 +260,14 @@ const Transform = require('_stream_transform');
   pt.end();
 
   // 'abcdeabcdeabcd'
-  pt.on('finish', common.mustCall(function() {
-    assert.strictEqual(pt.read(5).toString(), 'abcde');
-    assert.strictEqual(pt.read(5).toString(), 'abcde');
-    assert.strictEqual(pt.read(5).toString(), 'abcd');
-  }));
+  pt.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(pt.read(5).toString(), 'abcde');
+      assert.strictEqual(pt.read(5).toString(), 'abcde');
+      assert.strictEqual(pt.read(5).toString(), 'abcd');
+    })
+  );
 }
 
 // this tests for a stall when data is written to a full stream
@@ -267,8 +278,7 @@ const Transform = require('_stream_transform');
   let saved = null;
   const pt = new Transform({ highWaterMark: 3 });
   pt._transform = function(c, e, cb) {
-    if (count++ === 1)
-      saved = c;
+    if (count++ === 1) saved = c;
     else {
       if (saved) {
         pt.push(saved);
@@ -283,9 +293,12 @@ const Transform = require('_stream_transform');
   pt.once('readable', function() {
     process.nextTick(function() {
       pt.write(Buffer.from('d'));
-      pt.write(Buffer.from('ef'), common.mustCall(function() {
-        pt.end();
-      }));
+      pt.write(
+        Buffer.from('ef'),
+        common.mustCall(function() {
+          pt.end();
+        })
+      );
       assert.strictEqual(pt.read().toString(), 'abcdef');
       assert.strictEqual(pt.read(), null);
     });
@@ -293,7 +306,6 @@ const Transform = require('_stream_transform');
 
   pt.write(Buffer.from('abc'));
 }
-
 
 {
   // Verify passthrough event emission
@@ -343,22 +355,31 @@ const Transform = require('_stream_transform');
   assert.strictEqual(pt.read(5).toString(), 'foogb');
   assert.strictEqual(pt.read(5), null);
 
-  pt.once('readable', common.mustCall(function() {
-    assert.strictEqual(pt.read(5).toString(), 'arkba');
-    assert.strictEqual(pt.read(5), null);
-
-    pt.once('readable', common.mustCall(function() {
-      assert.strictEqual(pt.read(5).toString(), 'zykue');
+  pt.once(
+    'readable',
+    common.mustCall(function() {
+      assert.strictEqual(pt.read(5).toString(), 'arkba');
       assert.strictEqual(pt.read(5), null);
-      pt.once('readable', common.mustCall(function() {
-        assert.strictEqual(pt.read(5).toString(), 'l');
-        assert.strictEqual(pt.read(5), null);
-        assert.strictEqual(emits, 3);
-      }));
-      pt.end();
-    }));
-    pt.write(Buffer.from('kuel'));
-  }));
+
+      pt.once(
+        'readable',
+        common.mustCall(function() {
+          assert.strictEqual(pt.read(5).toString(), 'zykue');
+          assert.strictEqual(pt.read(5), null);
+          pt.once(
+            'readable',
+            common.mustCall(function() {
+              assert.strictEqual(pt.read(5).toString(), 'l');
+              assert.strictEqual(pt.read(5), null);
+              assert.strictEqual(emits, 3);
+            })
+          );
+          pt.end();
+        })
+      );
+      pt.write(Buffer.from('kuel'));
+    })
+  );
 
   pt.write(Buffer.from('bazy'));
 }
@@ -371,9 +392,12 @@ const Transform = require('_stream_transform');
     datas.push(chunk.toString());
   });
 
-  pt.on('end', common.mustCall(function() {
-    assert.deepStrictEqual(datas, ['foog', 'bark', 'bazy', 'kuel']);
-  }));
+  pt.on(
+    'end',
+    common.mustCall(function() {
+      assert.deepStrictEqual(datas, ['foog', 'bark', 'bazy', 'kuel']);
+    })
+  );
 
   pt.write(Buffer.from('foog'));
   setTimeout(function() {
@@ -408,7 +432,7 @@ const Transform = require('_stream_transform');
     { foo: 'bar' },
     100,
     'string',
-    { nested: { things: [ { foo: 'bar' }, 100, 'string' ] } }
+    { nested: { things: [{ foo: 'bar' }, 100, 'string'] } }
   ];
 
   let ended = false;
@@ -426,9 +450,11 @@ const Transform = require('_stream_transform');
   // read one more time to get the 'end' event
   jp.read();
 
-  process.nextTick(common.mustCall(function() {
-    assert.strictEqual(ended, true);
-  }));
+  process.nextTick(
+    common.mustCall(function() {
+      assert.strictEqual(ended, true);
+    })
+  );
 }
 
 {
@@ -449,7 +475,7 @@ const Transform = require('_stream_transform');
     { foo: 'bar' },
     100,
     'string',
-    { nested: { things: [ { foo: 'bar' }, 100, 'string' ] } }
+    { nested: { things: [{ foo: 'bar' }, 100, 'string'] } }
   ];
 
   let ended = false;
@@ -467,7 +493,9 @@ const Transform = require('_stream_transform');
   // read one more time to get the 'end' event
   js.read();
 
-  process.nextTick(common.mustCall(function() {
-    assert.strictEqual(ended, true);
-  }));
+  process.nextTick(
+    common.mustCall(function() {
+      assert.strictEqual(ended, true);
+    })
+  );
 }

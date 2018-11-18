@@ -11,23 +11,26 @@ let test_id = null;
 let run_cntr = 0;
 let hooks = null;
 
-process.on('beforeExit', common.mustCall(() => {
-  process.removeAllListeners('uncaughtException');
-  hooks.disable();
-  assert.strictEqual(test_id, null);
-  assert.strictEqual(run_cntr, RUNS);
-}));
+process.on(
+  'beforeExit',
+  common.mustCall(() => {
+    process.removeAllListeners('uncaughtException');
+    hooks.disable();
+    assert.strictEqual(test_id, null);
+    assert.strictEqual(run_cntr, RUNS);
+  })
+);
 
-
-hooks = async_hooks.createHook({
-  destroy(id) {
-    if (id === test_id) {
-      run_cntr++;
-      test_id = null;
+hooks = async_hooks
+  .createHook({
+    destroy(id) {
+      if (id === test_id) {
+        run_cntr++;
+        test_id = null;
+      }
     }
-  },
-}).enable();
-
+  })
+  .enable();
 
 (function runner(n) {
   assert.strictEqual(test_id, null);

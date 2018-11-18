@@ -12,22 +12,26 @@ const providers = { TTYWRAP };
 
 // Make sure that the TTYWRAP Provider is tested.
 {
-  const hooks = require('async_hooks').createHook({
-    init(id, type) {
-      if (type === 'NONE')
-        throw new Error('received a provider type of NONE');
-      delete providers[type];
-    },
-  }).enable();
-  process.on('beforeExit', common.mustCall(() => {
-    process.removeAllListeners('uncaughtException');
-    hooks.disable();
+  const hooks = require('async_hooks')
+    .createHook({
+      init(id, type) {
+        if (type === 'NONE')
+          throw new Error('received a provider type of NONE');
+        delete providers[type];
+      }
+    })
+    .enable();
+  process.on(
+    'beforeExit',
+    common.mustCall(() => {
+      process.removeAllListeners('uncaughtException');
+      hooks.disable();
 
-    const objKeys = Object.keys(providers);
-    if (objKeys.length > 0)
-      process._rawDebug(objKeys);
-    assert.strictEqual(objKeys.length, 0);
-  }));
+      const objKeys = Object.keys(providers);
+      if (objKeys.length > 0) process._rawDebug(objKeys);
+      assert.strictEqual(objKeys.length, 0);
+    })
+  );
 }
 
 function testInitialized(req, ctor_name) {

@@ -35,7 +35,6 @@ const server = http.createServer(function(req, res) {
 });
 server.listen(0);
 
-
 // first, we test an HTTP/1.0 request.
 server.on('listening', function() {
   const c = net.createConnection(this.address().port);
@@ -77,12 +76,13 @@ server.on('listening', function() {
   c.on('connect', function() {
     outstanding_reqs++;
     c.write('GET / HTTP/1.1\r\n\r\n');
-    tid = setTimeout(common.mustNotCall(), 2000, 'Couldn\'t find last chunk.');
+    tid = setTimeout(common.mustNotCall(), 2000, "Couldn't find last chunk.");
   });
 
   c.on('data', function(chunk) {
     res_buffer += chunk;
-    if (/0\r\n/.test(res_buffer)) { // got the end.
+    if (/0\r\n/.test(res_buffer)) {
+      // got the end.
       outstanding_reqs--;
       clearTimeout(tid);
       assert.ok(
@@ -99,21 +99,26 @@ server.on('listening', function() {
 
 // now, see if the client sees the trailers.
 server.on('listening', function() {
-  http.get({
-    port: this.address().port,
-    path: '/hello',
-    headers: {}
-  }, function(res) {
-    res.on('end', function() {
-      assert.ok('x-foo' in res.trailers,
-                `${util.inspect(res.trailers)} misses the 'x-foo' property`);
-      outstanding_reqs--;
-      if (outstanding_reqs === 0) {
-        server.close();
-        process.exit();
-      }
-    });
-    res.resume();
-  });
+  http.get(
+    {
+      port: this.address().port,
+      path: '/hello',
+      headers: {}
+    },
+    function(res) {
+      res.on('end', function() {
+        assert.ok(
+          'x-foo' in res.trailers,
+          `${util.inspect(res.trailers)} misses the 'x-foo' property`
+        );
+        outstanding_reqs--;
+        if (outstanding_reqs === 0) {
+          server.close();
+          process.exit();
+        }
+      });
+      res.resume();
+    }
+  );
   outstanding_reqs++;
 });

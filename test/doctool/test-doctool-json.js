@@ -15,7 +15,8 @@ const fixtures = require('../common/fixtures');
 const json = require('../../tools/doc/json.js');
 
 module.paths.unshift(
-  path.join(__dirname, '..', '..', 'tools', 'doc', 'node_modules'));
+  path.join(__dirname, '..', '..', 'tools', 'doc', 'node_modules')
+);
 const unified = require('unified');
 const markdown = require('remark-parse');
 
@@ -41,20 +42,25 @@ const testData = [
     json: {
       type: 'module',
       source: 'foo',
-      modules: [{
-        textRaw: 'Sample Markdown',
-        name: 'sample_markdown',
-        modules: [{
-          textRaw: 'Seussian Rhymes',
-          name: 'seussian_rhymes',
-          desc: '<ol>\n<li>fish</li>\n<li>fish</li>\n</ol>\n' +
-                  '<ul>\n<li>Red fish</li>\n<li>Blue fish</li>\n</ul>',
+      modules: [
+        {
+          textRaw: 'Sample Markdown',
+          name: 'sample_markdown',
+          modules: [
+            {
+              textRaw: 'Seussian Rhymes',
+              name: 'seussian_rhymes',
+              desc:
+                '<ol>\n<li>fish</li>\n<li>fish</li>\n</ol>\n' +
+                '<ul>\n<li>Red fish</li>\n<li>Blue fish</li>\n</ul>',
+              type: 'module',
+              displayName: 'Seussian Rhymes'
+            }
+          ],
           type: 'module',
-          displayName: 'Seussian Rhymes'
-        }],
-        type: 'module',
-        displayName: 'Sample Markdown'
-      }]
+          displayName: 'Sample Markdown'
+        }
+      ]
     }
   },
   {
@@ -62,32 +68,40 @@ const testData = [
     json: {
       type: 'module',
       source: 'foo',
-      modules: [{
-        textRaw: 'Title',
-        name: 'title',
-        modules: [{
-          textRaw: 'Subsection',
-          name: 'subsection',
-          classMethods: [{
-            textRaw: 'Class Method: Buffer.from(array)',
-            type: 'classMethod',
-            name: 'from',
-            signatures: [
-              {
-                params: [{
-                  textRaw: '`array` {Array}',
-                  name: 'array',
-                  type: 'Array'
-                }]
-              }
-            ]
-          }],
+      modules: [
+        {
+          textRaw: 'Title',
+          name: 'title',
+          modules: [
+            {
+              textRaw: 'Subsection',
+              name: 'subsection',
+              classMethods: [
+                {
+                  textRaw: 'Class Method: Buffer.from(array)',
+                  type: 'classMethod',
+                  name: 'from',
+                  signatures: [
+                    {
+                      params: [
+                        {
+                          textRaw: '`array` {Array}',
+                          name: 'array',
+                          type: 'Array'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              type: 'module',
+              displayName: 'Subsection'
+            }
+          ],
           type: 'module',
-          displayName: 'Subsection'
-        }],
-        type: 'module',
-        displayName: 'Title'
-      }]
+          displayName: 'Title'
+        }
+      ]
     }
   },
   {
@@ -107,8 +121,8 @@ const testData = [
                 added: ['v1.0.0'],
                 changes: []
               },
-              desc: '<p>Describe <code>Foobar</code> in more detail ' +
-                'here.</p>',
+              desc:
+                '<p>Describe <code>Foobar</code> in more detail ' + 'here.</p>',
               type: 'module',
               displayName: 'Foobar'
             },
@@ -118,14 +132,16 @@ const testData = [
               meta: {
                 added: ['v5.3.0', 'v4.2.0'],
                 changes: [
-                  { 'version': 'v4.2.0',
+                  {
+                    version: 'v4.2.0',
                     'pr-url': 'https://github.com/nodejs/node/pull/3276',
-                    'description': 'The `error` parameter can now be ' +
-                      'an arrow function.'
+                    description:
+                      'The `error` parameter can now be ' + 'an arrow function.'
                   }
                 ]
               },
-              desc: '<p>Describe <code>Foobar II</code> in more detail ' +
+              desc:
+                '<p>Describe <code>Foobar II</code> in more detail ' +
                 'here. fg(1)</p>',
               type: 'module',
               displayName: 'Foobar II'
@@ -138,7 +154,8 @@ const testData = [
                 deprecated: ['v2.0.0'],
                 changes: []
               },
-              desc: '<p>Describe <code>Deprecated thingy</code> in more ' +
+              desc:
+                '<p>Describe <code>Deprecated thingy</code> in more ' +
                 'detail here. fg(1p)</p>',
               type: 'module',
               displayName: 'Deprecated thingy'
@@ -146,7 +163,8 @@ const testData = [
             {
               textRaw: 'Something',
               name: 'something',
-              desc: '<!-- This is not a metadata comment -->\n<p>' +
+              desc:
+                '<!-- This is not a metadata comment -->\n<p>' +
                 'Describe <code>Something</code> in more detail here.</p>',
               type: 'module',
               displayName: 'Something'
@@ -161,11 +179,19 @@ const testData = [
 ];
 
 testData.forEach((item) => {
-  fs.readFile(item.file, 'utf8', common.mustCall((err, input) => {
-    assert.ifError(err);
-    toJSON(input, 'foo', common.mustCall((err, output) => {
+  fs.readFile(
+    item.file,
+    'utf8',
+    common.mustCall((err, input) => {
       assert.ifError(err);
-      assert.deepStrictEqual(output.json, item.json);
-    }));
-  }));
+      toJSON(
+        input,
+        'foo',
+        common.mustCall((err, output) => {
+          assert.ifError(err);
+          assert.deepStrictEqual(output.json, item.json);
+        })
+      );
+    })
+  );
 });

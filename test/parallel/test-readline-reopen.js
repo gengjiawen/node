@@ -21,10 +21,12 @@ rl1.on('line', common.mustCall(rl1OnLine));
 
 // Write a line plus the first byte of a UTF-8 multibyte character to make sure
 // that it doesn’t get lost when closing the readline instance.
-input.write(Buffer.concat([
-  Buffer.from('foo\n'),
-  Buffer.from([ 0xe2 ])  // Exactly one third of a ☃ snowman.
-]));
+input.write(
+  Buffer.concat([
+    Buffer.from('foo\n'),
+    Buffer.from([0xe2]) // Exactly one third of a ☃ snowman.
+  ])
+);
 
 function rl1OnLine(line) {
   assert.strictEqual(line, 'foo');
@@ -35,10 +37,13 @@ function rl1OnLine(line) {
     terminal: true
   });
 
-  rl2.on('line', common.mustCall((line) => {
-    assert.strictEqual(line, '☃bar');
-    rl2.close();
-  }));
+  rl2.on(
+    'line',
+    common.mustCall((line) => {
+      assert.strictEqual(line, '☃bar');
+      rl2.close();
+    })
+  );
   input.write(Buffer.from([0x98, 0x83])); // The rest of the ☃ snowman.
   input.write('bar\n');
 }

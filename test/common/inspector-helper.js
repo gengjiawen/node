@@ -38,12 +38,9 @@ function makeBufferingDataCallback(dataCallback) {
     const newData = Buffer.concat([buffer, data]);
     const str = newData.toString('utf8');
     const lines = str.replace(/\r/g, '').split('\n');
-    if (str.endsWith('\n'))
-      buffer = Buffer.alloc(0);
-    else
-      buffer = Buffer.from(lines.pop(), 'utf8');
-    for (const line of lines)
-      dataCallback(line);
+    if (str.endsWith('\n')) buffer = Buffer.alloc(0);
+    else buffer = Buffer.from(lines.pop(), 'utf8');
+    for (const line of lines) dataCallback(line);
   };
 }
 
@@ -58,16 +55,14 @@ function tearDown(child, err) {
 function parseWSFrame(buffer) {
   // Protocol described in https://tools.ietf.org/html/rfc6455#section-5
   let message = null;
-  if (buffer.length < 2)
-    return { length: 0, message };
+  if (buffer.length < 2) return { length: 0, message };
   if (buffer[0] === 0x88 && buffer[1] === 0x00) {
     return { length: 2, message, closed: true };
   }
   assert.strictEqual(buffer[0], 0x81);
-  let dataLen = 0x7F & buffer[1];
+  let dataLen = 0x7f & buffer[1];
   let bodyOffset = 2;
-  if (buffer.length < bodyOffset + dataLen)
-    return 0;
+  if (buffer.length < bodyOffset + dataLen) return 0;
   if (dataLen === 126) {
     dataLen = buffer.readUInt16BE(2);
     bodyOffset = 4;
@@ -76,18 +71,17 @@ function parseWSFrame(buffer) {
     dataLen = buffer.readUIntBE(4, 6);
     bodyOffset = 10;
   }
-  if (buffer.length < bodyOffset + dataLen)
-    return { length: 0, message };
-  const jsonPayload =
-    buffer.slice(bodyOffset, bodyOffset + dataLen).toString('utf8');
+  if (buffer.length < bodyOffset + dataLen) return { length: 0, message };
+  const jsonPayload = buffer
+    .slice(bodyOffset, bodyOffset + dataLen)
+    .toString('utf8');
   try {
     message = JSON.parse(jsonPayload);
   } catch (e) {
     console.error(`JSON.parse() failed for: ${jsonPayload}`);
     throw e;
   }
-  if (DEBUG)
-    console.log('[received]', JSON.stringify(message));
+  if (DEBUG) console.log('[received]', JSON.stringify(message));
   return { length: bodyOffset + dataLen, message };
 }
 
@@ -103,11 +97,11 @@ function formatWSFrame(message) {
   if (bodyLen < 126) {
     byte2 = 0x80 + bodyLen;
   } else if (bodyLen < 65536) {
-    byte2 = 0xFE;
+    byte2 = 0xfe;
     wsHeaderBuf.writeUInt16BE(bodyLen, 2);
     maskOffset = 4;
   } else {
-    byte2 = 0xFF;
+    byte2 = 0xff;
     wsHeaderBuf.writeUInt32BE(bodyLen, 2);
     wsHeaderBuf.writeUInt32BE(0, 6);
     maskOffset = 10;
@@ -116,7 +110,7 @@ function formatWSFrame(message) {
   wsHeaderBuf.writeUInt32BE(0x01020408, maskOffset);
 
   for (let i = 0; i < messageBuf.length; i++)
-    messageBuf[i] = messageBuf[i] ^ (1 << (i % 4));
+    messageBuf[i] = messageBuf[i] ^ (1 << i % 4);
 
   return Buffer.concat([wsHeaderBuf.slice(0, maskOffset + 4), messageBuf]);
 }
@@ -136,15 +130,13 @@ class InspectorSession {
       buffer = Buffer.concat([buffer, data]);
       do {
         const { length, message, closed } = parseWSFrame(buffer);
-        if (!length)
-          break;
+        if (!length) break;
 
         if (closed) {
-          socket.write(Buffer.from([0x88, 0x00]));  // WS close frame
+          socket.write(Buffer.from([0x88, 0x00])); // WS close frame
         }
         buffer = buffer.slice(length);
-        if (message)
-          this._onMessage(message);
+        if (message) this._onMessage(message);
       } while (true);
     });
     this._terminationPromise = new Promise((resolve) => {
@@ -165,16 +157,15 @@ class InspectorSession {
     if (message.id) {
       const { resolve, reject } = this._commandResponsePromises.get(message.id);
       this._commandResponsePromises.delete(message.id);
-      if (message.result)
-        resolve(message.result);
-      else
-        reject(message.error);
+      if (message.result) resolve(message.result);
+      else reject(message.error);
     } else {
       if (message.method === 'Debugger.scriptParsed') {
         const { scriptId, url } = message.params;
         this._scriptsIdsByUrl.set(scriptId, url);
-        const fileUrl = url.startsWith('file:') ?
-          url : pathToFileURL(url).toString();
+        const fileUrl = url.startsWith('file:')
+          ? url
+          : pathToFileURL(url).toString();
         if (fileUrl === this.scriptURL().toString()) {
           this.mainScriptId = scriptId;
         }
@@ -194,25 +185,24 @@ class InspectorSession {
   _sendMessage(message) {
     const msg = JSON.parse(JSON.stringify(message)); // Clone!
     msg.id = this._nextId++;
-    if (DEBUG)
-      console.log('[sent]', JSON.stringify(msg));
+    if (DEBUG) console.log('[sent]', JSON.stringify(msg));
 
     const responsePromise = new Promise((resolve, reject) => {
       this._commandResponsePromises.set(msg.id, { resolve, reject });
     });
 
-    return new Promise(
-      (resolve) => this._socket.write(formatWSFrame(msg), resolve))
-      .then(() => responsePromise);
+    return new Promise((resolve) =>
+      this._socket.write(formatWSFrame(msg), resolve)
+    ).then(() => responsePromise);
   }
 
   send(commands) {
     if (Array.isArray(commands)) {
       // Multiple commands means the response does not matter. There might even
       // never be a response.
-      return Promise
-        .all(commands.map((command) => this._sendMessage(command)))
-        .then(() => {});
+      return Promise.all(
+        commands.map((command) => this._sendMessage(command))
+      ).then(() => {});
     } else {
       return this._sendMessage(commands);
     }
@@ -222,7 +212,10 @@ class InspectorSession {
     const desc = description || methodOrPredicate;
     const message = `Timed out waiting for matching notification (${desc}))`;
     return fires(
-      this._asyncWaitForNotification(methodOrPredicate), message, TIMEOUT);
+      this._asyncWaitForNotification(methodOrPredicate),
+      message,
+      TIMEOUT
+    );
   }
 
   async _asyncWaitForNotification(methodOrPredicate) {
@@ -230,14 +223,15 @@ class InspectorSession {
       return notification.method === methodOrPredicate;
     }
     const predicate =
-        typeof methodOrPredicate === 'string' ? matchMethod : methodOrPredicate;
+      typeof methodOrPredicate === 'string' ? matchMethod : methodOrPredicate;
     let notification = null;
     do {
       if (this._unprocessedNotifications.length) {
         notification = this._unprocessedNotifications.shift();
       } else {
         notification = await new Promise(
-          (resolve) => this._notificationCallback = resolve);
+          (resolve) => (this._notificationCallback = resolve)
+        );
       }
     } while (!predicate(notification));
     return notification;
@@ -248,32 +242,32 @@ class InspectorSession {
       const callFrame = message.params.callFrames[0];
       const location = callFrame.location;
       const scriptPath = this._scriptsIdsByUrl.get(location.scriptId);
-      assert.strictEqual(scriptPath.toString(),
-                         expectedScriptPath.toString(),
-                         `${scriptPath} !== ${expectedScriptPath}`);
+      assert.strictEqual(
+        scriptPath.toString(),
+        expectedScriptPath.toString(),
+        `${scriptPath} !== ${expectedScriptPath}`
+      );
       assert.strictEqual(location.lineNumber, line);
       return true;
     }
   }
 
   waitForBreakOnLine(line, url) {
-    return this
-      .waitForNotification(
-        (notification) =>
-          this._isBreakOnLineNotification(notification, line, url),
-        `break on ${url}:${line}`);
+    return this.waitForNotification(
+      (notification) =>
+        this._isBreakOnLineNotification(notification, line, url),
+      `break on ${url}:${line}`
+    );
   }
 
   _matchesConsoleOutputNotification(notification, type, values) {
-    if (!Array.isArray(values))
-      values = [ values ];
+    if (!Array.isArray(values)) values = [values];
     if (notification.method === 'Runtime.consoleAPICalled') {
       const params = notification.params;
       if (params.type === type) {
         let i = 0;
         for (const value of params.args) {
-          if (value.value !== values[i++])
-            return false;
+          if (value.value !== values[i++]) return false;
         }
         return i === values.length;
       }
@@ -283,20 +277,25 @@ class InspectorSession {
   waitForConsoleOutput(type, values) {
     const desc = `Console output matching ${JSON.stringify(values)}`;
     return this.waitForNotification(
-      (notification) => this._matchesConsoleOutputNotification(notification,
-                                                               type, values),
-      desc);
+      (notification) =>
+        this._matchesConsoleOutputNotification(notification, type, values),
+      desc
+    );
   }
 
   async runToCompletion() {
     console.log('[test]', 'Verify node waits for the frontend to disconnect');
-    await this.send({ 'method': 'Debugger.resume' });
+    await this.send({ method: 'Debugger.resume' });
     await this.waitForNotification((notification) => {
-      return notification.method === 'Runtime.executionContextDestroyed' &&
-        notification.params.executionContextId === 1;
+      return (
+        notification.method === 'Runtime.executionContextDestroyed' &&
+        notification.params.executionContextId === 1
+      );
     });
-    while ((await this._instance.nextStderrString()) !==
-              'Waiting for the debugger to disconnect...');
+    while (
+      (await this._instance.nextStderrString()) !==
+      'Waiting for the debugger to disconnect...'
+    );
     await this.disconnect();
   }
 
@@ -314,29 +313,38 @@ class InspectorSession {
 }
 
 class NodeInstance extends EventEmitter {
-  constructor(inspectorFlags = ['--inspect-brk=0'],
-              scriptContents = '',
-              scriptFile = _MAINSCRIPT) {
+  constructor(
+    inspectorFlags = ['--inspect-brk=0'],
+    scriptContents = '',
+    scriptFile = _MAINSCRIPT
+  ) {
     super();
 
     this._scriptPath = scriptFile;
     this._script = scriptFile ? null : scriptContents;
     this._portCallback = null;
-    this.portPromise = new Promise((resolve) => this._portCallback = resolve);
-    this._process = spawnChildProcess(inspectorFlags, scriptContents,
-                                      scriptFile);
+    this.portPromise = new Promise((resolve) => (this._portCallback = resolve));
+    this._process = spawnChildProcess(
+      inspectorFlags,
+      scriptContents,
+      scriptFile
+    );
     this._running = true;
     this._stderrLineCallback = null;
     this._unprocessedStderrLines = [];
 
-    this._process.stdout.on('data', makeBufferingDataCallback(
-      (line) => {
+    this._process.stdout.on(
+      'data',
+      makeBufferingDataCallback((line) => {
         this.emit('stdout', line);
         console.log('[out]', line);
-      }));
+      })
+    );
 
-    this._process.stderr.on('data', makeBufferingDataCallback(
-      (message) => this.onStderrLine(message)));
+    this._process.stderr.on(
+      'data',
+      makeBufferingDataCallback((message) => this.onStderrLine(message))
+    );
 
     this._shutdownPromise = new Promise((resolve) => {
       this._process.once('exit', (exitCode, signal) => {
@@ -348,10 +356,14 @@ class NodeInstance extends EventEmitter {
 
   static async startViaSignal(scriptContents) {
     const instance = new NodeInstance(
-      [], `${scriptContents}\nprocess._rawDebug('started');`, undefined);
+      [],
+      `${scriptContents}\nprocess._rawDebug('started');`,
+      undefined
+    );
     const msg = 'Timed out waiting for process to start';
-    while (await fires(instance.nextStderrString(), msg, TIMEOUT) !==
-             'started') {}
+    while (
+      (await fires(instance.nextStderrString(), msg, TIMEOUT)) !== 'started'
+    ) {}
     process._debugProcess(instance._process.pid);
     return instance;
   }
@@ -375,26 +387,31 @@ class NodeInstance extends EventEmitter {
 
   httpGet(host, path, hostHeaderValue) {
     console.log('[test]', `Testing ${path}`);
-    const headers = hostHeaderValue ? { 'Host': hostHeaderValue } : null;
-    return this.portPromise.then((port) => new Promise((resolve, reject) => {
-      const req = http.get({ host, port, path, headers }, (res) => {
-        let response = '';
-        res.setEncoding('utf8');
-        res
-          .on('data', (data) => response += data.toString())
-          .on('end', () => {
-            resolve(response);
-          });
+    const headers = hostHeaderValue ? { Host: hostHeaderValue } : null;
+    return this.portPromise
+      .then(
+        (port) =>
+          new Promise((resolve, reject) => {
+            const req = http.get({ host, port, path, headers }, (res) => {
+              let response = '';
+              res.setEncoding('utf8');
+              res
+                .on('data', (data) => (response += data.toString()))
+                .on('end', () => {
+                  resolve(response);
+                });
+            });
+            req.on('error', reject);
+          })
+      )
+      .then((response) => {
+        try {
+          return JSON.parse(response);
+        } catch (e) {
+          e.body = response;
+          throw e;
+        }
       });
-      req.on('error', reject);
-    })).then((response) => {
-      try {
-        return JSON.parse(response);
-      } catch (e) {
-        e.body = response;
-        throw e;
-      }
-    });
   }
 
   async sendUpgradeRequest() {
@@ -405,8 +422,8 @@ class NodeInstance extends EventEmitter {
       port,
       path: parseURL(devtoolsUrl).path,
       headers: {
-        'Connection': 'Upgrade',
-        'Upgrade': 'websocket',
+        Connection: 'Upgrade',
+        Upgrade: 'websocket',
         'Sec-WebSocket-Version': 13,
         'Sec-WebSocket-Key': 'key=='
       }
@@ -418,8 +435,9 @@ class NodeInstance extends EventEmitter {
     const upgradeRequest = await this.sendUpgradeRequest();
     return new Promise((resolve, reject) => {
       upgradeRequest
-        .on('upgrade',
-            (message, socket) => resolve(new InspectorSession(socket, this)))
+        .on('upgrade', (message, socket) =>
+          resolve(new InspectorSession(socket, this))
+        )
         .on('response', common.mustNotCall('Upgrade was not received'));
     });
   }
@@ -429,10 +447,12 @@ class NodeInstance extends EventEmitter {
     const upgradeRequest = await this.sendUpgradeRequest();
     return new Promise((resolve, reject) => {
       upgradeRequest
-          .on('upgrade', common.mustNotCall('Upgrade was received'))
-          .on('response', (response) =>
-            response.on('data', () => {})
-                    .on('end', () => resolve(response.statusCode)));
+        .on('upgrade', common.mustNotCall('Upgrade was received'))
+        .on('response', (response) =>
+          response
+            .on('data', () => {})
+            .on('end', () => resolve(response.statusCode))
+        );
     });
   }
 
@@ -443,7 +463,7 @@ class NodeInstance extends EventEmitter {
   nextStderrString() {
     if (this._unprocessedStderrLines.length)
       return Promise.resolve(this._unprocessedStderrLines.shift());
-    return new Promise((resolve) => this._stderrLineCallback = resolve);
+    return new Promise((resolve) => (this._stderrLineCallback = resolve));
   }
 
   write(message) {
@@ -467,27 +487,32 @@ class NodeInstance extends EventEmitter {
 }
 
 function onResolvedOrRejected(promise, callback) {
-  return promise.then((result) => {
-    callback();
-    return result;
-  }, (error) => {
-    callback();
-    throw error;
-  });
+  return promise.then(
+    (result) => {
+      callback();
+      return result;
+    },
+    (error) => {
+      callback();
+      throw error;
+    }
+  );
 }
 
 function timeoutPromise(error, timeoutMs) {
   let clearCallback = null;
   let done = false;
-  const promise = onResolvedOrRejected(new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(error), timeoutMs);
-    clearCallback = () => {
-      if (done)
-        return;
-      clearTimeout(timeout);
-      resolve();
-    };
-  }), () => done = true);
+  const promise = onResolvedOrRejected(
+    new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => reject(error), timeoutMs);
+      clearCallback = () => {
+        if (done) return;
+        clearTimeout(timeout);
+        resolve();
+      };
+    }),
+    () => (done = true)
+  );
   promise.clear = clearCallback;
   return promise;
 }

@@ -14,7 +14,7 @@ const hooks = initHooks();
 
 hooks.enable();
 const watcher = fs.watch(__filename, onwatcherChanged);
-function onwatcherChanged() { }
+function onwatcherChanged() {}
 
 watcher.close();
 tick(2);

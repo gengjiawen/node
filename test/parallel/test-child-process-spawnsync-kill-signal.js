@@ -18,20 +18,23 @@ if (process.argv[2] === 'child') {
         return oldSpawnSync(opts);
       });
     }
-    const child = cp.spawnSync(process.execPath,
-                               [__filename, 'child'],
-                               { killSignal, timeout: 100 });
-    if (beforeSpawn)
-      internalCp.spawnSync = oldSpawnSync;
+    const child = cp.spawnSync(process.execPath, [__filename, 'child'], {
+      killSignal,
+      timeout: 100
+    });
+    if (beforeSpawn) internalCp.spawnSync = oldSpawnSync;
     assert.strictEqual(child.status, null);
     assert.strictEqual(child.error.code, 'ETIMEDOUT');
     return child;
   }
 
   // Verify that an error is thrown for unknown signals.
-  common.expectsError(() => {
-    spawn('SIG_NOT_A_REAL_SIGNAL');
-  }, { code: 'ERR_UNKNOWN_SIGNAL', type: TypeError });
+  common.expectsError(
+    () => {
+      spawn('SIG_NOT_A_REAL_SIGNAL');
+    },
+    { code: 'ERR_UNKNOWN_SIGNAL', type: TypeError }
+  );
 
   // Verify that the default kill signal is SIGTERM.
   {

@@ -25,10 +25,10 @@ const kOnBody = HTTPParser.kOnBody | 0;
 
 const request = Buffer.from(
   'HTTP/1.1 200 OK\r\n' +
-  'Content-Type: text/plain\r\n' +
-  'Content-Length: 4\r\n' +
-  '\r\n' +
-  'pong'
+    'Content-Type: text/plain\r\n' +
+    'Content-Length: 4\r\n' +
+    '\r\n' +
+    'pong'
 );
 
 const parser = new HTTPParser(RESPONSE);
@@ -45,13 +45,19 @@ parser[kOnBody] = common.mustCall(onbody);
 parser.execute(request, 0, request.length);
 
 function onheadersComplete() {
-  checkInvocations(httpparser, { init: 1, before: 1 },
-                   'when onheadersComplete called');
+  checkInvocations(
+    httpparser,
+    { init: 1, before: 1 },
+    'when onheadersComplete called'
+  );
 }
 
 function onbody() {
-  checkInvocations(httpparser, { init: 1, before: 2, after: 1 },
-                   'when onbody called');
+  checkInvocations(
+    httpparser,
+    { init: 1, before: 2, after: 1 },
+    'when onbody called'
+  );
   tick(1, common.mustCall(tick1));
 }
 
@@ -65,6 +71,9 @@ process.on('exit', onexit);
 function onexit() {
   hooks.disable();
   hooks.sanityCheck('HTTPPARSER');
-  checkInvocations(httpparser, { init: 1, before: 2, after: 2, destroy: 1 },
-                   'when process exits');
+  checkInvocations(
+    httpparser,
+    { init: 1, before: 2, after: 2, destroy: 1 },
+    'when process exits'
+  );
 }

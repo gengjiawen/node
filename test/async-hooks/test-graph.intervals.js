@@ -27,9 +27,8 @@ process.on('exit', onexit);
 
 function onexit() {
   hooks.disable();
-  verifyGraph(
-    hooks,
-    [ { type: 'Timeout', id: 'timeout:1', triggerAsyncId: null },
-      { type: 'Timeout', id: 'timeout:2', triggerAsyncId: 'timeout:1' }]
-  );
+  verifyGraph(hooks, [
+    { type: 'Timeout', id: 'timeout:1', triggerAsyncId: null },
+    { type: 'Timeout', id: 'timeout:2', triggerAsyncId: 'timeout:1' }
+  ]);
 }

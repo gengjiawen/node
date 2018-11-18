@@ -45,11 +45,12 @@ assert.strictEqual(util.format('foo', symbol), 'foo Symbol(foo)');
 assert.strictEqual(util.format('%s', symbol), 'Symbol(foo)');
 assert.strictEqual(util.format('%j', symbol), 'undefined');
 assert.throws(
-  () => { util.format('%d', symbol); },
+  () => {
+    util.format('%d', symbol);
+  },
   (e) => {
     // The error should be a TypeError.
-    if (!(e instanceof TypeError))
-      return false;
+    if (!(e instanceof TypeError)) return false;
 
     // The error should be from the JS engine and not from Node.js.
     // JS engine errors do not have the `code` property.
@@ -92,10 +93,7 @@ assert.strictEqual(util.format('%i', -0.5), '0');
 assert.strictEqual(util.format('%i', ''), 'NaN');
 assert.strictEqual(util.format('%i %i', 42, 43), '42 43');
 assert.strictEqual(util.format('%i %i', 42), '42 %i');
-assert.strictEqual(
-  util.format('%i', 1180591620717411303424),
-  '1'
-);
+assert.strictEqual(util.format('%i', 1180591620717411303424), '1');
 assert.strictEqual(
   util.format('%i', 1180591620717411303424n),
   '1180591620717411303424n'
@@ -164,79 +162,88 @@ const nestedObj2 = {
 };
 assert.strictEqual(util.format('%o'), '%o');
 assert.strictEqual(util.format('%o', 42), '42');
-assert.strictEqual(util.format('%o', 'foo'), '\'foo\'');
+assert.strictEqual(util.format('%o', 'foo'), "'foo'");
 assert.strictEqual(
   util.format('%o', obj),
-  '{ foo: \'bar\',\n' +
-  '  foobar: 1,\n' +
-  '  func:\n' +
-  '   { [Function: func]\n' +
-  '     [length]: 0,\n' +
-  '     [name]: \'func\',\n' +
-  '     [prototype]: func { [constructor]: [Circular] } } }');
+  "{ foo: 'bar',\n" +
+    '  foobar: 1,\n' +
+    '  func:\n' +
+    '   { [Function: func]\n' +
+    '     [length]: 0,\n' +
+    "     [name]: 'func',\n" +
+    '     [prototype]: func { [constructor]: [Circular] } } }'
+);
 assert.strictEqual(
   util.format('%o', nestedObj2),
-  '{ foo: \'bar\',\n' +
-  '  foobar: 1,\n' +
-  '  func:\n' +
-  '   [ { a:\n' +
-  '        { [Function: a]\n' +
-  '          [length]: 0,\n' +
-  '          [name]: \'a\',\n' +
-  '          [prototype]: a { [constructor]: [Circular] } } },\n' +
-  '     [length]: 1 ] }');
+  "{ foo: 'bar',\n" +
+    '  foobar: 1,\n' +
+    '  func:\n' +
+    '   [ { a:\n' +
+    '        { [Function: a]\n' +
+    '          [length]: 0,\n' +
+    "          [name]: 'a',\n" +
+    '          [prototype]: a { [constructor]: [Circular] } } },\n' +
+    '     [length]: 1 ] }'
+);
 assert.strictEqual(
   util.format('%o', nestedObj),
-  '{ foo: \'bar\',\n' +
-  '  foobar:\n' +
-  '   { foo: \'bar\',\n' +
-  '     func:\n' +
-  '      { [Function: func]\n' +
-  '        [length]: 0,\n' +
-  '        [name]: \'func\',\n' +
-  '        [prototype]: func { [constructor]: [Circular] } } } }');
+  "{ foo: 'bar',\n" +
+    '  foobar:\n' +
+    "   { foo: 'bar',\n" +
+    '     func:\n' +
+    '      { [Function: func]\n' +
+    '        [length]: 0,\n' +
+    "        [name]: 'func',\n" +
+    '        [prototype]: func { [constructor]: [Circular] } } } }'
+);
 assert.strictEqual(
   util.format('%o %o', obj, obj),
-  '{ foo: \'bar\',\n' +
-  '  foobar: 1,\n' +
-  '  func:\n' +
-  '   { [Function: func]\n' +
-  '     [length]: 0,\n' +
-  '     [name]: \'func\',\n' +
-  '     [prototype]: func { [constructor]: [Circular] } } }' +
-  ' { foo: \'bar\',\n' +
-  '  foobar: 1,\n' +
-  '  func:\n' +
-  '   { [Function: func]\n' +
-  '     [length]: 0,\n' +
-  '     [name]: \'func\',\n' +
-  '     [prototype]: func { [constructor]: [Circular] } } }');
+  "{ foo: 'bar',\n" +
+    '  foobar: 1,\n' +
+    '  func:\n' +
+    '   { [Function: func]\n' +
+    '     [length]: 0,\n' +
+    "     [name]: 'func',\n" +
+    '     [prototype]: func { [constructor]: [Circular] } } }' +
+    " { foo: 'bar',\n" +
+    '  foobar: 1,\n' +
+    '  func:\n' +
+    '   { [Function: func]\n' +
+    '     [length]: 0,\n' +
+    "     [name]: 'func',\n" +
+    '     [prototype]: func { [constructor]: [Circular] } } }'
+);
 assert.strictEqual(
   util.format('%o %o', obj),
-  '{ foo: \'bar\',\n' +
-  '  foobar: 1,\n' +
-  '  func:\n' +
-  '   { [Function: func]\n' +
-  '     [length]: 0,\n' +
-  '     [name]: \'func\',\n' +
-  '     [prototype]: func { [constructor]: [Circular] } } } %o');
+  "{ foo: 'bar',\n" +
+    '  foobar: 1,\n' +
+    '  func:\n' +
+    '   { [Function: func]\n' +
+    '     [length]: 0,\n' +
+    "     [name]: 'func',\n" +
+    '     [prototype]: func { [constructor]: [Circular] } } } %o'
+);
 
 assert.strictEqual(util.format('%O'), '%O');
 assert.strictEqual(util.format('%O', 42), '42');
-assert.strictEqual(util.format('%O', 'foo'), '\'foo\'');
+assert.strictEqual(util.format('%O', 'foo'), "'foo'");
 assert.strictEqual(
   util.format('%O', obj),
-  '{ foo: \'bar\', foobar: 1, func: [Function: func] }');
+  "{ foo: 'bar', foobar: 1, func: [Function: func] }"
+);
 assert.strictEqual(
   util.format('%O', nestedObj),
-  '{ foo: \'bar\', foobar: { foo: \'bar\', func: [Function: func] } }');
+  "{ foo: 'bar', foobar: { foo: 'bar', func: [Function: func] } }"
+);
 assert.strictEqual(
   util.format('%O %O', obj, obj),
-  '{ foo: \'bar\', foobar: 1, func: [Function: func] } ' +
-  '{ foo: \'bar\', foobar: 1, func: [Function: func] }');
+  "{ foo: 'bar', foobar: 1, func: [Function: func] } " +
+    "{ foo: 'bar', foobar: 1, func: [Function: func] }"
+);
 assert.strictEqual(
   util.format('%O %O', obj),
-  '{ foo: \'bar\', foobar: 1, func: [Function: func] } %O');
+  "{ foo: 'bar', foobar: 1, func: [Function: func] } %O"
+);
 
 // Various format specifiers
 assert.strictEqual(util.format('%%s%s', 'foo'), '%sfoo');
@@ -266,11 +273,12 @@ assert.strictEqual(util.format('o: %o, a: %O', {}, []), 'o: {}, a: []');
 assert.strictEqual(util.format('o: %o, a: %o', {}), 'o: {}, a: %o');
 assert.strictEqual(util.format('o: %O, a: %O'), 'o: %O, a: %O');
 
-
 // Invalid format specifiers
 assert.strictEqual(util.format('a% b', 'x'), 'a% b x');
-assert.strictEqual(util.format('percent: %d%, fraction: %d', 10, 0.1),
-                   'percent: 10%, fraction: 0.1');
+assert.strictEqual(
+  util.format('percent: %d%, fraction: %d', 10, 0.1),
+  'percent: 10%, fraction: 0.1'
+);
 assert.strictEqual(util.format('abc%', 1), 'abc% 1');
 
 // Additional arguments after format specifiers
@@ -289,8 +297,10 @@ assert.strictEqual(util.format('%i', 1, () => {}), '1 [Function]');
       throw new Error('Not a circular object but still not serializable');
     }
   };
-  assert.throws(() => util.format('%j', o),
-                /^Error: Not a circular object but still not serializable$/);
+  assert.throws(
+    () => util.format('%j', o),
+    /^Error: Not a circular object but still not serializable$/
+  );
 }
 
 // Errors
@@ -299,10 +309,11 @@ assert.strictEqual(util.format(err), err.stack);
 class CustomError extends Error {
   constructor(msg) {
     super();
-    Object.defineProperty(this, 'message',
-                          { value: msg, enumerable: false });
-    Object.defineProperty(this, 'name',
-                          { value: 'CustomError', enumerable: false });
+    Object.defineProperty(this, 'message', { value: msg, enumerable: false });
+    Object.defineProperty(this, 'name', {
+      value: 'CustomError',
+      enumerable: false
+    });
     Error.captureStackTrace(this, CustomError);
   }
 }
@@ -311,14 +322,17 @@ assert.strictEqual(util.format(customError), customError.stack);
 // Doesn't capture stack trace
 function BadCustomError(msg) {
   Error.call(this);
-  Object.defineProperty(this, 'message',
-                        { value: msg, enumerable: false });
-  Object.defineProperty(this, 'name',
-                        { value: 'BadCustomError', enumerable: false });
+  Object.defineProperty(this, 'message', { value: msg, enumerable: false });
+  Object.defineProperty(this, 'name', {
+    value: 'BadCustomError',
+    enumerable: false
+  });
 }
 util.inherits(BadCustomError, Error);
-assert.strictEqual(util.format(new BadCustomError('foo')),
-                   '[BadCustomError: foo]');
+assert.strictEqual(
+  util.format(new BadCustomError('foo')),
+  '[BadCustomError: foo]'
+);
 
 // The format of arguments should not depend on type of the first argument
 assert.strictEqual(util.format('1', '1'), '1 1');

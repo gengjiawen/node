@@ -7,14 +7,34 @@ const assert = require('assert');
 const { URL, URLSearchParams } = require('url');
 const fixtures = require('../common/fixtures');
 
-const serialized = 'a=a&a=1&a=true&a=undefined&a=null&a=%EF%BF%BD' +
-                   '&a=%EF%BF%BD&a=%F0%9F%98%80&a=%EF%BF%BD%EF%BF%BD' +
-                   '&a=%5Bobject+Object%5D';
-const values = ['a', 1, true, undefined, null, '\uD83D', '\uDE00',
-                '\uD83D\uDE00', '\uDE00\uD83D', {}];
-const normalizedValues = ['a', '1', 'true', 'undefined', 'null', '\uFFFD',
-                          '\uFFFD', '\uD83D\uDE00', '\uFFFD\uFFFD',
-                          '[object Object]'];
+const serialized =
+  'a=a&a=1&a=true&a=undefined&a=null&a=%EF%BF%BD' +
+  '&a=%EF%BF%BD&a=%F0%9F%98%80&a=%EF%BF%BD%EF%BF%BD' +
+  '&a=%5Bobject+Object%5D';
+const values = [
+  'a',
+  1,
+  true,
+  undefined,
+  null,
+  '\uD83D',
+  '\uDE00',
+  '\uD83D\uDE00',
+  '\uDE00\uD83D',
+  {}
+];
+const normalizedValues = [
+  'a',
+  '1',
+  'true',
+  'undefined',
+  'null',
+  '\uFFFD',
+  '\uFFFD',
+  '\uD83D\uDE00',
+  '\uFFFD\uFFFD',
+  '[object Object]'
+];
 
 const m = new URL('http://example.org');
 const sp = m.searchParams;
@@ -74,10 +94,13 @@ sp.forEach(function() {
 }, m);
 
 {
-  const callbackErr = common.expectsError({
-    code: 'ERR_INVALID_CALLBACK',
-    type: TypeError
-  }, 2);
+  const callbackErr = common.expectsError(
+    {
+      code: 'ERR_INVALID_CALLBACK',
+      type: TypeError
+    },
+    2
+  );
   assert.throws(() => sp.forEach(), callbackErr);
   assert.throws(() => sp.forEach(1), callbackErr);
 }

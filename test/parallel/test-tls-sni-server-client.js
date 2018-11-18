@@ -21,13 +21,11 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
 const fixtures = require('../common/fixtures');
-
 
 function loadPEM(n) {
   return fixtures.readKey(`${n}.pem`);
@@ -54,32 +52,38 @@ const SNIContexts = {
   }
 };
 
-const clientsOptions = [{
-  port: undefined,
-  ca: [loadPEM('ca1-cert')],
-  servername: 'a.example.com',
-  rejectUnauthorized: false
-}, {
-  port: undefined,
-  ca: [loadPEM('ca2-cert')],
-  servername: 'b.test.com',
-  rejectUnauthorized: false
-}, {
-  port: undefined,
-  ca: [loadPEM('ca2-cert')],
-  servername: 'a.b.test.com',
-  rejectUnauthorized: false
-}, {
-  port: undefined,
-  ca: [loadPEM('ca1-cert')],
-  servername: 'c.wrong.com',
-  rejectUnauthorized: false
-}, {
-  port: undefined,
-  ca: [loadPEM('ca1-cert')],
-  servername: 'chain.example.com',
-  rejectUnauthorized: false
-}];
+const clientsOptions = [
+  {
+    port: undefined,
+    ca: [loadPEM('ca1-cert')],
+    servername: 'a.example.com',
+    rejectUnauthorized: false
+  },
+  {
+    port: undefined,
+    ca: [loadPEM('ca2-cert')],
+    servername: 'b.test.com',
+    rejectUnauthorized: false
+  },
+  {
+    port: undefined,
+    ca: [loadPEM('ca2-cert')],
+    servername: 'a.b.test.com',
+    rejectUnauthorized: false
+  },
+  {
+    port: undefined,
+    ca: [loadPEM('ca1-cert')],
+    servername: 'c.wrong.com',
+    rejectUnauthorized: false
+  },
+  {
+    port: undefined,
+    ca: [loadPEM('ca1-cert')],
+    servername: 'chain.example.com',
+    rejectUnauthorized: false
+  }
+];
 
 const serverResults = [];
 const clientResults = [];
@@ -98,20 +102,23 @@ function startTest() {
   let i = 0;
   function start() {
     // No options left
-    if (i === clientsOptions.length)
-      return server.close();
+    if (i === clientsOptions.length) return server.close();
 
     const options = clientsOptions[i++];
     options.port = server.address().port;
-    const client = tls.connect(options, function() {
-      clientResults.push(
-        client.authorizationError &&
-        (client.authorizationError === 'ERR_TLS_CERT_ALTNAME_INVALID'));
-      client.destroy();
+    const client = tls.connect(
+      options,
+      function() {
+        clientResults.push(
+          client.authorizationError &&
+            client.authorizationError === 'ERR_TLS_CERT_ALTNAME_INVALID'
+        );
+        client.destroy();
 
-      // Continue
-      start();
-    });
+        // Continue
+        start();
+      }
+    );
   }
 
   start();
@@ -119,7 +126,10 @@ function startTest() {
 
 process.on('exit', function() {
   assert.deepStrictEqual(serverResults, [
-    'a.example.com', 'b.test.com', 'a.b.test.com', 'c.wrong.com',
+    'a.example.com',
+    'b.test.com',
+    'a.b.test.com',
+    'c.wrong.com',
     'chain.example.com'
   ]);
   assert.deepStrictEqual(clientResults, [true, true, false, false, true]);

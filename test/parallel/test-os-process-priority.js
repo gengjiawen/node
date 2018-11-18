@@ -53,12 +53,15 @@ assert.strictEqual(typeof PRIORITY_HIGHEST, 'number');
 
 // Test priority type validation.
 [null, true, false, 'foo', {}, [], /x/].forEach((priority) => {
-  common.expectsError(() => {
-    os.setPriority(0, priority);
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    message: /The "priority" argument must be of type number\./
-  });
+  common.expectsError(
+    () => {
+      os.setPriority(0, priority);
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      message: /The "priority" argument must be of type number\./
+    }
+  );
 });
 
 // Test priority range validation.
@@ -71,12 +74,15 @@ assert.strictEqual(typeof PRIORITY_HIGHEST, 'number');
   PRIORITY_HIGHEST - 1,
   PRIORITY_LOW + 1
 ].forEach((priority) => {
-  common.expectsError(() => {
-    os.setPriority(0, priority);
-  }, {
-    code: 'ERR_OUT_OF_RANGE',
-    message: /The value of "priority" is out of range\./
-  });
+  common.expectsError(
+    () => {
+      os.setPriority(0, priority);
+    },
+    {
+      code: 'ERR_OUT_OF_RANGE',
+      message: /The value of "priority" is out of range\./
+    }
+  );
 });
 
 // Verify that valid values work.
@@ -88,8 +94,7 @@ for (let i = PRIORITY_HIGHEST; i <= PRIORITY_LOW; i++) {
     // The current user might not have sufficient permissions to set this
     // specific priority level. Skip this priority, but keep trying lower
     // priorities.
-    if (err.info.code === 'EACCES')
-      continue;
+    if (err.info.code === 'EACCES') continue;
 
     assert(err);
   }
@@ -104,7 +109,6 @@ for (let i = PRIORITY_HIGHEST; i <= PRIORITY_LOW; i++) {
   os.setPriority(process.pid, i);
   checkPriority(process.pid, i);
 }
-
 
 function checkPriority(pid, expected) {
   const priority = os.getPriority(pid);
@@ -128,6 +132,5 @@ function checkPriority(pid, expected) {
     assert.strictEqual(priority, PRIORITY_NORMAL);
   else if (expected < PRIORITY_LOW)
     assert.strictEqual(priority, PRIORITY_BELOW_NORMAL);
-  else
-    assert.strictEqual(priority, PRIORITY_LOW);
+  else assert.strictEqual(priority, PRIORITY_LOW);
 }

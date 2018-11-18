@@ -15,8 +15,7 @@ fs.access(__filename, common.mustCall(onaccess));
 function onaccess() {
   const as = hooks.activitiesOfTypes('FSREQCALLBACK');
   const a = as[0];
-  checkInvocations(a, { init: 1, before: 1 },
-                   'while in onaccess callback');
+  checkInvocations(a, { init: 1, before: 1 }, 'while in onaccess callback');
   tick(2);
 }
 
@@ -32,6 +31,9 @@ function onexit() {
   const a = as[0];
   assert.strictEqual(a.type, 'FSREQCALLBACK');
   assert.strictEqual(typeof a.uid, 'number');
-  checkInvocations(a, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'when process exits');
+  checkInvocations(
+    a,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'when process exits'
+  );
 }

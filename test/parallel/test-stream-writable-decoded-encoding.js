@@ -38,21 +38,27 @@ class MyWritable extends stream.Writable {
 }
 
 {
-  const m = new MyWritable(function(isBuffer, type, enc) {
-    assert(isBuffer);
-    assert.strictEqual(type, 'object');
-    assert.strictEqual(enc, 'buffer');
-  }, { decodeStrings: true });
+  const m = new MyWritable(
+    function(isBuffer, type, enc) {
+      assert(isBuffer);
+      assert.strictEqual(type, 'object');
+      assert.strictEqual(enc, 'buffer');
+    },
+    { decodeStrings: true }
+  );
   m.write('some-text', 'utf8');
   m.end();
 }
 
 {
-  const m = new MyWritable(function(isBuffer, type, enc) {
-    assert(!isBuffer);
-    assert.strictEqual(type, 'string');
-    assert.strictEqual(enc, 'utf8');
-  }, { decodeStrings: false });
+  const m = new MyWritable(
+    function(isBuffer, type, enc) {
+      assert(!isBuffer);
+      assert.strictEqual(type, 'string');
+      assert.strictEqual(enc, 'utf8');
+    },
+    { decodeStrings: false }
+  );
   m.write('some-text', 'utf8');
   m.end();
 }

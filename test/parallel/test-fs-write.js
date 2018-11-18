@@ -39,7 +39,7 @@ const constants = fs.constants;
 common.allowGlobals(externalizeString, isOneByteString, x);
 
 {
-  const expected = 'ümlaut eins';  // Must be a unique string.
+  const expected = 'ümlaut eins'; // Must be a unique string.
   externalizeString(expected);
   assert.strictEqual(isOneByteString(expected), true);
   const fd = fs.openSync(fn, 'w');
@@ -49,7 +49,7 @@ common.allowGlobals(externalizeString, isOneByteString, x);
 }
 
 {
-  const expected = 'ümlaut zwei';  // Must be a unique string.
+  const expected = 'ümlaut zwei'; // Must be a unique string.
   externalizeString(expected);
   assert.strictEqual(isOneByteString(expected), true);
   const fd = fs.openSync(fn, 'w');
@@ -59,7 +59,7 @@ common.allowGlobals(externalizeString, isOneByteString, x);
 }
 
 {
-  const expected = '中文 1';  // Must be a unique string.
+  const expected = '中文 1'; // Must be a unique string.
   externalizeString(expected);
   assert.strictEqual(isOneByteString(expected), false);
   const fd = fs.openSync(fn, 'w');
@@ -69,7 +69,7 @@ common.allowGlobals(externalizeString, isOneByteString, x);
 }
 
 {
-  const expected = '中文 2';  // Must be a unique string.
+  const expected = '中文 2'; // Must be a unique string.
   externalizeString(expected);
   assert.strictEqual(isOneByteString(expected), false);
   const fd = fs.openSync(fn, 'w');
@@ -79,74 +79,83 @@ common.allowGlobals(externalizeString, isOneByteString, x);
 }
 /* eslint-enable no-undef */
 
-fs.open(fn, 'w', 0o644, common.mustCall((err, fd) => {
-  assert.ifError(err);
-
-  const done = common.mustCall((err, written) => {
+fs.open(
+  fn,
+  'w',
+  0o644,
+  common.mustCall((err, fd) => {
     assert.ifError(err);
-    assert.strictEqual(written, Buffer.byteLength(expected));
-    fs.closeSync(fd);
-    const found = fs.readFileSync(fn, 'utf8');
-    fs.unlinkSync(fn);
-    assert.strictEqual(found, expected);
-  });
 
-  const written = common.mustCall((err, written) => {
-    assert.ifError(err);
-    assert.strictEqual(written, 0);
-    fs.write(fd, expected, 0, 'utf8', done);
-  });
+    const done = common.mustCall((err, written) => {
+      assert.ifError(err);
+      assert.strictEqual(written, Buffer.byteLength(expected));
+      fs.closeSync(fd);
+      const found = fs.readFileSync(fn, 'utf8');
+      fs.unlinkSync(fn);
+      assert.strictEqual(found, expected);
+    });
 
-  fs.write(fd, '', 0, 'utf8', written);
-}));
+    const written = common.mustCall((err, written) => {
+      assert.ifError(err);
+      assert.strictEqual(written, 0);
+      fs.write(fd, expected, 0, 'utf8', done);
+    });
+
+    fs.write(fd, '', 0, 'utf8', written);
+  })
+);
 
 const args = constants.O_CREAT | constants.O_WRONLY | constants.O_TRUNC;
-fs.open(fn2, args, 0o644, common.mustCall((err, fd) => {
-  assert.ifError(err);
-
-  const done = common.mustCall((err, written) => {
+fs.open(
+  fn2,
+  args,
+  0o644,
+  common.mustCall((err, fd) => {
     assert.ifError(err);
-    assert.strictEqual(written, Buffer.byteLength(expected));
-    fs.closeSync(fd);
-    const found = fs.readFileSync(fn2, 'utf8');
-    fs.unlinkSync(fn2);
-    assert.strictEqual(found, expected);
-  });
 
-  const written = common.mustCall((err, written) => {
+    const done = common.mustCall((err, written) => {
+      assert.ifError(err);
+      assert.strictEqual(written, Buffer.byteLength(expected));
+      fs.closeSync(fd);
+      const found = fs.readFileSync(fn2, 'utf8');
+      fs.unlinkSync(fn2);
+      assert.strictEqual(found, expected);
+    });
+
+    const written = common.mustCall((err, written) => {
+      assert.ifError(err);
+      assert.strictEqual(written, 0);
+      fs.write(fd, expected, 0, 'utf8', done);
+    });
+
+    fs.write(fd, '', 0, 'utf8', written);
+  })
+);
+
+fs.open(
+  fn3,
+  'w',
+  0o644,
+  common.mustCall((err, fd) => {
     assert.ifError(err);
-    assert.strictEqual(written, 0);
-    fs.write(fd, expected, 0, 'utf8', done);
-  });
 
-  fs.write(fd, '', 0, 'utf8', written);
-}));
+    const done = common.mustCall((err, written) => {
+      assert.ifError(err);
+      assert.strictEqual(written, Buffer.byteLength(expected));
+      fs.closeSync(fd);
+    });
 
-fs.open(fn3, 'w', 0o644, common.mustCall((err, fd) => {
-  assert.ifError(err);
-
-  const done = common.mustCall((err, written) => {
-    assert.ifError(err);
-    assert.strictEqual(written, Buffer.byteLength(expected));
-    fs.closeSync(fd);
-  });
-
-  fs.write(fd, expected, done);
-}));
+    fs.write(fd, expected, done);
+  })
+);
 
 [false, 'test', {}, [], null, undefined].forEach((i) => {
-  common.expectsError(
-    () => fs.write(i, common.mustNotCall()),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
-  common.expectsError(
-    () => fs.writeSync(i),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
+  common.expectsError(() => fs.write(i, common.mustNotCall()), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
+  common.expectsError(() => fs.writeSync(i), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
 });

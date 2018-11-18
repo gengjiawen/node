@@ -16,12 +16,15 @@ class MyServerResponse extends http.ServerResponse {
   }
 }
 
-const server = http.Server({
-  ServerResponse: MyServerResponse
-}, common.mustCall(function(req, res) {
-  res.status(200);
-  res.end();
-}));
+const server = http.Server(
+  {
+    ServerResponse: MyServerResponse
+  },
+  common.mustCall(function(req, res) {
+    res.status(200);
+    res.end();
+  })
+);
 server.listen();
 
 server.on('listening', function makeRequest() {

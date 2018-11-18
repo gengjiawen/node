@@ -7,11 +7,8 @@ const common = require('../common');
 
 const { search } = require('internal/modules/esm/default_resolve');
 
-common.expectsError(
-  () => search('target', undefined),
-  {
-    code: 'ERR_MISSING_MODULE',
-    type: Error,
-    message: 'Cannot find module target'
-  }
-);
+common.expectsError(() => search('target', undefined), {
+  code: 'ERR_MISSING_MODULE',
+  type: Error,
+  message: 'Cannot find module target'
+});

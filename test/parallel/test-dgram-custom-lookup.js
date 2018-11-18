@@ -11,9 +11,11 @@ const dns = require('dns');
 
   const socket = dgram.createSocket({ type: 'udp4', lookup });
 
-  socket.bind(common.mustCall(() => {
-    socket.close();
-  }));
+  socket.bind(
+    common.mustCall(() => {
+      socket.close();
+    })
+  );
 }
 
 {
@@ -27,21 +29,27 @@ const dns = require('dns');
 
   const socket = dgram.createSocket({ type: 'udp4' });
 
-  socket.bind(common.mustCall(() => {
-    socket.close();
-  }));
+  socket.bind(
+    common.mustCall(() => {
+      socket.close();
+    })
+  );
 }
 
 {
   // Verify that non-functions throw.
   [null, true, false, 0, 1, NaN, '', 'foo', {}, Symbol()].forEach((value) => {
-    common.expectsError(() => {
-      dgram.createSocket({ type: 'udp4', lookup: value });
-    }, {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The "lookup" argument must be of type Function. ' +
-               `Received type ${typeof value}`
-    });
+    common.expectsError(
+      () => {
+        dgram.createSocket({ type: 'udp4', lookup: value });
+      },
+      {
+        code: 'ERR_INVALID_ARG_TYPE',
+        type: TypeError,
+        message:
+          'The "lookup" argument must be of type Function. ' +
+          `Received type ${typeof value}`
+      }
+    );
   });
 }

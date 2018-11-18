@@ -10,9 +10,12 @@ if (!process.env.HAS_STARTED_WORKER) {
   process.env.HAS_STARTED_WORKER = 1;
   const w = new Worker(fixtures.path('syntax', 'bad_syntax.js'));
   w.on('message', common.mustNotCall());
-  w.on('error', common.mustCall((err) => {
-    assert(/SyntaxError/.test(err));
-  }));
+  w.on(
+    'error',
+    common.mustCall((err) => {
+      assert(/SyntaxError/.test(err));
+    })
+  );
 } else {
   throw new Error('foo');
 }

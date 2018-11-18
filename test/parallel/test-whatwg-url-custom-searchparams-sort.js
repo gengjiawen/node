@@ -18,15 +18,15 @@ for (let i = 10; i < 100; i++) {
   pairs.push([`a${i}`, 'b']);
   tests[0].output.push([`a${i}`, 'b']);
 }
-tests[0].input = pairs.sort(() => Math.random() > 0.5)
-  .map((pair) => pair.join('=')).join('&');
+tests[0].input = pairs
+  .sort(() => Math.random() > 0.5)
+  .map((pair) => pair.join('='))
+  .join('&');
 
-tests.push(
-  {
-    'input': 'z=a&=b&c=d',
-    'output': [['', 'b'], ['c', 'd'], ['z', 'a']]
-  }
-);
+tests.push({
+  input: 'z=a&=b&c=d',
+  output: [['', 'b'], ['c', 'd'], ['z', 'a']]
+});
 
 tests.forEach((val) => {
   test(() => {

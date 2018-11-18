@@ -26,14 +26,14 @@ const assert = require('assert');
 const vm = require('vm');
 
 const code =
-    'Object.defineProperty(this, "f", {\n' +
-    '  get: function() { return x; },\n' +
-    '  set: function(k) { x = k; },\n' +
-    '  configurable: true,\n' +
-    '  enumerable: true\n' +
-    '});\n' +
-    'g = f;\n' +
-    'f;\n';
+  'Object.defineProperty(this, "f", {\n' +
+  '  get: function() { return x; },\n' +
+  '  set: function(k) { x = k; },\n' +
+  '  configurable: true,\n' +
+  '  enumerable: true\n' +
+  '});\n' +
+  'g = f;\n' +
+  'f;\n';
 
 const x = {};
 const o = vm.createContext({ console, x });

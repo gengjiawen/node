@@ -10,10 +10,7 @@ const tmpdir = require('../common/tmpdir');
 const path = require('path');
 const nonexistentFile = path.join(tmpdir.path, 'non-existent');
 const { internalBinding } = require('internal/test/binding');
-const {
-  UV_ENODEV,
-  UV_ENOENT
-} = internalBinding('uv');
+const { UV_ENODEV, UV_ENOENT } = internalBinding('uv');
 
 tmpdir.refresh();
 
@@ -25,13 +22,16 @@ tmpdir.refresh();
     if (err.code === 'ENOENT') {
       assert.strictEqual(
         err.message,
-        `ENOENT: no such file or directory, watch '${nonexistentFile}'`);
+        `ENOENT: no such file or directory, watch '${nonexistentFile}'`
+      );
       assert.strictEqual(err.errno, UV_ENOENT);
       assert.strictEqual(err.code, 'ENOENT');
-    } else {  // AIX
+    } else {
+      // AIX
       assert.strictEqual(
         err.message,
-        `ENODEV: no such device, watch '${nonexistentFile}'`);
+        `ENODEV: no such device, watch '${nonexistentFile}'`
+      );
       assert.strictEqual(err.errno, UV_ENODEV);
       assert.strictEqual(err.code, 'ENODEV');
     }
@@ -54,7 +54,8 @@ tmpdir.refresh();
     assert.strictEqual(err.filename, nonexistentFile);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, watch '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, watch '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'watch');

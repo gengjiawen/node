@@ -23,11 +23,9 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
-if (!common.opensslCli)
-  common.skip('missing openssl-cli');
+if (!common.opensslCli) common.skip('missing openssl-cli');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -43,17 +41,28 @@ const options = {
 
 const reply = 'I AM THE WALRUS'; // something recognizable
 
-const server = tls.createServer(options, common.mustCall(function(conn) {
-  conn.end(reply);
-}));
+const server = tls.createServer(
+  options,
+  common.mustCall(function(conn) {
+    conn.end(reply);
+  })
+);
 
-server.listen(0, '127.0.0.1', common.mustCall(function() {
-  const cmd = `"${common.opensslCli}" s_client -cipher ${
-    options.ciphers} -connect 127.0.0.1:${this.address().port}`;
+server.listen(
+  0,
+  '127.0.0.1',
+  common.mustCall(function() {
+    const cmd = `"${common.opensslCli}" s_client -cipher ${
+      options.ciphers
+    } -connect 127.0.0.1:${this.address().port}`;
 
-  exec(cmd, common.mustCall(function(err, stdout, stderr) {
-    assert.ifError(err);
-    assert(stdout.includes(reply));
-    server.close();
-  }));
-}));
+    exec(
+      cmd,
+      common.mustCall(function(err, stdout, stderr) {
+        assert.ifError(err);
+        assert(stdout.includes(reply));
+        server.close();
+      })
+    );
+  })
+);

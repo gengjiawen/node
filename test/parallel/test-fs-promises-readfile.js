@@ -15,7 +15,7 @@ async function validateReadFile() {
   const buffer = Buffer.from(
     Array.apply(null, { length: 16834 * 2 })
       .map(Math.random)
-      .map((number) => (number * (1 << 8)))
+      .map((number) => number * (1 << 8))
   );
 
   // Writing buffer to a file then try to read it
@@ -32,8 +32,7 @@ async function validateReadFileProc() {
   // - https://github.com/nodejs/node/issues/21331
 
   // Test is Linux-specific.
-  if (!common.isLinux)
-    return;
+  if (!common.isLinux) return;
 
   const hostname = await readFile('/proc/sys/kernel/hostname');
   assert.ok(hostname.length > 0);

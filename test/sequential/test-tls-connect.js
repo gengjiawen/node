@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 
@@ -37,11 +36,16 @@ const tls = require('tls');
   const key = fixtures.readSync('test_key.pem');
 
   const options = { cert: cert, key: key, port: common.PORT };
-  const conn = tls.connect(options, common.mustNotCall());
+  const conn = tls.connect(
+    options,
+    common.mustNotCall()
+  );
 
   conn.on(
     'error',
-    common.mustCall((e) => { assert.strictEqual(e.code, 'ECONNREFUSED'); })
+    common.mustCall((e) => {
+      assert.strictEqual(e.code, 'ECONNREFUSED');
+    })
   );
 }
 
@@ -51,11 +55,14 @@ const tls = require('tls');
   const key = fixtures.readSync('test_key.pem');
 
   assert.throws(() => {
-    tls.connect({
-      cert: cert,
-      key: key,
-      port: common.PORT,
-      ciphers: 'rick-128-roll'
-    }, common.mustNotCall());
+    tls.connect(
+      {
+        cert: cert,
+        key: key,
+        port: common.PORT,
+        ciphers: 'rick-128-roll'
+      },
+      common.mustNotCall()
+    );
   }, /no cipher match/i);
 }

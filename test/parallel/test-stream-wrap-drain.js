@@ -34,9 +34,12 @@ const { ShutdownWrap } = internalBinding('stream_wrap');
   );
 
   // Make sure that the 'drain' events will be emitted.
-  testDuplex.on('drain', common.mustCall(() => {
-    console.log('testDuplex drain');
-  }));
+  testDuplex.on(
+    'drain',
+    common.mustCall(() => {
+      console.log('testDuplex drain');
+    })
+  );
 
   assert.strictEqual(typeof resolve, 'function');
 

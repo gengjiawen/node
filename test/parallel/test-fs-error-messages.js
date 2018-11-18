@@ -30,7 +30,6 @@ const path = require('path');
 
 tmpdir.refresh();
 
-
 const nonexistentFile = path.join(tmpdir.path, 'non-existent');
 const nonexistentDir = path.join(tmpdir.path, 'non-existent', 'foo', 'bar');
 const existingFile = path.join(tmpdir.path, 'existingFile.js');
@@ -40,7 +39,6 @@ const existingDir2 = fixtures.path('keys');
 fs.mkdirSync(existingDir);
 fs.writeFileSync(existingFile, 'test', 'utf-8');
 fs.writeFileSync(existingFile2, 'test', 'utf-8');
-
 
 const { COPYFILE_EXCL } = fs.constants;
 const { internalBinding } = require('internal/test/binding');
@@ -72,7 +70,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, stat '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, stat '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'stat');
@@ -81,10 +80,7 @@ function re(literals, ...values) {
 
   fs.stat(nonexistentFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.statSync(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.statSync(nonexistentFile), validateError);
 }
 
 // lstat
@@ -93,7 +89,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, lstat '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, lstat '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'lstat');
@@ -101,10 +98,7 @@ function re(literals, ...values) {
   };
 
   fs.lstat(nonexistentFile, common.mustCall(validateError));
-  assert.throws(
-    () => fs.lstatSync(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.lstatSync(nonexistentFile), validateError);
 }
 
 // fstat
@@ -120,10 +114,7 @@ function re(literals, ...values) {
   common.runWithInvalidFD((fd) => {
     fs.fstat(fd, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.fstatSync(fd),
-      validateError
-    );
+    assert.throws(() => fs.fstatSync(fd), validateError);
   });
 }
 
@@ -133,7 +124,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, lstat '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, lstat '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'lstat');
@@ -142,10 +134,7 @@ function re(literals, ...values) {
 
   fs.realpath(nonexistentFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.realpathSync(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.realpathSync(nonexistentFile), validateError);
 }
 
 // native realpath
@@ -154,7 +143,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, realpath '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, realpath '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'realpath');
@@ -163,10 +153,7 @@ function re(literals, ...values) {
 
   fs.realpath.native(nonexistentFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.realpathSync.native(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.realpathSync.native(nonexistentFile), validateError);
 }
 
 // readlink
@@ -175,7 +162,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, readlink '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, readlink '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'readlink');
@@ -184,10 +172,7 @@ function re(literals, ...values) {
 
   fs.readlink(nonexistentFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.readlinkSync(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.readlinkSync(nonexistentFile), validateError);
 }
 
 // link nonexistent file
@@ -195,12 +180,16 @@ function re(literals, ...values) {
   const validateError = (err) => {
     assert.strictEqual(nonexistentFile, err.path);
     // Could be resolved to an absolute path
-    assert.ok(err.dest.endsWith('foo'),
-              `expect ${err.dest} to end with 'foo'`);
-    const regexp = new RegExp('^ENOENT: no such file or directory, link ' +
-                              re`'${nonexistentFile}' -> ` + '\'.*foo\'');
-    assert.ok(regexp.test(err.message),
-              `Expect ${err.message} to match ${regexp}`);
+    assert.ok(err.dest.endsWith('foo'), `expect ${err.dest} to end with 'foo'`);
+    const regexp = new RegExp(
+      '^ENOENT: no such file or directory, link ' +
+        re`'${nonexistentFile}' -> ` +
+        "'.*foo'"
+    );
+    assert.ok(
+      regexp.test(err.message),
+      `Expect ${err.message} to match ${regexp}`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'link');
@@ -209,10 +198,7 @@ function re(literals, ...values) {
 
   fs.link(nonexistentFile, 'foo', common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.linkSync(nonexistentFile, 'foo'),
-    validateError
-  );
+  assert.throws(() => fs.linkSync(nonexistentFile, 'foo'), validateError);
 }
 
 // link existing file
@@ -223,7 +209,8 @@ function re(literals, ...values) {
     assert.strictEqual(
       err.message,
       `EEXIST: file already exists, link '${existingFile}' -> ` +
-      `'${existingFile2}'`);
+        `'${existingFile2}'`
+    );
     assert.strictEqual(err.errno, UV_EEXIST);
     assert.strictEqual(err.code, 'EEXIST');
     assert.strictEqual(err.syscall, 'link');
@@ -232,10 +219,7 @@ function re(literals, ...values) {
 
   fs.link(existingFile, existingFile2, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.linkSync(existingFile, existingFile2),
-    validateError
-  );
+  assert.throws(() => fs.linkSync(existingFile, existingFile2), validateError);
 }
 
 // symlink
@@ -246,7 +230,8 @@ function re(literals, ...values) {
     assert.strictEqual(
       err.message,
       `EEXIST: file already exists, symlink '${existingFile}' -> ` +
-      `'${existingFile2}'`);
+        `'${existingFile2}'`
+    );
     assert.strictEqual(err.errno, UV_EEXIST);
     assert.strictEqual(err.code, 'EEXIST');
     assert.strictEqual(err.syscall, 'symlink');
@@ -267,7 +252,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, unlink '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, unlink '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'unlink');
@@ -276,10 +262,7 @@ function re(literals, ...values) {
 
   fs.unlink(nonexistentFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.unlinkSync(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.unlinkSync(nonexistentFile), validateError);
 }
 
 // rename
@@ -287,12 +270,16 @@ function re(literals, ...values) {
   const validateError = (err) => {
     assert.strictEqual(nonexistentFile, err.path);
     // Could be resolved to an absolute path
-    assert.ok(err.dest.endsWith('foo'),
-              `expect ${err.dest} to end with 'foo'`);
-    const regexp = new RegExp('ENOENT: no such file or directory, rename ' +
-                              re`'${nonexistentFile}' -> ` + '\'.*foo\'');
-    assert.ok(regexp.test(err.message),
-              `Expect ${err.message} to match ${regexp}`);
+    assert.ok(err.dest.endsWith('foo'), `expect ${err.dest} to end with 'foo'`);
+    const regexp = new RegExp(
+      'ENOENT: no such file or directory, rename ' +
+        re`'${nonexistentFile}' -> ` +
+        "'.*foo'"
+    );
+    assert.ok(
+      regexp.test(err.message),
+      `Expect ${err.message} to match ${regexp}`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'rename');
@@ -301,10 +288,7 @@ function re(literals, ...values) {
 
   fs.rename(nonexistentFile, 'foo', common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.renameSync(nonexistentFile, 'foo'),
-    validateError
-  );
+  assert.throws(() => fs.renameSync(nonexistentFile, 'foo'), validateError);
 }
 
 // rename non-empty directory
@@ -318,24 +302,31 @@ function re(literals, ...values) {
       assert.strictEqual(
         err.message,
         `ENOTEMPTY: directory not empty, rename '${existingDir}' -> ` +
-        `'${existingDir2}'`);
+          `'${existingDir2}'`
+      );
       assert.strictEqual(err.errno, UV_ENOTEMPTY);
-    } else if (err.code === 'EXDEV') {  // not on the same mounted filesystem
+    } else if (err.code === 'EXDEV') {
+      // not on the same mounted filesystem
       assert.strictEqual(
         err.message,
         `EXDEV: cross-device link not permitted, rename '${existingDir}' -> ` +
-            `'${existingDir2}'`);
-    } else if (err.code === 'EEXIST') {  // smartos and aix
+          `'${existingDir2}'`
+      );
+    } else if (err.code === 'EEXIST') {
+      // smartos and aix
       assert.strictEqual(
         err.message,
         `EEXIST: file already exists, rename '${existingDir}' -> ` +
-        `'${existingDir2}'`);
+          `'${existingDir2}'`
+      );
       assert.strictEqual(err.errno, UV_EEXIST);
-    } else {  // windows
+    } else {
+      // windows
       assert.strictEqual(
         err.message,
         `EPERM: operation not permitted, rename '${existingDir}' -> ` +
-        `'${existingDir2}'`);
+          `'${existingDir2}'`
+      );
       assert.strictEqual(err.errno, UV_EPERM);
       assert.strictEqual(err.code, 'EPERM');
     }
@@ -344,10 +335,7 @@ function re(literals, ...values) {
 
   fs.rename(existingDir, existingDir2, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.renameSync(existingDir, existingDir2),
-    validateError
-  );
+  assert.throws(() => fs.renameSync(existingDir, existingDir2), validateError);
 }
 
 // rmdir
@@ -356,7 +344,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, rmdir '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, rmdir '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'rmdir');
@@ -365,10 +354,7 @@ function re(literals, ...values) {
 
   fs.rmdir(nonexistentFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.rmdirSync(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.rmdirSync(nonexistentFile), validateError);
 }
 
 // rmdir a file
@@ -379,12 +365,15 @@ function re(literals, ...values) {
     if (err.code === 'ENOTDIR') {
       assert.strictEqual(
         err.message,
-        `ENOTDIR: not a directory, rmdir '${existingFile}'`);
+        `ENOTDIR: not a directory, rmdir '${existingFile}'`
+      );
       assert.strictEqual(err.errno, UV_ENOTDIR);
-    } else {  // windows
+    } else {
+      // windows
       assert.strictEqual(
         err.message,
-        `ENOENT: no such file or directory, rmdir '${existingFile}'`);
+        `ENOENT: no such file or directory, rmdir '${existingFile}'`
+      );
       assert.strictEqual(err.errno, UV_ENOENT);
       assert.strictEqual(err.code, 'ENOENT');
     }
@@ -393,10 +382,7 @@ function re(literals, ...values) {
 
   fs.rmdir(existingFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.rmdirSync(existingFile),
-    validateError
-  );
+  assert.throws(() => fs.rmdirSync(existingFile), validateError);
 }
 
 // mkdir
@@ -405,7 +391,8 @@ function re(literals, ...values) {
     assert.strictEqual(existingFile, err.path);
     assert.strictEqual(
       err.message,
-      `EEXIST: file already exists, mkdir '${existingFile}'`);
+      `EEXIST: file already exists, mkdir '${existingFile}'`
+    );
     assert.strictEqual(err.errno, UV_EEXIST);
     assert.strictEqual(err.code, 'EEXIST');
     assert.strictEqual(err.syscall, 'mkdir');
@@ -414,10 +401,7 @@ function re(literals, ...values) {
 
   fs.mkdir(existingFile, 0o666, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.mkdirSync(existingFile, 0o666),
-    validateError
-  );
+  assert.throws(() => fs.mkdirSync(existingFile, 0o666), validateError);
 }
 
 // chmod
@@ -426,7 +410,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, chmod '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, chmod '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'chmod');
@@ -435,10 +420,7 @@ function re(literals, ...values) {
 
   fs.chmod(nonexistentFile, 0o666, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.chmodSync(nonexistentFile, 0o666),
-    validateError
-  );
+  assert.throws(() => fs.chmodSync(nonexistentFile, 0o666), validateError);
 }
 
 // open
@@ -447,7 +429,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, open '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, open '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'open');
@@ -456,12 +439,8 @@ function re(literals, ...values) {
 
   fs.open(nonexistentFile, 'r', 0o666, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.openSync(nonexistentFile, 'r', 0o666),
-    validateError
-  );
+  assert.throws(() => fs.openSync(nonexistentFile, 'r', 0o666), validateError);
 }
-
 
 // close
 {
@@ -476,10 +455,7 @@ function re(literals, ...values) {
   common.runWithInvalidFD((fd) => {
     fs.close(fd, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.closeSync(fd),
-      validateError
-    );
+    assert.throws(() => fs.closeSync(fd), validateError);
   });
 }
 
@@ -489,7 +465,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, open '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, open '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'open');
@@ -498,10 +475,7 @@ function re(literals, ...values) {
 
   fs.readFile(nonexistentFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.readFileSync(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.readFileSync(nonexistentFile), validateError);
 }
 
 // readdir
@@ -510,7 +484,8 @@ function re(literals, ...values) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, scandir '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, scandir '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'scandir');
@@ -519,10 +494,7 @@ function re(literals, ...values) {
 
   fs.readdir(nonexistentFile, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.readdirSync(nonexistentFile),
-    validateError
-  );
+  assert.throws(() => fs.readdirSync(nonexistentFile), validateError);
 }
 
 // ftruncate
@@ -544,10 +516,7 @@ function re(literals, ...values) {
   common.runWithInvalidFD((fd) => {
     fs.ftruncate(fd, 4, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.ftruncateSync(fd, 4),
-      validateError
-    );
+    assert.throws(() => fs.ftruncateSync(fd, 4), validateError);
   });
 }
 
@@ -564,10 +533,7 @@ function re(literals, ...values) {
   common.runWithInvalidFD((fd) => {
     fs.fdatasync(fd, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.fdatasyncSync(fd),
-      validateError
-    );
+    assert.throws(() => fs.fdatasyncSync(fd), validateError);
   });
 }
 
@@ -584,10 +550,7 @@ function re(literals, ...values) {
   common.runWithInvalidFD((fd) => {
     fs.fsync(fd, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.fsyncSync(fd),
-      validateError
-    );
+    assert.throws(() => fs.fsyncSync(fd), validateError);
   });
 }
 
@@ -597,19 +560,23 @@ if (!common.isWindows) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, chown '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, chown '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'chown');
     return true;
   };
 
-  fs.chown(nonexistentFile, process.getuid(), process.getgid(),
-           common.mustCall(validateError));
+  fs.chown(
+    nonexistentFile,
+    process.getuid(),
+    process.getgid(),
+    common.mustCall(validateError)
+  );
 
   assert.throws(
-    () => fs.chownSync(nonexistentFile,
-                       process.getuid(), process.getgid()),
+    () => fs.chownSync(nonexistentFile, process.getuid(), process.getgid()),
     validateError
   );
 }
@@ -620,15 +587,20 @@ if (!common.isAIX) {
     assert.strictEqual(nonexistentFile, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, utime '${nonexistentFile}'`);
+      `ENOENT: no such file or directory, utime '${nonexistentFile}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'utime');
     return true;
   };
 
-  fs.utimes(nonexistentFile, new Date(), new Date(),
-            common.mustCall(validateError));
+  fs.utimes(
+    nonexistentFile,
+    new Date(),
+    new Date(),
+    common.mustCall(validateError)
+  );
 
   assert.throws(
     () => fs.utimesSync(nonexistentFile, new Date(), new Date()),
@@ -640,13 +612,18 @@ if (!common.isAIX) {
 {
   const validateError = (err) => {
     const pathPrefix = new RegExp('^' + re`${nonexistentDir}`);
-    assert(pathPrefix.test(err.path),
-           `Expect ${err.path} to match ${pathPrefix}`);
+    assert(
+      pathPrefix.test(err.path),
+      `Expect ${err.path} to match ${pathPrefix}`
+    );
 
-    const prefix = new RegExp('^ENOENT: no such file or directory, mkdtemp ' +
-                              re`'${nonexistentDir}`);
-    assert(prefix.test(err.message),
-           `Expect ${err.message} to match ${prefix}`);
+    const prefix = new RegExp(
+      '^ENOENT: no such file or directory, mkdtemp ' + re`'${nonexistentDir}`
+    );
+    assert(
+      prefix.test(err.message),
+      `Expect ${err.message} to match ${prefix}`
+    );
 
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
@@ -656,10 +633,7 @@ if (!common.isAIX) {
 
   fs.mkdtemp(nonexistentDir, common.mustCall(validateError));
 
-  assert.throws(
-    () => fs.mkdtempSync(nonexistentDir),
-    validateError
-  );
+  assert.throws(() => fs.mkdtempSync(nonexistentDir), validateError);
 }
 
 // Check copyFile with invalid flags.
@@ -672,11 +646,16 @@ if (!common.isAIX) {
     syscall: 'copyfile'
   };
 
-  fs.copyFile(existingFile, nonexistentFile, -1,
-              common.expectsError(validateError));
+  fs.copyFile(
+    existingFile,
+    nonexistentFile,
+    -1,
+    common.expectsError(validateError)
+  );
 
-  validateError.message = 'EINVAL: invalid argument, copyfile ' +
-                          `'${existingFile}' -> '${nonexistentFile}'`;
+  validateError.message =
+    'EINVAL: invalid argument, copyfile ' +
+    `'${existingFile}' -> '${nonexistentFile}'`;
   assert.throws(
     () => fs.copyFileSync(existingFile, nonexistentFile, -1),
     validateError
@@ -686,17 +665,22 @@ if (!common.isAIX) {
 // copyFile: destination exists but the COPYFILE_EXCL flag is provided.
 {
   const validateError = (err) => {
-    if (err.code === 'ENOENT') {  // Could be ENOENT or EEXIST
-      assert.strictEqual(err.message,
-                         'ENOENT: no such file or directory, copyfile ' +
-                         `'${existingFile}' -> '${existingFile2}'`);
+    if (err.code === 'ENOENT') {
+      // Could be ENOENT or EEXIST
+      assert.strictEqual(
+        err.message,
+        'ENOENT: no such file or directory, copyfile ' +
+          `'${existingFile}' -> '${existingFile2}'`
+      );
       assert.strictEqual(err.errno, UV_ENOENT);
       assert.strictEqual(err.code, 'ENOENT');
       assert.strictEqual(err.syscall, 'copyfile');
     } else {
-      assert.strictEqual(err.message,
-                         'EEXIST: file already exists, copyfile ' +
-                         `'${existingFile}' -> '${existingFile2}'`);
+      assert.strictEqual(
+        err.message,
+        'EEXIST: file already exists, copyfile ' +
+          `'${existingFile}' -> '${existingFile2}'`
+      );
       assert.strictEqual(err.errno, UV_EEXIST);
       assert.strictEqual(err.code, 'EEXIST');
       assert.strictEqual(err.syscall, 'copyfile');
@@ -704,8 +688,12 @@ if (!common.isAIX) {
     return true;
   };
 
-  fs.copyFile(existingFile, existingFile2, COPYFILE_EXCL,
-              common.mustCall(validateError));
+  fs.copyFile(
+    existingFile,
+    existingFile2,
+    COPYFILE_EXCL,
+    common.mustCall(validateError)
+  );
 
   assert.throws(
     () => fs.copyFileSync(existingFile, existingFile2, COPYFILE_EXCL),
@@ -716,17 +704,23 @@ if (!common.isAIX) {
 // copyFile: the source does not exist.
 {
   const validateError = (err) => {
-    assert.strictEqual(err.message,
-                       'ENOENT: no such file or directory, copyfile ' +
-                       `'${nonexistentFile}' -> '${existingFile2}'`);
+    assert.strictEqual(
+      err.message,
+      'ENOENT: no such file or directory, copyfile ' +
+        `'${nonexistentFile}' -> '${existingFile2}'`
+    );
     assert.strictEqual(err.errno, UV_ENOENT);
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'copyfile');
     return true;
   };
 
-  fs.copyFile(nonexistentFile, existingFile2, COPYFILE_EXCL,
-              common.mustCall(validateError));
+  fs.copyFile(
+    nonexistentFile,
+    existingFile2,
+    COPYFILE_EXCL,
+    common.mustCall(validateError)
+  );
 
   assert.throws(
     () => fs.copyFileSync(nonexistentFile, existingFile2, COPYFILE_EXCL),
@@ -748,10 +742,7 @@ if (!common.isAIX) {
     const buf = Buffer.alloc(5);
     fs.read(fd, buf, 0, 1, 1, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.readSync(fd, buf, 0, 1, 1),
-      validateError
-    );
+    assert.throws(() => fs.readSync(fd, buf, 0, 1, 1), validateError);
   });
 }
 
@@ -768,10 +759,7 @@ if (!common.isAIX) {
   common.runWithInvalidFD((fd) => {
     fs.fchmod(fd, 0o666, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.fchmodSync(fd, 0o666),
-      validateError
-    );
+    assert.throws(() => fs.fchmodSync(fd, 0o666), validateError);
   });
 }
 
@@ -786,8 +774,12 @@ if (!common.isWindows) {
   };
 
   common.runWithInvalidFD((fd) => {
-    fs.fchown(fd, process.getuid(), process.getgid(),
-              common.mustCall(validateError));
+    fs.fchown(
+      fd,
+      process.getuid(),
+      process.getgid(),
+      common.mustCall(validateError)
+    );
 
     assert.throws(
       () => fs.fchownSync(fd, process.getuid(), process.getgid()),
@@ -810,10 +802,7 @@ if (!common.isWindows) {
     const buf = Buffer.alloc(5);
     fs.write(fd, buf, 0, 1, 1, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.writeSync(fd, buf, 0, 1, 1),
-      validateError
-    );
+    assert.throws(() => fs.writeSync(fd, buf, 0, 1, 1), validateError);
   });
 }
 
@@ -830,13 +819,9 @@ if (!common.isWindows) {
   common.runWithInvalidFD((fd) => {
     fs.write(fd, 'test', 1, common.mustCall(validateError));
 
-    assert.throws(
-      () => fs.writeSync(fd, 'test', 1),
-      validateError
-    );
+    assert.throws(() => fs.writeSync(fd, 'test', 1), validateError);
   });
 }
-
 
 // futimes
 if (!common.isAIX) {

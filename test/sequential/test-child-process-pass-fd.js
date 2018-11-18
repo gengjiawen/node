@@ -9,8 +9,10 @@ const common = require('../common');
 // This test is basically `test-cluster-net-send` but creating lots of workers
 // so the issue reproduces on OS X consistently.
 
-if ((process.config.variables.arm_version === '6') ||
-    (process.config.variables.arm_version === '7'))
+if (
+  process.config.variables.arm_version === '6' ||
+  process.config.variables.arm_version === '7'
+)
   common.skip('Too slow for armv6 and armv7 bots');
 
 const assert = require('assert');
@@ -28,9 +30,12 @@ function forkWorker() {
     worker.send('got');
 
     let recvData = '';
-    handle.on('data', common.mustCall((data) => {
-      recvData += data;
-    }));
+    handle.on(
+      'data',
+      common.mustCall((data) => {
+        recvData += data;
+      })
+    );
 
     handle.on('end', () => {
       assert.strictEqual(recvData, 'hello');
@@ -53,13 +58,14 @@ if (process.argv[2] !== 'child') {
   for (let i = 0; i < N; ++i) {
     forkWorker();
   }
-  process.on('exit', () => { assert.strictEqual(messageCallbackCount, N); });
+  process.on('exit', () => {
+    assert.strictEqual(messageCallbackCount, N);
+  });
 } else {
   let socket;
   let cbcalls = 0;
   function socketConnected() {
-    if (++cbcalls === 2)
-      process.send('handle', socket);
+    if (++cbcalls === 2) process.send('handle', socket);
   }
 
   // As a side-effect, listening for the message event will ref the IPC channel,
@@ -70,15 +76,23 @@ if (process.argv[2] !== 'child') {
   // thus no work to do, and will exit immediately, preventing process leaks.
   process.on('message', common.mustCall());
 
-  const server = net.createServer((c) => {
-    process.once('message', (msg) => {
-      assert.strictEqual(msg, 'got');
-      c.end('hello');
-    });
-    socketConnected();
-  }).unref();
+  const server = net
+    .createServer((c) => {
+      process.once('message', (msg) => {
+        assert.strictEqual(msg, 'got');
+        c.end('hello');
+      });
+      socketConnected();
+    })
+    .unref();
   server.listen(0, common.localhostIPv4, () => {
     const { port } = server.address();
-    socket = net.connect(port, common.localhostIPv4, socketConnected).unref();
+    socket = net
+      .connect(
+        port,
+        common.localhostIPv4,
+        socketConnected
+      )
+      .unref();
   });
 }

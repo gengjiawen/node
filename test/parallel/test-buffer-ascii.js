@@ -28,12 +28,14 @@ const assert = require('assert');
 assert.strictEqual(Buffer.from('hérité').toString('ascii'), 'hC)ritC)');
 
 // 71 characters, 78 bytes. The ’ character is a triple-byte sequence.
-const input = 'C’est, graphiquement, la réunion d’un accent aigu ' +
-              'et d’un accent grave.';
+const input =
+  'C’est, graphiquement, la réunion d’un accent aigu ' +
+  'et d’un accent grave.';
 
-const expected = 'Cb\u0000\u0019est, graphiquement, la rC)union ' +
-                 'db\u0000\u0019un accent aigu et db\u0000\u0019un ' +
-                 'accent grave.';
+const expected =
+  'Cb\u0000\u0019est, graphiquement, la rC)union ' +
+  'db\u0000\u0019un accent aigu et db\u0000\u0019un ' +
+  'accent grave.';
 
 const buf = Buffer.from(input);
 

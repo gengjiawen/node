@@ -24,80 +24,86 @@ const common = require('../common');
 const assert = require('assert');
 const net = require('net');
 
-const tcp = net.Server(common.mustCall((s) => {
-  tcp.close();
+const tcp = net.Server(
+  common.mustCall((s) => {
+    tcp.close();
 
-  let buf = '';
-  s.setEncoding('utf8');
-  s.on('data', function(d) {
-    buf += d;
-  });
-
-  s.on('end', function() {
-    console.error('SERVER: end', buf);
-    assert.strictEqual(buf, "L'État, c'est moi");
-    s.end();
-  });
-}));
-
-tcp.listen(0, common.mustCall(function() {
-  const socket = net.Stream({ highWaterMark: 0 });
-
-  let connected = false;
-  assert.strictEqual(socket.pending, true);
-  socket.connect(this.address().port, common.mustCall(() => connected = true));
-
-  assert.strictEqual(socket.pending, true);
-  assert.strictEqual(socket.connecting, true);
-  assert.strictEqual(socket.readyState, 'opening');
-
-  // Make sure that anything besides a buffer or a string throws.
-  common.expectsError(() => socket.write(null),
-                      {
-                        code: 'ERR_STREAM_NULL_VALUES',
-                        type: TypeError,
-                        message: 'May not write null values to stream'
-                      });
-  [
-    true,
-    false,
-    undefined,
-    1,
-    1.0,
-    +Infinity,
-    -Infinity,
-    [],
-    {}
-  ].forEach((value) => {
-    common.expectsError(() => socket.write(value), {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The "chunk" argument must be one of type string or Buffer. ' +
-               `Received type ${typeof value}`
+    let buf = '';
+    s.setEncoding('utf8');
+    s.on('data', function(d) {
+      buf += d;
     });
-  });
 
-  // Write a string that contains a multi-byte character sequence to test that
-  // `bytesWritten` is incremented with the # of bytes, not # of characters.
-  const a = "L'État, c'est ";
-  const b = 'moi';
+    s.on('end', function() {
+      console.error('SERVER: end', buf);
+      assert.strictEqual(buf, "L'État, c'est moi");
+      s.end();
+    });
+  })
+);
 
-  // We're still connecting at this point so the datagram is first pushed onto
-  // the connect queue. Make sure that it's not added to `bytesWritten` again
-  // when the actual write happens.
-  const r = socket.write(a, common.mustCall((er) => {
-    console.error('write cb');
-    assert.ok(connected);
-    assert.strictEqual(socket.bytesWritten, Buffer.from(a + b).length);
-    assert.strictEqual(socket.pending, false);
-  }));
-  socket.on('close', common.mustCall(() => {
+tcp.listen(
+  0,
+  common.mustCall(function() {
+    const socket = net.Stream({ highWaterMark: 0 });
+
+    let connected = false;
     assert.strictEqual(socket.pending, true);
-  }));
+    socket.connect(
+      this.address().port,
+      common.mustCall(() => (connected = true))
+    );
 
-  assert.strictEqual(socket.bytesWritten, Buffer.from(a).length);
-  assert.strictEqual(r, false);
-  socket.end(b);
+    assert.strictEqual(socket.pending, true);
+    assert.strictEqual(socket.connecting, true);
+    assert.strictEqual(socket.readyState, 'opening');
 
-  assert.strictEqual(socket.readyState, 'opening');
-}));
+    // Make sure that anything besides a buffer or a string throws.
+    common.expectsError(() => socket.write(null), {
+      code: 'ERR_STREAM_NULL_VALUES',
+      type: TypeError,
+      message: 'May not write null values to stream'
+    });
+    [true, false, undefined, 1, 1.0, +Infinity, -Infinity, [], {}].forEach(
+      (value) => {
+        common.expectsError(() => socket.write(value), {
+          code: 'ERR_INVALID_ARG_TYPE',
+          type: TypeError,
+          message:
+            'The "chunk" argument must be one of type string or Buffer. ' +
+            `Received type ${typeof value}`
+        });
+      }
+    );
+
+    // Write a string that contains a multi-byte character sequence to test that
+    // `bytesWritten` is incremented with the # of bytes, not # of characters.
+    const a = "L'État, c'est ";
+    const b = 'moi';
+
+    // We're still connecting at this point so the datagram is first pushed onto
+    // the connect queue. Make sure that it's not added to `bytesWritten` again
+    // when the actual write happens.
+    const r = socket.write(
+      a,
+      common.mustCall((er) => {
+        console.error('write cb');
+        assert.ok(connected);
+        assert.strictEqual(socket.bytesWritten, Buffer.from(a + b).length);
+        assert.strictEqual(socket.pending, false);
+      })
+    );
+    socket.on(
+      'close',
+      common.mustCall(() => {
+        assert.strictEqual(socket.pending, true);
+      })
+    );
+
+    assert.strictEqual(socket.bytesWritten, Buffer.from(a).length);
+    assert.strictEqual(r, false);
+    socket.end(b);
+
+    assert.strictEqual(socket.readyState, 'opening');
+  })
+);

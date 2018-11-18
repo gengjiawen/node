@@ -27,17 +27,19 @@ function Test1() {
   // server only for maintaining event loop
   const server = net.createServer().listen(0);
 
-  const timer1 = setInterval(common.mustCall(() => {
-    timer1.unref();
-    if (counter1++ === 3) {
-      clearInterval(timer1);
-      server.close(() => {
-        Test2();
-      });
-    }
-  }, 4), 1);
+  const timer1 = setInterval(
+    common.mustCall(() => {
+      timer1.unref();
+      if (counter1++ === 3) {
+        clearInterval(timer1);
+        server.close(() => {
+          Test2();
+        });
+      }
+    }, 4),
+    1
+  );
 }
-
 
 // Test2 checks setInterval continues even if it is unrefed within
 // timer callback. counter2 continues to be incremented more than 11
@@ -48,8 +50,7 @@ function Test2() {
 
   const timer2 = setInterval(() => {
     timer2.unref();
-    if (counter2++ === 3)
-      server.close();
+    if (counter2++ === 3) server.close();
   }, 1);
 }
 

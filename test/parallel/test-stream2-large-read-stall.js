@@ -48,20 +48,24 @@ r.on('readable', function() {
     console.error(`  < ${ret && ret.length} (${rs.length} remain)`);
   } while (ret && ret.length === READSIZE);
 
-  console.error('<< after read()',
-                ret && ret.length,
-                rs.needReadable,
-                rs.length);
+  console.error(
+    '<< after read()',
+    ret && ret.length,
+    rs.needReadable,
+    rs.length
+  );
 });
 
-r.on('end', common.mustCall(function() {
-  assert.strictEqual(pushes, PUSHCOUNT + 1);
-}));
+r.on(
+  'end',
+  common.mustCall(function() {
+    assert.strictEqual(pushes, PUSHCOUNT + 1);
+  })
+);
 
 let pushes = 0;
 function push() {
-  if (pushes > PUSHCOUNT)
-    return;
+  if (pushes > PUSHCOUNT) return;
 
   if (pushes++ === PUSHCOUNT) {
     console.error('   push(EOF)');
@@ -69,6 +73,5 @@ function push() {
   }
 
   console.error(`   push #${pushes}`);
-  if (r.push(Buffer.allocUnsafe(PUSHSIZE)))
-    setTimeout(push, 1);
+  if (r.push(Buffer.allocUnsafe(PUSHSIZE))) setTimeout(push, 1);
 }

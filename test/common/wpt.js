@@ -25,11 +25,17 @@ const harnessMock = {
   assert_true: (value, message) => assert.strictEqual(value, true, message),
   assert_false: (value, message) => assert.strictEqual(value, false, message),
   assert_throws: (code, func, desc) => {
-    assert.throws(func, function(err) {
-      return typeof err === 'object' &&
-             'name' in err &&
-             err.name.startsWith(code.name);
-    }, desc);
+    assert.throws(
+      func,
+      function(err) {
+        return (
+          typeof err === 'object' &&
+          'name' in err &&
+          err.name.startsWith(code.name)
+        );
+      },
+      desc
+    );
   },
   assert_array_equals: assert.deepStrictEqual,
   assert_unreached(desc) {
@@ -48,18 +54,21 @@ class ResourceLoader {
       '/resources/WebIDLParser.js',
       '/resources/webidl2/lib/webidl2.js'
     );
-    const file = url.startsWith('/') ?
-      fixtures.path('wpt', url) :
-      fixtures.path('wpt', this.path, url);
+    const file = url.startsWith('/')
+      ? fixtures.path('wpt', url)
+      : fixtures.path('wpt', this.path, url);
     if (asPromise) {
-      return fsPromises.readFile(file)
-        .then((data) => {
-          return {
-            ok: true,
-            json() { return JSON.parse(data.toString()); },
-            text() { return data.toString(); }
-          };
-        });
+      return fsPromises.readFile(file).then((data) => {
+        return {
+          ok: true,
+          json() {
+            return JSON.parse(data.toString());
+          },
+          text() {
+            return data.toString();
+          }
+        };
+      });
     } else {
       return fs.readFileSync(file, 'utf8');
     }
@@ -76,7 +85,7 @@ class WPTTest {
    */
   constructor(mod, filename, requires, failReason, skipReason) {
     this.module = mod; // name of the WPT module, e.g. 'url'
-    this.filename = filename;  // name of the test file
+    this.filename = filename; // name of the test file
     this.requires = requires;
     this.failReason = failReason;
     this.skipReason = skipReason;
@@ -117,8 +126,7 @@ class StatusLoader {
       failReason = this.status[file].fail;
       skipReason = this.status[file].skip;
     }
-    return new WPTTest(this.path, file, requires,
-                       failReason, skipReason);
+    return new WPTTest(this.path, file, requires, failReason, skipReason);
   }
 
   load() {
@@ -212,7 +220,7 @@ class WPTRunner {
     for (const test of queue) {
       const filename = test.filename;
       const content = test.getContent();
-      const meta = test.title = this.getMeta(content);
+      const meta = (test.title = this.getMeta(content));
 
       const absolutePath = test.getAbsolutePath();
       const context = this.generateContext(test.filename);
@@ -222,11 +230,15 @@ class WPTRunner {
           filename: absolutePath
         });
       } catch (err) {
-        this.fail(filename, {
-          name: '',
-          message: err.message,
-          stack: err.stack
-        }, 'UNCAUGHT');
+        this.fail(
+          filename,
+          {
+            name: '',
+            message: err.message,
+            stack: err.stack
+          },
+          'UNCAUGHT'
+        );
         this.inProgress.delete(filename);
       }
     }
@@ -244,7 +256,9 @@ class WPTRunner {
       },
       location: {},
       GLOBAL: {
-        isWindow() { return false; }
+        isWindow() {
+          return false;
+        }
       },
       Object
     };
@@ -262,8 +276,8 @@ class WPTRunner {
   }
 
   generateContext(filename) {
-    const sandbox = this.sandbox = this.getSandbox();
-    const context = this.context = vm.createContext(sandbox);
+    const sandbox = (this.sandbox = this.getSandbox());
+    const context = (this.context = vm.createContext(sandbox));
 
     const harnessPath = fixtures.path('wpt', 'resources', 'testharness.js');
     const harness = fs.readFileSync(harnessPath, 'utf8');
@@ -271,16 +285,14 @@ class WPTRunner {
       filename: harnessPath
     });
 
-    sandbox.add_result_callback(
-      this.resultCallback.bind(this, filename)
-    );
+    sandbox.add_result_callback(this.resultCallback.bind(this, filename));
     sandbox.add_completion_callback(
       this.completionCallback.bind(this, filename)
     );
     sandbox.self = sandbox;
     // TODO(joyeecheung): we are not a window - work with the upstream to
     // add a new scope for us.
-    sandbox.document = {};  // Pretend we are Window
+    sandbox.document = {}; // Pretend we are Window
     return context;
   }
 
@@ -352,8 +364,9 @@ class WPTRunner {
         console.log(`[${item.reason}] ${item.test.name}`);
         console.log(item.test.message);
         console.log(item.test.stack);
-        const command = `${process.execPath} ${process.execArgv}` +
-                        ` ${require.main.filename} ${filename}`;
+        const command =
+          `${process.execPath} ${process.execArgv}` +
+          ` ${require.main.filename} ${filename}`;
         console.log(`Command: ${command}\n`);
       }
       assert.fail(`${unexpectedFailures.length} unexpected failures found`);

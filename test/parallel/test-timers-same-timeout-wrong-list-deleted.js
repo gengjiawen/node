@@ -15,22 +15,28 @@ const common = require('../common');
 
 const TIMEOUT = common.platformTimeout(100);
 
-const handle1 = setTimeout(common.mustCall(function() {
-  // Cause the old TIMEOUT list to be deleted
-  clearTimeout(handle1);
+const handle1 = setTimeout(
+  common.mustCall(function() {
+    // Cause the old TIMEOUT list to be deleted
+    clearTimeout(handle1);
 
-  // Cause a new list with the same key (TIMEOUT) to be created for this timer
-  const handle2 = setTimeout(common.mustNotCall(), TIMEOUT);
+    // Cause a new list with the same key (TIMEOUT) to be created for this timer
+    const handle2 = setTimeout(common.mustNotCall(), TIMEOUT);
 
-  setTimeout(common.mustCall(function() {
-    // Attempt to cancel the second timer. Fix for this bug will keep the
-    // newer timer from being dereferenced by keeping its list from being
-    // erroneously deleted. If we are able to cancel the timer successfully,
-    // the bug is fixed.
-    clearTimeout(handle2);
-  }), 1);
+    setTimeout(
+      common.mustCall(function() {
+        // Attempt to cancel the second timer. Fix for this bug will keep the
+        // newer timer from being dereferenced by keeping its list from being
+        // erroneously deleted. If we are able to cancel the timer successfully,
+        // the bug is fixed.
+        clearTimeout(handle2);
+      }),
+      1
+    );
 
-  // When this callback completes, `listOnTimeout` should now look at the
-  // correct list and refrain from removing the new TIMEOUT list which
-  // contains the reference to the newer timer.
-}), TIMEOUT);
+    // When this callback completes, `listOnTimeout` should now look at the
+    // correct list and refrain from removing the new TIMEOUT list which
+    // contains the reference to the newer timer.
+  }),
+  TIMEOUT
+);

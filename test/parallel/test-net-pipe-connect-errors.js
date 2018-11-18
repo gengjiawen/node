@@ -60,37 +60,50 @@ const notSocketClient = net.createConnection(emptyTxt, function() {
   assert.fail('connection callback should not run');
 });
 
-notSocketClient.on('error', common.mustCall(function(err) {
-  assert(err.code === 'ENOTSOCK' || err.code === 'ECONNREFUSED',
-         `received ${err.code} instead of ENOTSOCK or ECONNREFUSED`);
-}));
-
+notSocketClient.on(
+  'error',
+  common.mustCall(function(err) {
+    assert(
+      err.code === 'ENOTSOCK' || err.code === 'ECONNREFUSED',
+      `received ${err.code} instead of ENOTSOCK or ECONNREFUSED`
+    );
+  })
+);
 
 // Trying to connect to not-existing socket should result in ENOENT error
 const noEntSocketClient = net.createConnection('no-ent-file', function() {
   assert.fail('connection to non-existent socket, callback should not run');
 });
 
-noEntSocketClient.on('error', common.mustCall(function(err) {
-  assert.strictEqual(err.code, 'ENOENT');
-}));
-
+noEntSocketClient.on(
+  'error',
+  common.mustCall(function(err) {
+    assert.strictEqual(err.code, 'ENOENT');
+  })
+);
 
 // On Windows or when running as root, a chmod has no effect on named pipes
 if (!common.isWindows && process.getuid() !== 0) {
   // Trying to connect to a socket one has no access to should result in EACCES
   const accessServer = net.createServer(
-    common.mustNotCall('server callback should not run'));
-  accessServer.listen(common.PIPE, common.mustCall(function() {
-    fs.chmodSync(common.PIPE, 0);
+    common.mustNotCall('server callback should not run')
+  );
+  accessServer.listen(
+    common.PIPE,
+    common.mustCall(function() {
+      fs.chmodSync(common.PIPE, 0);
 
-    const accessClient = net.createConnection(common.PIPE, function() {
-      assert.fail('connection should get EACCES, callback should not run');
-    });
+      const accessClient = net.createConnection(common.PIPE, function() {
+        assert.fail('connection should get EACCES, callback should not run');
+      });
 
-    accessClient.on('error', common.mustCall(function(err) {
-      assert.strictEqual(err.code, 'EACCES');
-      accessServer.close();
-    }));
-  }));
+      accessClient.on(
+        'error',
+        common.mustCall(function(err) {
+          assert.strictEqual(err.code, 'EACCES');
+          accessServer.close();
+        })
+      );
+    })
+  );
 }

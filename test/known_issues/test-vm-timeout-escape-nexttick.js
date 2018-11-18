@@ -21,22 +21,24 @@ function loop() {
     const current = hrtime();
     const span = (current - start) / NS_PER_MS;
     if (span >= waitDuration) {
-      throw new Error(
-        `escaped timeout at ${span} milliseconds!`);
+      throw new Error(`escaped timeout at ${span} milliseconds!`);
     }
   }
 }
 
-assert.throws(() => {
-  vm.runInNewContext(
-    'nextTick(loop); loop();',
-    {
-      hrtime,
-      nextTick,
-      loop
-    },
-    { timeout: common.platformTimeout(10) }
-  );
-}, {
-  code: 'ERR_SCRIPT_EXECUTION_TIMEOUT'
-});
+assert.throws(
+  () => {
+    vm.runInNewContext(
+      'nextTick(loop); loop();',
+      {
+        hrtime,
+        nextTick,
+        loop
+      },
+      { timeout: common.platformTimeout(10) }
+    );
+  },
+  {
+    code: 'ERR_SCRIPT_EXECUTION_TIMEOUT'
+  }
+);

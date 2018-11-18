@@ -11,7 +11,7 @@ const check = '\u001b[1;1H\u001b[0J';
 function doTest(isTTY, check) {
   let buf = '';
   process.stdout.isTTY = isTTY;
-  process.stdout.write = (string) => buf += string;
+  process.stdout.write = (string) => (buf += string);
   console.clear();
   process.stdout.write = stdoutWrite;
   assert.strictEqual(buf, check);

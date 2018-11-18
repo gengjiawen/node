@@ -105,10 +105,7 @@ function testRunnerMain() {
   spawnMaster({
     execArgv: [`--inspect=${port}`],
     clusterSettings: { inspectPort: 'addTwo' },
-    workers: [
-      { expectedPort: port + 2 },
-      { expectedPort: port + 4 }
-    ]
+    workers: [{ expectedPort: port + 2 }, { expectedPort: port + 4 }]
   });
 
   port = debuggerPort + offset++ * 5;
@@ -164,9 +161,7 @@ function testRunnerMain() {
   spawnMaster({
     execArgv: [],
     clusterSettings: { inspectPort: port, execArgv: ['--inspect'] },
-    workers: [
-      { expectedPort: port }
-    ]
+    workers: [{ expectedPort: port }]
   });
 
   port = debuggerPort + offset++ * 5;
@@ -198,9 +193,7 @@ function testRunnerMain() {
     defaultPortCase = spawnMaster({
       execArgv: ['--inspect'],
       clusterSettings: { inspectPort: port + 2 },
-      workers: [
-        { expectedInitialPort: port + 2 }
-      ]
+      workers: [{ expectedInitialPort: port + 2 }]
     });
   });
 }
@@ -227,10 +220,9 @@ function masterProcessMain() {
 
     if (clusterSettings) {
       if (clusterSettings.inspectPort === 'addTwo') {
-        clusterSettings.inspectPort = common.mustCall(
-          () => { return debugPort += 2; },
-          workers.length
-        );
+        clusterSettings.inspectPort = common.mustCall(() => {
+          return (debugPort += 2);
+        }, workers.length);
       } else if (clusterSettings.inspectPort === 'string') {
         clusterSettings.inspectPort = 'string';
         cluster.setupMaster(clusterSettings);
@@ -322,17 +314,22 @@ function workerProcessMain() {
 
 function spawnMaster({ execArgv, workers, clusterSettings = {} }) {
   return new Promise((resolve) => {
-    childProcess.fork(__filename, {
-      env: Object.assign({}, process.env, {
-        workers: JSON.stringify(workers),
-        clusterSettings: JSON.stringify(clusterSettings),
-        testProcess: true
-      }),
-      execArgv
-    }).on('exit', common.mustCall((code, signal) => {
-      checkExitCode(code, signal);
-      resolve();
-    }));
+    childProcess
+      .fork(__filename, {
+        env: Object.assign({}, process.env, {
+          workers: JSON.stringify(workers),
+          clusterSettings: JSON.stringify(clusterSettings),
+          testProcess: true
+        }),
+        execArgv
+      })
+      .on(
+        'exit',
+        common.mustCall((code, signal) => {
+          checkExitCode(code, signal);
+          resolve();
+        })
+      );
   });
 }
 

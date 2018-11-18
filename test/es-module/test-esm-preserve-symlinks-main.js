@@ -18,12 +18,15 @@ const entry_link_absolute_path = path.join(tmpDir, 'link.js');
 const submodule = path.join(tmpDir, 'nested2', 'submodule.js');
 const submodule_link_absolute_path = path.join(tmpDir, 'submodule_link.js');
 
-fs.writeFileSync(entry, `
+fs.writeFileSync(
+  entry,
+  `
 const assert = require('assert');
 
 // this import only resolves with --preserve-symlinks-main set
 require('./submodule_link.js');
-`);
+`
+);
 fs.writeFileSync(submodule, '');
 
 try {
@@ -39,12 +42,15 @@ function doTest(flags, done) {
   // dictates that it'll resolve relative imports in the main file relative to
   // the symlink, and not relative to the symlink target; the file structure set
   // up above requires this to not crash when loading ./submodule_link.js
-  spawn(process.execPath,
-        flags.concat([
-          '--preserve-symlinks',
-          '--preserve-symlinks-main', entry_link_absolute_path
-        ]),
-        { stdio: 'inherit' }).on('exit', (code) => {
+  spawn(
+    process.execPath,
+    flags.concat([
+      '--preserve-symlinks',
+      '--preserve-symlinks-main',
+      entry_link_absolute_path
+    ]),
+    { stdio: 'inherit' }
+  ).on('exit', (code) => {
     assert.strictEqual(code, 0);
     done();
   });

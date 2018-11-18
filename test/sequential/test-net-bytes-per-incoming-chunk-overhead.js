@@ -13,24 +13,31 @@ let baseRSS;
 const receivedChunks = [];
 const N = 250000;
 
-const server = net.createServer(common.mustCall((socket) => {
-  baseRSS = process.memoryUsage().rss;
+const server = net
+  .createServer(
+    common.mustCall((socket) => {
+      baseRSS = process.memoryUsage().rss;
 
-  socket.setNoDelay(true);
-  socket.on('data', (chunk) => {
-    receivedChunks.push(chunk);
-    if (receivedChunks.length < N) {
-      client.write('a');
-    } else {
-      client.end();
-      server.close();
-    }
-  });
-})).listen(0, common.mustCall(() => {
-  client = net.connect(server.address().port);
-  client.setNoDelay(true);
-  client.write('hello!');
-}));
+      socket.setNoDelay(true);
+      socket.on('data', (chunk) => {
+        receivedChunks.push(chunk);
+        if (receivedChunks.length < N) {
+          client.write('a');
+        } else {
+          client.end();
+          server.close();
+        }
+      });
+    })
+  )
+  .listen(
+    0,
+    common.mustCall(() => {
+      client = net.connect(server.address().port);
+      client.setNoDelay(true);
+      client.write('hello!');
+    })
+  );
 
 process.on('exit', () => {
   global.gc();

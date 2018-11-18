@@ -42,8 +42,9 @@ const assert = require('assert');
   assert.throws(() => process.kill(val), {
     code: 'ERR_INVALID_ARG_TYPE',
     name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "pid" argument must be of type number. ' +
-             `Received type ${typeof val}`
+    message:
+      'The "pid" argument must be of type number. ' +
+      `Received type ${typeof val}`
   });
 });
 

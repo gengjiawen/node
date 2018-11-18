@@ -6,11 +6,14 @@ const { Transform } = require('stream');
 
 const t = new Transform();
 
-t.on('error', common.expectsError({
-  type: Error,
-  code: 'ERR_METHOD_NOT_IMPLEMENTED',
-  message: 'The _transform() method is not implemented'
-}));
+t.on(
+  'error',
+  common.expectsError({
+    type: Error,
+    code: 'ERR_METHOD_NOT_IMPLEMENTED',
+    message: 'The _transform() method is not implemented'
+  })
+);
 
 t.end(Buffer.from('blerg'));
 

@@ -7,7 +7,9 @@ const { inherits } = require('util');
 
 {
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   write.on('finish', common.mustNotCall());
@@ -19,16 +21,21 @@ const { inherits } = require('util');
 
 {
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   const expected = new Error('kaboom');
 
   write.on('finish', common.mustNotCall());
   write.on('close', common.mustCall());
-  write.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  write.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   write.destroy(expected);
   assert.strictEqual(write.destroyed, true);
@@ -36,7 +43,9 @@ const { inherits } = require('util');
 
 {
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   write._destroy = function(err, cb) {
@@ -48,9 +57,12 @@ const { inherits } = require('util');
 
   write.on('finish', common.mustNotCall('no finish event'));
   write.on('close', common.mustCall());
-  write.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  write.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   write.destroy(expected);
   assert.strictEqual(write.destroyed, true);
@@ -58,7 +70,9 @@ const { inherits } = require('util');
 
 {
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); },
+    write(chunk, enc, cb) {
+      cb();
+    },
     destroy: common.mustCall(function(err, cb) {
       assert.strictEqual(err, expected);
       cb();
@@ -79,7 +93,9 @@ const { inherits } = require('util');
 
 {
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   write._destroy = common.mustCall(function(err, cb) {
@@ -93,7 +109,9 @@ const { inherits } = require('util');
 
 {
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   write._destroy = common.mustCall(function(err, cb) {
@@ -118,7 +136,9 @@ const { inherits } = require('util');
 
 {
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   const expected = new Error('kaboom');
@@ -130,9 +150,12 @@ const { inherits } = require('util');
 
   write.on('close', common.mustCall());
   write.on('finish', common.mustNotCall('no finish event'));
-  write.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  write.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   write.destroy();
   assert.strictEqual(write.destroyed, true);
@@ -141,7 +164,9 @@ const { inherits } = require('util');
 {
   // double error case
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   write.on('close', common.mustCall());
@@ -155,7 +180,9 @@ const { inherits } = require('util');
 
 {
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   write.destroyed = true;
@@ -181,16 +208,21 @@ const { inherits } = require('util');
 {
   // destroy and destroy callback
   const write = new Writable({
-    write(chunk, enc, cb) { cb(); }
+    write(chunk, enc, cb) {
+      cb();
+    }
   });
 
   write.destroy();
 
   const expected = new Error('kaboom');
 
-  write.destroy(expected, common.mustCall(function(err) {
-    assert.strictEqual(expected, err);
-  }));
+  write.destroy(
+    expected,
+    common.mustCall(function(err) {
+      assert.strictEqual(expected, err);
+    })
+  );
 }
 
 {

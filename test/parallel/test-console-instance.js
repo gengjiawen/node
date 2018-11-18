@@ -44,7 +44,9 @@ assert.ok(!({} instanceof Console));
 // Make sure that the Console constructor throws
 // when not given a writable stream instance.
 common.expectsError(
-  () => { new Console(); },
+  () => {
+    new Console();
+  },
   {
     code: 'ERR_CONSOLE_WRITABLE_STREAM',
     type: TypeError,
@@ -106,7 +108,9 @@ out.write = err.write = (d) => {};
   class MyConsole extends Console {
     hello() {}
     // See if the methods on Console.prototype are overridable.
-    log() { return 'overridden'; }
+    log() {
+      return 'overridden';
+    }
   }
   const myConsole = new MyConsole(process.stdout);
   assert.strictEqual(typeof myConsole.hello, 'function');
@@ -121,8 +125,12 @@ out.write = err.write = (d) => {};
 {
   const c2 = new Console(out, err, false);
 
-  out.write = () => { throw new Error('out'); };
-  err.write = () => { throw new Error('err'); };
+  out.write = () => {
+    throw new Error('out');
+  };
+  err.write = () => {
+    throw new Error('err');
+  };
 
   assert.throws(() => c2.log('foo'), /^Error: out$/);
   assert.throws(() => c2.warn('foo'), /^Error: err$/);

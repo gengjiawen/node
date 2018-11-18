@@ -8,14 +8,16 @@ const doesNotExist = cp.spawn('does-not-exist', { shell: true });
 
 assert.notStrictEqual(doesNotExist.spawnfile, 'does-not-exist');
 doesNotExist.on('error', common.mustNotCall());
-doesNotExist.on('exit', common.mustCall((code, signal) => {
-  assert.strictEqual(signal, null);
+doesNotExist.on(
+  'exit',
+  common.mustCall((code, signal) => {
+    assert.strictEqual(signal, null);
 
-  if (common.isWindows)
-    assert.strictEqual(code, 1);    // Exit code of cmd.exe
-  else
-    assert.strictEqual(code, 127);  // Exit code of /bin/sh
-}));
+    if (common.isWindows) assert.strictEqual(code, 1);
+    // Exit code of cmd.exe
+    else assert.strictEqual(code, 127); // Exit code of /bin/sh
+  })
+);
 
 // Verify that passing arguments works
 const echo = cp.spawn('echo', ['foo'], {
@@ -24,14 +26,19 @@ const echo = cp.spawn('echo', ['foo'], {
 });
 let echoOutput = '';
 
-assert.strictEqual(echo.spawnargs[echo.spawnargs.length - 1].replace(/"/g, ''),
-                   'echo foo');
+assert.strictEqual(
+  echo.spawnargs[echo.spawnargs.length - 1].replace(/"/g, ''),
+  'echo foo'
+);
 echo.stdout.on('data', (data) => {
   echoOutput += data;
 });
-echo.on('close', common.mustCall((code, signal) => {
-  assert.strictEqual(echoOutput.trim(), 'foo');
-}));
+echo.on(
+  'close',
+  common.mustCall((code, signal) => {
+    assert.strictEqual(echoOutput.trim(), 'foo');
+  })
+);
 
 // Verify that shell features can be used
 const cmd = 'echo bar | cat';
@@ -44,9 +51,12 @@ let commandOutput = '';
 command.stdout.on('data', (data) => {
   commandOutput += data;
 });
-command.on('close', common.mustCall((code, signal) => {
-  assert.strictEqual(commandOutput.trim(), 'bar');
-}));
+command.on(
+  'close',
+  common.mustCall((code, signal) => {
+    assert.strictEqual(commandOutput.trim(), 'bar');
+  })
+);
 
 // Verify that the environment is properly inherited
 const env = cp.spawn(`"${process.execPath}" -pe process.env.BAZ`, {
@@ -59,6 +69,9 @@ let envOutput = '';
 env.stdout.on('data', (data) => {
   envOutput += data;
 });
-env.on('close', common.mustCall((code, signal) => {
-  assert.strictEqual(envOutput.trim(), 'buzz');
-}));
+env.on(
+  'close',
+  common.mustCall((code, signal) => {
+    assert.strictEqual(envOutput.trim(), 'buzz');
+  })
+);

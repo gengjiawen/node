@@ -35,10 +35,13 @@ internalCp.spawnSync = common.mustCall(function(options) {
 {
   const child = cp.spawn(cmd, args, options);
 
-  child.on('exit', common.mustCall((code, signal) => {
-    assert.strictEqual(code, 0);
-    assert.strictEqual(signal, null);
-  }));
+  child.on(
+    'exit',
+    common.mustCall((code, signal) => {
+      assert.strictEqual(code, 0);
+      assert.strictEqual(signal, null);
+    })
+  );
 }
 
 {

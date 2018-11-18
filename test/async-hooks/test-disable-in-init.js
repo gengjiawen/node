@@ -6,18 +6,22 @@ const fs = require('fs');
 
 let nestedCall = false;
 
-async_hooks.createHook({
-  init: common.mustCall(function() {
-    nestedHook.disable();
-    if (!nestedCall) {
-      nestedCall = true;
-      fs.access(__filename, common.mustCall());
-    }
-  }, 2)
-}).enable();
+async_hooks
+  .createHook({
+    init: common.mustCall(function() {
+      nestedHook.disable();
+      if (!nestedCall) {
+        nestedCall = true;
+        fs.access(__filename, common.mustCall());
+      }
+    }, 2)
+  })
+  .enable();
 
-const nestedHook = async_hooks.createHook({
-  init: common.mustCall(2)
-}).enable();
+const nestedHook = async_hooks
+  .createHook({
+    init: common.mustCall(2)
+  })
+  .enable();
 
 fs.access(__filename, common.mustCall());

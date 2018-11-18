@@ -28,34 +28,37 @@ if (process.argv[2] === 'child') {
   1 + 1;
   // These ensure that the RunTimers, CheckImmediate, and
   // RunAndClearNativeImmediates appear in the list.
-  setImmediate(() => { 1 + 1; });
-  setTimeout(() => { 1 + 1; }, 1);
+  setImmediate(() => {
+    1 + 1;
+  });
+  setTimeout(() => {
+    1 + 1;
+  }, 1);
 } else {
   tmpdir.refresh();
   process.chdir(tmpdir.path);
 
-  const proc = cp.fork(__filename,
-                       [ 'child' ], {
-                         execArgv: [
-                           '--trace-event-categories',
-                           'node.environment'
-                         ]
-                       });
+  const proc = cp.fork(__filename, ['child'], {
+    execArgv: ['--trace-event-categories', 'node.environment']
+  });
 
-  proc.once('exit', common.mustCall(async () => {
-    const file = path.join(tmpdir.path, 'node_trace.1.log');
-    const checkSet = new Set();
+  proc.once(
+    'exit',
+    common.mustCall(async () => {
+      const file = path.join(tmpdir.path, 'node_trace.1.log');
+      const checkSet = new Set();
 
-    assert(fs.existsSync(file));
-    const data = await fs.promises.readFile(file);
-    JSON.parse(data.toString()).traceEvents
-      .filter((trace) => trace.cat !== '__metadata')
-      .forEach((trace) => {
-        assert.strictEqual(trace.pid, proc.pid);
-        assert(names.has(trace.name));
-        checkSet.add(trace.name);
-      });
+      assert(fs.existsSync(file));
+      const data = await fs.promises.readFile(file);
+      JSON.parse(data.toString())
+        .traceEvents.filter((trace) => trace.cat !== '__metadata')
+        .forEach((trace) => {
+          assert.strictEqual(trace.pid, proc.pid);
+          assert(names.has(trace.name));
+          checkSet.add(trace.name);
+        });
 
-    assert.deepStrictEqual(names, checkSet);
-  }));
+      assert.deepStrictEqual(names, checkSet);
+    })
+  );
 }

@@ -5,9 +5,11 @@
    * Builder for creating a sequence of actions
    */
   function Actions() {
-    this.sourceTypes = new Map([["key", KeySource],
-                                ["pointer", PointerSource],
-                                ["general", GeneralSource]]);
+    this.sourceTypes = new Map([
+      ['key', KeySource],
+      ['pointer', PointerSource],
+      ['general', GeneralSource]
+    ]);
     this.sources = new Map();
     this.sourceOrder = [];
     for (let sourceType of this.sourceTypes.keys()) {
@@ -17,7 +19,7 @@
     for (let sourceType of this.sourceTypes.keys()) {
       this.currentSources.set(sourceType, null);
     }
-    this.createSource("general");
+    this.createSource('general');
     this.tickIdx = 0;
   }
 
@@ -51,7 +53,7 @@
       let actions;
       try {
         actions = this.serialize();
-      } catch(e) {
+      } catch (e) {
         return Promise.reject(e);
       }
       return test_driver.action_sequence(actions);
@@ -97,8 +99,8 @@
      * @param {Bool} set - Set source as the default key source
      * @returns {Actions}
      */
-    addKeyboard: function(name, set=true) {
-      this.createSource("key", name, true);
+    addKeyboard: function(name, set = true) {
+      this.createSource('key', name, true);
       if (set) {
         this.setKeyboard(name);
       }
@@ -112,7 +114,7 @@
      * @returns {Actions}
      */
     setKeyboard: function(name) {
-      this.setSource("key", name);
+      this.setSource('key', name);
       return this;
     },
 
@@ -124,8 +126,8 @@
      * @param {Bool} set - Set source as the default key source
      * @returns {Actions}
      */
-    addPointer: function(name, pointerType="mouse", set=true) {
-      this.createSource("pointer", name, true, {pointerType: pointerType});
+    addPointer: function(name, pointerType = 'mouse', set = true) {
+      this.createSource('pointer', name, true, { pointerType: pointerType });
       if (set) {
         this.setPointer(name);
       }
@@ -139,11 +141,11 @@
      * @returns {Actions}
      */
     setPointer: function(name) {
-      this.setSource("pointer", name);
+      this.setSource('pointer', name);
       return this;
     },
 
-    createSource: function(type, name, parameters={}) {
+    createSource: function(type, name, parameters = {}) {
       if (!this.sources.has(type)) {
         throw new Error(`${type} is not a valid action type`);
       }
@@ -153,14 +155,18 @@
       }
       if (!name) {
         do {
-          name = "" + sourceNameIdx++;
-        } while (sourceNames.has(name))
+          name = '' + sourceNameIdx++;
+        } while (sourceNames.has(name));
       } else {
         if (sourceNames.has(name)) {
-          throw new Error(`Alreay have a source of type ${type} named ${name}.`);
+          throw new Error(
+            `Alreay have a source of type ${type} named ${name}.`
+          );
         }
       }
-      this.sources.get(type).set(name, new (this.sourceTypes.get(type))(parameters));
+      this.sources
+        .get(type)
+        .set(name, new (this.sourceTypes.get(type))(parameters));
       this.currentSources.set(type, name);
       this.sourceOrder.push([type, name]);
       return this.sources.get(type).get(name);
@@ -187,7 +193,7 @@
      * @returns {Actions}
      */
     pause: function(duration) {
-      this.getSource("general").addPause(this, duration);
+      this.getSource('general').addPause(this, duration);
       return this;
     },
 
@@ -198,8 +204,8 @@
      * @param {String?} sourceName - Named key source to use or null for the default key source
      * @returns {Actions}
      */
-    keyDown: function(key, {sourceName=null}={}) {
-      let source = this.getSource("key", sourceName);
+    keyDown: function(key, { sourceName = null } = {}) {
+      let source = this.getSource('key', sourceName);
       source.keyDown(this, key);
       return this;
     },
@@ -211,8 +217,8 @@
      * @param {String?} sourceName - Named key source to use or null for the default key source
      * @returns {Actions}
      */
-    keyUp: function(key, {sourceName=null}={}) {
-      let source = this.getSource("key", sourceName);
+    keyUp: function(key, { sourceName = null } = {}) {
+      let source = this.getSource('key', sourceName);
       source.keyUp(this, key);
       return this;
     },
@@ -225,8 +231,8 @@
      *                               pointer source
      * @returns {Actions}
      */
-    pointerDown: function({button=0, sourceName=null}={}) {
-      let source = this.getSource("pointer", sourceName);
+    pointerDown: function({ button = 0, sourceName = null } = {}) {
+      let source = this.getSource('pointer', sourceName);
       source.pointerDown(this, button);
       return this;
     },
@@ -239,8 +245,8 @@
      *                               source
      * @returns {Actions}
      */
-    pointerUp: function({button=0, sourceName=null}={}) {
-      let source = this.getSource("pointer", sourceName);
+    pointerUp: function({ button = 0, sourceName = null } = {}) {
+      let source = this.getSource('pointer', sourceName);
       source.pointerUp(this, button);
       return this;
     },
@@ -257,12 +263,15 @@
      *                               source
      * @returns {Actions}
      */
-    pointerMove: function(x, y,
-                          {origin="viewport", duration, sourceName=null}={}) {
-      let source = this.getSource("pointer", sourceName);
+    pointerMove: function(
+      x,
+      y,
+      { origin = 'viewport', duration, sourceName = null } = {}
+    ) {
+      let source = this.getSource('pointer', sourceName);
       source.pointerMove(this, x, y, duration, origin);
       return this;
-    },
+    }
   };
 
   function GeneralSource() {
@@ -275,12 +284,12 @@
         return undefined;
       }
       let actions = [];
-      let data = {"type": "none", "actions": actions};
-      for (let i=0; i<tickCount; i++) {
+      let data = { type: 'none', actions: actions };
+      for (let i = 0; i < tickCount; i++) {
         if (this.actions.has(i)) {
           actions.push(this.actions.get(i));
         } else {
-          actions.push({"type": "pause"});
+          actions.push({ type: 'pause' });
         }
       }
       return data;
@@ -291,8 +300,8 @@
       if (this.actions.has(tick)) {
         throw new Error(`Already have a pause action for the current tick`);
       }
-      this.actions.set(tick, {type: "pause", duration: duration});
-    },
+      this.actions.set(tick, { type: 'pause', duration: duration });
+    }
   };
 
   function KeySource() {
@@ -305,12 +314,12 @@
         return undefined;
       }
       let actions = [];
-      let data = {"type": "key", "actions": actions};
-      for (let i=0; i<tickCount; i++) {
+      let data = { type: 'key', actions: actions };
+      for (let i = 0; i < tickCount; i++) {
         if (this.actions.has(i)) {
           actions.push(this.actions.get(i));
         } else {
-          actions.push({"type": "pause"});
+          actions.push({ type: 'pause' });
         }
       }
       return data;
@@ -321,7 +330,7 @@
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "keyDown", value: key});
+      this.actions.set(tick, { type: 'keyDown', value: key });
     },
 
     keyUp: function(actions, key) {
@@ -329,13 +338,13 @@
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "keyUp", value: key});
-    },
+      this.actions.set(tick, { type: 'keyUp', value: key });
+    }
   };
 
-  function PointerSource(parameters={pointerType: "mouse"}) {
-    let pointerType = parameters.pointerType || "mouse";
-    if (!["mouse", "pen", "touch"].includes(pointerType)) {
+  function PointerSource(parameters = { pointerType: 'mouse' }) {
+    let pointerType = parameters.pointerType || 'mouse';
+    if (!['mouse', 'pen', 'touch'].includes(pointerType)) {
       throw new Error(`Invalid pointerType ${pointerType}`);
     }
     this.type = pointerType;
@@ -348,12 +357,16 @@
         return undefined;
       }
       let actions = [];
-      let data = {"type": "pointer", "actions": actions, "parameters": {"pointerType": this.type}};
-      for (let i=0; i<tickCount; i++) {
+      let data = {
+        type: 'pointer',
+        actions: actions,
+        parameters: { pointerType: this.type }
+      };
+      for (let i = 0; i < tickCount; i++) {
         if (this.actions.has(i)) {
           actions.push(this.actions.get(i));
         } else {
-          actions.push({"type": "pause"});
+          actions.push({ type: 'pause' });
         }
       }
       return data;
@@ -364,7 +377,7 @@
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "pointerDown", button});
+      this.actions.set(tick, { type: 'pointerDown', button });
     },
 
     pointerUp: function(actions, button) {
@@ -372,7 +385,7 @@
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "pointerUp", button});
+      this.actions.set(tick, { type: 'pointerUp', button });
     },
 
     pointerMove: function(actions, x, y, duration, origin) {
@@ -380,11 +393,11 @@
       if (this.actions.has(tick)) {
         tick = actions.addTick().tickIdx;
       }
-      this.actions.set(tick, {type: "pointerMove", x, y, origin});
+      this.actions.set(tick, { type: 'pointerMove', x, y, origin });
       if (duration) {
         this.actions.get(tick).duration = duration;
       }
-    },
+    }
   };
 
   test_driver.Actions = Actions;

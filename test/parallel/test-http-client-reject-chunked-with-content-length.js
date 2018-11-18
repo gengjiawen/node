@@ -5,9 +5,10 @@ const http = require('http');
 const net = require('net');
 const assert = require('assert');
 
-const reqstr = 'HTTP/1.1 200 OK\r\n' +
-               'Content-Length: 1\r\n' +
-               'Transfer-Encoding: chunked\r\n\r\n';
+const reqstr =
+  'HTTP/1.1 200 OK\r\n' +
+  'Content-Length: 1\r\n' +
+  'Transfer-Encoding: chunked\r\n\r\n';
 
 const server = net.createServer((socket) => {
   socket.write(reqstr);
@@ -18,9 +19,12 @@ server.listen(0, () => {
   // both a Content-Length header and a Transfer-Encoding: chunked
   // header, which is a violation of the HTTP spec.
   const req = http.get({ port: server.address().port }, common.mustNotCall());
-  req.on('error', common.mustCall((err) => {
-    assert(/^Parse Error/.test(err.message));
-    assert.strictEqual(err.code, 'HPE_UNEXPECTED_CONTENT_LENGTH');
-    server.close();
-  }));
+  req.on(
+    'error',
+    common.mustCall((err) => {
+      assert(/^Parse Error/.test(err.message));
+      assert.strictEqual(err.code, 'HPE_UNEXPECTED_CONTENT_LENGTH');
+      server.close();
+    })
+  );
 });

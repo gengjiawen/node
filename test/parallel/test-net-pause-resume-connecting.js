@@ -28,14 +28,12 @@ let connections = 0;
 let dataEvents = 0;
 let conn;
 
-
 // Server
 const server = net.createServer(function(conn) {
   connections++;
   conn.end('This was the year he fell to pieces.');
 
-  if (connections === 5)
-    server.close();
+  if (connections === 5) server.close();
 });
 
 server.listen(0, function() {
@@ -44,13 +42,11 @@ server.listen(0, function() {
   conn.resume();
   conn.on('data', onDataOk);
 
-
   // Client 2
   conn = net.createConnection(this.address().port, 'localhost');
   conn.pause();
   conn.resume();
   conn.on('data', onDataOk);
-
 
   // Client 3
   conn = net.createConnection(this.address().port, 'localhost');
@@ -58,14 +54,12 @@ server.listen(0, function() {
   conn.on('data', common.mustNotCall());
   scheduleTearDown(conn);
 
-
   // Client 4
   conn = net.createConnection(this.address().port, 'localhost');
   conn.resume();
   conn.pause();
   conn.resume();
   conn.on('data', onDataOk);
-
 
   // Client 5
   conn = net.createConnection(this.address().port, 'localhost');
@@ -86,7 +80,6 @@ server.listen(0, function() {
     }, 100);
   }
 });
-
 
 // Exit sanity checks
 process.on('exit', function() {

@@ -55,8 +55,7 @@ if (!common.isWindows && process.getuid() === 0) {
   try {
     process.setuid('nobody');
     hasWriteAccessForReadonlyFile = false;
-  } catch {
-  }
+  } catch {}
 }
 
 assert.strictEqual(typeof fs.F_OK, 'number');
@@ -64,24 +63,42 @@ assert.strictEqual(typeof fs.R_OK, 'number');
 assert.strictEqual(typeof fs.W_OK, 'number');
 assert.strictEqual(typeof fs.X_OK, 'number');
 
-const throwNextTick = (e) => { process.nextTick(() => { throw e; }); };
+const throwNextTick = (e) => {
+  process.nextTick(() => {
+    throw e;
+  });
+};
 
-fs.access(__filename, common.mustCall(function(...args) {
-  assert.deepStrictEqual(args, [null]);
-}));
-fs.promises.access(__filename)
+fs.access(
+  __filename,
+  common.mustCall(function(...args) {
+    assert.deepStrictEqual(args, [null]);
+  })
+);
+fs.promises
+  .access(__filename)
   .then(common.mustCall())
   .catch(throwNextTick);
-fs.access(__filename, fs.R_OK, common.mustCall(function(...args) {
-  assert.deepStrictEqual(args, [null]);
-}));
-fs.promises.access(__filename, fs.R_OK)
+fs.access(
+  __filename,
+  fs.R_OK,
+  common.mustCall(function(...args) {
+    assert.deepStrictEqual(args, [null]);
+  })
+);
+fs.promises
+  .access(__filename, fs.R_OK)
   .then(common.mustCall())
   .catch(throwNextTick);
-fs.access(readOnlyFile, fs.F_OK | fs.R_OK, common.mustCall(function(...args) {
-  assert.deepStrictEqual(args, [null]);
-}));
-fs.promises.access(readOnlyFile, fs.F_OK | fs.R_OK)
+fs.access(
+  readOnlyFile,
+  fs.F_OK | fs.R_OK,
+  common.mustCall(function(...args) {
+    assert.deepStrictEqual(args, [null]);
+  })
+);
+fs.promises
+  .access(readOnlyFile, fs.F_OK | fs.R_OK)
   .then(common.mustCall())
   .catch(throwNextTick);
 
@@ -92,7 +109,8 @@ fs.promises.access(readOnlyFile, fs.F_OK | fs.R_OK)
     assert.strictEqual(err.path, doesNotExist);
   };
   fs.access(doesNotExist, common.mustCall(expectedError));
-  fs.promises.access(doesNotExist)
+  fs.promises
+    .access(doesNotExist)
     .then(common.mustNotCall(), common.mustCall(expectedError))
     .catch(throwNextTick);
 }
@@ -108,7 +126,8 @@ fs.promises.access(readOnlyFile, fs.F_OK | fs.R_OK)
     }
   }
   fs.access(readOnlyFile, fs.W_OK, common.mustCall(expectedError));
-  fs.promises.access(readOnlyFile, fs.W_OK)
+  fs.promises
+    .access(readOnlyFile, fs.W_OK)
     .then(common.mustNotCall(), common.mustCall(expectedError))
     .catch(throwNextTick);
 }
@@ -119,12 +138,12 @@ fs.promises.access(readOnlyFile, fs.F_OK | fs.R_OK)
     assert.ok(err instanceof TypeError);
     return true;
   };
-  assert.throws(
-    () => { fs.access(100, fs.F_OK, common.mustNotCall()); },
-    expectedError
-  );
+  assert.throws(() => {
+    fs.access(100, fs.F_OK, common.mustNotCall());
+  }, expectedError);
 
-  fs.promises.access(100, fs.F_OK)
+  fs.promises
+    .access(100, fs.F_OK)
     .then(common.mustNotCall(), common.mustCall(expectedError))
     .catch(throwNextTick);
 }
@@ -136,7 +155,8 @@ common.expectsError(
   {
     code: 'ERR_INVALID_CALLBACK',
     type: TypeError
-  });
+  }
+);
 
 common.expectsError(
   () => {
@@ -145,7 +165,8 @@ common.expectsError(
   {
     code: 'ERR_INVALID_CALLBACK',
     type: TypeError
-  });
+  }
+);
 
 // Regular access should not throw.
 fs.accessSync(__filename);
@@ -153,7 +174,9 @@ const mode = fs.F_OK | fs.R_OK | fs.W_OK;
 fs.accessSync(readWriteFile, mode);
 
 assert.throws(
-  () => { fs.accessSync(doesNotExist); },
+  () => {
+    fs.accessSync(doesNotExist);
+  },
   (err) => {
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.path, doesNotExist);
@@ -169,7 +192,9 @@ assert.throws(
 );
 
 assert.throws(
-  () => { fs.accessSync(Buffer.from(doesNotExist)); },
+  () => {
+    fs.accessSync(Buffer.from(doesNotExist));
+  },
   (err) => {
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.path, doesNotExist);

@@ -22,7 +22,10 @@ const proc = spawn(process.execPath, ['-e', '0']);
 proc.stdout.pipe(process.stdout);
 proc.stderr.pipe(process.stderr);
 
-proc.once('exit', common.mustCall(function(exitCode, signalCode) {
-  assert.strictEqual(exitCode, 0);
-  assert.strictEqual(signalCode, null);
-}));
+proc.once(
+  'exit',
+  common.mustCall(function(exitCode, signalCode) {
+    assert.strictEqual(exitCode, 0);
+    assert.strictEqual(signalCode, null);
+  })
+);

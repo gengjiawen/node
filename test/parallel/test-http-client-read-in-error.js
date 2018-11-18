@@ -12,16 +12,18 @@ class Agent extends http.Agent {
     });
 
     let onNewListener;
-    socket.on('newListener', onNewListener = (name) => {
-      if (name !== 'error')
-        return;
-      socket.removeListener('newListener', onNewListener);
+    socket.on(
+      'newListener',
+      (onNewListener = (name) => {
+        if (name !== 'error') return;
+        socket.removeListener('newListener', onNewListener);
 
-      // Let other listeners to be set up too
-      process.nextTick(() => {
-        this.breakSocket(socket);
-      });
-    });
+        // Let other listeners to be set up too
+        process.nextTick(() => {
+          this.breakSocket(socket);
+        });
+      })
+    );
 
     return socket;
   }
@@ -33,8 +35,10 @@ class Agent extends http.Agent {
 
 const agent = new Agent();
 
-http.request({
-  agent
-}).once('error', function() {
-  console.log('ignore');
-});
+http
+  .request({
+    agent
+  })
+  .once('error', function() {
+    console.log('ignore');
+  });

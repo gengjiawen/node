@@ -34,8 +34,8 @@ const inputs = [
   NaN,
   +Infinity,
   -Infinity,
-  (1.0 / 0.0),      // sanity check
-  parseFloat('x'),  // NaN
+  1.0 / 0.0, // sanity check
+  parseFloat('x'), // NaN
   -10,
   -1,
   -0.5,
@@ -47,8 +47,8 @@ const inputs = [
   0.5,
   1,
   1.0,
-  2147483648,     // browser behavior: timeouts > 2^31-1 run on next tick
-  12345678901234  // ditto
+  2147483648, // browser behavior: timeouts > 2^31-1 run on next tick
+  12345678901234 // ditto
 ];
 
 const timeouts = [];
@@ -68,14 +68,22 @@ inputs.forEach((value, index) => {
 // All values in inputs array coerce to 1 ms. Therefore, they should all run
 // before a timer set here for 2 ms.
 
-setTimeout(common.mustCall(() => {
-  // assert that all other timers have run
-  inputs.forEach((value, index) => {
-    assert(timeouts[index]);
-    assert(intervals[index]);
-  });
-}), 2);
+setTimeout(
+  common.mustCall(() => {
+    // assert that all other timers have run
+    inputs.forEach((value, index) => {
+      assert(timeouts[index]);
+      assert(intervals[index]);
+    });
+  }),
+  2
+);
 
 // Test 10 ms timeout separately.
 setTimeout(common.mustCall(), 10);
-setInterval(common.mustCall(function() { clearInterval(this); }), 10);
+setInterval(
+  common.mustCall(function() {
+    clearInterval(this);
+  }),
+  10
+);

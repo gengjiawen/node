@@ -10,8 +10,7 @@ function recurse(n) {
   a.emitBefore();
   assert.strictEqual(a.asyncId(), async_hooks.executionAsyncId());
   assert.strictEqual(a.triggerAsyncId(), async_hooks.triggerAsyncId());
-  if (n >= 0)
-    recurse(n - 1);
+  if (n >= 0) recurse(n - 1);
   assert.strictEqual(a.asyncId(), async_hooks.executionAsyncId());
   assert.strictEqual(a.triggerAsyncId(), async_hooks.triggerAsyncId());
   a.emitAfter();

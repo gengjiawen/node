@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (common.isWindows)
-  common.skip('Win32 does not support signals.');
+if (common.isWindows) common.skip('Win32 does not support signals.');
 
 const assert = require('assert');
 const spawn = require('child_process').spawn;
@@ -13,9 +12,12 @@ if (process.argv[2] !== '--do-test') {
   process.env.DOTEST = 'y';
   const child = spawn(process.execPath, [__filename, '--do-test']);
 
-  child.once('exit', common.mustCall(function(code, signal) {
-    assert.strictEqual(signal, 'SIGINT');
-  }));
+  child.once(
+    'exit',
+    common.mustCall(function(code, signal) {
+      assert.strictEqual(signal, 'SIGINT');
+    })
+  );
 
   return;
 }

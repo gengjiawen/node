@@ -23,8 +23,7 @@
 // Flags: --expose-gc
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const onGC = require('../common/ongc');
 const assert = require('assert');
@@ -34,13 +33,19 @@ const fixtures = require('../common/fixtures');
 // Test that the implicit listener for an 'connect' event on tls.Sockets is
 // added using `once()`, i.e. can be gc'ed once that event has occurred.
 
-const server = tls.createServer({
-  cert: fixtures.readSync('test_cert.pem'),
-  key: fixtures.readSync('test_key.pem')
-}).listen(0);
+const server = tls
+  .createServer({
+    cert: fixtures.readSync('test_cert.pem'),
+    key: fixtures.readSync('test_key.pem')
+  })
+  .listen(0);
 
 let collected = false;
-const gcListener = { ongc() { collected = true; } };
+const gcListener = {
+  ongc() {
+    collected = true;
+  }
+};
 
 {
   const gcObject = {};
@@ -53,7 +58,8 @@ const gcListener = { ongc() { collected = true; } };
       assert.strictEqual(gcObject, gcObject); // keep reference alive
       assert.strictEqual(collected, false);
       setImmediate(done, sock);
-    }));
+    })
+  );
 }
 
 function done(sock) {

@@ -1,10 +1,7 @@
 // Flags: --expose-internals
 'use strict';
 const common = require('../common');
-const {
-  hijackStdout,
-  restoreStdout,
-} = require('../common/hijackstdio');
+const { hijackStdout, restoreStdout } = require('../common/hijackstdio');
 
 const { internalBinding } = require('internal/test/binding');
 const assert = require('assert');
@@ -14,8 +11,13 @@ const errors = require('internal/errors');
 const { inspect } = require('util');
 inspect.defaultOptions.colors = false;
 
-errors.E('TEST_ERROR_1', 'Error for testing purposes: %s',
-         Error, TypeError, RangeError);
+errors.E(
+  'TEST_ERROR_1',
+  'Error for testing purposes: %s',
+  Error,
+  TypeError,
+  RangeError
+);
 errors.E('TEST_ERROR_2', (a, b) => `${a} ${b}`, Error);
 
 {
@@ -51,96 +53,128 @@ errors.E('TEST_ERROR_2', (a, b) => `${a} ${b}`, Error);
 }
 
 {
-  assert.throws(
-    () => new errors.codes.TEST_ERROR_1(),
-    {
-      message: 'Code: TEST_ERROR_1; The provided arguments ' +
-               'length (0) does not match the required ones (1).'
-    }
-  );
+  assert.throws(() => new errors.codes.TEST_ERROR_1(), {
+    message:
+      'Code: TEST_ERROR_1; The provided arguments ' +
+      'length (0) does not match the required ones (1).'
+  });
 }
 
 // Tests for common.expectsError
-common.expectsError(() => {
-  throw new errors.codes.TEST_ERROR_1.TypeError('a');
-}, { code: 'TEST_ERROR_1' });
-common.expectsError(() => {
-  throw new errors.codes.TEST_ERROR_1.TypeError('a');
-}, { code: 'TEST_ERROR_1',
-     type: TypeError,
-     message: /^Error for testing/ });
-common.expectsError(() => {
-  throw new errors.codes.TEST_ERROR_1.TypeError('a');
-}, { code: 'TEST_ERROR_1', type: TypeError });
-common.expectsError(() => {
-  throw new errors.codes.TEST_ERROR_1.TypeError('a');
-}, {
-  code: 'TEST_ERROR_1',
-  type: TypeError,
-  message: 'Error for testing purposes: a'
-});
-
-common.expectsError(() => {
-  common.expectsError(() => {
-    throw new errors.codes.TEST_ERROR_1.TypeError('a');
-  }, { code: 'TEST_ERROR_1', type: RangeError });
-}, {
-  code: 'ERR_ASSERTION',
-  message: /\+   type: \[Function: TypeError]\n-   type: \[Function: RangeError]/
-});
-
-common.expectsError(() => {
-  common.expectsError(() => {
-    throw new errors.codes.TEST_ERROR_1.TypeError('a');
-  }, { code: 'TEST_ERROR_1',
-       type: TypeError,
-       message: /^Error for testing 2/ });
-}, {
-  code: 'ERR_ASSERTION',
-  type: assert.AssertionError,
-  message: /\+   message: 'Error for testing purposes: a',\n-   message: \/\^Error/
-});
-
-// Test ERR_INVALID_FD_TYPE
-assert.strictEqual(errors.getMessage('ERR_INVALID_FD_TYPE', ['a']),
-                   'Unsupported fd type: a');
-
-// Test ERR_INVALID_URL_SCHEME
-assert.strictEqual(errors.getMessage('ERR_INVALID_URL_SCHEME', ['file']),
-                   'The URL must be of scheme file');
-assert.strictEqual(errors.getMessage('ERR_INVALID_URL_SCHEME', [['file']]),
-                   'The URL must be of scheme file');
-assert.strictEqual(errors.getMessage('ERR_INVALID_URL_SCHEME',
-                                     [['http', 'ftp']]),
-                   'The URL must be one of scheme http or ftp');
-assert.strictEqual(errors.getMessage('ERR_INVALID_URL_SCHEME',
-                                     [['a', 'b', 'c']]),
-                   'The URL must be one of scheme a, b, or c');
 common.expectsError(
-  () => errors.getMessage('ERR_INVALID_URL_SCHEME', [[]]),
+  () => {
+    throw new errors.codes.TEST_ERROR_1.TypeError('a');
+  },
+  { code: 'TEST_ERROR_1' }
+);
+common.expectsError(
+  () => {
+    throw new errors.codes.TEST_ERROR_1.TypeError('a');
+  },
+  { code: 'TEST_ERROR_1', type: TypeError, message: /^Error for testing/ }
+);
+common.expectsError(
+  () => {
+    throw new errors.codes.TEST_ERROR_1.TypeError('a');
+  },
+  { code: 'TEST_ERROR_1', type: TypeError }
+);
+common.expectsError(
+  () => {
+    throw new errors.codes.TEST_ERROR_1.TypeError('a');
+  },
+  {
+    code: 'TEST_ERROR_1',
+    type: TypeError,
+    message: 'Error for testing purposes: a'
+  }
+);
+
+common.expectsError(
+  () => {
+    common.expectsError(
+      () => {
+        throw new errors.codes.TEST_ERROR_1.TypeError('a');
+      },
+      { code: 'TEST_ERROR_1', type: RangeError }
+    );
+  },
+  {
+    code: 'ERR_ASSERTION',
+    message: /\+   type: \[Function: TypeError]\n-   type: \[Function: RangeError]/
+  }
+);
+
+common.expectsError(
+  () => {
+    common.expectsError(
+      () => {
+        throw new errors.codes.TEST_ERROR_1.TypeError('a');
+      },
+      { code: 'TEST_ERROR_1', type: TypeError, message: /^Error for testing 2/ }
+    );
+  },
   {
     code: 'ERR_ASSERTION',
     type: assert.AssertionError,
-    message: /^At least one expected value needs to be specified$/
-  });
+    message: /\+   message: 'Error for testing purposes: a',\n-   message: \/\^Error/
+  }
+);
+
+// Test ERR_INVALID_FD_TYPE
+assert.strictEqual(
+  errors.getMessage('ERR_INVALID_FD_TYPE', ['a']),
+  'Unsupported fd type: a'
+);
+
+// Test ERR_INVALID_URL_SCHEME
+assert.strictEqual(
+  errors.getMessage('ERR_INVALID_URL_SCHEME', ['file']),
+  'The URL must be of scheme file'
+);
+assert.strictEqual(
+  errors.getMessage('ERR_INVALID_URL_SCHEME', [['file']]),
+  'The URL must be of scheme file'
+);
+assert.strictEqual(
+  errors.getMessage('ERR_INVALID_URL_SCHEME', [['http', 'ftp']]),
+  'The URL must be one of scheme http or ftp'
+);
+assert.strictEqual(
+  errors.getMessage('ERR_INVALID_URL_SCHEME', [['a', 'b', 'c']]),
+  'The URL must be one of scheme a, b, or c'
+);
+common.expectsError(() => errors.getMessage('ERR_INVALID_URL_SCHEME', [[]]), {
+  code: 'ERR_ASSERTION',
+  type: assert.AssertionError,
+  message: /^At least one expected value needs to be specified$/
+});
 
 // Test ERR_MISSING_ARGS
-assert.strictEqual(errors.getMessage('ERR_MISSING_ARGS', ['name']),
-                   'The "name" argument must be specified');
-assert.strictEqual(errors.getMessage('ERR_MISSING_ARGS', ['name', 'value']),
-                   'The "name" and "value" arguments must be specified');
-assert.strictEqual(errors.getMessage('ERR_MISSING_ARGS', ['a', 'b', 'c']),
-                   'The "a", "b", and "c" arguments must be specified');
+assert.strictEqual(
+  errors.getMessage('ERR_MISSING_ARGS', ['name']),
+  'The "name" argument must be specified'
+);
+assert.strictEqual(
+  errors.getMessage('ERR_MISSING_ARGS', ['name', 'value']),
+  'The "name" and "value" arguments must be specified'
+);
+assert.strictEqual(
+  errors.getMessage('ERR_MISSING_ARGS', ['a', 'b', 'c']),
+  'The "a", "b", and "c" arguments must be specified'
+);
 
 // Test ERR_SOCKET_BAD_PORT
 assert.strictEqual(
   errors.getMessage('ERR_SOCKET_BAD_PORT', [0]),
-  'Port should be >= 0 and < 65536. Received 0.');
+  'Port should be >= 0 and < 65536. Received 0.'
+);
 
 // Test ERR_TLS_CERT_ALTNAME_INVALID
 assert.strictEqual(
   errors.getMessage('ERR_TLS_CERT_ALTNAME_INVALID', ['altname']),
-  'Hostname/IP does not match certificate\'s altnames: altname');
+  "Hostname/IP does not match certificate's altnames: altname"
+);
 
 assert.strictEqual(
   errors.getMessage('ERR_INVALID_PROTOCOL', ['bad protocol', 'http']),
@@ -170,23 +204,28 @@ assert.strictEqual(
 // Test ERR_DNS_SET_SERVERS_FAILED
 assert.strictEqual(
   errors.getMessage('ERR_DNS_SET_SERVERS_FAILED', ['err', 'servers']),
-  'c-ares failed to set servers: "err" [servers]');
+  'c-ares failed to set servers: "err" [servers]'
+);
 
 // Test ERR_ENCODING_NOT_SUPPORTED
 assert.strictEqual(
   errors.getMessage('ERR_ENCODING_NOT_SUPPORTED', ['enc']),
-  'The "enc" encoding is not supported');
+  'The "enc" encoding is not supported'
+);
 
 // Test error messages for async_hooks
 assert.strictEqual(
   errors.getMessage('ERR_ASYNC_CALLBACK', ['init']),
-  'init must be a function');
+  'init must be a function'
+);
 assert.strictEqual(
   errors.getMessage('ERR_ASYNC_TYPE', [{}]),
-  'Invalid name for async "type": [object Object]');
+  'Invalid name for async "type": [object Object]'
+);
 assert.strictEqual(
   errors.getMessage('ERR_INVALID_ASYNC_ID', ['asyncId', undefined]),
-  'Invalid asyncId value: undefined');
+  'Invalid asyncId value: undefined'
+);
 
 {
   const { kMaxLength } = internalBinding('buffer');
@@ -201,17 +240,19 @@ assert.strictEqual(
   const error = new errors.codes.ERR_INVALID_ARG_VALUE('foo', '\u0000bar');
   assert.strictEqual(
     error.message,
-    'The argument \'foo\' is invalid. Received \'\\u0000bar\''
+    "The argument 'foo' is invalid. Received '\\u0000bar'"
   );
 }
 
 {
   const error = new errors.codes.ERR_INVALID_ARG_VALUE(
-    'foo', { a: 1 }, 'must have property \'b\''
+    'foo',
+    { a: 1 },
+    "must have property 'b'"
   );
   assert.strictEqual(
     error.message,
-    'The argument \'foo\' must have property \'b\'. Received { a: 1 }'
+    "The argument 'foo' must have property 'b'. Received { a: 1 }"
   );
 }
 
@@ -250,7 +291,9 @@ assert.strictEqual(
 // browser. Note that `message` remains non-enumerable after being assigned.
 {
   let initialConsoleLog = '';
-  hijackStdout((data) => { initialConsoleLog += data; });
+  hijackStdout((data) => {
+    initialConsoleLog += data;
+  });
   const myError = new errors.codes.ERR_TLS_HANDSHAKE_TIMEOUT();
   assert.deepStrictEqual(Object.keys(myError), []);
   const initialToString = myError.toString();
@@ -260,7 +303,9 @@ assert.strictEqual(
   restoreStdout();
 
   let subsequentConsoleLog = '';
-  hijackStdout((data) => { subsequentConsoleLog += data; });
+  hijackStdout((data) => {
+    subsequentConsoleLog += data;
+  });
   myError.message = 'Fhqwhgads';
   assert.deepStrictEqual(Object.keys(myError), []);
   assert.notStrictEqual(myError.toString(), initialToString);

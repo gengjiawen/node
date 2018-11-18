@@ -36,8 +36,9 @@ function check(async, sync) {
       },
       {
         code: 'ERR_INVALID_ARG_VALUE',
-        type: TypeError,
-      });
+        type: TypeError
+      }
+    );
   }
 
   if (async) {
@@ -48,7 +49,8 @@ function check(async, sync) {
       {
         code: 'ERR_INVALID_ARG_VALUE',
         type: TypeError
-      });
+      }
+    );
   }
 }
 
@@ -150,7 +152,10 @@ check(fs.writeFile, fs.writeFileSync, fileUrl2, 'abc');
 
 // an 'error' for exists means that it doesn't exist.
 // one of many reasons why this file is the absolute worst.
-fs.exists('foo\u0000bar', common.mustCall((exists) => {
-  assert(!exists);
-}));
+fs.exists(
+  'foo\u0000bar',
+  common.mustCall((exists) => {
+    assert(!exists);
+  })
+);
 assert(!fs.existsSync('foo\u0000bar'));

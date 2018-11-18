@@ -36,19 +36,25 @@ const {
   mockedSysCall
 } = require('../common/dns');
 
-const client = net.connect({
-  host: addresses.INVALID_HOST,
-  port: 80, // port number doesn't matter because host name is invalid
-  lookup: common.mustCall(errorLookupMock())
-}, common.mustNotCall());
+const client = net.connect(
+  {
+    host: addresses.INVALID_HOST,
+    port: 80, // port number doesn't matter because host name is invalid
+    lookup: common.mustCall(errorLookupMock())
+  },
+  common.mustNotCall()
+);
 
-client.once('error', common.mustCall((err) => {
-  assert(err);
-  assert.strictEqual(err.code, err.errno);
-  assert.strictEqual(err.code, mockedErrorCode);
-  assert.strictEqual(err.host, err.hostname);
-  assert.strictEqual(err.host, addresses.INVALID_HOST);
-  assert.strictEqual(err.syscall, mockedSysCall);
-}));
+client.once(
+  'error',
+  common.mustCall((err) => {
+    assert(err);
+    assert.strictEqual(err.code, err.errno);
+    assert.strictEqual(err.code, mockedErrorCode);
+    assert.strictEqual(err.host, err.hostname);
+    assert.strictEqual(err.host, addresses.INVALID_HOST);
+    assert.strictEqual(err.syscall, mockedSysCall);
+  })
+);
 
 client.end();

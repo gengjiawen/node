@@ -3,8 +3,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const fixtures = require('../common/fixtures');
@@ -18,28 +17,35 @@ if (process.env.CHILD) {
 
 const env = Object.assign({}, process.env, {
   CHILD: 'yes',
-  NODE_EXTRA_CA_CERTS: `${fixtures.fixturesDir}/no-such-file-exists-🐢`,
+  NODE_EXTRA_CA_CERTS: `${fixtures.fixturesDir}/no-such-file-exists-🐢`
 });
 
 const opts = {
   env: env,
-  silent: true,
+  silent: true
 };
 let stderr = '';
 
 fork(__filename, opts)
-  .on('exit', common.mustCall(function(status) {
-    // Check that client succeeded in connecting.
-    assert.strictEqual(status, 0);
-  }))
-  .on('close', common.mustCall(function() {
-    // TODO(addaleax): Make `SafeGetenv` work like `process.env`
-    // encoding-wise
-    if (!common.isWindows) {
-      const re = /Warning: Ignoring extra certs from.*no-such-file-exists-🐢.* load failed:.*No such file or directory/;
-      assert(re.test(stderr), stderr);
-    }
-  }))
-  .stderr.setEncoding('utf8').on('data', function(str) {
+  .on(
+    'exit',
+    common.mustCall(function(status) {
+      // Check that client succeeded in connecting.
+      assert.strictEqual(status, 0);
+    })
+  )
+  .on(
+    'close',
+    common.mustCall(function() {
+      // TODO(addaleax): Make `SafeGetenv` work like `process.env`
+      // encoding-wise
+      if (!common.isWindows) {
+        const re = /Warning: Ignoring extra certs from.*no-such-file-exists-🐢.* load failed:.*No such file or directory/;
+        assert(re.test(stderr), stderr);
+      }
+    })
+  )
+  .stderr.setEncoding('utf8')
+  .on('data', function(str) {
     stderr += str;
   });

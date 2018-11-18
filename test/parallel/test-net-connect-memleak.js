@@ -33,7 +33,11 @@ const net = require('net');
 const server = net.createServer(common.mustCall()).listen(0);
 
 let collected = false;
-const gcListener = { ongc() { collected = true; } };
+const gcListener = {
+  ongc() {
+    collected = true;
+  }
+};
 
 {
   const gcObject = {};
@@ -45,7 +49,8 @@ const gcListener = { ongc() { collected = true; } };
       assert.strictEqual(gcObject, gcObject); // keep reference alive
       assert.strictEqual(collected, false);
       setImmediate(done, sock);
-    }));
+    })
+  );
 }
 
 function done(sock) {

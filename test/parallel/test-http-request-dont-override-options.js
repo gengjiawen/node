@@ -4,11 +4,12 @@ const common = require('../common');
 const assert = require('assert');
 const http = require('http');
 
-
-const server = http.createServer(common.mustCall(function(req, res) {
-  res.writeHead(200);
-  res.end('ok');
-}));
+const server = http.createServer(
+  common.mustCall(function(req, res) {
+    res.writeHead(200);
+    res.end('ok');
+  })
+);
 
 server.listen(0, function() {
   const agent = new http.Agent();
@@ -27,14 +28,16 @@ server.listen(0, function() {
     agent: agent
   };
 
-  http.request(options, function(res) {
-    res.resume();
-    server.close();
-    assert.strictEqual(options.host, undefined);
-    assert.strictEqual(options.hostname, common.localhostIPv4);
-    assert.strictEqual(options.port, undefined);
-    assert.strictEqual(options.defaultPort, undefined);
-    assert.strictEqual(options.path, undefined);
-    assert.strictEqual(options.method, undefined);
-  }).end();
+  http
+    .request(options, function(res) {
+      res.resume();
+      server.close();
+      assert.strictEqual(options.host, undefined);
+      assert.strictEqual(options.hostname, common.localhostIPv4);
+      assert.strictEqual(options.port, undefined);
+      assert.strictEqual(options.defaultPort, undefined);
+      assert.strictEqual(options.path, undefined);
+      assert.strictEqual(options.method, undefined);
+    })
+    .end();
 });

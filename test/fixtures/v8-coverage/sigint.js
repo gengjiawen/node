@@ -4,4 +4,4 @@ if (true) {
 } else {
   const c = 102;
 }
-process.kill(process.pid, "SIGINT");
+process.kill(process.pid, 'SIGINT');

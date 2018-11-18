@@ -36,17 +36,21 @@ if (process.argv[2] === 'child') {
   process.send(internal);
 
   process.exit(0);
-
 } else {
-
   const fork = require('child_process').fork;
   const child = fork(process.argv[1], ['child']);
 
-  child.once('message', common.mustCall(function(data) {
-    assert.deepStrictEqual(data, normal);
-  }));
+  child.once(
+    'message',
+    common.mustCall(function(data) {
+      assert.deepStrictEqual(data, normal);
+    })
+  );
 
-  child.once('internalMessage', common.mustCall(function(data) {
-    assert.deepStrictEqual(data, internal);
-  }));
+  child.once(
+    'internalMessage',
+    common.mustCall(function(data) {
+      assert.deepStrictEqual(data, internal);
+    })
+  );
 }

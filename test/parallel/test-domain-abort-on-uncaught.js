@@ -95,7 +95,10 @@ const tests = [
         conn.pipe(conn);
       });
       server.listen(0, common.localhostIPv4, function() {
-        const conn = net.connect(this.address().port, common.localhostIPv4);
+        const conn = net.connect(
+          this.address().port,
+          common.localhostIPv4
+        );
         conn.once('data', function() {
           throw new Error('ok');
         });
@@ -198,9 +201,7 @@ if (process.argv[2] === 'child') {
   const testIndex = +process.argv[3];
 
   tests[testIndex]();
-
 } else {
-
   tests.forEach(function(test, testIndex) {
     let testCmd = '';
     if (!common.isWindows) {
@@ -209,8 +210,9 @@ if (process.argv[2] === 'child') {
       testCmd += 'ulimit -c 0 && ';
     }
 
-    testCmd += `"${process.argv[0]}" --abort-on-uncaught-exception ` +
-               `"${process.argv[1]}" child ${testIndex}`;
+    testCmd +=
+      `"${process.argv[0]}" --abort-on-uncaught-exception ` +
+      `"${process.argv[1]}" child ${testIndex}`;
 
     try {
       child_process.execSync(testCmd);

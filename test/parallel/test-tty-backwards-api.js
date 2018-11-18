@@ -4,7 +4,7 @@ const common = require('../common');
 
 const noop = () => {};
 const { internalBinding } = require('internal/test/binding');
-const TTY = internalBinding('tty_wrap').TTY = function() {};
+const TTY = (internalBinding('tty_wrap').TTY = function() {});
 
 TTY.prototype = {
   setBlocking: noop,
@@ -13,12 +13,7 @@ TTY.prototype = {
 
 const { WriteStream } = require('tty');
 
-const methods = [
-  'cursorTo',
-  'moveCursor',
-  'clearLine',
-  'clearScreenDown'
-];
+const methods = ['cursorTo', 'moveCursor', 'clearLine', 'clearScreenDown'];
 
 methods.forEach((method) => {
   require('readline')[method] = common.mustCall();

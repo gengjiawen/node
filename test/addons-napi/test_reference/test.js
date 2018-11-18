@@ -33,7 +33,6 @@ function runTests(i, title, tests) {
   }
 }
 runTests(0, undefined, [
-
   'External value without a finalizer',
   () => {
     const value = test_reference.createExternal();
@@ -116,5 +115,5 @@ runTests(0, undefined, [
   () => {
     // Value was already GC'd
     assert.strictEqual(test_reference.finalizeCount, 1);
-  },
+  }
 ]);

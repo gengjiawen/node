@@ -59,17 +59,22 @@ fs.close = common.mustCall(function(fd_, cb) {
   process.nextTick(cb);
 });
 
-stream.on('error', common.mustCall(function(err_) {
-  console.error('error handler');
-  assert.strictEqual(stream.fd, null);
-  assert.strictEqual(err_, err);
-}));
-
+stream.on(
+  'error',
+  common.mustCall(function(err_) {
+    console.error('error handler');
+    assert.strictEqual(stream.fd, null);
+    assert.strictEqual(err_, err);
+  })
+);
 
 stream.write(Buffer.allocUnsafe(256), function() {
   console.error('first cb');
-  stream.write(Buffer.allocUnsafe(256), common.mustCall(function(err_) {
-    console.error('second cb');
-    assert.strictEqual(err_, err);
-  }));
+  stream.write(
+    Buffer.allocUnsafe(256),
+    common.mustCall(function(err_) {
+      console.error('second cb');
+      assert.strictEqual(err_, err);
+    })
+  );
 });

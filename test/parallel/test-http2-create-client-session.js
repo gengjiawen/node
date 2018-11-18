@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const h2 = require('http2');
 const Countdown = require('../common/countdown');
@@ -33,39 +32,50 @@ server.on('close', common.mustCall());
 
 server.listen(0);
 
-server.on('listening', common.mustCall(() => {
+server.on(
+  'listening',
+  common.mustCall(() => {
+    const client = h2.connect(`http://localhost:${server.address().port}`);
+    client.setMaxListeners(101);
 
-  const client = h2.connect(`http://localhost:${server.address().port}`);
-  client.setMaxListeners(101);
+    client.on('goaway', console.log);
 
-  client.on('goaway', console.log);
+    client.on(
+      'connect',
+      common.mustCall(() => {
+        assert(!client.encrypted);
+        assert(!client.originSet);
+        assert.strictEqual(client.alpnProtocol, 'h2c');
+      })
+    );
 
-  client.on('connect', common.mustCall(() => {
-    assert(!client.encrypted);
-    assert(!client.originSet);
-    assert.strictEqual(client.alpnProtocol, 'h2c');
-  }));
+    const countdown = new Countdown(count, () => {
+      client.close();
+      server.close(common.mustCall());
+    });
 
-  const countdown = new Countdown(count, () => {
-    client.close();
-    server.close(common.mustCall());
-  });
+    for (let n = 0; n < count; n++) {
+      const req = client.request();
 
-  for (let n = 0; n < count; n++) {
-    const req = client.request();
+      req.on(
+        'response',
+        common.mustCall(function(headers) {
+          assert.strictEqual(headers[':status'], 200);
+          assert.strictEqual(headers['content-type'], 'text/html');
+          assert(headers.date);
+        })
+      );
 
-    req.on('response', common.mustCall(function(headers) {
-      assert.strictEqual(headers[':status'], 200);
-      assert.strictEqual(headers['content-type'], 'text/html');
-      assert(headers.date);
-    }));
-
-    let data = '';
-    req.setEncoding('utf8');
-    req.on('data', (d) => data += d);
-    req.on('end', common.mustCall(() => {
-      assert.strictEqual(body, data);
-    }));
-    req.on('close', common.mustCall(() => countdown.dec()));
-  }
-}));
+      let data = '';
+      req.setEncoding('utf8');
+      req.on('data', (d) => (data += d));
+      req.on(
+        'end',
+        common.mustCall(() => {
+          assert.strictEqual(body, data);
+        })
+      );
+      req.on('close', common.mustCall(() => countdown.dec()));
+    }
+  })
+);

@@ -51,10 +51,13 @@ function parent() {
     console.log('ok - got expected message');
   });
 
-  child.on('exit', common.mustCall(function(c) {
-    assert(!c);
-    console.log('ok - child exited nicely');
-  }));
+  child.on(
+    'exit',
+    common.mustCall(function(c) {
+      assert(!c);
+      console.log('ok - child exited nicely');
+    })
+  );
 }
 
 function child() {

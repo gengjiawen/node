@@ -30,7 +30,8 @@ Object.defineProperties(sandbox, {
 
 const ctx = vm.createContext(sandbox);
 
-const result = vm.runInContext(`
+const result = vm.runInContext(
+  `
 const getDesc = (prop) => Object.getOwnPropertyDescriptor(this, prop);
 const result = {
   a: getDesc('a'),
@@ -42,7 +43,9 @@ const result = {
   g: getDesc('g')
 };
 result;
-`, ctx);
+`,
+  ctx
+);
 
 // eslint-disable-next-line no-restricted-properties
 assert.deepEqual(result, {
@@ -61,7 +64,8 @@ assert.deepEqual(result, {
 });
 
 // define new properties
-vm.runInContext(`
+vm.runInContext(
+  `
 Object.defineProperty(this, 'h', {value: 'h'});
 Object.defineProperty(this, 'i', {});
 Object.defineProperty(this, 'j', {
@@ -72,7 +76,9 @@ Object.defineProperty(this, 'k', {
   get() { return kValue; },
   set(value) { kValue = value }
 });
-`, ctx);
+`,
+  ctx
+);
 
 assert.deepStrictEqual(Object.getOwnPropertyDescriptor(ctx, 'h'), {
   value: 'h',
@@ -111,19 +117,32 @@ assert.strictEqual(vm.runInContext('k;', ctx), 2);
 // redefine properties on the global object
 assert.strictEqual(typeof vm.runInContext('encodeURI;', ctx), 'function');
 assert.strictEqual(ctx.encodeURI, undefined);
-vm.runInContext(`
+vm.runInContext(
+  `
 Object.defineProperty(this, 'encodeURI', { value: 42 });
-`, ctx);
+`,
+  ctx
+);
 assert.strictEqual(vm.runInContext('encodeURI;', ctx), 42);
 assert.strictEqual(ctx.encodeURI, 42);
 
 // redefine properties on the sandbox
-vm.runInContext(`
+vm.runInContext(
+  `
 Object.defineProperty(this, 'e', { value: 'newE' });
-`, ctx);
+`,
+  ctx
+);
 assert.strictEqual(ctx.e, 'newE');
 
-assert.throws(() => vm.runInContext(`
+assert.throws(
+  () =>
+    vm.runInContext(
+      `
 'use strict';
 Object.defineProperty(this, 'f', { value: 'newF' });
-`, ctx), /TypeError: Cannot redefine property: f/);
+`,
+      ctx
+    ),
+  /TypeError: Cannot redefine property: f/
+);

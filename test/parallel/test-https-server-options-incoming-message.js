@@ -9,8 +9,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const http = require('http');
@@ -22,30 +21,36 @@ class MyIncomingMessage extends http.IncomingMessage {
   }
 }
 
-const server = https.createServer({
-  key: fixtures.readKey('agent1-key.pem'),
-  cert: fixtures.readKey('agent1-cert.pem'),
-  ca: fixtures.readKey('ca1-cert.pem'),
-  IncomingMessage: MyIncomingMessage
-}, common.mustCall(function(req, res) {
-  assert.strictEqual(req.getUserAgent(), 'node-test');
-  res.statusCode = 200;
-  res.end();
-}));
+const server = https.createServer(
+  {
+    key: fixtures.readKey('agent1-key.pem'),
+    cert: fixtures.readKey('agent1-cert.pem'),
+    ca: fixtures.readKey('ca1-cert.pem'),
+    IncomingMessage: MyIncomingMessage
+  },
+  common.mustCall(function(req, res) {
+    assert.strictEqual(req.getUserAgent(), 'node-test');
+    res.statusCode = 200;
+    res.end();
+  })
+);
 server.listen();
 
 server.on('listening', function makeRequest() {
-  https.get({
-    port: this.address().port,
-    rejectUnauthorized: false,
-    headers: {
-      'User-Agent': 'node-test'
+  https.get(
+    {
+      port: this.address().port,
+      rejectUnauthorized: false,
+      headers: {
+        'User-Agent': 'node-test'
+      }
+    },
+    (res) => {
+      assert.strictEqual(res.statusCode, 200);
+      res.on('end', () => {
+        server.close();
+      });
+      res.resume();
     }
-  }, (res) => {
-    assert.strictEqual(res.statusCode, 200);
-    res.on('end', () => {
-      server.close();
-    });
-    res.resume();
-  });
+  );
 });

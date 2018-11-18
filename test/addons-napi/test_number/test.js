@@ -3,7 +3,6 @@ const common = require('../../common');
 const assert = require('assert');
 const test_number = require(`./build/${common.buildType}/test_number`);
 
-
 // testing api calls for number
 function testNumber(num) {
   assert.strictEqual(num, test_number.Test(num));
@@ -19,10 +18,8 @@ testNumber(-1233);
 testNumber(986583);
 testNumber(-976675);
 
-testNumber(
-  98765432213456789876546896323445679887645323232436587988766545658);
-testNumber(
-  -4350987086545760976737453646576078997096876957864353245245769809);
+testNumber(98765432213456789876546896323445679887645323232436587988766545658);
+testNumber(-4350987086545760976737453646576078997096876957864353245245769809);
 testNumber(Number.MIN_SAFE_INTEGER);
 testNumber(Number.MAX_SAFE_INTEGER);
 testNumber(Number.MAX_SAFE_INTEGER + 10);
@@ -84,8 +81,8 @@ testInt32(-Number.MAX_VALUE, 0);
 testInt32(Number.MAX_VALUE, 0);
 
 // Test outside int64_t range
-testInt32(-Math.pow(2, 63) + (Math.pow(2, 9)), 0);
-testInt32(Math.pow(2, 63) - (Math.pow(2, 9)), 0);
+testInt32(-Math.pow(2, 63) + Math.pow(2, 9), 0);
+testInt32(Math.pow(2, 63) - Math.pow(2, 9), 0);
 
 // Test non-finite numbers
 testInt32(Number.POSITIVE_INFINITY, 0);
@@ -122,8 +119,8 @@ testInt64(-Number.MAX_VALUE, RANGEERROR_NEGATIVE);
 testInt64(Number.MAX_VALUE, RANGEERROR_POSITIVE);
 
 // Test outside int64_t range
-testInt64(-Math.pow(2, 63) + (Math.pow(2, 9)), RANGEERROR_NEGATIVE);
-testInt64(Math.pow(2, 63) - (Math.pow(2, 9)), RANGEERROR_POSITIVE);
+testInt64(-Math.pow(2, 63) + Math.pow(2, 9), RANGEERROR_NEGATIVE);
+testInt64(Math.pow(2, 63) - Math.pow(2, 9), RANGEERROR_POSITIVE);
 
 // Test non-finite numbers
 testInt64(Number.POSITIVE_INFINITY, 0);

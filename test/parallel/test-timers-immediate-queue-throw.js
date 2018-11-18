@@ -33,21 +33,20 @@ d1.once('error', () => assert.strictEqual(stage, 0));
 const run = common.mustCall((callStage) => {
   assert(callStage >= stage);
   stage = callStage;
-  if (threw)
-    return;
+  if (threw) return;
 
   setImmediate(run, 2);
 }, QUEUE * 3);
 
-for (let i = 0; i < QUEUE; i++)
-  setImmediate(run, 0);
+for (let i = 0; i < QUEUE; i++) setImmediate(run, 0);
 setImmediate(() => {
   threw = true;
   process.nextTick(() => assert.strictEqual(stage, 1));
   throw new Error('setImmediate Err');
 });
-d1.run(() => setImmediate(() => {
-  throw new Error('setImmediate Err');
-}));
-for (let i = 0; i < QUEUE; i++)
-  setImmediate(run, 1);
+d1.run(() =>
+  setImmediate(() => {
+    throw new Error('setImmediate Err');
+  })
+);
+for (let i = 0; i < QUEUE; i++) setImmediate(run, 1);

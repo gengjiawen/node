@@ -23,12 +23,11 @@
 require('../common');
 const assert = require('assert');
 // minimum string size to overflow into external string space
-const EXTERN_APEX = 0xFBEE9;
+const EXTERN_APEX = 0xfbee9;
 
 // manually controlled string for checking binary output
 let ucs2_control = 'a\u0000';
 let write_str = 'a';
-
 
 // first do basic checks
 let b = Buffer.from(write_str, 'ucs2');
@@ -81,7 +80,6 @@ assert.strictEqual(c_bin.toString('ucs2'), c_ucs.toString('ucs2'));
 assert.strictEqual(c_bin.toString('latin1'), ucs2_control);
 assert.strictEqual(c_ucs.toString('latin1'), ucs2_control);
 
-
 // now let's test BASE64 and HEX encoding/decoding
 const RADIOS = 2;
 const PRE_HALF_APEX = Math.ceil(EXTERN_APEX / 2) - RADIOS;
@@ -131,7 +129,7 @@ const PRE_3OF4_APEX = Math.ceil((EXTERN_APEX / 4) * 3) - RADIOS;
 
 // https://github.com/nodejs/node/issues/1024
 {
-  const a = 'x'.repeat(1 << 20 - 1);
+  const a = 'x'.repeat(1 << (20 - 1));
   const b = Buffer.from(a, 'ucs2').toString('ucs2');
   const c = Buffer.from(b, 'utf8').toString('utf8');
 

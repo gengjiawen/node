@@ -39,130 +39,122 @@ const cookies = [
   'prefers_open_id=; path=/; expires=Thu, 01-Jan-1970 00:00:00 GMT'
 ];
 
-const s = http.createServer(common.mustCall((req, res) => {
-  switch (test) {
-    case 'headers':
-      // Check that header-related functions work before setting any headers
-      const headers = res.getHeaders();
-      const exoticObj = Object.create(null);
-      assert.deepStrictEqual(headers, exoticObj);
-      assert.deepStrictEqual(res.getHeaderNames(), []);
-      assert.deepStrictEqual(res.hasHeader('Connection'), false);
-      assert.deepStrictEqual(res.getHeader('Connection'), undefined);
+const s = http.createServer(
+  common.mustCall((req, res) => {
+    switch (test) {
+      case 'headers':
+        // Check that header-related functions work before setting any headers
+        const headers = res.getHeaders();
+        const exoticObj = Object.create(null);
+        assert.deepStrictEqual(headers, exoticObj);
+        assert.deepStrictEqual(res.getHeaderNames(), []);
+        assert.deepStrictEqual(res.hasHeader('Connection'), false);
+        assert.deepStrictEqual(res.getHeader('Connection'), undefined);
 
-      common.expectsError(
-        () => res.setHeader(),
-        {
+        common.expectsError(() => res.setHeader(), {
           code: 'ERR_INVALID_HTTP_TOKEN',
           type: TypeError,
           message: 'Header name must be a valid HTTP token ["undefined"]'
-        }
-      );
-      common.expectsError(
-        () => res.setHeader('someHeader'),
-        {
+        });
+        common.expectsError(() => res.setHeader('someHeader'), {
           code: 'ERR_HTTP_INVALID_HEADER_VALUE',
           type: TypeError,
           message: 'Invalid value "undefined" for header "someHeader"'
-        }
-      );
-      common.expectsError(
-        () => res.getHeader(),
-        {
+        });
+        common.expectsError(() => res.getHeader(), {
           code: 'ERR_INVALID_ARG_TYPE',
           type: TypeError,
-          message: 'The "name" argument must be of type string. ' +
-                   'Received type undefined'
-        }
-      );
-      common.expectsError(
-        () => res.removeHeader(),
-        {
+          message:
+            'The "name" argument must be of type string. ' +
+            'Received type undefined'
+        });
+        common.expectsError(() => res.removeHeader(), {
           code: 'ERR_INVALID_ARG_TYPE',
           type: TypeError,
-          message: 'The "name" argument must be of type string. ' +
-                   'Received type undefined'
-        }
-      );
+          message:
+            'The "name" argument must be of type string. ' +
+            'Received type undefined'
+        });
 
-      const arrayValues = [1, 2, 3];
-      res.setHeader('x-test-header', 'testing');
-      res.setHeader('X-TEST-HEADER2', 'testing');
-      res.setHeader('set-cookie', cookies);
-      res.setHeader('x-test-array-header', arrayValues);
+        const arrayValues = [1, 2, 3];
+        res.setHeader('x-test-header', 'testing');
+        res.setHeader('X-TEST-HEADER2', 'testing');
+        res.setHeader('set-cookie', cookies);
+        res.setHeader('x-test-array-header', arrayValues);
 
-      assert.strictEqual(res.getHeader('x-test-header'), 'testing');
-      assert.strictEqual(res.getHeader('x-test-header2'), 'testing');
+        assert.strictEqual(res.getHeader('x-test-header'), 'testing');
+        assert.strictEqual(res.getHeader('x-test-header2'), 'testing');
 
-      const headersCopy = res.getHeaders();
-      const expected = {
-        'x-test-header': 'testing',
-        'x-test-header2': 'testing',
-        'set-cookie': cookies,
-        'x-test-array-header': arrayValues
-      };
-      Object.setPrototypeOf(expected, null);
-      assert.deepStrictEqual(headersCopy, expected);
+        const headersCopy = res.getHeaders();
+        const expected = {
+          'x-test-header': 'testing',
+          'x-test-header2': 'testing',
+          'set-cookie': cookies,
+          'x-test-array-header': arrayValues
+        };
+        Object.setPrototypeOf(expected, null);
+        assert.deepStrictEqual(headersCopy, expected);
 
-      assert.deepStrictEqual(res.getHeaderNames(),
-                             ['x-test-header', 'x-test-header2',
-                              'set-cookie', 'x-test-array-header']);
+        assert.deepStrictEqual(res.getHeaderNames(), [
+          'x-test-header',
+          'x-test-header2',
+          'set-cookie',
+          'x-test-array-header'
+        ]);
 
-      assert.strictEqual(res.hasHeader('x-test-header2'), true);
-      assert.strictEqual(res.hasHeader('X-TEST-HEADER2'), true);
-      assert.strictEqual(res.hasHeader('X-Test-Header2'), true);
-      [
-        undefined,
-        null,
-        true,
-        {},
-        { toString: () => 'X-TEST-HEADER2' },
-        () => { }
-      ].forEach((val) => {
-        common.expectsError(
-          () => res.hasHeader(val),
-          {
+        assert.strictEqual(res.hasHeader('x-test-header2'), true);
+        assert.strictEqual(res.hasHeader('X-TEST-HEADER2'), true);
+        assert.strictEqual(res.hasHeader('X-Test-Header2'), true);
+        [
+          undefined,
+          null,
+          true,
+          {},
+          { toString: () => 'X-TEST-HEADER2' },
+          () => {}
+        ].forEach((val) => {
+          common.expectsError(() => res.hasHeader(val), {
             code: 'ERR_INVALID_ARG_TYPE',
             type: TypeError,
-            message: 'The "name" argument must be of type string. ' +
-                     `Received type ${typeof val}`
-          }
-        );
-      });
+            message:
+              'The "name" argument must be of type string. ' +
+              `Received type ${typeof val}`
+          });
+        });
 
-      res.removeHeader('x-test-header2');
+        res.removeHeader('x-test-header2');
 
-      assert.strictEqual(res.hasHeader('x-test-header2'), false);
-      assert.strictEqual(res.hasHeader('X-TEST-HEADER2'), false);
-      assert.strictEqual(res.hasHeader('X-Test-Header2'), false);
-      break;
+        assert.strictEqual(res.hasHeader('x-test-header2'), false);
+        assert.strictEqual(res.hasHeader('X-TEST-HEADER2'), false);
+        assert.strictEqual(res.hasHeader('X-Test-Header2'), false);
+        break;
 
-    case 'contentLength':
-      res.setHeader('content-length', content.length);
-      assert.strictEqual(res.getHeader('Content-Length'), content.length);
-      break;
+      case 'contentLength':
+        res.setHeader('content-length', content.length);
+        assert.strictEqual(res.getHeader('Content-Length'), content.length);
+        break;
 
-    case 'transferEncoding':
-      res.setHeader('transfer-encoding', 'chunked');
-      assert.strictEqual(res.getHeader('Transfer-Encoding'), 'chunked');
-      break;
+      case 'transferEncoding':
+        res.setHeader('transfer-encoding', 'chunked');
+        assert.strictEqual(res.getHeader('Transfer-Encoding'), 'chunked');
+        break;
 
-    case 'writeHead':
-      res.statusCode = 404;
-      res.setHeader('x-foo', 'keyboard cat');
-      res.writeHead(200, { 'x-foo': 'bar', 'x-bar': 'baz' });
-      break;
+      case 'writeHead':
+        res.statusCode = 404;
+        res.setHeader('x-foo', 'keyboard cat');
+        res.writeHead(200, { 'x-foo': 'bar', 'x-bar': 'baz' });
+        break;
 
-    default:
-      assert.fail('Unknown test');
-  }
+      default:
+        assert.fail('Unknown test');
+    }
 
-  res.statusCode = 201;
-  res.end(content);
-}, 4));
+    res.statusCode = 201;
+    res.end(content);
+  }, 4)
+);
 
 s.listen(0, nextTest);
-
 
 function nextTest() {
   if (test === 'end') {
@@ -171,47 +163,58 @@ function nextTest() {
 
   let bufferedResponse = '';
 
-  http.get({ port: s.address().port }, common.mustCall((response) => {
-    switch (test) {
-      case 'headers':
-        assert.strictEqual(response.statusCode, 201);
-        assert.strictEqual(response.headers['x-test-header'], 'testing');
-        assert.strictEqual(response.headers['x-test-array-header'],
-                           [1, 2, 3].join(', '));
-        assert.deepStrictEqual(cookies, response.headers['set-cookie']);
-        assert.strictEqual(response.headers['x-test-header2'], undefined);
-        test = 'contentLength';
-        break;
+  http.get(
+    { port: s.address().port },
+    common.mustCall((response) => {
+      switch (test) {
+        case 'headers':
+          assert.strictEqual(response.statusCode, 201);
+          assert.strictEqual(response.headers['x-test-header'], 'testing');
+          assert.strictEqual(
+            response.headers['x-test-array-header'],
+            [1, 2, 3].join(', ')
+          );
+          assert.deepStrictEqual(cookies, response.headers['set-cookie']);
+          assert.strictEqual(response.headers['x-test-header2'], undefined);
+          test = 'contentLength';
+          break;
 
-      case 'contentLength':
-        assert.strictEqual(+response.headers['content-length'], content.length);
-        test = 'transferEncoding';
-        break;
+        case 'contentLength':
+          assert.strictEqual(
+            +response.headers['content-length'],
+            content.length
+          );
+          test = 'transferEncoding';
+          break;
 
-      case 'transferEncoding':
-        assert.strictEqual(response.headers['transfer-encoding'], 'chunked');
-        test = 'writeHead';
-        break;
+        case 'transferEncoding':
+          assert.strictEqual(response.headers['transfer-encoding'], 'chunked');
+          test = 'writeHead';
+          break;
 
-      case 'writeHead':
-        assert.strictEqual(response.headers['x-foo'], 'bar');
-        assert.strictEqual(response.headers['x-bar'], 'baz');
-        assert.strictEqual(response.statusCode, 200);
-        test = 'end';
-        break;
+        case 'writeHead':
+          assert.strictEqual(response.headers['x-foo'], 'bar');
+          assert.strictEqual(response.headers['x-bar'], 'baz');
+          assert.strictEqual(response.statusCode, 200);
+          test = 'end';
+          break;
 
-      default:
-        assert.fail('Unknown test');
-    }
+        default:
+          assert.fail('Unknown test');
+      }
 
-    response.setEncoding('utf8');
-    response.on('data', (s) => {
-      bufferedResponse += s;
-    });
+      response.setEncoding('utf8');
+      response.on('data', (s) => {
+        bufferedResponse += s;
+      });
 
-    response.on('end', common.mustCall(() => {
-      assert.strictEqual(bufferedResponse, content);
-      common.mustCall(nextTest)();
-    }));
-  }));
+      response.on(
+        'end',
+        common.mustCall(() => {
+          assert.strictEqual(bufferedResponse, content);
+          common.mustCall(nextTest)();
+        })
+      );
+    })
+  );
 }

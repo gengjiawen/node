@@ -20,4 +20,3 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 exports.hello = 'hello from two!';
-

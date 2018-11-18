@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 // Test interaction of compiled-in CAs with user-provided CAs.
 
@@ -28,13 +27,24 @@ const opts = {
 };
 
 // Success relies on the compiled in well-known root CAs
-tls.connect(opts, common.mustCall(end));
+tls.connect(
+  opts,
+  common.mustCall(end)
+);
 
 // The .ca option replaces the well-known roots, so connection fails.
 opts.ca = caCert;
-tls.connect(opts, fail).on('error', common.mustCall((err) => {
-  assert.strictEqual(err.message, 'unable to get local issuer certificate');
-}));
+tls
+  .connect(
+    opts,
+    fail
+  )
+  .on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err.message, 'unable to get local issuer certificate');
+    })
+  );
 
 function fail() {
   assert.fail('should fail to connect');
@@ -42,12 +52,18 @@ function fail() {
 
 // New secure contexts have the well-known root CAs.
 opts.secureContext = tls.createSecureContext();
-tls.connect(opts, common.mustCall(end));
+tls.connect(
+  opts,
+  common.mustCall(end)
+);
 
 // Explicit calls to addCACert() add to the default well-known roots, instead
 // of replacing, so connection still succeeds.
 opts.secureContext.context.addCACert(caCert);
-tls.connect(opts, common.mustCall(end));
+tls.connect(
+  opts,
+  common.mustCall(end)
+);
 
 function end() {
   this.end();

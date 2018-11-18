@@ -6,11 +6,14 @@ const { Writable } = require('stream');
 
 const w = new Writable();
 
-w.on('error', common.expectsError({
-  type: Error,
-  code: 'ERR_METHOD_NOT_IMPLEMENTED',
-  message: 'The _write() method is not implemented'
-}));
+w.on(
+  'error',
+  common.expectsError({
+    type: Error,
+    code: 'ERR_METHOD_NOT_IMPLEMENTED',
+    message: 'The _write() method is not implemented'
+  })
+);
 
 w.end(Buffer.from('blerg'));
 

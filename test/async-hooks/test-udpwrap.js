@@ -32,6 +32,5 @@ process.on('exit', onexit);
 function onexit() {
   hooks.disable();
   hooks.sanityCheck('UDPWRAP');
-  checkInvocations(udpwrap, { init: 1, destroy: 1 },
-                   'when process exits');
+  checkInvocations(udpwrap, { init: 1, destroy: 1 }, 'when process exits');
 }

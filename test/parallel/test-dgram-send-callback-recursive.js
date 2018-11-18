@@ -36,8 +36,11 @@ client.on('message', function(buf, info) {
   }
 });
 
-client.on('close', common.mustCall(function() {
-  assert.strictEqual(received, limit);
-}));
+client.on(
+  'close',
+  common.mustCall(function() {
+    assert.strictEqual(received, limit);
+  })
+);
 
 client.bind(0);

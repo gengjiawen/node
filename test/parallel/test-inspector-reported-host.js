@@ -13,7 +13,8 @@ async function test() {
   const response = await child.httpGet(null, '/json', madeUpHost);
   assert.ok(
     response[0].webSocketDebuggerUrl.startsWith(`ws://${madeUpHost}`),
-    response[0].webSocketDebuggerUrl);
+    response[0].webSocketDebuggerUrl
+  );
   child.kill();
 }
 

@@ -12,11 +12,10 @@ const script = fixtures.path('inspector-global-function.js');
 async function setupDebugger(session) {
   console.log('[test]', 'Setting up a debugger');
   const commands = [
-    { 'method': 'Runtime.enable' },
-    { 'method': 'Debugger.enable' },
-    { 'method': 'Debugger.setAsyncCallStackDepth',
-      'params': { 'maxDepth': 0 } },
-    { 'method': 'Runtime.runIfWaitingForDebugger' },
+    { method: 'Runtime.enable' },
+    { method: 'Debugger.enable' },
+    { method: 'Debugger.setAsyncCallStackDepth', params: { maxDepth: 0 } },
+    { method: 'Runtime.runIfWaitingForDebugger' }
   ];
   session.send(commands);
   await session.waitForNotification('Runtime.consoleAPICalled');
@@ -25,23 +24,27 @@ async function setupDebugger(session) {
 async function breakOnLine(session) {
   console.log('[test]', 'Breaking in the code');
   const commands = [
-    { 'method': 'Debugger.setBreakpointByUrl',
-      'params': { 'lineNumber': 9,
-                  'url': pathToFileURL(script).toString(),
-                  'columnNumber': 0,
-                  'condition': ''
+    {
+      method: 'Debugger.setBreakpointByUrl',
+      params: {
+        lineNumber: 9,
+        url: pathToFileURL(script).toString(),
+        columnNumber: 0,
+        condition: ''
       }
     },
-    { 'method': 'Runtime.evaluate',
-      'params': { 'expression': 'sum()',
-                  'objectGroup': 'console',
-                  'includeCommandLineAPI': true,
-                  'silent': false,
-                  'contextId': 1,
-                  'returnByValue': false,
-                  'generatePreview': true,
-                  'userGesture': true,
-                  'awaitPromise': false
+    {
+      method: 'Runtime.evaluate',
+      params: {
+        expression: 'sum()',
+        objectGroup: 'console',
+        includeCommandLineAPI: true,
+        silent: false,
+        contextId: 1,
+        returnByValue: false,
+        generatePreview: true,
+        userGesture: true,
+        awaitPromise: false
       }
     }
   ];
@@ -51,7 +54,7 @@ async function breakOnLine(session) {
 
 async function stepOverConsoleStatement(session) {
   console.log('[test]', 'Step over console statement and test output');
-  session.send({ 'method': 'Debugger.stepOver' });
+  session.send({ method: 'Debugger.stepOver' });
   await session.waitForConsoleOutput('log', [0, 3]);
   await session.waitForNotification('Debugger.paused');
 }

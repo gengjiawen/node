@@ -6,11 +6,9 @@ const common = require('../common');
 // the full 64 bits and the result is that it does not process the
 // addresses correctly and runs out of memory
 // Disabling until we get a fix upstreamed into V8
-if (common.isAIX)
-  common.skip('AIX address range too big for scripts.');
+if (common.isAIX) common.skip('AIX address range too big for scripts.');
 
-if (!common.enoughTestCpu)
-  common.skip('test is CPU-intensive');
+if (!common.enoughTestCpu) common.skip('test is CPU-intensive');
 
 const base = require('./tick-processor-base.js');
 

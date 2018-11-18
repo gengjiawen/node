@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const https = require('https');
@@ -46,17 +45,30 @@ const server = https.createServer(options, function(req, res) {
   req.resume();
 });
 
-server.listen(0, '127.0.0.1', common.mustCall(function() {
-  https.request({
-    host: 'localhost',
-    port: this.address().port,
-    path: '/',
-    method: 'GET',
-    localAddress: invalidLocalAddress
-  }, function(res) {
-    assert.fail('unexpectedly got response from server');
-  }).on('error', common.mustCall(function(e) {
-    console.log(`client got error: ${e.message}`);
-    server.close();
-  })).end();
-}));
+server.listen(
+  0,
+  '127.0.0.1',
+  common.mustCall(function() {
+    https
+      .request(
+        {
+          host: 'localhost',
+          port: this.address().port,
+          path: '/',
+          method: 'GET',
+          localAddress: invalidLocalAddress
+        },
+        function(res) {
+          assert.fail('unexpectedly got response from server');
+        }
+      )
+      .on(
+        'error',
+        common.mustCall(function(e) {
+          console.log(`client got error: ${e.message}`);
+          server.close();
+        })
+      )
+      .end();
+  })
+);

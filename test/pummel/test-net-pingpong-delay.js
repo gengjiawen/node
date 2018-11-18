@@ -63,45 +63,52 @@ function pingPongTest(port, host, on_complete) {
     });
   });
 
-  server.listen(port, host, common.mustCall(function() {
-    const client = net.createConnection(port, host);
+  server.listen(
+    port,
+    host,
+    common.mustCall(function() {
+      const client = net.createConnection(port, host);
 
-    client.setEncoding('utf8');
+      client.setEncoding('utf8');
 
-    client.on('connect', function() {
-      assert.strictEqual(client.readyState, 'open');
-      client.write('PING');
-    });
-
-    client.on('data', function(data) {
-      console.log(data);
-      assert.strictEqual(data, 'PONG');
-      assert.strictEqual(client.readyState, 'open');
-
-      setTimeout(function() {
+      client.on('connect', function() {
         assert.strictEqual(client.readyState, 'open');
-        if (count++ < N) {
-          client.write('PING');
-        } else {
-          console.log('closing client');
-          client.end();
-          client_ended = true;
-        }
-      }, DELAY);
-    });
+        client.write('PING');
+      });
 
-    client.on('timeout', function() {
-      console.error('client-side timeout!!');
-      assert.strictEqual(false, true);
-    });
+      client.on('data', function(data) {
+        console.log(data);
+        assert.strictEqual(data, 'PONG');
+        assert.strictEqual(client.readyState, 'open');
 
-    client.on('close', common.mustCall(function() {
-      console.log('client.end');
-      assert.strictEqual(count, N + 1);
-      assert.ok(client_ended);
-      if (on_complete) on_complete();
-    }));
-  }));
+        setTimeout(function() {
+          assert.strictEqual(client.readyState, 'open');
+          if (count++ < N) {
+            client.write('PING');
+          } else {
+            console.log('closing client');
+            client.end();
+            client_ended = true;
+          }
+        }, DELAY);
+      });
+
+      client.on('timeout', function() {
+        console.error('client-side timeout!!');
+        assert.strictEqual(false, true);
+      });
+
+      client.on(
+        'close',
+        common.mustCall(function() {
+          console.log('client.end');
+          assert.strictEqual(count, N + 1);
+          assert.ok(client_ended);
+          if (on_complete) on_complete();
+        })
+      );
+    })
+  );
 }
 
 pingPongTest(common.PORT);

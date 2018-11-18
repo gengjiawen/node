@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('node compiled without OpenSSL.');
+if (!common.hasCrypto) common.skip('node compiled without OpenSSL.');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -32,26 +31,30 @@ assert.throws(
     crypto.getDiffieHellman('unknown-group');
   },
   /^Error: Unknown group$/,
-  'crypto.getDiffieHellman(\'unknown-group\') ' +
-  'failed to throw the expected error.'
+  "crypto.getDiffieHellman('unknown-group') " +
+    'failed to throw the expected error.'
 );
 assert.throws(
   function() {
     crypto.getDiffieHellman('modp1').setPrivateKey('');
   },
-  new RegExp('^TypeError: crypto\\.getDiffieHellman\\(\\.\\.\\.\\)\\.' +
-  'setPrivateKey is not a function$'),
-  'crypto.getDiffieHellman(\'modp1\').setPrivateKey(\'\') ' +
-  'failed to throw the expected error.'
+  new RegExp(
+    '^TypeError: crypto\\.getDiffieHellman\\(\\.\\.\\.\\)\\.' +
+      'setPrivateKey is not a function$'
+  ),
+  "crypto.getDiffieHellman('modp1').setPrivateKey('') " +
+    'failed to throw the expected error.'
 );
 assert.throws(
   function() {
     crypto.getDiffieHellman('modp1').setPublicKey('');
   },
-  new RegExp('^TypeError: crypto\\.getDiffieHellman\\(\\.\\.\\.\\)\\.' +
-  'setPublicKey is not a function$'),
-  'crypto.getDiffieHellman(\'modp1\').setPublicKey(\'\') ' +
-  'failed to throw the expected error.'
+  new RegExp(
+    '^TypeError: crypto\\.getDiffieHellman\\(\\.\\.\\.\\)\\.' +
+      'setPublicKey is not a function$'
+  ),
+  "crypto.getDiffieHellman('modp1').setPublicKey('') " +
+    'failed to throw the expected error.'
 );
 
 const hashes = {
@@ -69,16 +72,17 @@ for (const name in hashes) {
   const group = crypto.getDiffieHellman(name);
   const private_key = group.getPrime('hex');
   const hash1 = hashes[name];
-  const hash2 = crypto.createHash('sha1')
-                    .update(private_key.toUpperCase()).digest('hex');
+  const hash2 = crypto
+    .createHash('sha1')
+    .update(private_key.toUpperCase())
+    .digest('hex');
   assert.strictEqual(hash1, hash2);
   assert.strictEqual(group.getGenerator('hex'), '02');
 }
 
 for (const name in hashes) {
   // modp1 is 768 bits, FIPS requires >= 1024
-  if (name === 'modp1' && common.hasFipsCrypto)
-    continue;
+  if (name === 'modp1' && common.hasFipsCrypto) continue;
   const group1 = crypto.getDiffieHellman(name);
   const group2 = crypto.getDiffieHellman(name);
   group1.generateKeys();

@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (common.inFreeBSDJail)
-  common.skip('in a FreeBSD jail');
+if (common.inFreeBSDJail) common.skip('in a FreeBSD jail');
 
 const assert = require('assert');
 const dgram = require('dgram');
@@ -66,8 +65,10 @@ if (process.argv[2] !== 'child') {
 
   // Exit the test if it doesn't succeed within TIMEOUT
   timer = setTimeout(function() {
-    console.error('[PARENT] Responses were not received within %d ms.',
-                  TIMEOUT);
+    console.error(
+      '[PARENT] Responses were not received within %d ms.',
+      TIMEOUT
+    );
     console.error('[PARENT] Fail');
 
     killSubprocesses(workers);
@@ -93,10 +94,12 @@ if (process.argv[2] !== 'child') {
         }
 
         dead += 1;
-        console.error('[PARENT] Worker %d died. %d dead of %d',
-                      worker.pid,
-                      dead,
-                      listeners);
+        console.error(
+          '[PARENT] Worker %d died. %d dead of %d',
+          worker.pid,
+          dead,
+          listeners
+        );
 
         if (dead === listeners) {
           console.error('[PARENT] All workers have died.');
@@ -122,15 +125,19 @@ if (process.argv[2] !== 'child') {
           if (worker.messagesReceived.length === messages.length) {
             done += 1;
             worker.isDone = true;
-            console.error('[PARENT] %d received %d messages total.',
-                          worker.pid,
-                          worker.messagesReceived.length);
+            console.error(
+              '[PARENT] %d received %d messages total.',
+              worker.pid,
+              worker.messagesReceived.length
+            );
           }
 
           if (done === listeners) {
-            console.error('[PARENT] All workers have received the ' +
-                          'required number of ' +
-                          'messages. Will now compare.');
+            console.error(
+              '[PARENT] All workers have received the ' +
+                'required number of ' +
+                'messages. Will now compare.'
+            );
 
             Object.keys(workers).forEach(function(pid) {
               const worker = workers[pid];
@@ -146,9 +153,11 @@ if (process.argv[2] !== 'child') {
                 }
               });
 
-              console.error('[PARENT] %d received %d matching messages.',
-                            worker.pid,
-                            count);
+              console.error(
+                '[PARENT] %d received %d matching messages.',
+                worker.pid,
+                count
+              );
 
               assert.strictEqual(count, messages.length);
             });
@@ -182,7 +191,9 @@ if (process.argv[2] !== 'child') {
     const buf = messages[i++];
 
     if (!buf) {
-      try { sendSocket.close(); } catch {}
+      try {
+        sendSocket.close();
+      } catch {}
       return;
     }
 
@@ -194,9 +205,12 @@ if (process.argv[2] !== 'child') {
       LOCAL_BROADCAST_HOST,
       function(err) {
         assert.ifError(err);
-        console.error('[PARENT] sent %s to %s:%s',
-                      util.inspect(buf.toString()),
-                      LOCAL_BROADCAST_HOST, common.PORT);
+        console.error(
+          '[PARENT] sent %s to %s:%s',
+          util.inspect(buf.toString()),
+          LOCAL_BROADCAST_HOST,
+          common.PORT
+        );
 
         process.nextTick(sendSocket.sendNext);
       }
@@ -222,10 +236,12 @@ if (process.argv[2] === 'child') {
     // receive udp messages only sent from parent
     if (rinfo.address !== bindAddress) return;
 
-    console.error('[CHILD] %s received %s from %j',
-                  process.pid,
-                  util.inspect(buf.toString()),
-                  rinfo);
+    console.error(
+      '[CHILD] %s received %s from %j',
+      process.pid,
+      util.inspect(buf.toString()),
+      rinfo
+    );
 
     receivedMessages.push(buf);
 

@@ -24,20 +24,25 @@ const common = require('../common');
 const net = require('net');
 
 const connect = (opts, code, type) => {
-  common.expectsError(
-    () => net.connect(opts),
-    { code, type }
-  );
+  common.expectsError(() => net.connect(opts), { code, type });
 };
 
-connect({
-  host: 'localhost',
-  port: 0,
-  localAddress: 'foobar',
-}, 'ERR_INVALID_IP_ADDRESS', TypeError);
+connect(
+  {
+    host: 'localhost',
+    port: 0,
+    localAddress: 'foobar'
+  },
+  'ERR_INVALID_IP_ADDRESS',
+  TypeError
+);
 
-connect({
-  host: 'localhost',
-  port: 0,
-  localPort: 'foobar',
-}, 'ERR_INVALID_ARG_TYPE', TypeError);
+connect(
+  {
+    host: 'localhost',
+    port: 0,
+    localPort: 'foobar'
+  },
+  'ERR_INVALID_ARG_TYPE',
+  TypeError
+);

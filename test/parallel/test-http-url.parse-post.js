@@ -33,8 +33,10 @@ function check(request) {
   // Everything else should be right
   assert.strictEqual(request.url, '/asdf?qwer=zxcv');
   // The host header should use the url.parse.hostname
-  assert.strictEqual(request.headers.host,
-                     `${testURL.hostname}:${testURL.port}`);
+  assert.strictEqual(
+    request.headers.host,
+    `${testURL.hostname}:${testURL.port}`
+  );
 }
 
 const server = http.createServer(function(request, response) {

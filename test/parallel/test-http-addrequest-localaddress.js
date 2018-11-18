@@ -20,9 +20,7 @@ agent.maxSockets = 0;
 // port 8080 is hardcoded since this does not create a network connection
 agent.addRequest(req, 'localhost', 8080, '127.0.0.1');
 assert.strictEqual(Object.keys(agent.requests).length, 1);
-assert.strictEqual(
-  Object.keys(agent.requests)[0],
-  'localhost:8080:127.0.0.1');
+assert.strictEqual(Object.keys(agent.requests)[0], 'localhost:8080:127.0.0.1');
 
 // path is *not* used when naming requests / sockets
 // port 8080 is hardcoded since this does not create a network connection
@@ -33,6 +31,4 @@ agent.addRequest(req, {
   path: '/foo'
 });
 assert.strictEqual(Object.keys(agent.requests).length, 1);
-assert.strictEqual(
-  Object.keys(agent.requests)[0],
-  'localhost:8080:127.0.0.1');
+assert.strictEqual(Object.keys(agent.requests)[0], 'localhost:8080:127.0.0.1');

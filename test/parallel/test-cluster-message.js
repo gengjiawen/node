@@ -41,10 +41,12 @@ if (cluster.isWorker) {
     if (!socket || !message) return;
 
     // Tell master using TCP socket that a message is received.
-    socket.write(JSON.stringify({
-      code: 'received message',
-      echo: message
-    }));
+    socket.write(
+      JSON.stringify({
+        code: 'received message',
+        echo: message
+      })
+    );
   }
 
   server.on('connection', function(socket_) {
@@ -62,22 +64,20 @@ if (cluster.isWorker) {
 
   server.listen(0, '127.0.0.1');
 } else if (cluster.isMaster) {
-
   const checks = {
     global: {
-      'receive': false,
-      'correct': false
+      receive: false,
+      correct: false
     },
     master: {
-      'receive': false,
-      'correct': false
+      receive: false,
+      correct: false
     },
     worker: {
-      'receive': false,
-      'correct': false
+      receive: false,
+      correct: false
     }
   };
-
 
   let client;
   const check = (type, result) => {
@@ -110,11 +110,13 @@ if (cluster.isWorker) {
 
   // When a TCP server is listening in the worker connect to it
   worker.on('listening', function(address) {
-
-    client = net.connect(address.port, function() {
-      // Send message to worker.
-      worker.send('message from master');
-    });
+    client = net.connect(
+      address.port,
+      function() {
+        // Send message to worker.
+        worker.send('message from master');
+      }
+    );
 
     client.on('data', function(data) {
       // All data is JSON
@@ -132,9 +134,12 @@ if (cluster.isWorker) {
       worker.kill();
     });
 
-    worker.on('exit', common.mustCall(function() {
-      process.exit(0);
-    }));
+    worker.on(
+      'exit',
+      common.mustCall(function() {
+        process.exit(0);
+      })
+    );
   });
 
   process.once('exit', function() {

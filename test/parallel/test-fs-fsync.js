@@ -35,27 +35,38 @@ const fileTemp = path.join(tmpdir.path, 'a.js');
 tmpdir.refresh();
 fs.copyFileSync(fileFixture, fileTemp);
 
-fs.open(fileTemp, 'a', 0o777, common.mustCall(function(err, fd) {
-  assert.ifError(err);
-
-  fs.fdatasyncSync(fd);
-
-  fs.fsyncSync(fd);
-
-  fs.fdatasync(fd, common.mustCall(function(err) {
+fs.open(
+  fileTemp,
+  'a',
+  0o777,
+  common.mustCall(function(err, fd) {
     assert.ifError(err);
-    fs.fsync(fd, common.mustCall(function(err) {
-      assert.ifError(err);
-    }));
-  }));
-}));
+
+    fs.fdatasyncSync(fd);
+
+    fs.fsyncSync(fd);
+
+    fs.fdatasync(
+      fd,
+      common.mustCall(function(err) {
+        assert.ifError(err);
+        fs.fsync(
+          fd,
+          common.mustCall(function(err) {
+            assert.ifError(err);
+          })
+        );
+      })
+    );
+  })
+);
 
 ['', false, null, undefined, {}, []].forEach((input) => {
   const errObj = {
     code: 'ERR_INVALID_ARG_TYPE',
     name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "fd" argument must be of type number. Received type ' +
-             typeof input
+    message:
+      'The "fd" argument must be of type number. Received type ' + typeof input
   };
   assert.throws(() => fs.fdatasync(input), errObj);
   assert.throws(() => fs.fdatasyncSync(input), errObj);

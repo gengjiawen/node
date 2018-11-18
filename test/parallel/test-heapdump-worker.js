@@ -16,11 +16,13 @@ validateSnapshotNodes('Node / Worker', [
     ]
   }
 ]);
-validateSnapshotNodes('Node / MessagePort', [
-  {
-    children: [
-      { node_name: 'Node / MessagePortData', edge_name: 'data' }
-    ]
-  }
-], { loose: true });
+validateSnapshotNodes(
+  'Node / MessagePort',
+  [
+    {
+      children: [{ node_name: 'Node / MessagePortData', edge_name: 'data' }]
+    }
+  ],
+  { loose: true }
+);
 worker.terminate();

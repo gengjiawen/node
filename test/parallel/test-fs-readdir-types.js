@@ -30,7 +30,6 @@ files.forEach(function(currentFile) {
   fs.closeSync(fs.openSync(`${readdirDir}/${currentFile}`, 'w'));
 });
 
-
 function assertDirents(dirents) {
   assert.strictEqual(files.length, dirents.length);
   for (const [i, dirent] of dirents.entries()) {
@@ -49,26 +48,36 @@ function assertDirents(dirents) {
 // Check the readdir Sync version
 assertDirents(fs.readdirSync(readdirDir, { withFileTypes: true }));
 
-fs.readdir(__filename, {
-  withFileTypes: true
-}, common.mustCall((err) => {
-  assert.throws(
-    () => { throw err; },
-    {
-      code: 'ENOTDIR',
-      name: 'Error',
-      message: `ENOTDIR: not a directory, scandir '${__filename}'`
-    }
-  );
-}));
+fs.readdir(
+  __filename,
+  {
+    withFileTypes: true
+  },
+  common.mustCall((err) => {
+    assert.throws(
+      () => {
+        throw err;
+      },
+      {
+        code: 'ENOTDIR',
+        name: 'Error',
+        message: `ENOTDIR: not a directory, scandir '${__filename}'`
+      }
+    );
+  })
+);
 
 // Check the readdir async version
-fs.readdir(readdirDir, {
-  withFileTypes: true
-}, common.mustCall((err, dirents) => {
-  assert.ifError(err);
-  assertDirents(dirents);
-}));
+fs.readdir(
+  readdirDir,
+  {
+    withFileTypes: true
+  },
+  common.mustCall((err, dirents) => {
+    assert.ifError(err);
+    assertDirents(dirents);
+  })
+);
 
 // Check the promisified version
 assert.doesNotReject(async () => {
@@ -100,12 +109,16 @@ binding.readdir = common.mustCall((path, encoding, types, req, ctx) => {
   }
 }, 2);
 assertDirents(fs.readdirSync(readdirDir, { withFileTypes: true }));
-fs.readdir(readdirDir, {
-  withFileTypes: true
-}, common.mustCall((err, dirents) => {
-  assert.ifError(err);
-  assertDirents(dirents);
-}));
+fs.readdir(
+  readdirDir,
+  {
+    withFileTypes: true
+  },
+  common.mustCall((err, dirents) => {
+    assert.ifError(err);
+    assertDirents(dirents);
+  })
+);
 
 // Dirent types
 for (const method of typeMethods) {

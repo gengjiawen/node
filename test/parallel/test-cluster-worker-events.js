@@ -27,7 +27,6 @@ const cluster = require('cluster');
 const OK = 2;
 
 if (cluster.isMaster) {
-
   const worker = cluster.fork();
 
   worker.on('exit', (code) => {

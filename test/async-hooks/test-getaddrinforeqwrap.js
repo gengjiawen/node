@@ -37,6 +37,9 @@ function onexit() {
 
   const as = hooks.activitiesOfTypes('GETADDRINFOREQWRAP');
   const a = as[0];
-  checkInvocations(a, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'when process exits');
+  checkInvocations(
+    a,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'when process exits'
+  );
 }

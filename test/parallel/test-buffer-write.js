@@ -3,11 +3,14 @@
 const common = require('../common');
 const assert = require('assert');
 
-const outsideBounds = common.expectsError({
-  code: 'ERR_BUFFER_OUT_OF_BOUNDS',
-  type: RangeError,
-  message: 'Attempt to write outside buffer bounds'
-}, 2);
+const outsideBounds = common.expectsError(
+  {
+    code: 'ERR_BUFFER_OUT_OF_BOUNDS',
+    type: RangeError,
+    message: 'Attempt to write outside buffer bounds'
+  },
+  2
+);
 
 assert.throws(() => Buffer.alloc(9).write('foo', -1), outsideBounds);
 assert.throws(() => Buffer.alloc(9).write('foo', 10), outsideBounds);
@@ -24,8 +27,17 @@ const resultMap = new Map([
 ]);
 
 // utf8, ucs2, ascii, latin1, utf16le
-const encodings = ['utf8', 'utf-8', 'ucs2', 'ucs-2', 'ascii', 'latin1',
-                   'binary', 'utf16le', 'utf-16le'];
+const encodings = [
+  'utf8',
+  'utf-8',
+  'ucs2',
+  'ucs-2',
+  'ascii',
+  'latin1',
+  'binary',
+  'utf16le',
+  'utf-16le'
+];
 
 encodings
   .reduce((es, e) => es.concat(e, e.toUpperCase()), [])
@@ -34,8 +46,7 @@ encodings
     const len = Buffer.byteLength('foo', encoding);
     assert.strictEqual(buf.write('foo', 0, len, encoding), len);
 
-    if (encoding.includes('-'))
-      encoding = encoding.replace('-', '');
+    if (encoding.includes('-')) encoding = encoding.replace('-', '');
 
     assert.deepStrictEqual(buf, resultMap.get(encoding.toLowerCase()));
   });
@@ -89,5 +100,7 @@ assert.strictEqual(z.write('\u0001', 3, 'ucs2'), 0);
 assert.strictEqual(Buffer.compare(z, Buffer.alloc(4, 0)), 0);
 
 // Large overrun could corrupt the process
-assert.strictEqual(Buffer.alloc(4)
-  .write('ыыыыыы'.repeat(100), 3, 'utf16le'), 0);
+assert.strictEqual(
+  Buffer.alloc(4).write('ыыыыыы'.repeat(100), 3, 'utf16le'),
+  0
+);

@@ -28,17 +28,19 @@ const domain = require('domain');
 
 const d = new domain.Domain();
 
-d.on('error', common.mustCall(function(er) {
-  console.error('caught', er);
+d.on(
+  'error',
+  common.mustCall(function(er) {
+    console.error('caught', er);
 
-  assert.strictEqual(er.domain, d);
-  assert.strictEqual(er.domainThrown, true);
-  assert.ok(!er.domainEmitter);
-  assert.strictEqual(er.actual.code, 'ENOENT');
-  assert.ok(/\bthis file does not exist\b/i.test(er.actual.path));
-  assert.strictEqual(typeof er.actual.errno, 'number');
-}));
-
+    assert.strictEqual(er.domain, d);
+    assert.strictEqual(er.domainThrown, true);
+    assert.ok(!er.domainEmitter);
+    assert.strictEqual(er.actual.code, 'ENOENT');
+    assert.ok(/\bthis file does not exist\b/i.test(er.actual.path));
+    assert.strictEqual(typeof er.actual.errno, 'number');
+  })
+);
 
 // implicit handling of thrown errors while in a domain, via the
 // single entry points of ReqWrap and MakeCallback.  Even if

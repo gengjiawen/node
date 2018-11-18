@@ -9,11 +9,13 @@ const assert = require('assert');
 const async_hooks = require('async_hooks');
 
 const destroyedIds = new Set();
-async_hooks.createHook({
-  destroy: common.mustCallAtLeast((asyncId) => {
-    destroyedIds.add(asyncId);
-  }, 1)
-}).enable();
+async_hooks
+  .createHook({
+    destroy: common.mustCallAtLeast((asyncId) => {
+      destroyedIds.add(asyncId);
+    }, 1)
+  })
+  .enable();
 
 let asyncId = null;
 {

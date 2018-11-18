@@ -10,17 +10,21 @@ function timerNotCanceled() {
   assert.fail('Timer should be canceled');
 }
 
-process.on('warning', common.mustCall((warning) => {
-  if (warning.name === 'DeprecationWarning') return;
+process.on(
+  'warning',
+  common.mustCall((warning) => {
+    if (warning.name === 'DeprecationWarning') return;
 
-  const lines = warning.message.split('\n');
+    const lines = warning.message.split('\n');
 
-  assert.strictEqual(warning.name, 'TimeoutOverflowWarning');
-  assert.strictEqual(lines[0], `${OVERFLOW} does not fit into a 32-bit signed` +
-                               ' integer.');
-  assert.strictEqual(lines.length, 2);
-}, 5));
-
+    assert.strictEqual(warning.name, 'TimeoutOverflowWarning');
+    assert.strictEqual(
+      lines[0],
+      `${OVERFLOW} does not fit into a 32-bit signed` + ' integer.'
+    );
+    assert.strictEqual(lines.length, 2);
+  }, 5)
+);
 
 {
   const timeout = setTimeout(timerNotCanceled, OVERFLOW);

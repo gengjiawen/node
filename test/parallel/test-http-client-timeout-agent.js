@@ -29,7 +29,7 @@ let requests_done = 0;
 const options = {
   method: 'GET',
   port: undefined,
-  host: '127.0.0.1',
+  host: '127.0.0.1'
 };
 
 const server = http.createServer(function(req, res) {

@@ -38,8 +38,10 @@ if (process.argv[2] === 'you-are-the-child') {
 {
   const spawn = require('child_process').spawn;
 
-  assert.strictEqual(Object.prototype.hasOwnProperty,
-                     process.env.hasOwnProperty);
+  assert.strictEqual(
+    Object.prototype.hasOwnProperty,
+    process.env.hasOwnProperty
+  );
   const has = process.env.hasOwnProperty('hasOwnProperty');
   assert.strictEqual(has, false);
 
@@ -55,15 +57,18 @@ if (process.argv[2] === 'you-are-the-child') {
   assert.strictEqual('NODE_PROCESS_ENV_DELETED' in process.env, false);
 
   const child = spawn(process.argv[0], [process.argv[1], 'you-are-the-child']);
-  child.stdout.on('data', function(data) { console.log(data.toString()); });
-  child.stderr.on('data', function(data) { console.log(data.toString()); });
+  child.stdout.on('data', function(data) {
+    console.log(data.toString());
+  });
+  child.stderr.on('data', function(data) {
+    console.log(data.toString());
+  });
   child.on('exit', function(statusCode) {
     if (statusCode !== 0) {
-      process.exit(statusCode);  // failed assertion in child process
+      process.exit(statusCode); // failed assertion in child process
     }
   });
 }
-
 
 // delete should return true except for non-configurable properties
 // https://github.com/nodejs/node/issues/7960

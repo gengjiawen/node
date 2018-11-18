@@ -33,8 +33,9 @@ tmpdir.refresh();
 
 let stat;
 
-const msg = 'Using fs.truncate with a file descriptor is deprecated.' +
-            ' Please use fs.ftruncate with a file descriptor instead.';
+const msg =
+  'Using fs.truncate with a file descriptor is deprecated.' +
+  ' Please use fs.ftruncate with a file descriptor instead.';
 
 // Check truncateSync
 fs.writeFileSync(filename, data);
@@ -71,10 +72,12 @@ fs.truncateSync(fd);
 fs.closeSync(fd);
 
 // Async tests
-testTruncate(common.mustCall(function(er) {
-  assert.ifError(er);
-  testFtruncate(common.mustCall(assert.ifError));
-}));
+testTruncate(
+  common.mustCall(function(er) {
+    assert.ifError(er);
+    testFtruncate(common.mustCall(assert.ifError));
+  })
+);
 
 function testTruncate(cb) {
   fs.writeFile(filename, data, function(er) {
@@ -155,10 +158,14 @@ function testFtruncate(cb) {
 {
   const file3 = path.resolve(tmp, 'truncate-file-3.txt');
   fs.writeFileSync(file3, 'Hi');
-  fs.truncate(file3, 4, common.mustCall(function(err) {
-    assert.ifError(err);
-    assert(fs.readFileSync(file3).equals(Buffer.from('Hi\u0000\u0000')));
-  }));
+  fs.truncate(
+    file3,
+    4,
+    common.mustCall(function(err) {
+      assert.ifError(err);
+      assert(fs.readFileSync(file3).equals(Buffer.from('Hi\u0000\u0000')));
+    })
+  );
 }
 
 {
@@ -166,10 +173,14 @@ function testFtruncate(cb) {
   fs.writeFileSync(file4, 'Hi');
   const fd = fs.openSync(file4, 'r+');
   process.on('exit', () => fs.closeSync(fd));
-  fs.ftruncate(fd, 4, common.mustCall(function(err) {
-    assert.ifError(err);
-    assert(fs.readFileSync(file4).equals(Buffer.from('Hi\u0000\u0000')));
-  }));
+  fs.ftruncate(
+    fd,
+    4,
+    common.mustCall(function(err) {
+      assert.ifError(err);
+      assert(fs.readFileSync(file4).equals(Buffer.from('Hi\u0000\u0000')));
+    })
+  );
 }
 
 {
@@ -179,53 +190,49 @@ function testFtruncate(cb) {
   process.on('exit', () => fs.closeSync(fd));
 
   ['', false, null, {}, []].forEach((input) => {
-    assert.throws(
-      () => fs.truncate(file5, input, common.mustNotCall()),
-      {
-        code: 'ERR_INVALID_ARG_TYPE',
-        name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-        message: 'The "len" argument must be of type number. ' +
-                 `Received type ${typeof input}`
-      }
-    );
+    assert.throws(() => fs.truncate(file5, input, common.mustNotCall()), {
+      code: 'ERR_INVALID_ARG_TYPE',
+      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+      message:
+        'The "len" argument must be of type number. ' +
+        `Received type ${typeof input}`
+    });
 
-    assert.throws(
-      () => fs.ftruncate(fd, input),
-      {
-        code: 'ERR_INVALID_ARG_TYPE',
-        name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-        message: 'The "len" argument must be of type number. ' +
-                 `Received type ${typeof input}`
-      }
-    );
+    assert.throws(() => fs.ftruncate(fd, input), {
+      code: 'ERR_INVALID_ARG_TYPE',
+      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+      message:
+        'The "len" argument must be of type number. ' +
+        `Received type ${typeof input}`
+    });
   });
 
   [-1.5, 1.5].forEach((input) => {
-    assert.throws(
-      () => fs.truncate(file5, input),
-      {
-        code: 'ERR_OUT_OF_RANGE',
-        name: 'RangeError [ERR_OUT_OF_RANGE]',
-        message: 'The value of "len" is out of range. It must be ' +
-                  `an integer. Received ${input}`
-      }
-    );
+    assert.throws(() => fs.truncate(file5, input), {
+      code: 'ERR_OUT_OF_RANGE',
+      name: 'RangeError [ERR_OUT_OF_RANGE]',
+      message:
+        'The value of "len" is out of range. It must be ' +
+        `an integer. Received ${input}`
+    });
 
-    assert.throws(
-      () => fs.ftruncate(fd, input),
-      {
-        code: 'ERR_OUT_OF_RANGE',
-        name: 'RangeError [ERR_OUT_OF_RANGE]',
-        message: 'The value of "len" is out of range. It must be ' +
-                  `an integer. Received ${input}`
-      }
-    );
+    assert.throws(() => fs.ftruncate(fd, input), {
+      code: 'ERR_OUT_OF_RANGE',
+      name: 'RangeError [ERR_OUT_OF_RANGE]',
+      message:
+        'The value of "len" is out of range. It must be ' +
+        `an integer. Received ${input}`
+    });
   });
 
-  fs.ftruncate(fd, undefined, common.mustCall(function(err) {
-    assert.ifError(err);
-    assert(fs.readFileSync(file5).equals(Buffer.from('')));
-  }));
+  fs.ftruncate(
+    fd,
+    undefined,
+    common.mustCall(function(err) {
+      assert.ifError(err);
+      assert(fs.readFileSync(file5).equals(Buffer.from('')));
+    })
+  );
 }
 
 {
@@ -233,19 +240,27 @@ function testFtruncate(cb) {
   fs.writeFileSync(file6, 'Hi');
   const fd = fs.openSync(file6, 'r+');
   process.on('exit', () => fs.closeSync(fd));
-  fs.ftruncate(fd, -1, common.mustCall(function(err) {
-    assert.ifError(err);
-    assert(fs.readFileSync(file6).equals(Buffer.from('')));
-  }));
+  fs.ftruncate(
+    fd,
+    -1,
+    common.mustCall(function(err) {
+      assert.ifError(err);
+      assert(fs.readFileSync(file6).equals(Buffer.from('')));
+    })
+  );
 }
 
 {
   const file7 = path.resolve(tmp, 'truncate-file-7.txt');
   fs.writeFileSync(file7, 'Hi');
-  fs.truncate(file7, undefined, common.mustCall(function(err) {
-    assert.ifError(err);
-    assert(fs.readFileSync(file7).equals(Buffer.from('')));
-  }));
+  fs.truncate(
+    file7,
+    undefined,
+    common.mustCall(function(err) {
+      assert.ifError(err);
+      assert(fs.readFileSync(file7).equals(Buffer.from('')));
+    })
+  );
 }
 
 {
@@ -254,7 +269,8 @@ function testFtruncate(cb) {
     assert.strictEqual(file8, err.path);
     assert.strictEqual(
       err.message,
-      `ENOENT: no such file or directory, open '${file8}'`);
+      `ENOENT: no such file or directory, open '${file8}'`
+    );
     assert.strictEqual(err.code, 'ENOENT');
     assert.strictEqual(err.syscall, 'open');
     return true;
@@ -263,27 +279,23 @@ function testFtruncate(cb) {
 }
 
 ['', false, null, {}, []].forEach((input) => {
-  assert.throws(
-    () => fs.truncate('/foo/bar', input),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-      message: 'The "len" argument must be of type number. ' +
-               `Received type ${typeof input}`
-    }
-  );
+  assert.throws(() => fs.truncate('/foo/bar', input), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+    message:
+      'The "len" argument must be of type number. ' +
+      `Received type ${typeof input}`
+  });
 });
 
 ['', false, null, undefined, {}, []].forEach((input) => {
   ['ftruncate', 'ftruncateSync'].forEach((fnName) => {
-    assert.throws(
-      () => fs[fnName](input),
-      {
-        code: 'ERR_INVALID_ARG_TYPE',
-        name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-        message: 'The "fd" argument must be of type number. ' +
-                 `Received type ${typeof input}`
-      }
-    );
+    assert.throws(() => fs[fnName](input), {
+      code: 'ERR_INVALID_ARG_TYPE',
+      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+      message:
+        'The "fd" argument must be of type number. ' +
+        `Received type ${typeof input}`
+    });
   });
 });

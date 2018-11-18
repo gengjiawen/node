@@ -17,10 +17,9 @@ const setup = dgram.createSocket.bind(dgram, { type: 'udp4', reuseAddr: true });
 // dropMembership() without previous addMembership should throw
 {
   const socket = setup();
-  assert.throws(
-    () => { socket.dropMembership(multicastAddress); },
-    /^Error: dropMembership EADDRNOTAVAIL$/
-  );
+  assert.throws(() => {
+    socket.dropMembership(multicastAddress);
+  }, /^Error: dropMembership EADDRNOTAVAIL$/);
   socket.close();
 }
 

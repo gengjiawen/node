@@ -33,12 +33,18 @@ process.chdir(dir);
 assert.strictEqual(process.cwd().normalize(), dir.normalize());
 
 process.chdir('..');
-assert.strictEqual(process.cwd().normalize(),
-                   path.resolve(tmpdir.path).normalize());
+assert.strictEqual(
+  process.cwd().normalize(),
+  path.resolve(tmpdir.path).normalize()
+);
 
 const err = {
   code: 'ERR_INVALID_ARG_TYPE',
   message: /The "directory" argument must be of type string/
 };
-common.expectsError(function() { process.chdir({}); }, err);
-common.expectsError(function() { process.chdir(); }, err);
+common.expectsError(function() {
+  process.chdir({});
+}, err);
+common.expectsError(function() {
+  process.chdir();
+}, err);

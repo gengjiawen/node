@@ -10,11 +10,8 @@ const dns = require('dns');
 // Stub `getnameinfo` to *always* error.
 cares.getnameinfo = () => UV_ENOENT;
 
-assert.throws(
-  () => dns.lookupService('127.0.0.1', 80, common.mustNotCall()),
-  {
-    code: 'ENOENT',
-    message: 'getnameinfo ENOENT 127.0.0.1',
-    syscall: 'getnameinfo'
-  }
-);
+assert.throws(() => dns.lookupService('127.0.0.1', 80, common.mustNotCall()), {
+  code: 'ENOENT',
+  message: 'getnameinfo ENOENT 127.0.0.1',
+  syscall: 'getnameinfo'
+});

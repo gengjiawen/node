@@ -26,10 +26,12 @@ const assert = require('assert');
 
 assert.strictEqual(
   require.resolve(fixtures.path('a')).toLowerCase(),
-  fixtures.path('a.js').toLowerCase());
+  fixtures.path('a.js').toLowerCase()
+);
 assert.strictEqual(
   require.resolve(fixtures.path('nested-index', 'one')).toLowerCase(),
-  fixtures.path('nested-index', 'one', 'index.js').toLowerCase());
+  fixtures.path('nested-index', 'one', 'index.js').toLowerCase()
+);
 assert.strictEqual(require.resolve('path'), 'path');
 
 // Test configurable resolve() paths.
@@ -39,16 +41,22 @@ require(fixtures.path('resolve-paths', 'default', 'verify-paths.js'));
 const re = /^The "request" argument must be of type string\. Received type \w+$/;
 [1, false, null, undefined, {}].forEach((value) => {
   common.expectsError(
-    () => { require.resolve(value); },
+    () => {
+      require.resolve(value);
+    },
     {
       code: 'ERR_INVALID_ARG_TYPE',
       message: re
-    });
+    }
+  );
 
   common.expectsError(
-    () => { require.resolve.paths(value); },
+    () => {
+      require.resolve.paths(value);
+    },
     {
       code: 'ERR_INVALID_ARG_TYPE',
       message: re
-    });
+    }
+  );
 });

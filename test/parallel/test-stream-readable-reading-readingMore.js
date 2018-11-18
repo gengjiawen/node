@@ -14,15 +14,17 @@ const Readable = require('stream').Readable;
   assert.strictEqual(state.reading, false);
   assert.strictEqual(state.readingMore, false);
 
-  readable.on('data', common.mustCall((data) => {
-    // while in a flowing state with a 'readable' listener
-    // we should not be reading more
-    if (readable.readableFlowing)
-      assert.strictEqual(state.readingMore, true);
+  readable.on(
+    'data',
+    common.mustCall((data) => {
+      // while in a flowing state with a 'readable' listener
+      // we should not be reading more
+      if (readable.readableFlowing) assert.strictEqual(state.readingMore, true);
 
-    // reading as long as we've not ended
-    assert.strictEqual(state.reading, !state.ended);
-  }, 2));
+      // reading as long as we've not ended
+      assert.strictEqual(state.reading, !state.ended);
+    }, 2)
+  );
 
   function onStreamEnd() {
     // End of stream; state.reading is false
@@ -32,18 +34,22 @@ const Readable = require('stream').Readable;
   }
 
   const expectedReadingMore = [true, false];
-  readable.on('readable', common.mustCall(() => {
-    // there is only one readingMore scheduled from on('data'),
-    // after which everything is governed by the .read() call
-    assert.strictEqual(state.readingMore, expectedReadingMore.shift());
+  readable.on(
+    'readable',
+    common.mustCall(() => {
+      // there is only one readingMore scheduled from on('data'),
+      // after which everything is governed by the .read() call
+      assert.strictEqual(state.readingMore, expectedReadingMore.shift());
 
-    // if the stream has ended, we shouldn't be reading
-    assert.strictEqual(state.ended, !state.reading);
+      // if the stream has ended, we shouldn't be reading
+      assert.strictEqual(state.ended, !state.reading);
 
-    const data = readable.read();
-    if (data === null) // reached end of stream
-      process.nextTick(common.mustCall(onStreamEnd, 1));
-  }, 2));
+      const data = readable.read();
+      if (data === null)
+        // reached end of stream
+        process.nextTick(common.mustCall(onStreamEnd, 1));
+    }, 2)
+  );
 
   readable.on('end', common.mustCall(onStreamEnd));
   readable.push('pushed');
@@ -72,15 +78,17 @@ const Readable = require('stream').Readable;
   assert.strictEqual(state.reading, false);
   assert.strictEqual(state.readingMore, false);
 
-  readable.on('data', common.mustCall((data) => {
-    // while in a flowing state without a 'readable' listener
-    // we should be reading more
-    if (readable.readableFlowing)
-      assert.strictEqual(state.readingMore, true);
+  readable.on(
+    'data',
+    common.mustCall((data) => {
+      // while in a flowing state without a 'readable' listener
+      // we should be reading more
+      if (readable.readableFlowing) assert.strictEqual(state.readingMore, true);
 
-    // reading as long as we've not ended
-    assert.strictEqual(state.reading, !state.ended);
-  }, 2));
+      // reading as long as we've not ended
+      assert.strictEqual(state.reading, !state.ended);
+    }, 2)
+  );
 
   function onStreamEnd() {
     // End of stream; state.reading is false
@@ -126,10 +134,13 @@ const Readable = require('stream').Readable;
 
   readable.on('readable', onReadable);
 
-  readable.on('data', common.mustCall((data) => {
-    // reading as long as we've not ended
-    assert.strictEqual(state.reading, !state.ended);
-  }, 2));
+  readable.on(
+    'data',
+    common.mustCall((data) => {
+      // reading as long as we've not ended
+      assert.strictEqual(state.reading, !state.ended);
+    }, 2)
+  );
 
   readable.removeListener('readable', onReadable);
 

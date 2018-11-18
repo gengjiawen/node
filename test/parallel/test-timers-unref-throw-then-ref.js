@@ -2,9 +2,12 @@
 const common = require('../common');
 const assert = require('assert');
 
-process.once('uncaughtException', common.expectsError({
-  message: 'Timeout Error'
-}));
+process.once(
+  'uncaughtException',
+  common.expectsError({
+    message: 'Timeout Error'
+  })
+);
 
 let called = false;
 const t = setTimeout(() => {

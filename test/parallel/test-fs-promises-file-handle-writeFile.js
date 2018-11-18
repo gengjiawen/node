@@ -24,5 +24,4 @@ async function validateWriteFile() {
   assert.deepStrictEqual(buffer, readFileData);
 }
 
-validateWriteFile()
-  .then(common.mustCall());
+validateWriteFile().then(common.mustCall());

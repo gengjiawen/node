@@ -14,8 +14,10 @@ const config = process.binding('config');
 const fork = require('child_process').fork;
 
 function message(name) {
-  return `${name} did not set the process.binding('config').` +
-         'pendingDeprecation flag.';
+  return (
+    `${name} did not set the process.binding('config').` +
+    'pendingDeprecation flag.'
+  );
 }
 
 switch (process.argv[2]) {
@@ -32,23 +34,32 @@ switch (process.argv[2]) {
     fork(__filename, ['switch'], {
       execArgv: ['--pending-deprecation'],
       silent: true
-    }).on('exit', common.mustCall((code) => {
-      assert.strictEqual(code, 0, message('--pending-deprecation'));
-    }));
+    }).on(
+      'exit',
+      common.mustCall((code) => {
+        assert.strictEqual(code, 0, message('--pending-deprecation'));
+      })
+    );
 
     // Test the --pending_deprecation command line switch.
     fork(__filename, ['switch'], {
       execArgv: ['--pending_deprecation'],
       silent: true
-    }).on('exit', common.mustCall((code) => {
-      assert.strictEqual(code, 0, message('--pending_deprecation'));
-    }));
+    }).on(
+      'exit',
+      common.mustCall((code) => {
+        assert.strictEqual(code, 0, message('--pending_deprecation'));
+      })
+    );
 
     // Test the NODE_PENDING_DEPRECATION environment var.
     fork(__filename, ['env'], {
       env: Object.assign({}, process.env, { NODE_PENDING_DEPRECATION: 1 }),
       silent: true
-    }).on('exit', common.mustCall((code) => {
-      assert.strictEqual(code, 0, message('NODE_PENDING_DEPRECATION'));
-    }));
+    }).on(
+      'exit',
+      common.mustCall((code) => {
+        assert.strictEqual(code, 0, message('NODE_PENDING_DEPRECATION'));
+      })
+    );
 }

@@ -23,11 +23,15 @@ const promises = [];
 
 {
   const handler = (err) => {
-    assert(err instanceof assert.AssertionError,
-           `${err.name} is not instance of AssertionError`);
+    assert(
+      err instanceof assert.AssertionError,
+      `${err.name} is not instance of AssertionError`
+    );
     assert.strictEqual(err.code, 'ERR_ASSERTION');
-    assert.strictEqual(err.message,
-                       'Missing expected rejection (mustNotCall).');
+    assert.strictEqual(
+      err.message,
+      'Missing expected rejection (mustNotCall).'
+    );
     assert.strictEqual(err.operator, 'rejects');
     assert.ok(!err.stack.includes('at Function.rejects'));
     return true;
@@ -37,12 +41,15 @@ const promises = [];
   promises.push(assert.rejects(promise, common.mustCall(handler)));
 
   promise = assert.rejects(() => {}, common.mustNotCall());
-  promises.push(assert.rejects(promise, {
-    name: 'TypeError [ERR_INVALID_RETURN_VALUE]',
-    code: 'ERR_INVALID_RETURN_VALUE',
-    message: 'Expected instance of Promise to be returned ' +
-             'from the "promiseFn" function but got type undefined.'
-  }));
+  promises.push(
+    assert.rejects(promise, {
+      name: 'TypeError [ERR_INVALID_RETURN_VALUE]',
+      code: 'ERR_INVALID_RETURN_VALUE',
+      message:
+        'Expected instance of Promise to be returned ' +
+        'from the "promiseFn" function but got type undefined.'
+    })
+  );
 
   promise = assert.rejects(Promise.resolve(), common.mustNotCall());
   promises.push(assert.rejects(promise, common.mustCall(handler)));
@@ -51,50 +58,65 @@ const promises = [];
 {
   const THROWN_ERROR = new Error();
 
-  promises.push(assert.rejects(() => {
-    throw THROWN_ERROR;
-  }, {}).catch(common.mustCall((err) => {
-    assert.strictEqual(err, THROWN_ERROR);
-  })));
+  promises.push(
+    assert
+      .rejects(() => {
+        throw THROWN_ERROR;
+      }, {})
+      .catch(
+        common.mustCall((err) => {
+          assert.strictEqual(err, THROWN_ERROR);
+        })
+      )
+  );
 }
 
-promises.push(assert.rejects(
-  assert.rejects('fail', {}),
-  {
+promises.push(
+  assert.rejects(assert.rejects('fail', {}), {
     code: 'ERR_INVALID_ARG_TYPE',
-    message: 'The "promiseFn" argument must be one of type ' +
-             'Function or Promise. Received type string'
-  }
-));
+    message:
+      'The "promiseFn" argument must be one of type ' +
+      'Function or Promise. Received type string'
+  })
+);
 
 // Check `assert.doesNotReject`.
 {
   // `assert.doesNotReject` accepts a function or a promise as first argument.
   const promise = assert.doesNotReject(() => new Map(), common.mustNotCall());
-  promises.push(assert.rejects(promise, {
-    message: 'Expected instance of Promise to be returned ' +
-             'from the "promiseFn" function but got instance of Map.',
-    code: 'ERR_INVALID_RETURN_VALUE',
-    name: 'TypeError [ERR_INVALID_RETURN_VALUE]'
-  }));
+  promises.push(
+    assert.rejects(promise, {
+      message:
+        'Expected instance of Promise to be returned ' +
+        'from the "promiseFn" function but got instance of Map.',
+      code: 'ERR_INVALID_RETURN_VALUE',
+      name: 'TypeError [ERR_INVALID_RETURN_VALUE]'
+    })
+  );
   promises.push(assert.doesNotReject(async () => {}));
   promises.push(assert.doesNotReject(Promise.resolve()));
 }
 
 {
   const handler1 = (err) => {
-    assert(err instanceof assert.AssertionError,
-           `${err.name} is not instance of AssertionError`);
+    assert(
+      err instanceof assert.AssertionError,
+      `${err.name} is not instance of AssertionError`
+    );
     assert.strictEqual(err.code, 'ERR_ASSERTION');
     assert.strictEqual(err.message, 'Failed');
     return true;
   };
   const handler2 = (err) => {
-    assert(err instanceof assert.AssertionError,
-           `${err.name} is not instance of AssertionError`);
+    assert(
+      err instanceof assert.AssertionError,
+      `${err.name} is not instance of AssertionError`
+    );
     assert.strictEqual(err.code, 'ERR_ASSERTION');
-    assert.strictEqual(err.message,
-                       'Got unwanted rejection.\nActual message: "Failed"');
+    assert.strictEqual(
+      err.message,
+      'Got unwanted rejection.\nActual message: "Failed"'
+    );
     assert.strictEqual(err.operator, 'doesNotReject');
     assert.ok(!err.stack.includes('at Function.doesNotReject'));
     return true;
@@ -112,14 +134,14 @@ promises.push(assert.rejects(
   promises.push(assert.rejects(promise, common.mustCall(handler1)));
 }
 
-promises.push(assert.rejects(
-  assert.doesNotReject(123),
-  {
+promises.push(
+  assert.rejects(assert.doesNotReject(123), {
     code: 'ERR_INVALID_ARG_TYPE',
-    message: 'The "promiseFn" argument must be one of type ' +
-             'Function or Promise. Received type number'
-  }
-));
+    message:
+      'The "promiseFn" argument must be one of type ' +
+      'Function or Promise. Received type number'
+  })
+);
 
 // Make sure all async code gets properly executed.
 Promise.all(promises).then(common.mustCall());

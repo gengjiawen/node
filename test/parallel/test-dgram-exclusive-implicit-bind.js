@@ -52,8 +52,7 @@ if (cluster.isMaster) {
   });
 
   target.on('message', function(buf, rinfo) {
-    if (pids.includes(buf.toString()))
-      return;
+    if (pids.includes(buf.toString())) return;
     pids.push(buf.toString());
     messages++;
     ports[rinfo.port] = true;

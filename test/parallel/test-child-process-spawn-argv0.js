@@ -13,6 +13,7 @@ if (process.argv[2] === 'child') {
 const noArgv0 = cp.spawnSync(process.execPath, [__filename, 'child']);
 assert.strictEqual(noArgv0.stdout.toString().trim(), process.execPath);
 
-const withArgv0 = cp.spawnSync(process.execPath, [__filename, 'child'],
-                               { argv0: 'withArgv0' });
+const withArgv0 = cp.spawnSync(process.execPath, [__filename, 'child'], {
+  argv0: 'withArgv0'
+});
 assert.strictEqual(withArgv0.stdout.toString().trim(), 'withArgv0');

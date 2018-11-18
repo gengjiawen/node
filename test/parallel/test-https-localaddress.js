@@ -22,11 +22,9 @@
 // Flags: --expose-internals
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
-if (!common.hasMultiLocalhost())
-  common.skip('platform-specific test.');
+if (!common.hasMultiLocalhost()) common.skip('platform-specific test.');
 
 const fixtures = require('../common/fixtures');
 const assert = require('assert');

@@ -27,9 +27,12 @@ const { inherits } = require('util');
 
   read.on('end', common.mustNotCall('no end event'));
   read.on('close', common.mustCall());
-  read.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  read.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   read.destroy(expected);
   assert.strictEqual(read.destroyed, true);
@@ -49,9 +52,12 @@ const { inherits } = require('util');
 
   read.on('end', common.mustNotCall('no end event'));
   read.on('close', common.mustCall());
-  read.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  read.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   read.destroy(expected);
   assert.strictEqual(read.destroyed, true);
@@ -131,9 +137,12 @@ const { inherits } = require('util');
   });
 
   read.on('end', common.mustNotCall('no end event'));
-  read.on('error', common.mustCall((err) => {
-    assert.strictEqual(err, expected);
-  }));
+  read.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err, expected);
+    })
+  );
 
   read.destroy();
   assert.strictEqual(read.destroyed, true);
@@ -175,9 +184,12 @@ const { inherits } = require('util');
   const expected = new Error('kaboom');
 
   read.on('close', common.mustCall());
-  read.destroy(expected, common.mustCall(function(err) {
-    assert.strictEqual(expected, err);
-  }));
+  read.destroy(
+    expected,
+    common.mustCall(function(err) {
+      assert.strictEqual(expected, err);
+    })
+  );
 }
 
 {

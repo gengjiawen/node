@@ -3,8 +3,7 @@
 
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -29,12 +28,14 @@ if (process.argv[2] !== 'child') {
 
   [
     extendsEnv({ CHILD_USE_EXTRA_CA_CERTS: 'yes', NODE_EXTRA_CA_CERTS }),
-    extendsEnv({ CHILD_USE_EXTRA_CA_CERTS: 'no' }),
+    extendsEnv({ CHILD_USE_EXTRA_CA_CERTS: 'no' })
   ].forEach((processEnv) => {
-    fork(__filename, ['child'], { env: processEnv })
-    .on('exit', common.mustCall((status) => {
-      // client did not succeed in connecting
-      assert.strictEqual(status, 0);
-    }));
+    fork(__filename, ['child'], { env: processEnv }).on(
+      'exit',
+      common.mustCall((status) => {
+        // client did not succeed in connecting
+        assert.strictEqual(status, 0);
+      })
+    );
   });
 }

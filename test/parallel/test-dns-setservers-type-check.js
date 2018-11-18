@@ -20,29 +20,22 @@ const promiseResolver = new dns.promises.Resolver();
     const errObj = {
       code: 'ERR_INVALID_ARG_TYPE',
       name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-      message: 'The "servers" argument must be of type Array. Received type ' +
-      typeof val
+      message:
+        'The "servers" argument must be of type Array. Received type ' +
+        typeof val
     };
-    assert.throws(
-      () => {
-        dns.setServers(val);
-      }, errObj
-    );
-    assert.throws(
-      () => {
-        resolver.setServers(val);
-      }, errObj
-    );
-    assert.throws(
-      () => {
-        dnsPromises.setServers(val);
-      }, errObj
-    );
-    assert.throws(
-      () => {
-        promiseResolver.setServers(val);
-      }, errObj
-    );
+    assert.throws(() => {
+      dns.setServers(val);
+    }, errObj);
+    assert.throws(() => {
+      resolver.setServers(val);
+    }, errObj);
+    assert.throws(() => {
+      dnsPromises.setServers(val);
+    }, errObj);
+    assert.throws(() => {
+      promiseResolver.setServers(val);
+    }, errObj);
   });
 }
 
@@ -60,28 +53,21 @@ const promiseResolver = new dns.promises.Resolver();
     const errObj = {
       code: 'ERR_INVALID_ARG_TYPE',
       name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-      message: 'The "servers[0]" argument must be of type string. ' +
-               `Received type ${typeof val[0]}`
+      message:
+        'The "servers[0]" argument must be of type string. ' +
+        `Received type ${typeof val[0]}`
     };
-    assert.throws(
-      () => {
-        dns.setServers(val);
-      }, errObj
-    );
-    assert.throws(
-      () => {
-        resolver.setServers(val);
-      }, errObj
-    );
-    assert.throws(
-      () => {
-        dnsPromises.setServers(val);
-      }, errObj
-    );
-    assert.throws(
-      () => {
-        promiseResolver.setServers(val);
-      }, errObj
-    );
+    assert.throws(() => {
+      dns.setServers(val);
+    }, errObj);
+    assert.throws(() => {
+      resolver.setServers(val);
+    }, errObj);
+    assert.throws(() => {
+      dnsPromises.setServers(val);
+    }, errObj);
+    assert.throws(() => {
+      promiseResolver.setServers(val);
+    }, errObj);
   });
 }

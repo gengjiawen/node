@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasIntl)
-  common.skip('missing Intl');
+if (!common.hasIntl) common.skip('missing Intl');
 
 const assert = require('assert');
 const url = require('url');
@@ -22,15 +21,13 @@ assert.strictEqual(
 
 {
   [true, 1, 'test', Infinity].forEach((value) => {
-    assert.throws(
-      () => url.format(myURL, value),
-      {
-        code: 'ERR_INVALID_ARG_TYPE',
-        name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-        message: 'The "options" argument must be of type Object. ' +
-                 `Received type ${typeof value}`
-      }
-    );
+    assert.throws(() => url.format(myURL, value), {
+      code: 'ERR_INVALID_ARG_TYPE',
+      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+      message:
+        'The "options" argument must be of type Object. ' +
+        `Received type ${typeof value}`
+    });
   });
 }
 

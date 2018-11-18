@@ -35,7 +35,6 @@ if (process.argv[2] === 'child') {
   process.on('disconnect', function() {
     process.stdout.write('3');
   });
-
 } else {
   const child = fork(__filename, ['child'], { silent: true });
 

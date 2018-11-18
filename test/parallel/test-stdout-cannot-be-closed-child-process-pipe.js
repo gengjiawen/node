@@ -2,10 +2,8 @@
 require('../common');
 const assert = require('assert');
 
-if (process.argv[2] === 'child')
-  process.stdout.end('foo');
-else
-  parent();
+if (process.argv[2] === 'child') process.stdout.end('foo');
+else parent();
 
 function parent() {
   const spawn = require('child_process').spawn;

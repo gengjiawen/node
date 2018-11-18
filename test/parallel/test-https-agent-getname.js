@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const https = require('https');
@@ -10,10 +9,7 @@ const https = require('https');
 const agent = new https.Agent();
 
 // empty options
-assert.strictEqual(
-  agent.getName({}),
-  'localhost:::::::::::::::::'
-);
+assert.strictEqual(agent.getName({}), 'localhost:::::::::::::::::');
 
 // pass all options arguments
 const options = {

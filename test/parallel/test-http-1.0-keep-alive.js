@@ -25,83 +25,100 @@ const http = require('http');
 const net = require('net');
 
 // Check that our HTTP server correctly handles HTTP/1.0 keep-alive requests.
-check([{
-  name: 'keep-alive, no TE header',
-  requests: [{
-    expectClose: true,
-    data: 'POST / HTTP/1.0\r\n' +
-          'Connection: keep-alive\r\n' +
-          '\r\n'
-  }, {
-    expectClose: true,
-    data: 'POST / HTTP/1.0\r\n' +
-          'Connection: keep-alive\r\n' +
-          '\r\n'
-  }],
-  responses: [{
-    headers: { 'Connection': 'keep-alive' },
-    chunks: ['OK']
-  }, {
-    chunks: []
-  }]
-}, {
-  name: 'keep-alive, with TE: chunked',
-  requests: [{
-    expectClose: false,
-    data: 'POST / HTTP/1.0\r\n' +
+check([
+  {
+    name: 'keep-alive, no TE header',
+    requests: [
+      {
+        expectClose: true,
+        data: 'POST / HTTP/1.0\r\n' + 'Connection: keep-alive\r\n' + '\r\n'
+      },
+      {
+        expectClose: true,
+        data: 'POST / HTTP/1.0\r\n' + 'Connection: keep-alive\r\n' + '\r\n'
+      }
+    ],
+    responses: [
+      {
+        headers: { Connection: 'keep-alive' },
+        chunks: ['OK']
+      },
+      {
+        chunks: []
+      }
+    ]
+  },
+  {
+    name: 'keep-alive, with TE: chunked',
+    requests: [
+      {
+        expectClose: false,
+        data:
+          'POST / HTTP/1.0\r\n' +
           'Connection: keep-alive\r\n' +
           'TE: chunked\r\n' +
           '\r\n'
-  }, {
-    expectClose: true,
-    data: 'POST / HTTP/1.0\r\n' +
-          '\r\n'
-  }],
-  responses: [{
-    headers: { 'Connection': 'keep-alive' },
-    chunks: ['OK']
-  }, {
-    chunks: []
-  }]
-}, {
-  name: 'keep-alive, with Transfer-Encoding: chunked',
-  requests: [{
-    expectClose: false,
-    data: 'POST / HTTP/1.0\r\n' +
-          'Connection: keep-alive\r\n' +
-          '\r\n'
-  }, {
-    expectClose: true,
-    data: 'POST / HTTP/1.0\r\n' +
-          '\r\n'
-  }],
-  responses: [{
-    headers: { 'Connection': 'keep-alive',
-               'Transfer-Encoding': 'chunked' },
-    chunks: ['OK']
-  }, {
-    chunks: []
-  }]
-}, {
-  name: 'keep-alive, with Content-Length',
-  requests: [{
-    expectClose: false,
-    data: 'POST / HTTP/1.0\r\n' +
-          'Connection: keep-alive\r\n' +
-          '\r\n'
-  }, {
-    expectClose: true,
-    data: 'POST / HTTP/1.0\r\n' +
-          '\r\n'
-  }],
-  responses: [{
-    headers: { 'Connection': 'keep-alive',
-               'Content-Length': '2' },
-    chunks: ['OK']
-  }, {
-    chunks: []
-  }]
-}]);
+      },
+      {
+        expectClose: true,
+        data: 'POST / HTTP/1.0\r\n' + '\r\n'
+      }
+    ],
+    responses: [
+      {
+        headers: { Connection: 'keep-alive' },
+        chunks: ['OK']
+      },
+      {
+        chunks: []
+      }
+    ]
+  },
+  {
+    name: 'keep-alive, with Transfer-Encoding: chunked',
+    requests: [
+      {
+        expectClose: false,
+        data: 'POST / HTTP/1.0\r\n' + 'Connection: keep-alive\r\n' + '\r\n'
+      },
+      {
+        expectClose: true,
+        data: 'POST / HTTP/1.0\r\n' + '\r\n'
+      }
+    ],
+    responses: [
+      {
+        headers: { Connection: 'keep-alive', 'Transfer-Encoding': 'chunked' },
+        chunks: ['OK']
+      },
+      {
+        chunks: []
+      }
+    ]
+  },
+  {
+    name: 'keep-alive, with Content-Length',
+    requests: [
+      {
+        expectClose: false,
+        data: 'POST / HTTP/1.0\r\n' + 'Connection: keep-alive\r\n' + '\r\n'
+      },
+      {
+        expectClose: true,
+        data: 'POST / HTTP/1.0\r\n' + '\r\n'
+      }
+    ],
+    responses: [
+      {
+        headers: { Connection: 'keep-alive', 'Content-Length': '2' },
+        chunks: ['OK']
+      },
+      {
+        chunks: []
+      }
+    ]
+  }
+]);
 
 function check(tests) {
   const test = tests[0];
@@ -120,7 +137,9 @@ function check(tests) {
     const ctx = test.responses[current];
     console.error('<  SERVER SENDING RESPONSE', ctx);
     res.writeHead(200, ctx.headers);
-    ctx.chunks.slice(0, -1).forEach(function(chunk) { res.write(chunk); });
+    ctx.chunks.slice(0, -1).forEach(function(chunk) {
+      res.write(chunk);
+    });
     res.end(ctx.chunks[ctx.chunks.length - 1]);
   }
 

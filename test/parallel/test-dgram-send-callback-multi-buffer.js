@@ -18,10 +18,13 @@ client.on('listening', () => {
   client.send([buf1, buf2], port, common.localhostIPv4, messageSent);
 });
 
-client.on('message', common.mustCall((buf, info) => {
-  const expected = Buffer.concat([buf1, buf2]);
-  assert.ok(buf.equals(expected), 'message was received correctly');
-  client.close();
-}));
+client.on(
+  'message',
+  common.mustCall((buf, info) => {
+    const expected = Buffer.concat([buf1, buf2]);
+    assert.ok(buf.equals(expected), 'message was received correctly');
+    client.close();
+  })
+);
 
 client.bind(0);

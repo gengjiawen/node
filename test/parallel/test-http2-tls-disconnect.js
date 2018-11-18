@@ -2,8 +2,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const child_process = require('child_process');
 const http2 = require('http2');
@@ -20,12 +19,12 @@ const server = http2.createSecureServer({ key, cert }, (request, response) => {
 // that just requires somebody to take the time and actually do it.
 server.listen(0, () => {
   const proc = child_process.spawn('h2load', [
-    '-n', '1000',
+    '-n',
+    '1000',
     `https://localhost:${server.address().port}/`
   ]);
   proc.on('error', (err) => {
-    if (err.code === 'ENOENT')
-      common.skip('no h2load');
+    if (err.code === 'ENOENT') common.skip('no h2load');
   });
   proc.on('exit', () => server.close());
   setTimeout(() => proc.kill(2), 100);

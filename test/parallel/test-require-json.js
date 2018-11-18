@@ -29,5 +29,6 @@ try {
 } catch (err) {
   assert.ok(
     /test[/\\]fixtures[/\\]invalid\.json: /.test(err.message),
-    `require() json error should include path: ${err.message}`);
+    `require() json error should include path: ${err.message}`
+  );
 }

@@ -82,7 +82,7 @@ const d2 = require('../fixtures/b/d');
   assert.ok(d4.D instanceof Function);
   assert.strictEqual(d4.D(), 'D');
 
-  assert.ok((new a.SomeClass()) instanceof c.SomeClass);
+  assert.ok(new a.SomeClass() instanceof c.SomeClass);
 }
 
 {
@@ -106,10 +106,9 @@ assert.strictEqual(require('../fixtures/packages/main').ok, 'ok');
 assert.strictEqual(require('../fixtures/packages/main-index').ok, 'ok');
 assert.strictEqual(require('../fixtures/packages/missing-main').ok, 'ok');
 
-assert.throws(
-  function() { require('../fixtures/packages/unparseable'); },
-  /^SyntaxError: Error parsing/
-);
+assert.throws(function() {
+  require('../fixtures/packages/unparseable');
+}, /^SyntaxError: Error parsing/);
 
 {
   console.error('test cycles containing a .. path');
@@ -130,8 +129,9 @@ require('../fixtures/node_modules/foo');
   const my_path = require('../fixtures/path');
   assert.ok(my_path.path_func instanceof Function);
   // this one does not exist and should throw
-  assert.throws(function() { require('./utils'); },
-                /^Error: Cannot find module '\.\/utils'$/);
+  assert.throws(function() {
+    require('./utils');
+  }, /^Error: Cannot find module '\.\/utils'$/);
 }
 
 let errorThrown = false;
@@ -148,15 +148,16 @@ console.error('load custom file types with extensions');
 require.extensions['.test'] = function(module, filename) {
   let content = fs.readFileSync(filename).toString();
   assert.strictEqual(content, 'this is custom source\n');
-  content = content.replace('this is custom source',
-                            'exports.test = \'passed\'');
+  content = content.replace('this is custom source', "exports.test = 'passed'");
   module._compile(content, filename);
 };
 
 assert.strictEqual(require('../fixtures/registerExt').test, 'passed');
 // unknown extension, load as .js
-assert.strictEqual(require('../fixtures/registerExt.hello.world').test,
-                   'passed');
+assert.strictEqual(
+  require('../fixtures/registerExt.hello.world').test,
+  'passed'
+);
 
 console.error('load custom file types that return non-strings');
 require.extensions['.test'] = function(module) {
@@ -192,10 +193,12 @@ try {
     require(`${loadOrder}file3`);
   } catch (e) {
     // Not a real .node module, but we know we require'd the right thing.
-    if (common.isOpenBSD) // OpenBSD errors with non-ELF object error
-      assert.ok(/File not an ELF object/.test(e.message.replace(backslash, '/')));
-    else
-      assert.ok(/file3\.node/.test(e.message.replace(backslash, '/')));
+    if (common.isOpenBSD)
+      // OpenBSD errors with non-ELF object error
+      assert.ok(
+        /File not an ELF object/.test(e.message.replace(backslash, '/'))
+      );
+    else assert.ok(/file3\.node/.test(e.message.replace(backslash, '/')));
   }
 
   assert.strictEqual(require(`${loadOrder}file4`).file4, 'file4.reg');
@@ -205,7 +208,9 @@ try {
     require(`${loadOrder}file7`);
   } catch (e) {
     if (common.isOpenBSD)
-      assert.ok(/File not an ELF object/.test(e.message.replace(backslash, '/')));
+      assert.ok(
+        /File not an ELF object/.test(e.message.replace(backslash, '/'))
+      );
     else
       assert.ok(/file7\/index\.node/.test(e.message.replace(backslash, '/')));
   }
@@ -232,7 +237,6 @@ try {
     main: 'package-main-module'
   });
 }
-
 
 {
   // now verify that module.children contains all the different
@@ -305,7 +309,6 @@ try {
   });
 }
 
-
 process.on('exit', function() {
   assert.ok(a.A instanceof Function);
   assert.strictEqual(a.A(), 'A done');
@@ -327,7 +330,6 @@ process.on('exit', function() {
   console.log('exit');
 });
 
-
 // Loading files with a byte order marker.
 // See https://github.com/nodejs/node-v0.x-archive/issues/1440.
 assert.strictEqual(require('../fixtures/utf8-bom.js'), 42);
@@ -335,8 +337,12 @@ assert.strictEqual(require('../fixtures/utf8-bom.json'), 42);
 
 // Error on the first line of a module should
 // have the correct line number
-assert.throws(function() {
-  require('../fixtures/test-error-first-line-offset.js');
-}, function(err) {
-  return /test-error-first-line-offset\.js:1:/.test(err.stack);
-}, 'Expected appearance of proper offset in Error stack');
+assert.throws(
+  function() {
+    require('../fixtures/test-error-first-line-offset.js');
+  },
+  function(err) {
+    return /test-error-first-line-offset\.js:1:/.test(err.stack);
+  },
+  'Expected appearance of proper offset in Error stack'
+);

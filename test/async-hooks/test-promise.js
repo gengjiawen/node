@@ -13,7 +13,7 @@ const hooks = initHooks();
 
 hooks.enable();
 
-const p = (new Promise(common.mustCall(executor)));
+const p = new Promise(common.mustCall(executor));
 p.then(afterresolution);
 
 function executor(resolve, reject) {
@@ -29,8 +29,11 @@ function afterresolution(val) {
   const as = hooks.activitiesOfTypes('PROMISE');
   assert.strictEqual(as.length, 2);
   checkInvocations(as[0], { init: 1 }, 'after resolution parent promise');
-  checkInvocations(as[1], { init: 1, before: 1 },
-                   'after resolution child promise');
+  checkInvocations(
+    as[1],
+    { init: 1, before: 1 },
+    'after resolution child promise'
+  );
 }
 
 process.on('exit', onexit);

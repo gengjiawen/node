@@ -9,9 +9,11 @@ const EventEmitter = require('events');
 const { Session } = require('inspector');
 const { pathToFileURL } = require('url');
 const {
-  Worker, isMainThread, parentPort, workerData
+  Worker,
+  isMainThread,
+  parentPort,
+  workerData
 } = require('worker_threads');
-
 
 const workerMessage = 'This is a message from a worker';
 
@@ -25,7 +27,7 @@ function waitForMessage() {
 if (!isMainThread) {
   if (workerData === 1) {
     console.log(workerMessage);
-    debugger;  // eslint-disable-line no-debugger
+    debugger; // eslint-disable-line no-debugger
   } else if (workerData === 2) {
     parentPort.postMessage('running');
     waitForMessage();
@@ -36,10 +38,8 @@ if (!isMainThread) {
 function doPost(session, method, params) {
   return new Promise((resolve, reject) => {
     session.post(method, params, (error, result) => {
-      if (error)
-        reject(JSON.stringify(error));
-      else
-        resolve(result);
+      if (error) reject(JSON.stringify(error));
+      else resolve(result);
     });
   });
 }
@@ -49,15 +49,18 @@ function waitForEvent(emitter, event) {
 }
 
 function waitForWorkerAttach(session) {
-  return waitForEvent(session, 'NodeWorker.attachedToWorker')
-      .then(({ params }) => params);
+  return waitForEvent(session, 'NodeWorker.attachedToWorker').then(
+    ({ params }) => params
+  );
 }
 
 async function waitForWorkerDetach(session, id) {
   let sessionId;
   do {
-    const { params } =
-        await waitForEvent(session, 'NodeWorker.detachedFromWorker');
+    const { params } = await waitForEvent(
+      session,
+      'NodeWorker.detachedFromWorker'
+    );
     sessionId = params.sessionId;
   } while (sessionId !== id);
 }
@@ -78,11 +81,13 @@ class WorkerSession extends EventEmitter {
     this._id = id;
     this._requestCallbacks = new Map();
     this._nextCommandId = 1;
-    this._parentSession.on('NodeWorker.receivedMessageFromWorker',
-                           ({ params }) => {
-                             if (params.sessionId === this._id)
-                               this._processMessage(JSON.parse(params.message));
-                           });
+    this._parentSession.on(
+      'NodeWorker.receivedMessageFromWorker',
+      ({ params }) => {
+        if (params.sessionId === this._id)
+          this._processMessage(JSON.parse(params.message));
+      }
+    );
   }
 
   _processMessage(message) {
@@ -95,10 +100,8 @@ class WorkerSession extends EventEmitter {
     const callback = this._requestCallbacks.get(message.id);
     if (callback) {
       this._requestCallbacks.delete(message.id);
-      if (message.error)
-        callback[1](message.error.message);
-      else
-        callback[0](message.result);
+      if (message.error) callback[1](message.error.message);
+      else callback[0](message.result);
     }
   }
 
@@ -116,13 +119,13 @@ class WorkerSession extends EventEmitter {
       id: this._nextCommandId++,
       method
     };
-    if (parameters)
-      msg.params = parameters;
+    if (parameters) msg.params = parameters;
 
     return new Promise((resolve, reject) => {
       this._requestCallbacks.set(msg.id, [resolve, reject]);
       this._parentSession.post('NodeWorker.sendMessageToWorker', {
-        sessionId: this._id, message: JSON.stringify(msg)
+        sessionId: this._id,
+        message: JSON.stringify(msg)
       });
     });
   }
@@ -149,14 +152,22 @@ async function testBasicWorkerDebug(session, post) {
     waitForEvent(workerSession, 'Runtime.executionContextCreated'),
     waitForEvent(workerSession, 'Runtime.executionContextDestroyed')
   ]);
-  const consolePromise = waitForEvent(workerSession, 'Runtime.consoleAPICalled')
-      .then((notification) => notification.params.args[0].value);
+  const consolePromise = waitForEvent(
+    workerSession,
+    'Runtime.consoleAPICalled'
+  ).then((notification) => notification.params.args[0].value);
   await workerSession.post('Debugger.enable');
   await workerSession.post('Runtime.enable');
   await workerSession.waitForBreakAfterCommand(
-    'Runtime.runIfWaitingForDebugger', __filename, 2);
+    'Runtime.runIfWaitingForDebugger',
+    __filename,
+    2
+  );
   await workerSession.waitForBreakAfterCommand(
-    'Debugger.resume', __filename, 27);  // V8 line number is zero-based
+    'Debugger.resume',
+    __filename,
+    27
+  ); // V8 line number is zero-based
   assert.strictEqual(await consolePromise, workerMessage);
   workerSession.post('Debugger.resume');
   await Promise.all([worker, detached, contextEvents]);
@@ -167,7 +178,9 @@ async function testNoWaitOnStart(session, post) {
   await post('NodeWorker.enable', { waitForDebuggerOnStart: false });
   let worker;
   const promise = waitForWorkerAttach(session);
-  const exitPromise = runWorker(2, (w) => { worker = w; });
+  const exitPromise = runWorker(2, (w) => {
+    worker = w;
+  });
   const { waitingForDebugger } = await promise;
   assert.strictEqual(waitingForDebugger, false);
   worker.postMessage('resume');
@@ -186,8 +199,10 @@ async function testTwoWorkers(session, post) {
   let worker1Exited;
   const worker = await new Promise((resolve, reject) => {
     worker1Exited = runWorker(2, resolve);
-  }).then((worker) => new Promise(
-    (resolve) => worker.once('message', () => resolve(worker))));
+  }).then(
+    (worker) =>
+      new Promise((resolve) => worker.once('message', () => resolve(worker)))
+  );
   okToAttach = true;
   await post('NodeWorker.enable', { waitForDebuggerOnStart: true });
   const { waitingForDebugger: worker1Waiting } = await worker1attached;
@@ -195,8 +210,9 @@ async function testTwoWorkers(session, post) {
 
   const worker2Attached = waitForWorkerAttach(session);
   let worker2Done = false;
-  const worker2Exited = runWorker(1)
-      .then(() => assert.strictEqual(worker2Done, true));
+  const worker2Exited = runWorker(1).then(() =>
+    assert.strictEqual(worker2Done, true)
+  );
   const worker2AttachInfo = await worker2Attached;
   assert.strictEqual(worker2AttachInfo.waitingForDebugger, true);
   worker2Done = true;

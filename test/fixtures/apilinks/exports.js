@@ -2,12 +2,12 @@
 
 // Support `exports` as an alternative to `module.exports`.
 
-function Buffer() {};
+function Buffer() {}
 
 exports.Buffer = Buffer;
 exports.fn1 = function fn1() {};
 
-var fn2 = exports.fn2 = function() {};
+var fn2 = (exports.fn2 = function() {});
 
-function fn3() {};
+function fn3() {}
 exports.fn3 = fn3;

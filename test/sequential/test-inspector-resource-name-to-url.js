@@ -31,10 +31,13 @@ common.skipIfInspectorDisabled();
   }
 
   async function check(filename, expected) {
-    const promise =
-      new Promise((resolve) => session.once('inspectorNotification', resolve));
+    const promise = new Promise((resolve) =>
+      session.once('inspectorNotification', resolve)
+    );
     new vm.Script('42', { filename }).runInThisContext();
-    const { params: { url } } = await promise;
+    const {
+      params: { url }
+    } = await promise;
     strictEqual(url, expected);
   }
 })();

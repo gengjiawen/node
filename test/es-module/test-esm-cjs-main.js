@@ -21,7 +21,10 @@ child.stdout.on('data', (data) => {
   assert.strictEqual(data.toString(), 'executed\n');
   validatedExecution = true;
 });
-child.on('close', common.mustCall((code, stdout) => {
-  assert.strictEqual(validatedExecution, true);
-  assert.strictEqual(code, 0);
-}));
+child.on(
+  'close',
+  common.mustCall((code, stdout) => {
+    assert.strictEqual(validatedExecution, true);
+    assert.strictEqual(code, 0);
+  })
+);

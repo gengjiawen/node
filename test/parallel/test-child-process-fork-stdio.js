@@ -21,7 +21,8 @@ if (process.argv[2] === 'child') {
 } else {
   common.expectsError(
     () => cp.fork(__filename, { stdio: ['pipe', 'pipe', 'pipe', 'pipe'] }),
-    { code: 'ERR_CHILD_PROCESS_IPC_REQUIRED', type: Error });
+    { code: 'ERR_CHILD_PROCESS_IPC_REQUIRED', type: Error }
+  );
 
   let ipc = '';
   let stderr = '';
@@ -44,11 +45,14 @@ if (process.argv[2] === 'child') {
     stderr += chunk;
   });
 
-  child.on('exit', common.mustCall((code, signal) => {
-    assert.strictEqual(code, 0);
-    assert.strictEqual(signal, null);
-    assert.strictEqual(stderr, 'this should not be ignored');
-  }));
+  child.on(
+    'exit',
+    common.mustCall((code, signal) => {
+      assert.strictEqual(code, 0);
+      assert.strictEqual(signal, null);
+      assert.strictEqual(stderr, 'this should not be ignored');
+    })
+  );
 
   child.stdio[4].write(buf);
 }

@@ -5,9 +5,7 @@ require('../common');
 const assert = require('assert');
 const Transform = require('stream').Transform;
 
-
 const expected = 'asdf';
-
 
 function _transform(d, e, n) {
   n();

@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 // This test is intended for Windows only
-if (!common.isWindows)
-  common.skip('this test is Windows-specific.');
+if (!common.isWindows) common.skip('this test is Windows-specific.');
 
 const assert = require('assert');
 
@@ -17,8 +16,7 @@ if (!process.argv[2]) {
   const stdoutPipeName = `\\\\.\\pipe\\${pipeNamePrefix}.stdout`;
 
   const stdinPipeServer = net.createServer(function(c) {
-    c.on('end', common.mustCall(function() {
-    }));
+    c.on('end', common.mustCall(function() {}));
     c.end('hello');
   });
   stdinPipeServer.listen(stdinPipeName);
@@ -29,22 +27,34 @@ if (!process.argv[2]) {
     c.on('data', function(x) {
       output.push(x);
     });
-    c.on('end', common.mustCall(function() {
-      assert.strictEqual(output.join(''), 'hello');
-    }));
+    c.on(
+      'end',
+      common.mustCall(function() {
+        assert.strictEqual(output.join(''), 'hello');
+      })
+    );
   });
   stdoutPipeServer.listen(stdoutPipeName);
 
-  const args =
-    [`"${__filename}"`, 'child', '<', stdinPipeName, '>', stdoutPipeName];
+  const args = [
+    `"${__filename}"`,
+    'child',
+    '<',
+    stdinPipeName,
+    '>',
+    stdoutPipeName
+  ];
 
   const child = spawn(`"${process.execPath}"`, args, { shell: true });
 
-  child.on('exit', common.mustCall(function(exitCode) {
-    stdinPipeServer.close();
-    stdoutPipeServer.close();
-    assert.strictEqual(exitCode, 0);
-  }));
+  child.on(
+    'exit',
+    common.mustCall(function(exitCode) {
+      stdinPipeServer.close();
+      stdoutPipeServer.close();
+      assert.strictEqual(exitCode, 0);
+    })
+  );
 } else {
   // child
   process.stdin.pipe(process.stdout);

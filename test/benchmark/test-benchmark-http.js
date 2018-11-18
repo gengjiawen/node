@@ -11,24 +11,26 @@ if (!common.enoughTestMem)
 
 const runBenchmark = require('../common/benchmark');
 
-runBenchmark('http',
-             [
-               'benchmarker=test-double-http',
-               'c=1',
-               'chunkedEnc=true',
-               'chunks=0',
-               'dur=0.1',
-               'duplicates=1',
-               'input=keep-alive',
-               'key=""',
-               'len=1',
-               'method=write',
-               'n=1',
-               'res=normal',
-               'type=asc',
-               'value=X-Powered-By'
-             ],
-             {
-               NODEJS_BENCHMARK_ZERO_ALLOWED: 1,
-               duration: 0
-             });
+runBenchmark(
+  'http',
+  [
+    'benchmarker=test-double-http',
+    'c=1',
+    'chunkedEnc=true',
+    'chunks=0',
+    'dur=0.1',
+    'duplicates=1',
+    'input=keep-alive',
+    'key=""',
+    'len=1',
+    'method=write',
+    'n=1',
+    'res=normal',
+    'type=asc',
+    'value=X-Powered-By'
+  ],
+  {
+    NODEJS_BENCHMARK_ZERO_ALLOWED: 1,
+    duration: 0
+  }
+);

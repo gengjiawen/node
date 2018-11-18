@@ -34,11 +34,12 @@ const server = http.createServer((req, res) => {
   res.writeHead(200);
   res.write('foo');
 
-  complete = complete || function() {
-    res.end();
-  };
+  complete =
+    complete ||
+    function() {
+      res.end();
+    };
 });
-
 
 server.listen(0, () => {
   const agent = new http.Agent({ maxSockets: 1 });
@@ -82,14 +83,20 @@ server.listen(0, () => {
 
     res1.on('data', (chunk) => complete());
 
-    res1.on('end', common.mustCall(() => {
-      setTimeout(common.mustCall(() => {
-        assert.strictEqual(Object.keys(agent.sockets).length, 0);
-        assert.strictEqual(Object.keys(agent.requests).length, 0);
+    res1.on(
+      'end',
+      common.mustCall(() => {
+        setTimeout(
+          common.mustCall(() => {
+            assert.strictEqual(Object.keys(agent.sockets).length, 0);
+            assert.strictEqual(Object.keys(agent.requests).length, 0);
 
-        server.close();
-      }), 100);
-    }));
+            server.close();
+          }),
+          100
+        );
+      })
+    );
   });
 
   req1.end();

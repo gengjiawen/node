@@ -23,12 +23,15 @@
 const common = require('../common');
 const vm = require('vm');
 
-common.expectsError(() => {
-  vm.createContext('string is not supported');
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError
-});
+common.expectsError(
+  () => {
+    vm.createContext('string is not supported');
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  }
+);
 
 // Should not throw.
 vm.createContext({ a: 1 });

@@ -7,8 +7,9 @@ common.skipIfEslintMissing();
 const RuleTester = require('../../tools/node_modules/eslint').RuleTester;
 const rule = require('../../tools/eslint-rules/prefer-common-expectserror');
 
-const message = 'Please use common.expectsError(fn, err) instead of ' +
-                'assert.throws(fn, common.expectsError(err)).';
+const message =
+  'Please use common.expectsError(fn, err) instead of ' +
+  'assert.throws(fn, common.expectsError(err)).';
 
 new RuleTester().run('prefer-common-expectserror', rule, {
   valid: [

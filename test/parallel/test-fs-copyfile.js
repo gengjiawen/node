@@ -6,10 +6,7 @@ const tmpdir = require('../common/tmpdir');
 const assert = require('assert');
 const fs = require('fs');
 const { internalBinding } = require('internal/test/binding');
-const {
-  UV_ENOENT,
-  UV_EEXIST
-} = internalBinding('uv');
+const { UV_ENOENT, UV_EEXIST } = internalBinding('uv');
 const path = require('path');
 const src = fixtures.path('a.js');
 const dest = path.join(tmpdir.path, 'copyfile.out');
@@ -68,74 +65,82 @@ try {
   verify(src, dest);
 } catch (err) {
   assert.strictEqual(err.syscall, 'copyfile');
-  assert(err.code === 'ENOTSUP' || err.code === 'ENOTTY' ||
-    err.code === 'ENOSYS' || err.code === 'EXDEV');
+  assert(
+    err.code === 'ENOTSUP' ||
+      err.code === 'ENOTTY' ||
+      err.code === 'ENOSYS' ||
+      err.code === 'EXDEV'
+  );
   assert.strictEqual(err.path, src);
   assert.strictEqual(err.dest, dest);
 }
 
 // Copies asynchronously.
 tmpdir.refresh(); // Don't use unlinkSync() since the last test may fail.
-fs.copyFile(src, dest, common.mustCall((err) => {
-  assert.ifError(err);
-  verify(src, dest);
+fs.copyFile(
+  src,
+  dest,
+  common.mustCall((err) => {
+    assert.ifError(err);
+    verify(src, dest);
 
-  // Copy asynchronously with flags.
-  fs.copyFile(src, dest, COPYFILE_EXCL, common.mustCall((err) => {
-    if (err.code === 'ENOENT') {  // Could be ENOENT or EEXIST
-      assert.strictEqual(err.message,
-                         'ENOENT: no such file or directory, copyfile ' +
-                         `'${src}' -> '${dest}'`);
-      assert.strictEqual(err.errno, UV_ENOENT);
-      assert.strictEqual(err.code, 'ENOENT');
-      assert.strictEqual(err.syscall, 'copyfile');
-    } else {
-      assert.strictEqual(err.message,
-                         'EEXIST: file already exists, copyfile ' +
-                         `'${src}' -> '${dest}'`);
-      assert.strictEqual(err.errno, UV_EEXIST);
-      assert.strictEqual(err.code, 'EEXIST');
-      assert.strictEqual(err.syscall, 'copyfile');
-    }
-  }));
-}));
+    // Copy asynchronously with flags.
+    fs.copyFile(
+      src,
+      dest,
+      COPYFILE_EXCL,
+      common.mustCall((err) => {
+        if (err.code === 'ENOENT') {
+          // Could be ENOENT or EEXIST
+          assert.strictEqual(
+            err.message,
+            'ENOENT: no such file or directory, copyfile ' +
+              `'${src}' -> '${dest}'`
+          );
+          assert.strictEqual(err.errno, UV_ENOENT);
+          assert.strictEqual(err.code, 'ENOENT');
+          assert.strictEqual(err.syscall, 'copyfile');
+        } else {
+          assert.strictEqual(
+            err.message,
+            'EEXIST: file already exists, copyfile ' + `'${src}' -> '${dest}'`
+          );
+          assert.strictEqual(err.errno, UV_EEXIST);
+          assert.strictEqual(err.code, 'EEXIST');
+          assert.strictEqual(err.syscall, 'copyfile');
+        }
+      })
+    );
+  })
+);
 
 // Throws if callback is not a function.
-common.expectsError(() => {
-  fs.copyFile(src, dest, 0, 0);
-}, {
-  code: 'ERR_INVALID_CALLBACK',
-  type: TypeError
-});
+common.expectsError(
+  () => {
+    fs.copyFile(src, dest, 0, 0);
+  },
+  {
+    code: 'ERR_INVALID_CALLBACK',
+    type: TypeError
+  }
+);
 
 // Throws if the source path is not a string.
 [false, 1, {}, [], null, undefined].forEach((i) => {
-  common.expectsError(
-    () => fs.copyFile(i, dest, common.mustNotCall()),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
-  common.expectsError(
-    () => fs.copyFile(src, i, common.mustNotCall()),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
-  common.expectsError(
-    () => fs.copyFileSync(i, dest),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
-  common.expectsError(
-    () => fs.copyFileSync(src, i),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
+  common.expectsError(() => fs.copyFile(i, dest, common.mustNotCall()), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
+  common.expectsError(() => fs.copyFile(src, i, common.mustNotCall()), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
+  common.expectsError(() => fs.copyFileSync(i, dest), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
+  common.expectsError(() => fs.copyFileSync(src, i), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
 });

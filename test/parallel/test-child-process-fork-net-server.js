@@ -38,7 +38,6 @@ ProgressTracker.prototype.check = function() {
 };
 
 if (process.argv[2] === 'child') {
-
   let serverScope;
 
   process.on('message', function onServer(msg, server) {
@@ -70,17 +69,18 @@ if (process.argv[2] === 'child') {
 
   process.send({ what: 'ready' });
 } else {
-
   const child = fork(process.argv[1], ['child']);
 
-  child.on('exit', common.mustCall(function(code, signal) {
-    const message = `CHILD: died with ${code}, ${signal}`;
-    assert.strictEqual(code, 0, message);
-  }));
+  child.on(
+    'exit',
+    common.mustCall(function(code, signal) {
+      const message = `CHILD: died with ${code}, ${signal}`;
+      assert.strictEqual(code, 0, message);
+    })
+  );
 
   // Send net.Server to child and test by connecting.
   function testServer(callback) {
-
     // Destroy server execute callback when done.
     const progress = new ProgressTracker(2, function() {
       server.on('close', function() {
@@ -109,20 +109,21 @@ if (process.argv[2] === 'child') {
 
     // Handle client messages.
     function messageHandlers(msg) {
-
       if (msg.what === 'listening') {
         // Make connections.
         let socket;
         for (let i = 0; i < 4; i++) {
-          socket = net.connect(server.address().port, function() {
-            console.log('CLIENT: connected');
-          });
+          socket = net.connect(
+            server.address().port,
+            function() {
+              console.log('CLIENT: connected');
+            }
+          );
           socket.on('close', function() {
             closed.done();
             console.log('CLIENT: closed');
           });
         }
-
       } else if (msg.what === 'connection') {
         // child got connection
         connections.done();

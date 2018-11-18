@@ -46,43 +46,57 @@ const srv = net.createServer(function(c) {
   });
 });
 
-srv.listen(0, '127.0.0.1', common.mustCall(function() {
+srv.listen(
+  0,
+  '127.0.0.1',
+  common.mustCall(function() {
+    const options = {
+      port: this.address().port,
+      host: '127.0.0.1',
+      headers: {
+        connection: 'upgrade',
+        upgrade: 'websocket'
+      }
+    };
+    const name = `${options.host}:${options.port}`;
 
-  const options = {
-    port: this.address().port,
-    host: '127.0.0.1',
-    headers: {
-      'connection': 'upgrade',
-      'upgrade': 'websocket'
-    }
-  };
-  const name = `${options.host}:${options.port}`;
+    const req = http.request(options);
+    req.end();
 
-  const req = http.request(options);
-  req.end();
+    req.on(
+      'upgrade',
+      common.mustCall(function(res, socket, upgradeHead) {
+        let recvData = upgradeHead;
+        socket.on('data', function(d) {
+          recvData += d;
+        });
 
-  req.on('upgrade', common.mustCall(function(res, socket, upgradeHead) {
-    let recvData = upgradeHead;
-    socket.on('data', function(d) {
-      recvData += d;
-    });
+        socket.on(
+          'close',
+          common.mustCall(function() {
+            assert.strictEqual(recvData.toString(), 'nurtzo');
+          })
+        );
 
-    socket.on('close', common.mustCall(function() {
-      assert.strictEqual(recvData.toString(), 'nurtzo');
-    }));
+        console.log(res.headers);
+        const expectedHeaders = {
+          hello: 'world',
+          connection: 'upgrade',
+          upgrade: 'websocket'
+        };
+        assert.deepStrictEqual(expectedHeaders, res.headers);
 
-    console.log(res.headers);
-    const expectedHeaders = { 'hello': 'world',
-                              'connection': 'upgrade',
-                              'upgrade': 'websocket' };
-    assert.deepStrictEqual(expectedHeaders, res.headers);
+        // Make sure this request got removed from the pool.
+        assert(!http.globalAgent.sockets.hasOwnProperty(name));
 
-    // Make sure this request got removed from the pool.
-    assert(!http.globalAgent.sockets.hasOwnProperty(name));
-
-    req.on('close', common.mustCall(function() {
-      socket.end();
-      srv.close();
-    }));
-  }));
-}));
+        req.on(
+          'close',
+          common.mustCall(function() {
+            socket.end();
+            srv.close();
+          })
+        );
+      })
+    );
+  })
+);

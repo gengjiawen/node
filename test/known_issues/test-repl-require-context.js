@@ -16,13 +16,16 @@ const r = repl.start({
 
 let output = '';
 outputStream.setEncoding('utf8');
-outputStream.on('data', (data) => output += data);
+outputStream.on('data', (data) => (output += data));
 
-r.on('exit', common.mustCall(() => {
-  const results = output.replace(/^> /mg, '').split('\n');
+r.on(
+  'exit',
+  common.mustCall(() => {
+    const results = output.replace(/^> /gm, '').split('\n');
 
-  assert.deepStrictEqual(results, ['undefined', 'true', 'true', '']);
-}));
+    assert.deepStrictEqual(results, ['undefined', 'true', 'true', '']);
+  })
+);
 
 inputStream.write('const isObject = (obj) => obj.constructor === Object;\n');
 inputStream.write('isObject({});\n');

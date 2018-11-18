@@ -1,10 +1,12 @@
 const util = require('util');
 const assert = require('assert');
 
-class deprecatedClass {
-}
+class deprecatedClass {}
 
-const deprecated = util.deprecate(deprecatedClass, 'deprecatedClass is deprecated.');
+const deprecated = util.deprecate(
+  deprecatedClass,
+  'deprecatedClass is deprecated.'
+);
 
 class subclass extends deprecated {
   constructor() {

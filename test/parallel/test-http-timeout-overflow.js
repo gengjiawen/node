@@ -23,27 +23,35 @@
 const common = require('../common');
 const http = require('http');
 
-const server = http.createServer(common.mustCall(function(req, res) {
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.end('OK');
-}));
+const server = http.createServer(
+  common.mustCall(function(req, res) {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('OK');
+  })
+);
 
 server.listen(0, function() {
   function callback() {}
 
-  const req = http.request({
-    port: this.address().port,
-    path: '/',
-    agent: false
-  }, function(res) {
-    req.clearTimeout(callback);
+  const req = http.request(
+    {
+      port: this.address().port,
+      path: '/',
+      agent: false
+    },
+    function(res) {
+      req.clearTimeout(callback);
 
-    res.on('end', common.mustCall(function() {
-      server.close();
-    }));
+      res.on(
+        'end',
+        common.mustCall(function() {
+          server.close();
+        })
+      );
 
-    res.resume();
-  });
+      res.resume();
+    }
+  );
 
   // Overflow signed int32
   req.setTimeout(0xffffffff, callback);

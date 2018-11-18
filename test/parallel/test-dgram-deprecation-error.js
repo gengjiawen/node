@@ -17,10 +17,7 @@ const propertiesToTest = [
   '_reuseAddr'
 ];
 
-const methodsToTest = [
-  '_healthCheck',
-  '_stopReceiving'
-];
+const methodsToTest = ['_healthCheck', '_stopReceiving'];
 
 const propertyCases = propertiesToTest.map((propName) => {
   return [
@@ -56,16 +53,12 @@ const methodCases = methodsToTest.map((propName) => {
   };
 });
 
-const cases = [].concat(
-  ...propertyCases,
-  ...methodCases
-);
+const cases = [].concat(...propertyCases, ...methodCases);
 
 // If we weren't passed a test ID then we need to spawn all of the cases.
 // We run the cases in child processes since deprecations print once.
 if (Number.isNaN(testNumber)) {
-  const children = cases.map((_case, i) =>
-    fork(process.argv[1], [ String(i) ]));
+  const children = cases.map((_case, i) => fork(process.argv[1], [String(i)]));
 
   children.forEach((child) => {
     child.on('close', (code) => {

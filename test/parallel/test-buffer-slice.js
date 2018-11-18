@@ -83,8 +83,12 @@ assert.strictEqual(Buffer.alloc(0).slice(0, 1).length, 0);
 
 {
   // Single argument slice
-  assert.strictEqual(Buffer.from('abcde', 'utf8').slice(1).toString('utf8'),
-                     'bcde');
+  assert.strictEqual(
+    Buffer.from('abcde', 'utf8')
+      .slice(1)
+      .toString('utf8'),
+    'bcde'
+  );
 }
 
 // slice(0,0).length === 0
@@ -94,16 +98,15 @@ assert.strictEqual(Buffer.from('hello', 'utf8').slice(0, 0).length, 0);
   // Regression tests for https://github.com/nodejs/node/issues/9096
   const buf = Buffer.from('abcd', 'utf8');
   assert.strictEqual(buf.slice(buf.length / 3).toString('utf8'), 'bcd');
-  assert.strictEqual(
-    buf.slice(buf.length / 3, buf.length).toString(),
-    'bcd'
-  );
+  assert.strictEqual(buf.slice(buf.length / 3, buf.length).toString(), 'bcd');
 }
 
 {
   const buf = Buffer.from('abcdefg', 'utf8');
-  assert.strictEqual(buf.slice(-(-1 >>> 0) - 1).toString('utf8'),
-                     buf.toString('utf8'));
+  assert.strictEqual(
+    buf.slice(-(-1 >>> 0) - 1).toString('utf8'),
+    buf.toString('utf8')
+  );
 }
 
 {
@@ -113,15 +116,50 @@ assert.strictEqual(Buffer.from('hello', 'utf8').slice(0, 0).length, 0);
 
 {
   const buf = Buffer.from([
-    1, 29, 0, 0, 1, 143, 216, 162, 92, 254, 248, 63, 0,
-    0, 0, 18, 184, 6, 0, 175, 29, 0, 8, 11, 1, 0, 0
+    1,
+    29,
+    0,
+    0,
+    1,
+    143,
+    216,
+    162,
+    92,
+    254,
+    248,
+    63,
+    0,
+    0,
+    0,
+    18,
+    184,
+    6,
+    0,
+    175,
+    29,
+    0,
+    8,
+    11,
+    1,
+    0,
+    0
   ]);
   const chunk1 = Buffer.from([
-    1, 29, 0, 0, 1, 143, 216, 162, 92, 254, 248, 63, 0
+    1,
+    29,
+    0,
+    0,
+    1,
+    143,
+    216,
+    162,
+    92,
+    254,
+    248,
+    63,
+    0
   ]);
-  const chunk2 = Buffer.from([
-    0, 0, 18, 184, 6, 0, 175, 29, 0, 8, 11, 1, 0, 0
-  ]);
+  const chunk2 = Buffer.from([0, 0, 18, 184, 6, 0, 175, 29, 0, 8, 11, 1, 0, 0]);
   const middle = buf.length / 2;
 
   assert.deepStrictEqual(buf.slice(0, middle), chunk1);

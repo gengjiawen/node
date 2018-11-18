@@ -4,68 +4,127 @@
 
 const common = require('../common');
 
-if (!common.hasIntl)
-  common.skip('missing Intl');
+if (!common.hasIntl) common.skip('missing Intl');
 
 const assert = require('assert');
 
 const bad = [
-  { encoding: 'utf-8', input: [0xFF], name: 'invalid code' },
-  { encoding: 'utf-8', input: [0xC0], name: 'ends early' },
-  { encoding: 'utf-8', input: [0xE0], name: 'ends early 2' },
-  { encoding: 'utf-8', input: [0xC0, 0x00], name: 'invalid trail' },
-  { encoding: 'utf-8', input: [0xC0, 0xC0], name: 'invalid trail 2' },
-  { encoding: 'utf-8', input: [0xE0, 0x00], name: 'invalid trail 3' },
-  { encoding: 'utf-8', input: [0xE0, 0xC0], name: 'invalid trail 4' },
-  { encoding: 'utf-8', input: [0xE0, 0x80, 0x00], name: 'invalid trail 5' },
-  { encoding: 'utf-8', input: [0xE0, 0x80, 0xC0], name: 'invalid trail 6' },
-  { encoding: 'utf-8', input: [0xFC, 0x80, 0x80, 0x80, 0x80, 0x80],
-    name: '> 0x10FFFF' },
-  { encoding: 'utf-8', input: [0xFE, 0x80, 0x80, 0x80, 0x80, 0x80],
-    name: 'obsolete lead byte' },
+  { encoding: 'utf-8', input: [0xff], name: 'invalid code' },
+  { encoding: 'utf-8', input: [0xc0], name: 'ends early' },
+  { encoding: 'utf-8', input: [0xe0], name: 'ends early 2' },
+  { encoding: 'utf-8', input: [0xc0, 0x00], name: 'invalid trail' },
+  { encoding: 'utf-8', input: [0xc0, 0xc0], name: 'invalid trail 2' },
+  { encoding: 'utf-8', input: [0xe0, 0x00], name: 'invalid trail 3' },
+  { encoding: 'utf-8', input: [0xe0, 0xc0], name: 'invalid trail 4' },
+  { encoding: 'utf-8', input: [0xe0, 0x80, 0x00], name: 'invalid trail 5' },
+  { encoding: 'utf-8', input: [0xe0, 0x80, 0xc0], name: 'invalid trail 6' },
+  {
+    encoding: 'utf-8',
+    input: [0xfc, 0x80, 0x80, 0x80, 0x80, 0x80],
+    name: '> 0x10FFFF'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xfe, 0x80, 0x80, 0x80, 0x80, 0x80],
+    name: 'obsolete lead byte'
+  },
   // Overlong encodings
-  { encoding: 'utf-8', input: [0xC0, 0x80], name: 'overlong U+0000 - 2 bytes' },
-  { encoding: 'utf-8', input: [0xE0, 0x80, 0x80],
-    name: 'overlong U+0000 - 3 bytes' },
-  { encoding: 'utf-8', input: [0xF0, 0x80, 0x80, 0x80],
-    name: 'overlong U+0000 - 4 bytes' },
-  { encoding: 'utf-8', input: [0xF8, 0x80, 0x80, 0x80, 0x80],
-    name: 'overlong U+0000 - 5 bytes' },
-  { encoding: 'utf-8', input: [0xFC, 0x80, 0x80, 0x80, 0x80, 0x80],
-    name: 'overlong U+0000 - 6 bytes' },
-  { encoding: 'utf-8', input: [0xC1, 0xBF], name: 'overlong U+007F - 2 bytes' },
-  { encoding: 'utf-8', input: [0xE0, 0x81, 0xBF],
-    name: 'overlong U+007F - 3 bytes' },
-  { encoding: 'utf-8', input: [0xF0, 0x80, 0x81, 0xBF],
-    name: 'overlong U+007F - 4 bytes' },
-  { encoding: 'utf-8', input: [0xF8, 0x80, 0x80, 0x81, 0xBF],
-    name: 'overlong U+007F - 5 bytes' },
-  { encoding: 'utf-8', input: [0xFC, 0x80, 0x80, 0x80, 0x81, 0xBF],
-    name: 'overlong U+007F - 6 bytes' },
-  { encoding: 'utf-8', input: [0xE0, 0x9F, 0xBF],
-    name: 'overlong U+07FF - 3 bytes' },
-  { encoding: 'utf-8', input: [0xF0, 0x80, 0x9F, 0xBF],
-    name: 'overlong U+07FF - 4 bytes' },
-  { encoding: 'utf-8', input: [0xF8, 0x80, 0x80, 0x9F, 0xBF],
-    name: 'overlong U+07FF - 5 bytes' },
-  { encoding: 'utf-8', input: [0xFC, 0x80, 0x80, 0x80, 0x9F, 0xBF],
-    name: 'overlong U+07FF - 6 bytes' },
-  { encoding: 'utf-8', input: [0xF0, 0x8F, 0xBF, 0xBF],
-    name: 'overlong U+FFFF - 4 bytes' },
-  { encoding: 'utf-8', input: [0xF8, 0x80, 0x8F, 0xBF, 0xBF],
-    name: 'overlong U+FFFF - 5 bytes' },
-  { encoding: 'utf-8', input: [0xFC, 0x80, 0x80, 0x8F, 0xBF, 0xBF],
-    name: 'overlong U+FFFF - 6 bytes' },
-  { encoding: 'utf-8', input: [0xF8, 0x84, 0x8F, 0xBF, 0xBF],
-    name: 'overlong U+10FFFF - 5 bytes' },
-  { encoding: 'utf-8', input: [0xFC, 0x80, 0x84, 0x8F, 0xBF, 0xBF],
-    name: 'overlong U+10FFFF - 6 bytes' },
+  { encoding: 'utf-8', input: [0xc0, 0x80], name: 'overlong U+0000 - 2 bytes' },
+  {
+    encoding: 'utf-8',
+    input: [0xe0, 0x80, 0x80],
+    name: 'overlong U+0000 - 3 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf0, 0x80, 0x80, 0x80],
+    name: 'overlong U+0000 - 4 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf8, 0x80, 0x80, 0x80, 0x80],
+    name: 'overlong U+0000 - 5 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xfc, 0x80, 0x80, 0x80, 0x80, 0x80],
+    name: 'overlong U+0000 - 6 bytes'
+  },
+  { encoding: 'utf-8', input: [0xc1, 0xbf], name: 'overlong U+007F - 2 bytes' },
+  {
+    encoding: 'utf-8',
+    input: [0xe0, 0x81, 0xbf],
+    name: 'overlong U+007F - 3 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf0, 0x80, 0x81, 0xbf],
+    name: 'overlong U+007F - 4 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf8, 0x80, 0x80, 0x81, 0xbf],
+    name: 'overlong U+007F - 5 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xfc, 0x80, 0x80, 0x80, 0x81, 0xbf],
+    name: 'overlong U+007F - 6 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xe0, 0x9f, 0xbf],
+    name: 'overlong U+07FF - 3 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf0, 0x80, 0x9f, 0xbf],
+    name: 'overlong U+07FF - 4 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf8, 0x80, 0x80, 0x9f, 0xbf],
+    name: 'overlong U+07FF - 5 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xfc, 0x80, 0x80, 0x80, 0x9f, 0xbf],
+    name: 'overlong U+07FF - 6 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf0, 0x8f, 0xbf, 0xbf],
+    name: 'overlong U+FFFF - 4 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf8, 0x80, 0x8f, 0xbf, 0xbf],
+    name: 'overlong U+FFFF - 5 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xfc, 0x80, 0x80, 0x8f, 0xbf, 0xbf],
+    name: 'overlong U+FFFF - 6 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xf8, 0x84, 0x8f, 0xbf, 0xbf],
+    name: 'overlong U+10FFFF - 5 bytes'
+  },
+  {
+    encoding: 'utf-8',
+    input: [0xfc, 0x80, 0x84, 0x8f, 0xbf, 0xbf],
+    name: 'overlong U+10FFFF - 6 bytes'
+  },
   // UTF-16 surrogates encoded as code points in UTF-8
-  { encoding: 'utf-8', input: [0xED, 0xA0, 0x80], name: 'lead surrogate' },
-  { encoding: 'utf-8', input: [0xED, 0xB0, 0x80], name: 'trail surrogate' },
-  { encoding: 'utf-8', input: [0xED, 0xA0, 0x80, 0xED, 0xB0, 0x80],
-    name: 'surrogate pair' },
-  { encoding: 'utf-16le', input: [0x00], name: 'truncated code unit' },
+  { encoding: 'utf-8', input: [0xed, 0xa0, 0x80], name: 'lead surrogate' },
+  { encoding: 'utf-8', input: [0xed, 0xb0, 0x80], name: 'trail surrogate' },
+  {
+    encoding: 'utf-8',
+    input: [0xed, 0xa0, 0x80, 0xed, 0xb0, 0x80],
+    name: 'surrogate pair'
+  },
+  { encoding: 'utf-16le', input: [0x00], name: 'truncated code unit' }
   // Mismatched UTF-16 surrogates are exercised in utf16-surrogates.html
   // FIXME: Add legacy encoding cases
 ];
@@ -73,9 +132,11 @@ const bad = [
 bad.forEach((t) => {
   common.expectsError(
     () => {
-      new TextDecoder(t.encoding, { fatal: true })
-        .decode(new Uint8Array(t.input));
-    }, {
+      new TextDecoder(t.encoding, { fatal: true }).decode(
+        new Uint8Array(t.input)
+      );
+    },
+    {
       code: 'ERR_ENCODING_INVALID_ENCODED_DATA',
       type: TypeError
     }
@@ -92,11 +153,14 @@ bad.forEach((t) => {
 {
   const notArrayBufferViewExamples = [false, {}, 1, '', new Error()];
   notArrayBufferViewExamples.forEach((invalidInputType) => {
-    common.expectsError(() => {
-      new TextDecoder(undefined, null).decode(invalidInputType);
-    }, {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    });
+    common.expectsError(
+      () => {
+        new TextDecoder(undefined, null).decode(invalidInputType);
+      },
+      {
+        code: 'ERR_INVALID_ARG_TYPE',
+        type: TypeError
+      }
+    );
   });
 }

@@ -25,10 +25,13 @@ const assert = require('assert');
 const child_process = require('child_process');
 
 function test(fn, code) {
-  fn('does-not-exist', common.mustCall(function(err) {
-    assert.strictEqual(err.code, code);
-    assert(err.cmd.includes('does-not-exist'));
-  }));
+  fn(
+    'does-not-exist',
+    common.mustCall(function(err) {
+      assert.strictEqual(err.code, code);
+      assert(err.cmd.includes('does-not-exist'));
+    })
+  );
 }
 
 if (common.isWindows) {

@@ -6,9 +6,12 @@ const { Worker, isMainThread, parentPort } = require('worker_threads');
 
 if (isMainThread) {
   const w = new Worker(__filename);
-  w.on('message', common.mustCall((message) => {
-    assert.strictEqual(message, true);
-  }));
+  w.on(
+    'message',
+    common.mustCall((message) => {
+      assert.strictEqual(message, true);
+    })
+  );
 } else {
   {
     const before = process.title;

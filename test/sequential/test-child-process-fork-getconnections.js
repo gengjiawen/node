@@ -53,13 +53,11 @@ if (process.argv[2] === 'child') {
       }
     }
   });
-
 } else {
   const child = fork(process.argv[1], ['child']);
 
   child.on('exit', function(code, signal) {
-    if (!subprocessKilled)
-      throw new Error('subprocess died unexpectedly!');
+    if (!subprocessKilled) throw new Error('subprocess died unexpectedly!');
   });
 
   const server = net.createServer();
@@ -79,7 +77,10 @@ if (process.argv[2] === 'child') {
   server.on('listening', function() {
     let j = count;
     while (j--) {
-      const client = net.connect(common.PORT, '127.0.0.1');
+      const client = net.connect(
+        common.PORT,
+        '127.0.0.1'
+      );
       client.on('close', function() {
         disconnected += 1;
       });

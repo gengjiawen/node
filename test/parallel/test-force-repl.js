@@ -9,7 +9,10 @@ const cp = spawn(process.execPath, ['-i']);
 
 cp.stdout.setEncoding('utf8');
 
-cp.stdout.once('data', common.mustCall(function(b) {
-  assert.strictEqual(b, '> ');
-  cp.kill();
-}));
+cp.stdout.once(
+  'data',
+  common.mustCall(function(b) {
+    assert.strictEqual(b, '> ');
+    cp.kill();
+  })
+);

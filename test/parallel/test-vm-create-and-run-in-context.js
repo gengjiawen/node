@@ -32,7 +32,7 @@ let result = vm.runInContext('"passed";', context);
 assert.strictEqual(result, 'passed');
 
 // Create a new pre-populated context
-context = vm.createContext({ 'foo': 'bar', 'thing': 'lala' });
+context = vm.createContext({ foo: 'bar', thing: 'lala' });
 assert.strictEqual(context.foo, 'bar');
 assert.strictEqual(context.thing, 'lala');
 

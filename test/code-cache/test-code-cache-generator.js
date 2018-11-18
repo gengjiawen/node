@@ -13,16 +13,21 @@ const fs = require('fs');
 const readline = require('readline');
 
 const generator = path.join(
-  __dirname, '..', '..', 'tools', 'generate_code_cache.js'
+  __dirname,
+  '..',
+  '..',
+  'tools',
+  'generate_code_cache.js'
 );
 tmpdir.refresh();
 const dest = path.join(tmpdir.path, 'cache.cc');
 
 // Run tools/generate_code_cache.js
-const child = spawnSync(
-  process.execPath,
-  ['--expose-internals', generator, dest]
-);
+const child = spawnSync(process.execPath, [
+  '--expose-internals',
+  generator,
+  dest
+]);
 assert.ifError(child.error);
 if (child.status !== 0) {
   console.log(child.stderr.toString());
@@ -43,16 +48,22 @@ const rl = readline.createInterface({
 let hasCacheDef = false;
 let hasHashDef = false;
 
-rl.on('line', common.mustCallAtLeast((line) => {
-  if (line.includes('DefineCodeCache(')) {
-    hasCacheDef = true;
-  }
-  if (line.includes('DefineCodeCacheHash(')) {
-    hasHashDef = true;
-  }
-}, 2));
+rl.on(
+  'line',
+  common.mustCallAtLeast((line) => {
+    if (line.includes('DefineCodeCache(')) {
+      hasCacheDef = true;
+    }
+    if (line.includes('DefineCodeCacheHash(')) {
+      hasHashDef = true;
+    }
+  }, 2)
+);
 
-rl.on('close', common.mustCall(() => {
-  assert.ok(hasCacheDef);
-  assert.ok(hasHashDef);
-}));
+rl.on(
+  'close',
+  common.mustCall(() => {
+    assert.ok(hasCacheDef);
+    assert.ok(hasHashDef);
+  })
+);

@@ -21,8 +21,7 @@ let gotRequests = 0;
 let gotResponses = 0;
 
 function execAndClose() {
-  if (parsers.length === 0)
-    return;
+  if (parsers.length === 0) return;
   process.stdout.write('.');
 
   const parser = parsers.pop();
@@ -53,13 +52,14 @@ function execAndClose() {
   };
 }
 
-const server = net.createServer(function(c) {
-  if (++gotRequests === COUNT)
-    server.close();
-  c.end('HTTP/1.1 200 OK\r\n\r\n', function() {
-    c.destroySoon();
-  });
-}).listen(common.PORT, execAndClose);
+const server = net
+  .createServer(function(c) {
+    if (++gotRequests === COUNT) server.close();
+    c.end('HTTP/1.1 200 OK\r\n\r\n', function() {
+      c.destroySoon();
+    });
+  })
+  .listen(common.PORT, execAndClose);
 
 process.on('exit', function() {
   assert.strictEqual(gotResponses, COUNT);

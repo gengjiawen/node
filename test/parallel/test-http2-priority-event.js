@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const h2 = require('http2');
 
@@ -35,27 +34,31 @@ server.listen(0);
 
 server.on('priority', common.mustCall(onPriority));
 
-server.on('listening', common.mustCall(() => {
+server.on(
+  'listening',
+  common.mustCall(() => {
+    const client = h2.connect(`http://localhost:${server.address().port}`);
+    const req = client.request({ ':path': '/' });
 
-  const client = h2.connect(`http://localhost:${server.address().port}`);
-  const req = client.request({ ':path': '/' });
-
-  client.on('connect', () => {
-    req.priority({
-      parent: 0,
-      weight: 1,
-      exclusive: false
+    client.on('connect', () => {
+      req.priority({
+        parent: 0,
+        weight: 1,
+        exclusive: false
+      });
     });
-  });
 
-  req.on('priority', common.mustCall(onPriority));
+    req.on('priority', common.mustCall(onPriority));
 
-  req.on('response', common.mustCall());
-  req.resume();
-  req.on('end', common.mustCall(() => {
-    server.close();
-    client.close();
-  }));
-  req.end();
-
-}));
+    req.on('response', common.mustCall());
+    req.resume();
+    req.on(
+      'end',
+      common.mustCall(() => {
+        server.close();
+        client.close();
+      })
+    );
+    req.end();
+  })
+);

@@ -21,15 +21,16 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
 
 const iv = Buffer.from('00000000000000000000000000000000', 'hex');
-const key = Buffer.from('0123456789abcdef0123456789abcdef' +
-                        '0123456789abcdef0123456789abcdef', 'hex');
+const key = Buffer.from(
+  '0123456789abcdef0123456789abcdef' + '0123456789abcdef0123456789abcdef',
+  'hex'
+);
 
 function encrypt(val, pad) {
   const c = crypto.createCipheriv('aes256', key, iv);

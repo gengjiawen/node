@@ -14,27 +14,30 @@ if (process.argv[2] === 'child') {
   new vm.Script('[', {});
 } else {
   run('', 'child', null);
-  run('--abort-on-uncaught-exception', 'child',
-      ['SIGABRT', 'SIGTRAP', 'SIGILL']);
+  run('--abort-on-uncaught-exception', 'child', [
+    'SIGABRT',
+    'SIGTRAP',
+    'SIGILL'
+  ]);
   run('--abort-on-uncaught-exception', 'vm', ['SIGABRT', 'SIGTRAP', 'SIGILL']);
 }
 
 function run(flags, argv2, signals) {
   const args = [__filename, argv2];
-  if (flags)
-    args.unshift(flags);
+  if (flags) args.unshift(flags);
 
   const child = spawn(node, args);
-  child.on('exit', common.mustCall(function(code, sig) {
-    if (common.isWindows) {
-      if (signals)
-        assert.strictEqual(code, 0xC0000005);
-      else
-        assert.strictEqual(code, 1);
-    } else if (signals) {
-      assert(signals.includes(sig), `Unexpected signal ${sig}`);
-    } else {
-      assert.strictEqual(sig, null);
-    }
-  }));
+  child.on(
+    'exit',
+    common.mustCall(function(code, sig) {
+      if (common.isWindows) {
+        if (signals) assert.strictEqual(code, 0xc0000005);
+        else assert.strictEqual(code, 1);
+      } else if (signals) {
+        assert(signals.includes(sig), `Unexpected signal ${sig}`);
+      } else {
+        assert.strictEqual(sig, null);
+      }
+    })
+  );
 }

@@ -13,7 +13,7 @@ const dnsPromises = dns.promises;
 const isIPv4 = net.isIPv4;
 const isIPv6 = net.isIPv6;
 
-dns.setServers([ '8.8.8.8', '8.8.4.4' ]);
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 function checkWrap(req) {
   assert.ok(typeof req === 'object');
@@ -119,8 +119,8 @@ TEST(async function test_google(done) {
   function validateResult(res) {
     const types = processResult(res);
     assert.ok(
-      types.A && types.AAAA && types.MX &&
-      types.NS && types.TXT && types.SOA);
+      types.A && types.AAAA && types.MX && types.NS && types.TXT && types.SOA
+    );
   }
 
   validateResult(await dnsPromises.resolve('google.com', 'ANY'));
@@ -132,7 +132,8 @@ TEST(async function test_google(done) {
       assert.ifError(err);
       validateResult(ret);
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -152,7 +153,8 @@ TEST(async function test_sip2sip_for_naptr(done) {
       assert.ifError(err);
       validateResult(ret);
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -172,7 +174,8 @@ TEST(async function test_google_for_cname_and_srv(done) {
       assert.ifError(err);
       validateResult(ret);
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -192,7 +195,8 @@ TEST(async function test_ptr(done) {
       assert.ifError(err);
       validateResult(ret);
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });

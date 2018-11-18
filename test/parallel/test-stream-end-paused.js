@@ -39,10 +39,13 @@ stream.on('data', function() {
 });
 stream.pause();
 
-setTimeout(common.mustCall(function() {
-  stream.on('end', common.mustCall());
-  stream.resume();
-}), 1);
+setTimeout(
+  common.mustCall(function() {
+    stream.on('end', common.mustCall());
+    stream.resume();
+  }),
+  1
+);
 
 process.on('exit', function() {
   assert(calledRead);

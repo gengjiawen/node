@@ -4,8 +4,8 @@ const Readable = require('_stream_readable');
 const assert = require('assert');
 
 let buf = '';
-const euro = Buffer.from([0xE2, 0x82, 0xAC]);
-const cent = Buffer.from([0xC2, 0xA2]);
+const euro = Buffer.from([0xe2, 0x82, 0xac]);
+const cent = Buffer.from([0xc2, 0xa2]);
 const source = Buffer.concat([euro, cent]);
 
 const readable = Readable({ encoding: 'utf8' });

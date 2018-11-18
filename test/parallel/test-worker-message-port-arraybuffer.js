@@ -12,9 +12,12 @@ const { MessageChannel } = require('worker_threads');
   const typedArray = new Uint32Array(arrayBuffer);
   typedArray[0] = 0x12345678;
 
-  port1.postMessage(typedArray, [ arrayBuffer ]);
-  port2.on('message', common.mustCall((received) => {
-    assert.strictEqual(received[0], 0x12345678);
-    port2.close(common.mustCall());
-  }));
+  port1.postMessage(typedArray, [arrayBuffer]);
+  port2.on(
+    'message',
+    common.mustCall((received) => {
+      assert.strictEqual(received[0], 0x12345678);
+      port2.close(common.mustCall());
+    })
+  );
 }

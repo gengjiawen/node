@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.isLinux)
-  common.skip('Test is linux specific.');
+if (!common.isLinux) common.skip('Test is linux specific.');
 
 const path = require('path');
 const fs = require('fs');
@@ -23,10 +22,14 @@ try {
   throw e;
 }
 
-fs.readdir(tmpdir.path, 'ucs2', common.mustCall((err, list) => {
-  assert.ifError(err);
-  assert.strictEqual(list.length, 1);
-  const fn = list[0];
-  assert.deepStrictEqual(Buffer.from(fn, 'ucs2'), filebuff);
-  assert.strictEqual(fn, filename);
-}));
+fs.readdir(
+  tmpdir.path,
+  'ucs2',
+  common.mustCall((err, list) => {
+    assert.ifError(err);
+    assert.strictEqual(list.length, 1);
+    const fn = list[0];
+    assert.deepStrictEqual(Buffer.from(fn, 'ucs2'), filebuff);
+    assert.strictEqual(fn, filename);
+  })
+);

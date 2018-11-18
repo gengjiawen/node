@@ -5,6 +5,9 @@ const net = require('net');
 const fp = '/blah/fadfa';
 const server = net.createServer(common.mustNotCall());
 server.listen(fp, common.mustNotCall());
-server.on('error', common.mustCall(function(e) {
-  assert.strictEqual(e.address, fp);
-}));
+server.on(
+  'error',
+  common.mustCall(function(e) {
+    assert.strictEqual(e.address, fp);
+  })
+);

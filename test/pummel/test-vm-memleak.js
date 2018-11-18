@@ -37,8 +37,7 @@ assert(ok, 'Run this test with --max_old_space_size=32.');
 const interval = setInterval(function() {
   try {
     vm.runInNewContext('throw 1;');
-  } catch {
-  }
+  } catch {}
 
   const rss = process.memoryUsage().rss;
   maxMem = Math.max(rss, maxMem);
@@ -52,8 +51,7 @@ const interval = setInterval(function() {
 }, 1);
 
 function testContextLeak() {
-  for (let i = 0; i < 1000; i++)
-    vm.createContext({});
+  for (let i = 0; i < 1000; i++) vm.createContext({});
 }
 
 process.on('exit', function() {

@@ -11,11 +11,17 @@ delete global.clearInterval;
 delete global.setImmediate;
 delete global.clearImmediate;
 
-const timeoutCallback = () => { timers.clearTimeout(timeout); };
+const timeoutCallback = () => {
+  timers.clearTimeout(timeout);
+};
 const timeout = timers.setTimeout(common.mustCall(timeoutCallback), 1);
 
-const intervalCallback = () => { timers.clearInterval(interval); };
+const intervalCallback = () => {
+  timers.clearInterval(interval);
+};
 const interval = timers.setInterval(common.mustCall(intervalCallback), 1);
 
-const immediateCallback = () => { timers.clearImmediate(immediate); };
+const immediateCallback = () => {
+  timers.clearImmediate(immediate);
+};
 const immediate = timers.setImmediate(immediateCallback);

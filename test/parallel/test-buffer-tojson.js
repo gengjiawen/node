@@ -4,10 +4,14 @@ require('../common');
 const assert = require('assert');
 
 {
-  assert.strictEqual(JSON.stringify(Buffer.alloc(0)),
-                     '{"type":"Buffer","data":[]}');
-  assert.strictEqual(JSON.stringify(Buffer.from([1, 2, 3, 4])),
-                     '{"type":"Buffer","data":[1,2,3,4]}');
+  assert.strictEqual(
+    JSON.stringify(Buffer.alloc(0)),
+    '{"type":"Buffer","data":[]}'
+  );
+  assert.strictEqual(
+    JSON.stringify(Buffer.from([1, 2, 3, 4])),
+    '{"type":"Buffer","data":[1,2,3,4]}'
+  );
 }
 
 // issue GH-7849

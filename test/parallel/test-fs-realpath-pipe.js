@@ -26,7 +26,10 @@ for (const code of [
     process.exit(1);
   }`
 ]) {
-  assert.strictEqual(spawnSync(process.execPath, ['-e', code], {
-    stdio: 'pipe'
-  }).status, 2);
+  assert.strictEqual(
+    spawnSync(process.execPath, ['-e', code], {
+      stdio: 'pipe'
+    }).status,
+    2
+  );
 }

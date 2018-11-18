@@ -16,7 +16,6 @@ const server = http.createServer(function(req, res) {
   res.end('');
 });
 server.listen(0, function() {
-
   http.get({ port: this.address().port }, function() {
     ee.emit('done');
   });
@@ -38,7 +37,7 @@ server.listen(0, function() {
   // Should not throw.
   const options = {
     port: server.address().port,
-    headers: { 'testing_123': 123 }
+    headers: { testing_123: 123 }
   };
   http.get(options, function() {
     ee.emit('done');

@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.isSunOS)
-  common.skip('no DTRACE support');
+if (!common.isSunOS) common.skip('no DTRACE support');
 
 const assert = require('assert');
 const os = require('os');
@@ -30,7 +29,7 @@ const os = require('os');
 /*
  * Some functions to create a recognizable stack.
  */
-const frames = [ 'stalloogle', 'bagnoogle', 'doogle' ];
+const frames = ['stalloogle', 'bagnoogle', 'doogle'];
 
 const stalloogle = (str) => {
   global.expected = str;
@@ -44,8 +43,7 @@ const bagnoogle = (arg0, arg1) => {
 let done = false;
 
 const doogle = () => {
-  if (!done)
-    setTimeout(doogle, 10);
+  if (!done) setTimeout(doogle, 10);
 
   bagnoogle('The bfs command', '(almost) like ed(1)');
 };
@@ -57,8 +55,12 @@ const spawn = require('child_process').spawn;
  * when we call getloadavg() -- with the implicit assumption that our
  * deepest function is the only caller of os.loadavg().
  */
-const dtrace = spawn('dtrace', [ '-qwn', `syscall::getloadavg:entry/pid == ${
-  process.pid}/{ustack(100, 8192); exit(0); }` ]);
+const dtrace = spawn('dtrace', [
+  '-qwn',
+  `syscall::getloadavg:entry/pid == ${
+    process.pid
+  }/{ustack(100, 8192); exit(0); }`
+]);
 
 let output = '';
 
@@ -84,18 +86,19 @@ dtrace.on('exit', function(code) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
 
-    if (!line.includes(sentinel) || frames.length === 0)
-      continue;
+    if (!line.includes(sentinel) || frames.length === 0) continue;
 
     const frame = line.substr(line.indexOf(sentinel) + sentinel.length);
     const top = frames.shift();
 
-    assert(frame.startsWith(top),
-           `unexpected frame where ${top} was expected`);
+    assert(frame.startsWith(top), `unexpected frame where ${top} was expected`);
   }
 
-  assert.strictEqual(frames.length, 0,
-                     `did not find expected frame ${frames[0]}`);
+  assert.strictEqual(
+    frames.length,
+    0,
+    `did not find expected frame ${frames[0]}`
+  );
   process.exit(0);
 });
 

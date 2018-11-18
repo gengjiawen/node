@@ -98,14 +98,14 @@ let cntr = 0;
 const bb = Buffer.allocUnsafe(10);
 bb.fill('hello crazy world');
 
-
 // Try to copy from before the beginning of b. Should not throw.
 b.copy(c, 0, 100, 10);
 
 // copy throws at negative sourceStart
 common.expectsError(
   () => Buffer.allocUnsafe(5).copy(Buffer.allocUnsafe(5), 0, -1),
-  errorProperty);
+  errorProperty
+);
 
 {
   // check sourceEnd resets to targetEnd if former is greater than the latter
@@ -118,8 +118,7 @@ common.expectsError(
 }
 
 // throw with negative sourceEnd
-common.expectsError(
-  () => b.copy(c, 0, -1), errorProperty);
+common.expectsError(() => b.copy(c, 0, -1), errorProperty);
 
 // when sourceStart is greater than sourceEnd, zero copied
 assert.strictEqual(b.copy(c, 0, 100, 10), 0);

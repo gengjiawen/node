@@ -11,23 +11,33 @@ const { spawnSync } = require('child_process');
 // This is a sibling test to test/addons/uv-handle-leak.
 
 const bindingPath = path.resolve(
-  __dirname, '..', 'addons', 'uv-handle-leak', 'build',
-  `${common.buildType}/binding.node`);
+  __dirname,
+  '..',
+  'addons',
+  'uv-handle-leak',
+  'build',
+  `${common.buildType}/binding.node`
+);
 
-if (!fs.existsSync(bindingPath))
-  common.skip('binding not built yet');
+if (!fs.existsSync(bindingPath)) common.skip('binding not built yet');
 
 if (process.argv[2] === 'child') {
-  new Worker(`
+  new Worker(
+    `
   const binding = require(${JSON.stringify(bindingPath)});
 
   binding.leakHandle();
   binding.leakHandle(0);
   binding.leakHandle(0x42);
-  `, { eval: true });
+  `,
+    { eval: true }
+  );
 } else {
-  const child = cp.spawnSync(process.execPath,
-                             ['--experimental-worker', __filename, 'child']);
+  const child = cp.spawnSync(process.execPath, [
+    '--experimental-worker',
+    __filename,
+    'child'
+  ]);
   const stderr = child.stderr.toString();
 
   assert.strictEqual(child.stdout.toString(), '');
@@ -53,23 +63,27 @@ if (process.argv[2] === 'child') {
   function isGlibc() {
     try {
       const lddOut = spawnSync('ldd', [process.execPath]).stdout;
-      const libcInfo = lddOut.toString().split('\n').map(
-        (line) => line.match(/libc\.so.+=>\s*(\S+)\s/)).filter((info) => info);
-      if (libcInfo.length === 0)
-        return false;
+      const libcInfo = lddOut
+        .toString()
+        .split('\n')
+        .map((line) => line.match(/libc\.so.+=>\s*(\S+)\s/))
+        .filter((info) => info);
+      if (libcInfo.length === 0) return false;
       const nmOut = spawnSync('nm', ['-D', libcInfo[0][1]]).stdout;
-      if (/gnu_get_libc_version/.test(nmOut))
-        return true;
+      if (/gnu_get_libc_version/.test(nmOut)) return true;
     } catch {
       return false;
     }
   }
 
-
-  if (!(common.isFreeBSD ||
-        common.isAIX ||
-        (common.isLinux && !isGlibc()) ||
-        common.isWindows)) {
+  if (
+    !(
+      common.isFreeBSD ||
+      common.isAIX ||
+      (common.isLinux && !isGlibc()) ||
+      common.isWindows
+    )
+  ) {
     assert(stderr.includes('ExampleOwnerClass'), stderr);
     assert(stderr.includes('CloseCallback'), stderr);
     assert(stderr.includes('example_instance'), stderr);

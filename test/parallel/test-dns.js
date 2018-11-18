@@ -88,10 +88,7 @@ assert(existing.length > 0);
   });
 }
 
-const goog = [
-  '8.8.8.8',
-  '8.8.4.4',
-];
+const goog = ['8.8.8.8', '8.8.4.4'];
 dns.setServers(goog);
 assert.deepStrictEqual(dns.getServers(), goog);
 common.expectsError(() => dns.setServers(['foobar']), {
@@ -106,10 +103,7 @@ common.expectsError(() => dns.setServers(['127.0.0.1:va']), {
 });
 assert.deepStrictEqual(dns.getServers(), goog);
 
-const goog6 = [
-  '2001:4860:4860::8888',
-  '2001:4860:4860::8844',
-];
+const goog6 = ['2001:4860:4860::8888', '2001:4860:4860::8844'];
 dns.setServers(goog6);
 assert.deepStrictEqual(dns.getServers(), goog6);
 
@@ -139,8 +133,8 @@ assert.deepStrictEqual(dns.getServers(), []);
   const errObj = {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError,
-    message: 'The "rrtype" argument must be of type string. ' +
-             'Received type object'
+    message:
+      'The "rrtype" argument must be of type string. ' + 'Received type object'
   };
   common.expectsError(() => {
     dns.resolve('example.com', [], common.mustNotCall());
@@ -153,8 +147,8 @@ assert.deepStrictEqual(dns.getServers(), []);
   const errObj = {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError,
-    message: 'The "name" argument must be of type string. ' +
-             'Received type undefined'
+    message:
+      'The "name" argument must be of type string. ' + 'Received type undefined'
   };
   common.expectsError(() => {
     dnsPromises.resolve();
@@ -163,11 +157,14 @@ assert.deepStrictEqual(dns.getServers(), []);
 
 // dns.lookup should accept only falsey and string values
 {
-  const errorReg = common.expectsError({
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError,
-    message: /^The "hostname" argument must be of type string\. Received type .*/
-  }, 10);
+  const errorReg = common.expectsError(
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError,
+      message: /^The "hostname" argument must be of type string\. Received type .*/
+    },
+    10
+  );
 
   assert.throws(() => dns.lookup({}, common.mustNotCall()), errorReg);
 
@@ -177,8 +174,10 @@ assert.deepStrictEqual(dns.getServers(), []);
 
   assert.throws(() => dns.lookup(1, common.mustNotCall()), errorReg);
 
-  assert.throws(() => dns.lookup(common.mustNotCall(), common.mustNotCall()),
-                errorReg);
+  assert.throws(
+    () => dns.lookup(common.mustNotCall(), common.mustNotCall()),
+    errorReg
+  );
 
   assert.throws(() => dnsPromises.lookup({}), errorReg);
   assert.throws(() => dnsPromises.lookup([]), errorReg);
@@ -204,14 +203,14 @@ assert.deepStrictEqual(dns.getServers(), []);
 
 {
   /*
-  * Make sure that dns.lookup throws if hints does not represent a valid flag.
-  * (dns.V4MAPPED | dns.ADDRCONFIG) + 1 is invalid because:
-  * - it's different from dns.V4MAPPED and dns.ADDRCONFIG.
-  * - it's different from them bitwise ored.
-  * - it's different from 0.
-  * - it's an odd number different than 1, and thus is invalid, because
-  * flags are either === 1 or even.
-  */
+   * Make sure that dns.lookup throws if hints does not represent a valid flag.
+   * (dns.V4MAPPED | dns.ADDRCONFIG) + 1 is invalid because:
+   * - it's different from dns.V4MAPPED and dns.ADDRCONFIG.
+   * - it's different from them bitwise ored.
+   * - it's different from 0.
+   * - it's an odd number different than 1, and thus is invalid, because
+   * flags are either === 1 or even.
+   */
   const hints = (dns.V4MAPPED | dns.ADDRCONFIG) + 1;
   const err = {
     code: 'ERR_INVALID_OPT_VALUE',
@@ -239,16 +238,24 @@ common.expectsError(() => dns.lookup('nodejs.org', 4), {
 
 dns.lookup('', { family: 4, hints: 0 }, common.mustCall());
 
-dns.lookup('', {
-  family: 6,
-  hints: dns.ADDRCONFIG
-}, common.mustCall());
+dns.lookup(
+  '',
+  {
+    family: 6,
+    hints: dns.ADDRCONFIG
+  },
+  common.mustCall()
+);
 
 dns.lookup('', { hints: dns.V4MAPPED }, common.mustCall());
 
-dns.lookup('', {
-  hints: dns.ADDRCONFIG | dns.V4MAPPED
-}, common.mustCall());
+dns.lookup(
+  '',
+  {
+    hints: dns.ADDRCONFIG | dns.V4MAPPED
+  },
+  common.mustCall()
+);
 
 (async function() {
   await dnsPromises.lookup('', { family: 4, hints: 0 });
@@ -261,8 +268,8 @@ dns.lookup('', {
   const err = {
     code: 'ERR_MISSING_ARGS',
     type: TypeError,
-    message: 'The "hostname", "port", and "callback" arguments must be ' +
-    'specified'
+    message:
+      'The "hostname", "port", and "callback" arguments must be ' + 'specified'
   };
 
   common.expectsError(() => dns.lookupService('0.0.0.0'), err);
@@ -290,8 +297,7 @@ dns.lookup('', {
 const portErr = (port) => {
   const err = {
     code: 'ERR_SOCKET_BAD_PORT',
-    message:
-      `Port should be >= 0 and < 65536. Received ${port}.`,
+    message: `Port should be >= 0 and < 65536. Received ${port}.`,
     type: RangeError
   };
 
@@ -308,9 +314,12 @@ portErr(undefined);
 portErr(65538);
 portErr('test');
 
-common.expectsError(() => {
-  dns.lookupService('0.0.0.0', 80, null);
-}, {
-  code: 'ERR_INVALID_CALLBACK',
-  type: TypeError
-});
+common.expectsError(
+  () => {
+    dns.lookupService('0.0.0.0', 80, null);
+  },
+  {
+    code: 'ERR_INVALID_CALLBACK',
+    type: TypeError
+  }
+);

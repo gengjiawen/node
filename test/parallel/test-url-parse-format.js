@@ -35,7 +35,8 @@ const parseTests = {
     query: 'json=%22%5C%22foo%5C%22%22',
     path: '/foo.html?json=%22%5C%22foo%5C%22%22',
     hash: '#h%5Ca%5Cs%5Ch',
-    href: 'http://evil-phisher/foo.html?json=%22%5C%22foo%5C%22%22#h%5Ca%5Cs%5Ch'
+    href:
+      'http://evil-phisher/foo.html?json=%22%5C%22foo%5C%22%22#h%5Ca%5Cs%5Ch'
   },
 
   'http:\\\\evil-phisher\\foo.html#h\\a\\s\\h?blarg': {
@@ -48,7 +49,6 @@ const parseTests = {
     hash: '#h%5Ca%5Cs%5Ch?blarg',
     href: 'http://evil-phisher/foo.html#h%5Ca%5Cs%5Ch?blarg'
   },
-
 
   'http:\\\\evil-phisher\\foo.html': {
     protocol: 'http:',
@@ -134,7 +134,7 @@ const parseTests = {
     path: '/'
   },
 
-  'http://x.com/path?that\'s#all, folks': {
+  "http://x.com/path?that's#all, folks": {
     href: 'http://x.com/path?that%27s#all,%20folks',
     protocol: 'http:',
     slashes: true,
@@ -258,8 +258,9 @@ const parseTests = {
   },
 
   'http://mt0.google.com/vt/lyrs=m@114???&hl=en&src=api&x=2&y=2&z=3&s=': {
-    href: 'http://mt0.google.com/vt/lyrs=m@114???&hl=en&src=api' +
-          '&x=2&y=2&z=3&s=',
+    href:
+      'http://mt0.google.com/vt/lyrs=m@114???&hl=en&src=api' +
+      '&x=2&y=2&z=3&s=',
     protocol: 'http:',
     slashes: true,
     host: 'mt0.google.com',
@@ -271,7 +272,8 @@ const parseTests = {
   },
 
   'http://user:pass@mt0.google.com/vt/lyrs=m@114???&hl=en&src=api&x=2&y=2&z=3&s=': {
-    href: 'http://user:pass@mt0.google.com/vt/lyrs=m@114???&hl=en&src=api&x=2&y=2&z=3&s=',
+    href:
+      'http://user:pass@mt0.google.com/vt/lyrs=m@114???&hl=en&src=api&x=2&y=2&z=3&s=',
     protocol: 'http:',
     slashes: true,
     host: 'mt0.google.com',
@@ -409,11 +411,11 @@ const parseTests = {
     path: '?subject=hello'
   },
 
-  'javascript:alert(\'hello\');': {
-    href: 'javascript:alert(\'hello\');',
+  "javascript:alert('hello');": {
+    href: "javascript:alert('hello');",
     protocol: 'javascript:',
-    pathname: 'alert(\'hello\');',
-    path: 'alert(\'hello\');'
+    pathname: "alert('hello');",
+    path: "alert('hello');"
   },
 
   'xmpp:isaacschlueter@jabber.org': {
@@ -716,7 +718,7 @@ const parseTests = {
     hostname: '-lovemonsterz.tumblr.com',
     href: 'http://-lovemonsterz.tumblr.com/rss',
     pathname: '/rss',
-    path: '/rss',
+    path: '/rss'
   },
 
   'http://-lovemonsterz.tumblr.com:80/rss': {
@@ -727,7 +729,7 @@ const parseTests = {
     hostname: '-lovemonsterz.tumblr.com',
     href: 'http://-lovemonsterz.tumblr.com:80/rss',
     pathname: '/rss',
-    path: '/rss',
+    path: '/rss'
   },
 
   'http://user:pass@-lovemonsterz.tumblr.com/rss': {
@@ -738,7 +740,7 @@ const parseTests = {
     hostname: '-lovemonsterz.tumblr.com',
     href: 'http://user:pass@-lovemonsterz.tumblr.com/rss',
     pathname: '/rss',
-    path: '/rss',
+    path: '/rss'
   },
 
   'http://user:pass@-lovemonsterz.tumblr.com:80/rss': {
@@ -750,7 +752,7 @@ const parseTests = {
     hostname: '-lovemonsterz.tumblr.com',
     href: 'http://user:pass@-lovemonsterz.tumblr.com:80/rss',
     pathname: '/rss',
-    path: '/rss',
+    path: '/rss'
   },
 
   'http://_jabber._tcp.google.com/test': {
@@ -760,7 +762,7 @@ const parseTests = {
     hostname: '_jabber._tcp.google.com',
     href: 'http://_jabber._tcp.google.com/test',
     pathname: '/test',
-    path: '/test',
+    path: '/test'
   },
 
   'http://user:pass@_jabber._tcp.google.com/test': {
@@ -771,7 +773,7 @@ const parseTests = {
     hostname: '_jabber._tcp.google.com',
     href: 'http://user:pass@_jabber._tcp.google.com/test',
     pathname: '/test',
-    path: '/test',
+    path: '/test'
   },
 
   'http://_jabber._tcp.google.com:80/test': {
@@ -782,7 +784,7 @@ const parseTests = {
     hostname: '_jabber._tcp.google.com',
     href: 'http://_jabber._tcp.google.com:80/test',
     pathname: '/test',
-    path: '/test',
+    path: '/test'
   },
 
   'http://user:pass@_jabber._tcp.google.com:80/test': {
@@ -794,7 +796,7 @@ const parseTests = {
     hostname: '_jabber._tcp.google.com',
     href: 'http://user:pass@_jabber._tcp.google.com:80/test',
     pathname: '/test',
-    path: '/test',
+    path: '/test'
   },
 
   'http://x:1/\' <>"`/{}|\\^~`/': {
@@ -840,10 +842,12 @@ const parseTests = {
     hostname: 'a.b',
     hash: null,
     pathname: '/%09bc%0Adr%0Def%20g%22hq%27j%3Ckl%3E',
-    path: '/%09bc%0Adr%0Def%20g%22hq%27j%3Ckl%3E?mn%5Cop%5Eq=r%6099%7Bst%7Cuv%7Dwz', // eslint-disable-line max-len
+    path:
+      '/%09bc%0Adr%0Def%20g%22hq%27j%3Ckl%3E?mn%5Cop%5Eq=r%6099%7Bst%7Cuv%7Dwz', // eslint-disable-line max-len
     search: '?mn%5Cop%5Eq=r%6099%7Bst%7Cuv%7Dwz',
     query: 'mn%5Cop%5Eq=r%6099%7Bst%7Cuv%7Dwz',
-    href: 'http://a.b/%09bc%0Adr%0Def%20g%22hq%27j%3Ckl%3E?mn%5Cop%5Eq=r%6099%7Bst%7Cuv%7Dwz'
+    href:
+      'http://a.b/%09bc%0Adr%0Def%20g%22hq%27j%3Ckl%3E?mn%5Cop%5Eq=r%6099%7Bst%7Cuv%7Dwz'
   },
 
   'http://a\r" \t\n<\'b:b@c\r\nd/e?f': {
@@ -858,7 +862,7 @@ const parseTests = {
     query: 'f',
     pathname: '%0D%0Ad/e',
     path: '%0D%0Ad/e?f',
-    href: 'http://a%0D%22%20%09%0A%3C\'b:b@c/%0D%0Ad/e?f'
+    href: "http://a%0D%22%20%09%0A%3C'b:b@c/%0D%0Ad/e?f"
   },
 
   // git urls used by npm
@@ -918,6 +922,9 @@ for (const u in parseTests) {
   expected = parseTests[u].href;
   actual = url.format(parseTests[u]);
 
-  assert.strictEqual(actual, expected,
-                     `format(${u}) == ${u}\nactual:${actual}`);
+  assert.strictEqual(
+    actual,
+    expected,
+    `format(${u}) == ${u}\nactual:${actual}`
+  );
 }

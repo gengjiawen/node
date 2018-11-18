@@ -50,8 +50,7 @@ if (process.argv[2] === 'child') {
       if (process.argv.includes('useTryCatch')) {
         try {
           throw new Error(domainErrHandlerExMessage);
-        } catch {
-        }
+        } catch {}
       } else {
         throw new Error(domainErrHandlerExMessage);
       }
@@ -100,11 +99,11 @@ if (process.argv[2] === 'child') {
     }
 
     let useTryCatchOpt;
-    if (options.useTryCatch)
-      useTryCatchOpt = 'useTryCatch';
+    if (options.useTryCatch) useTryCatchOpt = 'useTryCatch';
 
     cmdToExec += `"${process.argv[0]}" ${cmdLineOption ? cmdLineOption : ''} "${
-      process.argv[1]}" child ${throwInDomainErrHandlerOpt} ${useTryCatchOpt}`;
+      process.argv[1]
+    }" child ${throwInDomainErrHandlerOpt} ${useTryCatchOpt}`;
 
     const child = exec(cmdToExec);
 
@@ -114,8 +113,10 @@ if (process.argv[2] === 'child') {
         // outside of a try/catch block, the process should not exit gracefully
         if (!options.useTryCatch && options.throwInDomainErrHandler) {
           if (cmdLineOption === '--abort_on_uncaught_exception') {
-            assert(common.nodeProcessAborted(exitCode, signal),
-                   'process should have aborted, but did not');
+            assert(
+              common.nodeProcessAborted(exitCode, signal),
+              'process should have aborted, but did not'
+            );
           } else {
             // By default, uncaught exceptions make node exit with an exit
             // code of 7.

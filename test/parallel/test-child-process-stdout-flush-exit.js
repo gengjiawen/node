@@ -51,8 +51,11 @@ if (process.argv[2] === 'child') {
     stdout += data;
   });
 
-  child.on('close', common.mustCall(function() {
-    assert.strictEqual(stdout.slice(0, 6), 'hello\n');
-    assert.strictEqual(stdout.slice(stdout.length - 8), 'goodbye\n');
-  }));
+  child.on(
+    'close',
+    common.mustCall(function() {
+      assert.strictEqual(stdout.slice(0, 6), 'hello\n');
+      assert.strictEqual(stdout.slice(stdout.length - 8), 'goodbye\n');
+    })
+  );
 }

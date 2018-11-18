@@ -3,8 +3,10 @@ const common = require('../common');
 const assert = require('assert');
 const path = require('path');
 
-assert.strictEqual(path.dirname(__filename).substr(-13),
-                   common.isWindows ? 'test\\parallel' : 'test/parallel');
+assert.strictEqual(
+  path.dirname(__filename).substr(-13),
+  common.isWindows ? 'test\\parallel' : 'test/parallel'
+);
 
 assert.strictEqual(path.posix.dirname('/a/b/'), '/a');
 assert.strictEqual(path.posix.dirname('/a/b'), '/a');
@@ -35,18 +37,27 @@ assert.strictEqual(path.win32.dirname('c:foo\\bar\\'), 'c:foo');
 assert.strictEqual(path.win32.dirname('c:foo\\bar\\baz'), 'c:foo\\bar');
 assert.strictEqual(path.win32.dirname('file:stream'), '.');
 assert.strictEqual(path.win32.dirname('dir\\file:stream'), 'dir');
-assert.strictEqual(path.win32.dirname('\\\\unc\\share'),
-                   '\\\\unc\\share');
-assert.strictEqual(path.win32.dirname('\\\\unc\\share\\foo'),
-                   '\\\\unc\\share\\');
-assert.strictEqual(path.win32.dirname('\\\\unc\\share\\foo\\'),
-                   '\\\\unc\\share\\');
-assert.strictEqual(path.win32.dirname('\\\\unc\\share\\foo\\bar'),
-                   '\\\\unc\\share\\foo');
-assert.strictEqual(path.win32.dirname('\\\\unc\\share\\foo\\bar\\'),
-                   '\\\\unc\\share\\foo');
-assert.strictEqual(path.win32.dirname('\\\\unc\\share\\foo\\bar\\baz'),
-                   '\\\\unc\\share\\foo\\bar');
+assert.strictEqual(path.win32.dirname('\\\\unc\\share'), '\\\\unc\\share');
+assert.strictEqual(
+  path.win32.dirname('\\\\unc\\share\\foo'),
+  '\\\\unc\\share\\'
+);
+assert.strictEqual(
+  path.win32.dirname('\\\\unc\\share\\foo\\'),
+  '\\\\unc\\share\\'
+);
+assert.strictEqual(
+  path.win32.dirname('\\\\unc\\share\\foo\\bar'),
+  '\\\\unc\\share\\foo'
+);
+assert.strictEqual(
+  path.win32.dirname('\\\\unc\\share\\foo\\bar\\'),
+  '\\\\unc\\share\\foo'
+);
+assert.strictEqual(
+  path.win32.dirname('\\\\unc\\share\\foo\\bar\\baz'),
+  '\\\\unc\\share\\foo\\bar'
+);
 assert.strictEqual(path.win32.dirname('/a/b/'), '/a');
 assert.strictEqual(path.win32.dirname('/a/b'), '/a');
 assert.strictEqual(path.win32.dirname('/a'), '/');

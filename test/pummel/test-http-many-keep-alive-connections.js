@@ -41,25 +41,30 @@ server.once('connection', function(c) {
 });
 
 server.listen(common.PORT, function connect() {
-  const request = http.get({
-    port: common.PORT,
-    path: '/',
-    headers: {
-      'Connection': 'Keep-alive'
-    }
-  }, function(res) {
-    res.on('end', function() {
-      if (++responses < expected) {
-        connect();
-      } else {
-        server.close();
+  const request = http
+    .get(
+      {
+        port: common.PORT,
+        path: '/',
+        headers: {
+          Connection: 'Keep-alive'
+        }
+      },
+      function(res) {
+        res.on('end', function() {
+          if (++responses < expected) {
+            connect();
+          } else {
+            server.close();
+          }
+        });
+        res.resume();
       }
+    )
+    .on('error', function(e) {
+      console.log(e.message);
+      process.exit(1);
     });
-    res.resume();
-  }).on('error', function(e) {
-    console.log(e.message);
-    process.exit(1);
-  });
   request.agent.maxSockets = 1;
 });
 

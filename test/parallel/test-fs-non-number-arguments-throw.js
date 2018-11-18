@@ -21,7 +21,8 @@ common.expectsError(
   {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError
-  });
+  }
+);
 
 common.expectsError(
   () => {
@@ -30,7 +31,8 @@ common.expectsError(
   {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError
-  });
+  }
+);
 
 common.expectsError(
   () => {
@@ -39,10 +41,16 @@ common.expectsError(
   {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError
-  });
+  }
+);
 
-saneEmitter.on('data', common.mustCall(function(data) {
-  assert.strictEqual(
-    sanity, data.toString('utf8'),
-    `read ${data.toString('utf8')} instead of ${sanity}`);
-}));
+saneEmitter.on(
+  'data',
+  common.mustCall(function(data) {
+    assert.strictEqual(
+      sanity,
+      data.toString('utf8'),
+      `read ${data.toString('utf8')} instead of ${sanity}`
+    );
+  })
+);

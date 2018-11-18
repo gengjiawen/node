@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 
@@ -22,19 +21,27 @@ const server = https.createServer(options, function(req, res) {
   res.end('hello world\n');
 });
 
-server.listen(0, common.mustCall(function() {
-  console.error('listening');
-  https.get({
-    agent: false,
-    path: '/',
-    port: this.address().port,
-    rejectUnauthorized: false
-  }, common.mustCall(function(res) {
-    console.error(res.statusCode, res.headers);
-    res.resume();
-    server.close();
-  })).on('error', function(e) {
-    console.error(e.stack);
-    process.exit(1);
-  });
-}));
+server.listen(
+  0,
+  common.mustCall(function() {
+    console.error('listening');
+    https
+      .get(
+        {
+          agent: false,
+          path: '/',
+          port: this.address().port,
+          rejectUnauthorized: false
+        },
+        common.mustCall(function(res) {
+          console.error(res.statusCode, res.headers);
+          res.resume();
+          server.close();
+        })
+      )
+      .on('error', function(e) {
+        console.error(e.stack);
+        process.exit(1);
+      });
+  })
+);

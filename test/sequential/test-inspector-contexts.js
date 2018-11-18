@@ -19,8 +19,9 @@ function notificationPromise(method) {
 async function testContextCreatedAndDestroyed() {
   console.log('Testing context created/destroyed notifications');
   {
-    const mainContextPromise =
-        notificationPromise('Runtime.executionContextCreated');
+    const mainContextPromise = notificationPromise(
+      'Runtime.executionContextCreated'
+    );
 
     session.post('Runtime.enable');
     const contextCreated = await mainContextPromise;
@@ -39,110 +40,116 @@ async function testContextCreatedAndDestroyed() {
       }
       strictEqual(expects, name);
     }
-    strictEqual(origin, '',
-                JSON.stringify(contextCreated));
-    strictEqual(auxData.isDefault, true,
-                JSON.stringify(contextCreated));
+    strictEqual(origin, '', JSON.stringify(contextCreated));
+    strictEqual(auxData.isDefault, true, JSON.stringify(contextCreated));
   }
 
   {
-    const vmContextCreatedPromise =
-        notificationPromise('Runtime.executionContextCreated');
+    const vmContextCreatedPromise = notificationPromise(
+      'Runtime.executionContextCreated'
+    );
 
     let contextDestroyed = null;
-    session.once('Runtime.executionContextDestroyed',
-                 (notification) => contextDestroyed = notification);
+    session.once(
+      'Runtime.executionContextDestroyed',
+      (notification) => (contextDestroyed = notification)
+    );
 
     runInNewContext('1 + 1');
 
     const contextCreated = await vmContextCreatedPromise;
     const { id, name, origin, auxData } = contextCreated.params.context;
-    strictEqual(name, 'VM Context 1',
-                JSON.stringify(contextCreated));
-    strictEqual(origin, '',
-                JSON.stringify(contextCreated));
-    strictEqual(auxData.isDefault, false,
-                JSON.stringify(contextCreated));
+    strictEqual(name, 'VM Context 1', JSON.stringify(contextCreated));
+    strictEqual(origin, '', JSON.stringify(contextCreated));
+    strictEqual(auxData.isDefault, false, JSON.stringify(contextCreated));
 
     // GC is unpredictable...
-    while (!contextDestroyed)
-      global.gc();
+    while (!contextDestroyed) global.gc();
 
-    strictEqual(contextDestroyed.params.executionContextId, id,
-                JSON.stringify(contextDestroyed));
+    strictEqual(
+      contextDestroyed.params.executionContextId,
+      id,
+      JSON.stringify(contextDestroyed)
+    );
   }
 
   {
-    const vmContextCreatedPromise =
-        notificationPromise('Runtime.executionContextCreated');
+    const vmContextCreatedPromise = notificationPromise(
+      'Runtime.executionContextCreated'
+    );
 
     let contextDestroyed = null;
-    session.once('Runtime.executionContextDestroyed',
-                 (notification) => contextDestroyed = notification);
+    session.once(
+      'Runtime.executionContextDestroyed',
+      (notification) => (contextDestroyed = notification)
+    );
 
-    runInNewContext('1 + 1', {}, {
-      contextName: 'Custom context',
-      contextOrigin: 'https://origin.example'
-    });
+    runInNewContext(
+      '1 + 1',
+      {},
+      {
+        contextName: 'Custom context',
+        contextOrigin: 'https://origin.example'
+      }
+    );
 
     const contextCreated = await vmContextCreatedPromise;
     const { name, origin, auxData } = contextCreated.params.context;
-    strictEqual(name, 'Custom context',
-                JSON.stringify(contextCreated));
-    strictEqual(origin, 'https://origin.example',
-                JSON.stringify(contextCreated));
-    strictEqual(auxData.isDefault, false,
-                JSON.stringify(contextCreated));
+    strictEqual(name, 'Custom context', JSON.stringify(contextCreated));
+    strictEqual(
+      origin,
+      'https://origin.example',
+      JSON.stringify(contextCreated)
+    );
+    strictEqual(auxData.isDefault, false, JSON.stringify(contextCreated));
 
     // GC is unpredictable...
-    while (!contextDestroyed)
-      global.gc();
+    while (!contextDestroyed) global.gc();
   }
 
   {
-    const vmContextCreatedPromise =
-        notificationPromise('Runtime.executionContextCreated');
+    const vmContextCreatedPromise = notificationPromise(
+      'Runtime.executionContextCreated'
+    );
 
     let contextDestroyed = null;
-    session.once('Runtime.executionContextDestroyed',
-                 (notification) => contextDestroyed = notification);
+    session.once(
+      'Runtime.executionContextDestroyed',
+      (notification) => (contextDestroyed = notification)
+    );
 
     createContext({}, { origin: 'https://nodejs.org' });
 
     const contextCreated = await vmContextCreatedPromise;
     const { name, origin, auxData } = contextCreated.params.context;
-    strictEqual(name, 'VM Context 2',
-                JSON.stringify(contextCreated));
-    strictEqual(origin, 'https://nodejs.org',
-                JSON.stringify(contextCreated));
-    strictEqual(auxData.isDefault, false,
-                JSON.stringify(contextCreated));
+    strictEqual(name, 'VM Context 2', JSON.stringify(contextCreated));
+    strictEqual(origin, 'https://nodejs.org', JSON.stringify(contextCreated));
+    strictEqual(auxData.isDefault, false, JSON.stringify(contextCreated));
 
     // GC is unpredictable...
-    while (!contextDestroyed)
-      global.gc();
+    while (!contextDestroyed) global.gc();
   }
 
   {
-    const vmContextCreatedPromise =
-        notificationPromise('Runtime.executionContextCreated');
+    const vmContextCreatedPromise = notificationPromise(
+      'Runtime.executionContextCreated'
+    );
 
     let contextDestroyed = null;
-    session.once('Runtime.executionContextDestroyed',
-                 (notification) => contextDestroyed = notification);
+    session.once(
+      'Runtime.executionContextDestroyed',
+      (notification) => (contextDestroyed = notification)
+    );
 
     createContext({}, { name: 'Custom context 2' });
 
     const contextCreated = await vmContextCreatedPromise;
     const { name, auxData } = contextCreated.params.context;
-    strictEqual(name, 'Custom context 2',
-                JSON.stringify(contextCreated));
-    strictEqual(auxData.isDefault, false,
-                JSON.stringify(contextCreated));
+    strictEqual(name, 'Custom context 2', JSON.stringify(contextCreated));
+    strictEqual(auxData.isDefault, false, JSON.stringify(contextCreated));
 
     // GC is unpredictable...
-    while (!contextDestroyed)
-      global.gc();
+    while (!contextDestroyed) global.gc();
   }
 }
 

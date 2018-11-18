@@ -74,8 +74,7 @@ function test1() {
   const results = [];
   function flow() {
     let chunk;
-    while (null !== (chunk = r.read()))
-      results.push(String(chunk));
+    while (null !== (chunk = r.read())) results.push(String(chunk));
   }
   r.on('readable', flow);
   r.on('end', function() {
@@ -84,7 +83,7 @@ function test1() {
   flow();
 
   process.on('exit', function() {
-    assert.deepStrictEqual(results, [ 'xxxxx', 'xxxxx', 'EOF' ]);
+    assert.deepStrictEqual(results, ['xxxxx', 'xxxxx', 'EOF']);
     console.log('ok');
   });
 }
@@ -93,17 +92,15 @@ function test2() {
   const r = new Readable({ encoding: 'base64' });
   let reads = 5;
   r._read = function(n) {
-    if (!reads--)
-      return r.push(null); // EOF
-    else
-      return r.push(Buffer.from('x'));
+    if (!reads--) return r.push(null);
+    // EOF
+    else return r.push(Buffer.from('x'));
   };
 
   const results = [];
   function flow() {
     let chunk;
-    while (null !== (chunk = r.read()))
-      results.push(String(chunk));
+    while (null !== (chunk = r.read())) results.push(String(chunk));
   }
   r.on('readable', flow);
   r.on('end', function() {
@@ -112,7 +109,7 @@ function test2() {
   flow();
 
   process.on('exit', function() {
-    assert.deepStrictEqual(results, [ 'eHh4', 'eHg=', 'EOF' ]);
+    assert.deepStrictEqual(results, ['eHh4', 'eHg=', 'EOF']);
     console.log('ok');
   });
 }

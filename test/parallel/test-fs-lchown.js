@@ -13,7 +13,8 @@ const { promises } = fs;
 
   common.expectsError(() => fs.lchown(i, 1, 1, common.mustNotCall()), err);
   common.expectsError(() => fs.lchownSync(i, 1, 1), err);
-  promises.lchown(false, 1, 1)
+  promises
+    .lchown(false, 1, 1)
     .then(common.mustNotCall())
     .catch(common.expectsError(err));
 });
@@ -33,11 +34,13 @@ const { promises } = fs;
   common.expectsError(() => fs.lchownSync('not_a_file_that_exists', i, 1), err);
   common.expectsError(() => fs.lchownSync('not_a_file_that_exists', 1, i), err);
 
-  promises.lchown('not_a_file_that_exists', i, 1)
+  promises
+    .lchown('not_a_file_that_exists', i, 1)
     .then(common.mustNotCall())
     .catch(common.expectsError(err));
 
-  promises.lchown('not_a_file_that_exists', 1, i)
+  promises
+    .lchown('not_a_file_that_exists', 1, i)
     .then(common.mustNotCall())
     .catch(common.expectsError(err));
 });
@@ -58,8 +61,13 @@ if (!common.isWindows) {
   tmpdir.refresh();
   fs.copyFileSync(__filename, testFile);
   fs.lchownSync(testFile, uid, gid);
-  fs.lchown(testFile, uid, gid, common.mustCall(async (err) => {
-    assert.ifError(err);
-    await promises.lchown(testFile, uid, gid);
-  }));
+  fs.lchown(
+    testFile,
+    uid,
+    gid,
+    common.mustCall(async (err) => {
+      assert.ifError(err);
+      await promises.lchown(testFile, uid, gid);
+    })
+  );
 }

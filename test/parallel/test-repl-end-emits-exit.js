@@ -71,6 +71,5 @@ process.on('exit', function() {
   assert.strictEqual(regularExit, 1);
 });
 
-
 // start
 testTerminalMode();

@@ -13,7 +13,7 @@ server.listen(0, '127.0.0.1', function() {
   const req = http.request({
     method: 'GET',
     host: '127.0.0.1',
-    port: this.address().port,
+    port: this.address().port
   });
   req.setHeader('foo', 'bar');
   req.flushHeaders();

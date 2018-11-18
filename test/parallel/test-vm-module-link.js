@@ -17,11 +17,13 @@ async function simple() {
 
   assert.deepStrictEqual(bar.dependencySpecifiers, ['foo']);
 
-  await bar.link(common.mustCall((specifier, module) => {
-    assert.strictEqual(module, bar);
-    assert.strictEqual(specifier, 'foo');
-    return foo;
-  }));
+  await bar.link(
+    common.mustCall((specifier, module) => {
+      assert.strictEqual(module, bar);
+      assert.strictEqual(specifier, 'foo');
+      return foo;
+    })
+  );
 
   bar.instantiate();
 
@@ -37,11 +39,13 @@ async function depth() {
       import ${parentName} from '${parentName}';
       export default ${parentName};
     `);
-    await mod.link(common.mustCall((specifier, module) => {
-      assert.strictEqual(module, mod);
-      assert.strictEqual(specifier, parentName);
-      return parentModule;
-    }));
+    await mod.link(
+      common.mustCall((specifier, module) => {
+        assert.strictEqual(module, mod);
+        assert.strictEqual(specifier, parentName);
+        return parentModule;
+      })
+    );
     return mod;
   }
 
@@ -67,18 +71,22 @@ async function circular() {
       return foo;
     }
   `);
-  await foo.link(common.mustCall(async (fooSpecifier, fooModule) => {
-    assert.strictEqual(fooModule, foo);
-    assert.strictEqual(fooSpecifier, 'bar');
-    await bar.link(common.mustCall((barSpecifier, barModule) => {
-      assert.strictEqual(barModule, bar);
-      assert.strictEqual(barSpecifier, 'foo');
-      assert.strictEqual(foo.linkingStatus, 'linking');
-      return foo;
-    }));
-    assert.strictEqual(bar.linkingStatus, 'linked');
-    return bar;
-  }));
+  await foo.link(
+    common.mustCall(async (fooSpecifier, fooModule) => {
+      assert.strictEqual(fooModule, foo);
+      assert.strictEqual(fooSpecifier, 'bar');
+      await bar.link(
+        common.mustCall((barSpecifier, barModule) => {
+          assert.strictEqual(barModule, bar);
+          assert.strictEqual(barSpecifier, 'foo');
+          assert.strictEqual(foo.linkingStatus, 'linking');
+          return foo;
+        })
+      );
+      assert.strictEqual(bar.linkingStatus, 'linked');
+      return bar;
+    })
+  );
 
   foo.instantiate();
   await foo.evaluate();
@@ -87,7 +95,7 @@ async function circular() {
 
 async function circular2() {
   const sourceMap = {
-    'root': `
+    root: `
       import * as a from './a.mjs';
       import * as b from './b.mjs';
       if (!('fromA' in a))
@@ -115,7 +123,7 @@ async function circular2() {
       return moduleMap.get(specifier);
     }
     const mod = new SourceTextModule(sourceMap[specifier], {
-      url: new URL(specifier, 'file:///').href,
+      url: new URL(specifier, 'file:///').href
     });
     moduleMap.set(specifier, mod);
     return mod;

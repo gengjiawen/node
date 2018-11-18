@@ -5,20 +5,19 @@ const http = require('http');
 const Countdown = require('../common/countdown');
 
 const expectedHeadersMultipleWrites = {
-  'connection': 'close',
-  'transfer-encoding': 'chunked',
+  connection: 'close',
+  'transfer-encoding': 'chunked'
 };
 
 const expectedHeadersEndWithData = {
-  'connection': 'close',
+  connection: 'close',
   'content-length': String('hello world'.length)
 };
 
 const expectedHeadersEndNoData = {
-  'connection': 'close',
-  'content-length': '0',
+  connection: 'close',
+  'content-length': '0'
 };
-
 
 const countdown = new Countdown(3, () => server.close());
 
@@ -85,5 +84,4 @@ server.listen(0, function() {
   req.on('response', function(res) {
     assert.deepStrictEqual(res.headers, expectedHeadersEndNoData);
   });
-
 });

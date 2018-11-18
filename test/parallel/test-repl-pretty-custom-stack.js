@@ -5,14 +5,13 @@ const fixtures = require('../common/fixtures');
 const assert = require('assert');
 const repl = require('repl');
 
-
 function run({ command, expected }) {
   let accum = '';
 
   const inputStream = new ArrayStream();
   const outputStream = new ArrayStream();
 
-  outputStream.write = (data) => accum += data.replace('\r', '');
+  outputStream.write = (data) => (accum += data.replace('\r', ''));
 
   const r = repl.start({
     prompt: '',
@@ -29,8 +28,7 @@ function run({ command, expected }) {
 
 const origPrepareStackTrace = Error.prepareStackTrace;
 Error.prepareStackTrace = (err, stack) => {
-  if (err instanceof SyntaxError)
-    return err.toString();
+  if (err instanceof SyntaxError) return err.toString();
   stack.push(err);
   return stack.reverse().join('--->\n');
 };
@@ -46,15 +44,16 @@ const tests = [
   {
     // test .load for a file that throws
     command: `.load ${fixtures.path('repl-pretty-stack.js')}`,
-    expected: 'Error: Whoops!--->\nrepl:9:24--->\nd (repl:12:3)--->\nc ' +
-              '(repl:9:3)--->\nb (repl:6:3)--->\na (repl:3:3)\n'
+    expected:
+      'Error: Whoops!--->\nrepl:9:24--->\nd (repl:12:3)--->\nc ' +
+      '(repl:9:3)--->\nb (repl:6:3)--->\na (repl:3:3)\n'
   },
   {
     command: 'let x y;',
     expected: 'let x y;\n      ^\n\nSyntaxError: Unexpected identifier\n'
   },
   {
-    command: 'throw new Error(\'Whoops!\')',
+    command: "throw new Error('Whoops!')",
     expected: 'Error: Whoops!\n'
   },
   {
@@ -63,7 +62,7 @@ const tests = [
   },
   // test anonymous IIFE
   {
-    command: '(function() { throw new Error(\'Whoops!\'); })()',
+    command: "(function() { throw new Error('Whoops!'); })()",
     expected: 'Error: Whoops!--->\nrepl:1:21\n'
   }
 ];

@@ -37,12 +37,8 @@ deflater.on('drain', function() {
 });
 
 process.once('exit', function() {
-  assert.strictEqual(
-    beforeFlush, true);
-  assert.strictEqual(
-    afterFlush, false);
-  assert.strictEqual(
-    drainCount, 1);
-  assert.strictEqual(
-    flushCount, 1);
+  assert.strictEqual(beforeFlush, true);
+  assert.strictEqual(afterFlush, false);
+  assert.strictEqual(drainCount, 1);
+  assert.strictEqual(flushCount, 1);
 });

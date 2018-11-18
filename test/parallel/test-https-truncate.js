@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const fixtures = require('../common/fixtures');
@@ -54,12 +53,14 @@ function httpsTest() {
   });
 }
 
-
 const test = common.mustCall(function(res) {
-  res.on('end', common.mustCall(function() {
-    assert.strictEqual(res.readableLength, 0);
-    assert.strictEqual(bytes, data.length);
-  }));
+  res.on(
+    'end',
+    common.mustCall(function() {
+      assert.strictEqual(res.readableLength, 0);
+      assert.strictEqual(bytes, data.length);
+    })
+  );
 
   // Pause and then resume on each chunk, to ensure that there will be
   // a lone byte hanging out at the very end.
@@ -67,6 +68,8 @@ const test = common.mustCall(function(res) {
   res.on('data', function(chunk) {
     bytes += chunk.length;
     this.pause();
-    setTimeout(() => { this.resume(); }, 1);
+    setTimeout(() => {
+      this.resume();
+    }, 1);
   });
 });

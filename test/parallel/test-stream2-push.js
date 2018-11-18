@@ -26,7 +26,6 @@ const { Readable, Writable } = require('stream');
 
 const EE = require('events').EventEmitter;
 
-
 // a mock thing a bit like the net.Socket/tcp_wrap.handle interaction
 
 const stream = new Readable({
@@ -49,8 +48,7 @@ stream.on('end', function() {
 source.on('data', function(chunk) {
   const ret = stream.push(chunk);
   console.error('data', stream.readableLength);
-  if (!ret)
-    readStop();
+  if (!ret) readStop();
 });
 
 source.on('end', function() {
@@ -69,8 +67,7 @@ function readStop() {
   reading = false;
   process.nextTick(function() {
     const r = stream.read();
-    if (r !== null)
-      writer.write(r);
+    if (r !== null) writer.write(r);
   });
 }
 
@@ -80,13 +77,14 @@ const writer = new Writable({
 
 const written = [];
 
-const expectWritten =
-  [ 'asdfgasdfgasdfgasdfg',
-    'asdfgasdfgasdfgasdfg',
-    'asdfgasdfgasdfgasdfg',
-    'asdfgasdfgasdfgasdfg',
-    'asdfgasdfgasdfgasdfg',
-    'asdfgasdfgasdfgasdfg' ];
+const expectWritten = [
+  'asdfgasdfgasdfgasdfg',
+  'asdfgasdfgasdfgasdfg',
+  'asdfgasdfgasdfgasdfg',
+  'asdfgasdfgasdfgasdfg',
+  'asdfgasdfgasdfgasdfg',
+  'asdfgasdfgasdfgasdfg'
+];
 
 writer._write = function(chunk, encoding, cb) {
   console.error(`WRITE ${chunk}`);
@@ -95,7 +93,6 @@ writer._write = function(chunk, encoding, cb) {
 };
 
 writer.on('finish', finish);
-
 
 // now emit some chunks.
 
@@ -114,10 +111,8 @@ function data() {
   assert(reading);
   source.emit('data', chunk);
   assert(!reading);
-  if (set++ < 5)
-    setTimeout(data, 10);
-  else
-    end();
+  if (set++ < 5) setTimeout(data, 10);
+  else end();
 }
 
 function finish() {

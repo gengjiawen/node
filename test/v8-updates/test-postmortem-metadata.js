@@ -11,15 +11,12 @@ const { getSharedLibPath } = require('../common/shared-lib-util.js');
 
 // For shared lib case, check shared lib instead
 const args = [
-  process.config.variables.node_shared ?
-    getSharedLibPath() : process.execPath
+  process.config.variables.node_shared ? getSharedLibPath() : process.execPath
 ];
 
-if (common.isAIX)
-  args.unshift('-Xany', '-B');
+if (common.isAIX) args.unshift('-Xany', '-B');
 
-if (common.isOpenBSD)
-  common.skip('no v8 debug symbols on OpenBSD');
+if (common.isOpenBSD) common.skip('no v8 debug symbols on OpenBSD');
 
 const nm = spawnSync('nm', args);
 
@@ -32,15 +29,17 @@ if (stderr.length > 0) {
 }
 
 const symbolRe = /\s_?(v8dbg_.+)$/;
-const symbols = nm.stdout.toString().split('\n').reduce((filtered, line) => {
-  const match = line.match(symbolRe);
-  const symbol = match && match[1];
+const symbols = nm.stdout
+  .toString()
+  .split('\n')
+  .reduce((filtered, line) => {
+    const match = line.match(symbolRe);
+    const symbol = match && match[1];
 
-  if (symbol)
-    filtered.push(symbol);
+    if (symbol) filtered.push(symbol);
 
-  return filtered;
-}, []);
+    return filtered;
+  }, []);
 const missing = getExpectedSymbols().filter((symbol) => {
   return !symbols.includes(symbol);
 });
@@ -190,6 +189,6 @@ function getExpectedSymbols() {
     'v8dbg_StringEncodingMask',
     'v8dbg_StringRepresentationMask',
     'v8dbg_ThinStringTag',
-    'v8dbg_TwoByteStringTag',
+    'v8dbg_TwoByteStringTag'
   ];
 }

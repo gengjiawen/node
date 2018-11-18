@@ -40,25 +40,32 @@ class State {
   // Validate the v8 heap snapshot
   validateSnapshot(rootName, expected, { loose = false } = {}) {
     const rootNodes = this.snapshot.filter(
-      (node) => node.name === rootName && node.type !== 'string');
+      (node) => node.name === rootName && node.type !== 'string'
+    );
     if (loose) {
-      assert(rootNodes.length >= expected.length,
-             `Expect to find at least ${expected.length} '${rootName}', ` +
-             `found ${rootNodes.length}`);
+      assert(
+        rootNodes.length >= expected.length,
+        `Expect to find at least ${expected.length} '${rootName}', ` +
+          `found ${rootNodes.length}`
+      );
     } else {
       assert.strictEqual(
-        rootNodes.length, expected.length,
+        rootNodes.length,
+        expected.length,
         `Expect to find ${expected.length} '${rootName}', ` +
-        `found ${rootNodes.length}`);
+          `found ${rootNodes.length}`
+      );
     }
 
     for (const expectation of expected) {
       if (expectation.children) {
         for (const expectedEdge of expectation.children) {
-          const check = typeof expectedEdge === 'function' ? expectedEdge :
-            (edge) => (isEdge(edge, expectedEdge));
-          const hasChild = rootNodes.some(
-            (node) => node.outgoingEdges.some(check)
+          const check =
+            typeof expectedEdge === 'function'
+              ? expectedEdge
+              : (edge) => isEdge(edge, expectedEdge);
+          const hasChild = rootNodes.some((node) =>
+            node.outgoingEdges.some(check)
           );
           // Don't use assert with a custom message here. Otherwise the
           // inspection in the message is done eagerly and wastes a lot of CPU
@@ -66,7 +73,8 @@ class State {
           if (!hasChild) {
             throw new Error(
               'expected to find child ' +
-              `${util.inspect(expectedEdge)} in ${inspectNode(rootNodes)}`);
+                `${util.inspect(expectedEdge)} in ${inspectNode(rootNodes)}`
+            );
           }
         }
       }
@@ -79,30 +87,35 @@ class State {
       (node) => node.name === rootName
     );
     if (loose) {
-      assert(rootNodes.length >= expected.length,
-             `Expect to find at least ${expected.length} '${rootName}', ` +
-             `found ${rootNodes.length}`);
+      assert(
+        rootNodes.length >= expected.length,
+        `Expect to find at least ${expected.length} '${rootName}', ` +
+          `found ${rootNodes.length}`
+      );
     } else {
       assert.strictEqual(
-        rootNodes.length, expected.length,
+        rootNodes.length,
+        expected.length,
         `Expect to find ${expected.length} '${rootName}', ` +
-        `found ${rootNodes.length}`);
+          `found ${rootNodes.length}`
+      );
     }
     for (const expectation of expected) {
       if (expectation.children) {
         for (const expectedEdge of expectation.children) {
-          const check = typeof expectedEdge === 'function' ? expectedEdge :
-            (edge) => (isEdge(edge, expectedEdge));
+          const check =
+            typeof expectedEdge === 'function'
+              ? expectedEdge
+              : (edge) => isEdge(edge, expectedEdge);
           // Don't use assert with a custom message here. Otherwise the
           // inspection in the message is done eagerly and wastes a lot of CPU
           // time.
-          const hasChild = rootNodes.some(
-            (node) => node.edges.some(check)
-          );
+          const hasChild = rootNodes.some((node) => node.edges.some(check));
           if (!hasChild) {
             throw new Error(
               'expected to find child ' +
-              `${util.inspect(expectedEdge)} in ${inspectNode(rootNodes)}`);
+                `${util.inspect(expectedEdge)} in ${inspectNode(rootNodes)}`
+            );
           }
         }
       }

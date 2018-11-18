@@ -9,32 +9,40 @@ const Countdown = require('../common/countdown');
 const N = 2;
 let abortRequest = true;
 
-const server = http.Server(common.mustCall((req, res) => {
-  const headers = { 'Content-Type': 'text/plain' };
-  headers['Content-Length'] = 50;
-  const socket = res.socket;
-  res.writeHead(200, headers);
-  res.write('aaaaaaaaaabbbbbbbbbbccccccccccdddddddddd');
-  if (abortRequest) {
-    process.nextTick(() => socket.destroy());
-  } else {
-    process.nextTick(() => res.end('eeeeeeeeee'));
-  }
-}, N));
+const server = http.Server(
+  common.mustCall((req, res) => {
+    const headers = { 'Content-Type': 'text/plain' };
+    headers['Content-Length'] = 50;
+    const socket = res.socket;
+    res.writeHead(200, headers);
+    res.write('aaaaaaaaaabbbbbbbbbbccccccccccdddddddddd');
+    if (abortRequest) {
+      process.nextTick(() => socket.destroy());
+    } else {
+      process.nextTick(() => res.end('eeeeeeeeee'));
+    }
+  }, N)
+);
 
-server.listen(0, common.mustCall(() => {
-  download();
-}));
+server.listen(
+  0,
+  common.mustCall(() => {
+    download();
+  })
+);
 
-const finishCountdown = new Countdown(N, common.mustCall(() => {
-  server.close();
-}));
+const finishCountdown = new Countdown(
+  N,
+  common.mustCall(() => {
+    server.close();
+  })
+);
 const reqCountdown = new Countdown(N, common.mustCall());
 
 function download() {
   const opts = {
     port: server.address().port,
-    path: '/',
+    path: '/'
   };
   const req = http.get(opts);
   req.on('error', common.mustNotCall());
@@ -56,9 +64,12 @@ function download() {
       if (res.complete) res.readable = true;
       callback();
     };
-    res.on('end', common.mustCall(() => {
-      reqCountdown.dec();
-    }));
+    res.on(
+      'end',
+      common.mustCall(() => {
+        reqCountdown.dec();
+      })
+    );
     res.on('aborted', () => {
       aborted = true;
     });

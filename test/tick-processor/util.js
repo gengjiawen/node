@@ -10,9 +10,6 @@ const {
 } = require('../common');
 
 module.exports = {
-  isCPPSymbolsNotMapped: isWindows ||
-                         isSunOS ||
-                         isAIX ||
-                         isLinuxPPCBE ||
-                         isFreeBSD
+  isCPPSymbolsNotMapped:
+    isWindows || isSunOS || isAIX || isLinuxPPCBE || isFreeBSD
 };

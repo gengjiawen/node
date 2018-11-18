@@ -13,22 +13,28 @@ const wrap = (fn, ioStream, string) => {
       fn.call(ioStream);
     } catch (e) {
       // EINVAL happens on SmartOS if emulation is incomplete
-      if (!common.isSunOS || e.code !== 'EINVAL')
-        throw e;
+      if (!common.isSunOS || e.code !== 'EINVAL') throw e;
     }
   });
   return wrapped;
 };
 
-process.stderr._refreshSize = wrap(originalRefreshSizeStderr,
-                                   process.stderr,
-                                   'calling stderr._refreshSize');
-process.stdout._refreshSize = wrap(originalRefreshSizeStdout,
-                                   process.stdout,
-                                   'calling stdout._refreshSize');
+process.stderr._refreshSize = wrap(
+  originalRefreshSizeStderr,
+  process.stderr,
+  'calling stderr._refreshSize'
+);
+process.stdout._refreshSize = wrap(
+  originalRefreshSizeStdout,
+  process.stdout,
+  'calling stdout._refreshSize'
+);
 
 // In AIX, the child exits even before the python parent
 // can setup the readloop. Provide a reasonable delay.
-setTimeout(function() {
-  process.emit('SIGWINCH');
-}, common.isAIX ? 200 : 0);
+setTimeout(
+  function() {
+    process.emit('SIGWINCH');
+  },
+  common.isAIX ? 200 : 0
+);

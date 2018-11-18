@@ -23,11 +23,9 @@
 
 const common = require('../common');
 
-if (!common.opensslCli)
-  common.skip('node compiled without OpenSSL CLI.');
+if (!common.opensslCli) common.skip('node compiled without OpenSSL CLI.');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const net = require('net');
 const assert = require('assert');
@@ -46,10 +44,14 @@ function test1() {
 function test2() {
   function check(pair) {
     // "TLS Web Client Authentication"
-    assert.strictEqual(pair.cleartext.getPeerCertificate().ext_key_usage.length,
-                       1);
-    assert.strictEqual(pair.cleartext.getPeerCertificate().ext_key_usage[0],
-                       '1.3.6.1.5.5.7.3.2');
+    assert.strictEqual(
+      pair.cleartext.getPeerCertificate().ext_key_usage.length,
+      1
+    );
+    assert.strictEqual(
+      pair.cleartext.getPeerCertificate().ext_key_usage[0],
+      '1.3.6.1.5.5.7.3.2'
+    );
   }
   test('keys/agent4-key.pem', 'keys/agent4-cert.pem', check);
 }
@@ -58,13 +60,17 @@ function test(keyfn, certfn, check, next) {
   const key = fixtures.readSync(keyfn).toString();
   const cert = fixtures.readSync(certfn).toString();
 
-  const server = spawn(common.opensslCli, ['s_server',
-                                           '-accept', common.PORT,
-                                           '-cert', certfn,
-                                           '-key', keyfn]);
+  const server = spawn(common.opensslCli, [
+    's_server',
+    '-accept',
+    common.PORT,
+    '-cert',
+    certfn,
+    '-key',
+    keyfn
+  ]);
   server.stdout.pipe(process.stdout);
   server.stderr.pipe(process.stdout);
-
 
   let state = 'WAIT-ACCEPT';
 
@@ -84,7 +90,6 @@ function test(keyfn, certfn, check, next) {
 
       case 'WAIT-HELLO':
         if (/hello/.test(serverStdoutBuffer)) {
-
           // End the current SSL connection and exit.
           // See s_server(1ssl).
           server.stdin.write('Q');
@@ -97,7 +102,6 @@ function test(keyfn, certfn, check, next) {
         break;
     }
   });
-
 
   const timeout = setTimeout(function() {
     server.kill();
@@ -112,7 +116,6 @@ function test(keyfn, certfn, check, next) {
     clearTimeout(timeout);
     if (next) next();
   });
-
 
   function startClient() {
     const s = new net.Stream();
@@ -136,10 +139,14 @@ function test(keyfn, certfn, check, next) {
 
     pair.on('secure', function() {
       console.log('client: connected+secure!');
-      console.log('client pair.cleartext.getPeerCertificate(): %j',
-                  pair.cleartext.getPeerCertificate());
-      console.log('client pair.cleartext.getCipher(): %j',
-                  pair.cleartext.getCipher());
+      console.log(
+        'client pair.cleartext.getPeerCertificate(): %j',
+        pair.cleartext.getPeerCertificate()
+      );
+      console.log(
+        'client pair.cleartext.getCipher(): %j',
+        pair.cleartext.getCipher()
+      );
       if (check) check(pair);
       setTimeout(function() {
         pair.cleartext.write('hello\r\n', function() {
@@ -168,7 +175,6 @@ function test(keyfn, certfn, check, next) {
       console.log(`secure error: ${err}`);
     });
   }
-
 
   process.on('exit', function() {
     assert.strictEqual(serverExitCode, 0);

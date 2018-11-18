@@ -15,7 +15,8 @@ tmpdir.refresh();
 
 function test(size, useBuffer, cb) {
   const cmd = `"${process.argv[0]}" "${
-    useBuffer ? scriptBuffer : scriptString}" ${size} > "${tmpFile}"`;
+    useBuffer ? scriptBuffer : scriptString
+  }" ${size} > "${tmpFile}"`;
 
   try {
     fs.unlinkSync(tmpFile);
@@ -23,24 +24,35 @@ function test(size, useBuffer, cb) {
 
   console.log(`${size} chars to ${tmpFile}...`);
 
-  childProcess.exec(cmd, common.mustCall(function(err) {
-    assert.ifError(err);
-    console.log('done!');
+  childProcess.exec(
+    cmd,
+    common.mustCall(function(err) {
+      assert.ifError(err);
+      console.log('done!');
 
-    const stat = fs.statSync(tmpFile);
+      const stat = fs.statSync(tmpFile);
 
-    console.log(`${tmpFile} has ${stat.size} bytes`);
+      console.log(`${tmpFile} has ${stat.size} bytes`);
 
-    assert.strictEqual(size, stat.size);
-    fs.unlinkSync(tmpFile);
+      assert.strictEqual(size, stat.size);
+      fs.unlinkSync(tmpFile);
 
-    cb();
-  }));
+      cb();
+    })
+  );
 }
 
-test(1024 * 1024, false, common.mustCall(function() {
-  console.log('Done printing with string');
-  test(1024 * 1024, true, common.mustCall(function() {
-    console.log('Done printing with buffer');
-  }));
-}));
+test(
+  1024 * 1024,
+  false,
+  common.mustCall(function() {
+    console.log('Done printing with string');
+    test(
+      1024 * 1024,
+      true,
+      common.mustCall(function() {
+        console.log('Done printing with buffer');
+      })
+    );
+  })
+);

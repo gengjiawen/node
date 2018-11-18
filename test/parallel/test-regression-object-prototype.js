@@ -22,7 +22,6 @@
 /* eslint-disable node-core/required-modules */
 'use strict';
 
-Object.prototype.xadsadsdasasdxx = function() {
-};
+Object.prototype.xadsadsdasasdxx = function() {};
 
 console.log('puts after');

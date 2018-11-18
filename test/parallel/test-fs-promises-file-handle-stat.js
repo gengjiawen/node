@@ -19,5 +19,4 @@ async function validateStat() {
   assert.ok(stats.mtime instanceof Date);
 }
 
-validateStat()
-  .then(common.mustCall());
+validateStat().then(common.mustCall());

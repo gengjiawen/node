@@ -10,8 +10,7 @@
 
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 if (process.argv[2] === 'child') {
   const fixtures = require('../common/fixtures');
@@ -44,7 +43,9 @@ if (process.argv[2] === 'child') {
     c.on('data', d.push.bind(d));
 
     const options = { key, cert };
-    const fail = () => { throw new Error('eyecatcher'); };
+    const fail = () => {
+      throw new Error('eyecatcher');
+    };
     tls.createServer(options, mustCall(fail)).emit('connection', d);
   }
 } else {

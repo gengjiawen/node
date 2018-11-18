@@ -9,8 +9,9 @@ const rule = require('../../tools/eslint-rules/no-let-in-for-declaration');
 
 const ruleTester = new RuleTester({ parserOptions: { ecmaVersion: 6 } });
 
-const message = 'Use of `let` as the loop variable in a for-loop is ' +
-                'not recommended. Please use `var` instead.';
+const message =
+  'Use of `let` as the loop variable in a for-loop is ' +
+  'not recommended. Please use `var` instead.';
 
 ruleTester.run('no-let-in-for-declaration', rule, {
   valid: [

@@ -14,23 +14,28 @@ const { stringToFlags } = require('internal/fs/utils');
 let fdnum;
 {
   const ctx = {};
-  fdnum = fs.openFileHandle(path.toNamespacedPath(__filename),
-                            stringToFlags('r'), 0o666, undefined, ctx).fd;
+  fdnum = fs.openFileHandle(
+    path.toNamespacedPath(__filename),
+    stringToFlags('r'),
+    0o666,
+    undefined,
+    ctx
+  ).fd;
   assert.strictEqual(ctx.errno, undefined);
 }
 
 common.expectWarning({
   'internal/test/binding': [
     'These APIs are exposed only for testing ' +
-    'and are not tracked by any versioning system or deprecation process.',
+      'and are not tracked by any versioning system or deprecation process.',
     common.noWarnCode
   ],
-  'Warning': [
+  Warning: [
     `Closing file descriptor ${fdnum} on garbage collection`,
     common.noWarnCode
   ]
 });
 
-gc();  // eslint-disable-line no-undef
+gc(); // eslint-disable-line no-undef
 
 setTimeout(() => {}, 10);

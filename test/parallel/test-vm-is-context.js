@@ -24,15 +24,16 @@ const common = require('../common');
 const assert = require('assert');
 const vm = require('vm');
 
-for (const valToTest of [
-  'string', null, undefined, 8.9, Symbol('sym'), true
-]) {
-  common.expectsError(() => {
-    vm.isContext(valToTest);
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError
-  });
+for (const valToTest of ['string', null, undefined, 8.9, Symbol('sym'), true]) {
+  common.expectsError(
+    () => {
+      vm.isContext(valToTest);
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError
+    }
+  );
 }
 
 assert.strictEqual(vm.isContext({}), false);

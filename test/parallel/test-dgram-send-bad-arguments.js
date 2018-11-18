@@ -30,38 +30,53 @@ const sock = dgram.createSocket('udp4');
 
 // First argument should be a buffer.
 common.expectsError(
-  () => { sock.send(); },
+  () => {
+    sock.send();
+  },
   {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError,
-    message: 'The "buffer" argument must be one of type ' +
-    'Buffer, Uint8Array, or string. Received type undefined'
+    message:
+      'The "buffer" argument must be one of type ' +
+      'Buffer, Uint8Array, or string. Received type undefined'
   }
 );
 
 // send(buf, offset, length, port, host)
-assert.throws(() => { sock.send(buf, 1, 1, -1, host); }, RangeError);
-assert.throws(() => { sock.send(buf, 1, 1, 0, host); }, RangeError);
-assert.throws(() => { sock.send(buf, 1, 1, 65536, host); }, RangeError);
+assert.throws(() => {
+  sock.send(buf, 1, 1, -1, host);
+}, RangeError);
+assert.throws(() => {
+  sock.send(buf, 1, 1, 0, host);
+}, RangeError);
+assert.throws(() => {
+  sock.send(buf, 1, 1, 65536, host);
+}, RangeError);
 
 // send(buf, port, host)
 common.expectsError(
-  () => { sock.send(23, 12345, host); },
+  () => {
+    sock.send(23, 12345, host);
+  },
   {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError,
-    message: 'The "buffer" argument must be one of type ' +
-    'Buffer, Uint8Array, or string. Received type number'
+    message:
+      'The "buffer" argument must be one of type ' +
+      'Buffer, Uint8Array, or string. Received type number'
   }
 );
 
 // send([buf1, ..], port, host)
 common.expectsError(
-  () => { sock.send([buf, 23], 12345, host); },
+  () => {
+    sock.send([buf, 23], 12345, host);
+  },
   {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError,
-    message: 'The "buffer list arguments" argument must be one of type ' +
-    'Buffer or string. Received type object'
+    message:
+      'The "buffer list arguments" argument must be one of type ' +
+      'Buffer or string. Received type object'
   }
 );

@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const fixtures = require('../common/fixtures');
 
 const assert = require('assert');
@@ -18,9 +17,9 @@ function loadDHParam(n) {
 }
 
 const cipherlist = {
-  'NOT_PFS': 'AES128-SHA256',
-  'DH': 'DHE-RSA-AES128-GCM-SHA256',
-  'ECDH': 'ECDHE-RSA-AES128-GCM-SHA256'
+  NOT_PFS: 'AES128-SHA256',
+  DH: 'DHE-RSA-AES128-GCM-SHA256',
+  ECDH: 'ECDHE-RSA-AES128-GCM-SHA256'
 };
 
 function test(size, type, name, next) {
@@ -41,24 +40,34 @@ function test(size, type, name, next) {
     conn.end();
   });
 
-  server.on('close', common.mustCall(function(err) {
-    assert.ifError(err);
-    if (next) next();
-  }));
+  server.on(
+    'close',
+    common.mustCall(function(err) {
+      assert.ifError(err);
+      if (next) next();
+    })
+  );
 
-  server.listen(0, '127.0.0.1', common.mustCall(function() {
-    const client = tls.connect({
-      port: this.address().port,
-      rejectUnauthorized: false
-    }, function() {
-      const ekeyinfo = client.getEphemeralKeyInfo();
-      assert.strictEqual(ekeyinfo.type, type);
-      assert.strictEqual(ekeyinfo.size, size);
-      assert.strictEqual(ekeyinfo.name, name);
-      nsuccess++;
-      server.close();
-    });
-  }));
+  server.listen(
+    0,
+    '127.0.0.1',
+    common.mustCall(function() {
+      const client = tls.connect(
+        {
+          port: this.address().port,
+          rejectUnauthorized: false
+        },
+        function() {
+          const ekeyinfo = client.getEphemeralKeyInfo();
+          assert.strictEqual(ekeyinfo.type, type);
+          assert.strictEqual(ekeyinfo.size, size);
+          assert.strictEqual(ekeyinfo.name, name);
+          nsuccess++;
+          server.close();
+        }
+      );
+    })
+  );
 }
 
 function testNOT_PFS() {

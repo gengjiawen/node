@@ -68,10 +68,11 @@ if (process.env.FAST) {
 }
 
 const tests = {};
-testFiles.forEach(common.mustCall((file) => {
-  tests[file] = fixtures.readSync(file);
-}, testFiles.length));
-
+testFiles.forEach(
+  common.mustCall((file) => {
+    tests[file] = fixtures.readSync(file);
+  }, testFiles.length)
+);
 
 // stream that saves everything
 class BufferStream extends stream.Stream {
@@ -166,11 +167,16 @@ zlib.createDeflateRaw({ windowBits: 8 });
   // that does not know about the silent 8-to-9 upgrade of windowBits
   // that most versions of zlib/Node perform, and which *still* results in
   // a valid 8-bit-window zlib stream.
-  node.pipe(zlib.createDeflateRaw({ windowBits: 9 }))
-      .pipe(zlib.createInflateRaw({ windowBits: 8 }))
-      .on('data', (chunk) => reinflated.push(chunk))
-      .on('end', common.mustCall(
-        () => assert(Buffer.concat(raw).equals(Buffer.concat(reinflated)))));
+  node
+    .pipe(zlib.createDeflateRaw({ windowBits: 9 }))
+    .pipe(zlib.createInflateRaw({ windowBits: 8 }))
+    .on('data', (chunk) => reinflated.push(chunk))
+    .on(
+      'end',
+      common.mustCall(() =>
+        assert(Buffer.concat(raw).equals(Buffer.concat(reinflated)))
+      )
+    );
 }
 
 // for each of the files, make sure that compressing and
@@ -178,45 +184,76 @@ zlib.createDeflateRaw({ windowBits: 8 });
 // of the options set above.
 
 const testKeys = Object.keys(tests);
-testKeys.forEach(common.mustCall((file) => {
-  const test = tests[file];
-  chunkSize.forEach(common.mustCall((chunkSize) => {
-    trickle.forEach(common.mustCall((trickle) => {
-      windowBits.forEach(common.mustCall((windowBits) => {
-        level.forEach(common.mustCall((level) => {
-          memLevel.forEach(common.mustCall((memLevel) => {
-            strategy.forEach(common.mustCall((strategy) => {
-              zlibPairs.forEach(common.mustCall((pair) => {
-                const Def = pair[0];
-                const Inf = pair[1];
-                const opts = { level, windowBits, memLevel, strategy };
+testKeys.forEach(
+  common.mustCall((file) => {
+    const test = tests[file];
+    chunkSize.forEach(
+      common.mustCall((chunkSize) => {
+        trickle.forEach(
+          common.mustCall((trickle) => {
+            windowBits.forEach(
+              common.mustCall((windowBits) => {
+                level.forEach(
+                  common.mustCall((level) => {
+                    memLevel.forEach(
+                      common.mustCall((memLevel) => {
+                        strategy.forEach(
+                          common.mustCall((strategy) => {
+                            zlibPairs.forEach(
+                              common.mustCall((pair) => {
+                                const Def = pair[0];
+                                const Inf = pair[1];
+                                const opts = {
+                                  level,
+                                  windowBits,
+                                  memLevel,
+                                  strategy
+                                };
 
-                const def = new Def(opts);
-                const inf = new Inf(opts);
-                const ss = new SlowStream(trickle);
-                const buf = new BufferStream();
+                                const def = new Def(opts);
+                                const inf = new Inf(opts);
+                                const ss = new SlowStream(trickle);
+                                const buf = new BufferStream();
 
-                // verify that the same exact buffer comes out the other end.
-                buf.on('data', common.mustCall((c) => {
-                  const msg = `${file} ${chunkSize} ${
-                    JSON.stringify(opts)} ${Def.name} -> ${Inf.name}`;
-                  let i;
-                  for (i = 0; i < Math.max(c.length, test.length); i++) {
-                    if (c[i] !== test[i]) {
-                      assert.fail(msg);
-                      break;
-                    }
-                  }
-                }));
+                                // verify that the same exact buffer comes out the other end.
+                                buf.on(
+                                  'data',
+                                  common.mustCall((c) => {
+                                    const msg = `${file} ${chunkSize} ${JSON.stringify(
+                                      opts
+                                    )} ${Def.name} -> ${Inf.name}`;
+                                    let i;
+                                    for (
+                                      i = 0;
+                                      i < Math.max(c.length, test.length);
+                                      i++
+                                    ) {
+                                      if (c[i] !== test[i]) {
+                                        assert.fail(msg);
+                                        break;
+                                      }
+                                    }
+                                  })
+                                );
 
-                // the magic happens here.
-                ss.pipe(def).pipe(inf).pipe(buf);
-                ss.end(test);
-              }, zlibPairs.length));
-            }, strategy.length));
-          }, memLevel.length));
-        }, level.length));
-      }, windowBits.length));
-    }, trickle.length));
-  }, chunkSize.length));
-}, testKeys.length));
+                                // the magic happens here.
+                                ss.pipe(def)
+                                  .pipe(inf)
+                                  .pipe(buf);
+                                ss.end(test);
+                              }, zlibPairs.length)
+                            );
+                          }, strategy.length)
+                        );
+                      }, memLevel.length)
+                    );
+                  }, level.length)
+                );
+              }, windowBits.length)
+            );
+          }, trickle.length)
+        );
+      }, chunkSize.length)
+    );
+  }, testKeys.length)
+);

@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 (() => {
   // These regular expressions use the sticky flag so they will only match at
@@ -6,125 +6,121 @@
   const tokenRe = {
     // This expression uses a lookahead assertion to catch false matches
     // against integers early.
-    "float": /-?(?=[0-9]*\.|[0-9]+[eE])(([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([Ee][-+]?[0-9]+)?|[0-9]+[Ee][-+]?[0-9]+)/y,
-    "integer": /-?(0([Xx][0-9A-Fa-f]+|[0-7]*)|[1-9][0-9]*)/y,
-    "identifier": /_?[A-Za-z][0-9A-Z_a-z-]*/y,
-    "string": /"[^"]*"/y,
-    "whitespace": /[\t\n\r ]+/y,
-    "comment": /((\/(\/.*|\*([^*]|\*[^\/])*\*\/)[\t\n\r ]*)+)/y,
-    "other": /[^\t\n\r 0-9A-Za-z]/y
+    float: /-?(?=[0-9]*\.|[0-9]+[eE])(([0-9]+\.[0-9]*|[0-9]*\.[0-9]+)([Ee][-+]?[0-9]+)?|[0-9]+[Ee][-+]?[0-9]+)/y,
+    integer: /-?(0([Xx][0-9A-Fa-f]+|[0-7]*)|[1-9][0-9]*)/y,
+    identifier: /_?[A-Za-z][0-9A-Z_a-z-]*/y,
+    string: /"[^"]*"/y,
+    whitespace: /[\t\n\r ]+/y,
+    comment: /((\/(\/.*|\*([^*]|\*[^\/])*\*\/)[\t\n\r ]*)+)/y,
+    other: /[^\t\n\r 0-9A-Za-z]/y
   };
 
-  const stringTypes = [
-    "ByteString",
-    "DOMString",
-    "USVString"
-  ];
+  const stringTypes = ['ByteString', 'DOMString', 'USVString'];
 
   const argumentNameKeywords = [
-    "attribute",
-    "callback",
-    "const",
-    "deleter",
-    "dictionary",
-    "enum",
-    "getter",
-    "includes",
-    "inherit",
-    "interface",
-    "iterable",
-    "maplike",
-    "namespace",
-    "partial",
-    "required",
-    "setlike",
-    "setter",
-    "static",
-    "stringifier",
-    "typedef",
-    "unrestricted"
+    'attribute',
+    'callback',
+    'const',
+    'deleter',
+    'dictionary',
+    'enum',
+    'getter',
+    'includes',
+    'inherit',
+    'interface',
+    'iterable',
+    'maplike',
+    'namespace',
+    'partial',
+    'required',
+    'setlike',
+    'setter',
+    'static',
+    'stringifier',
+    'typedef',
+    'unrestricted'
   ];
 
   const nonRegexTerminals = [
-    "FrozenArray",
-    "Infinity",
-    "NaN",
-    "Promise",
-    "boolean",
-    "byte",
-    "double",
-    "false",
-    "float",
-    "implements",
-    "legacyiterable",
-    "long",
-    "mixin",
-    "null",
-    "octet",
-    "optional",
-    "or",
-    "readonly",
-    "record",
-    "sequence",
-    "short",
-    "true",
-    "unsigned",
-    "void"
+    'FrozenArray',
+    'Infinity',
+    'NaN',
+    'Promise',
+    'boolean',
+    'byte',
+    'double',
+    'false',
+    'float',
+    'implements',
+    'legacyiterable',
+    'long',
+    'mixin',
+    'null',
+    'octet',
+    'optional',
+    'or',
+    'readonly',
+    'record',
+    'sequence',
+    'short',
+    'true',
+    'unsigned',
+    'void'
   ].concat(argumentNameKeywords, stringTypes);
 
   const punctuations = [
-    "(",
-    ")",
-    ",",
-    "-Infinity",
-    "...",
-    ":",
-    ";",
-    "<",
-    "=",
-    ">",
-    "?",
-    "[",
-    "]",
-    "{",
-    "}"
+    '(',
+    ')',
+    ',',
+    '-Infinity',
+    '...',
+    ':',
+    ';',
+    '<',
+    '=',
+    '>',
+    '?',
+    '[',
+    ']',
+    '{',
+    '}'
   ];
 
   function tokenise(str) {
     const tokens = [];
     let lastIndex = 0;
-    let trivia = "";
+    let trivia = '';
     while (lastIndex < str.length) {
       const nextChar = str.charAt(lastIndex);
       let result = -1;
 
       if (/[\t\n\r ]/.test(nextChar)) {
-        result = attemptTokenMatch("whitespace", { noFlushTrivia: true });
+        result = attemptTokenMatch('whitespace', { noFlushTrivia: true });
       } else if (nextChar === '/') {
-        result = attemptTokenMatch("comment", { noFlushTrivia: true });
+        result = attemptTokenMatch('comment', { noFlushTrivia: true });
       }
 
       if (result !== -1) {
         trivia += tokens.pop().value;
       } else if (/[-0-9.]/.test(nextChar)) {
-        result = attemptTokenMatch("float");
+        result = attemptTokenMatch('float');
         if (result === -1) {
-          result = attemptTokenMatch("integer");
+          result = attemptTokenMatch('integer');
         }
       } else if (/[A-Z_a-z]/.test(nextChar)) {
-        result = attemptTokenMatch("identifier");
+        result = attemptTokenMatch('identifier');
         const token = tokens[tokens.length - 1];
         if (result !== -1 && nonRegexTerminals.includes(token.value)) {
           token.type = token.value;
         }
       } else if (nextChar === '"') {
-        result = attemptTokenMatch("string");
+        result = attemptTokenMatch('string');
       }
 
       for (const punctuation of punctuations) {
         if (str.startsWith(punctuation, lastIndex)) {
           tokens.push({ type: punctuation, value: punctuation, trivia });
-          trivia = "";
+          trivia = '';
           lastIndex += punctuation.length;
           result = lastIndex;
           break;
@@ -133,10 +129,10 @@
 
       // other as the last try
       if (result === -1) {
-        result = attemptTokenMatch("other");
+        result = attemptTokenMatch('other');
       }
       if (result === -1) {
-        throw new Error("Token stream not progressing");
+        throw new Error('Token stream not progressing');
       }
       lastIndex = result;
     }
@@ -149,7 +145,7 @@
       if (result) {
         tokens.push({ type, value: result[0], trivia });
         if (!noFlushTrivia) {
-          trivia = "";
+          trivia = '';
         }
         return re.lastIndex;
       }
@@ -168,7 +164,9 @@
     toString() {
       const escapedInput = JSON.stringify(this.input);
       const tokens = JSON.stringify(this.tokens, null, 4);
-      return `${this.message}, line ${this.line} (tokens: ${escapedInput})\n${tokens}`;
+      return `${this.message}, line ${
+        this.line
+      } (tokens: ${escapedInput})\n${tokens}`;
     }
   }
 
@@ -178,14 +176,14 @@
     const names = new Map();
     let current = null;
 
-    const FLOAT = "float";
-    const INT = "integer";
-    const ID = "identifier";
-    const STR = "string";
-    const OTHER = "other";
+    const FLOAT = 'float';
+    const INT = 'integer';
+    const ID = 'identifier';
+    const STR = 'string';
+    const OTHER = 'other';
 
     const EMPTY_OPERATION = Object.freeze({
-      type: "operation",
+      type: 'operation',
       getter: false,
       setter: false,
       deleter: false,
@@ -205,27 +203,36 @@
       const maxTokens = 5;
       const tok = tokens
         .slice(consume_position, consume_position + maxTokens)
-        .map(t => t.trivia + t.value).join("");
+        .map((t) => t.trivia + t.value)
+        .join('');
       // Count newlines preceding the actual erroneous token
       if (tokens.length) {
-        line += count(tokens[consume_position].trivia, "\n");
+        line += count(tokens[consume_position].trivia, '\n');
       }
 
       let message;
       if (current) {
-        message = `Got an error during or right after parsing \`${current.partial ? "partial " : ""}${current.type} ${current.name}\`: ${str}`
-      }
-      else {
+        message = `Got an error during or right after parsing \`${
+          current.partial ? 'partial ' : ''
+        }${current.type} ${current.name}\`: ${str}`;
+      } else {
         // throwing before any valid definition
         message = `Got an error before parsing any named definition: ${str}`;
       }
 
-      throw new WebIDLParseError(message, line, tok, tokens.slice(0, maxTokens));
+      throw new WebIDLParseError(
+        message,
+        line,
+        tok,
+        tokens.slice(0, maxTokens)
+      );
     }
 
     function sanitize_name(name, type) {
       if (names.has(name)) {
-        error(`The name "${name}" of type "${names.get(name)}" is already seen`);
+        error(
+          `The name "${name}" of type "${names.get(name)}" is already seen`
+        );
       }
       names.set(name, type);
       return name;
@@ -234,7 +241,10 @@
     let consume_position = 0;
 
     function probe(type) {
-      return tokens.length > consume_position && tokens[consume_position].type === type;
+      return (
+        tokens.length > consume_position &&
+        tokens[consume_position].type === type
+      );
     }
 
     function consume(...candidates) {
@@ -243,7 +253,7 @@
         if (!probe(type)) continue;
         const token = tokens[consume_position];
         consume_position++;
-        line += count(token.trivia, "\n");
+        line += count(token.trivia, '\n');
         return token;
       }
     }
@@ -255,7 +265,7 @@
     function unconsume(position) {
       while (consume_position > position) {
         consume_position--;
-        line -= count(tokens[consume_position].trivia, "\n");
+        line -= count(tokens[consume_position].trivia, '\n');
       }
     }
 
@@ -268,80 +278,86 @@
     }
 
     function integer_type() {
-      let ret = "";
-      if (consume("unsigned")) ret = "unsigned ";
-      if (consume("short")) return ret + "short";
-      if (consume("long")) {
-        ret += "long";
-        if (consume("long")) return ret + " long";
+      let ret = '';
+      if (consume('unsigned')) ret = 'unsigned ';
+      if (consume('short')) return ret + 'short';
+      if (consume('long')) {
+        ret += 'long';
+        if (consume('long')) return ret + ' long';
         return ret;
       }
-      if (ret) error("Failed to parse integer type");
+      if (ret) error('Failed to parse integer type');
     }
 
     function float_type() {
-      let ret = "";
-      if (consume("unrestricted")) ret = "unrestricted ";
-      if (consume("float")) return ret + "float";
-      if (consume("double")) return ret + "double";
-      if (ret) error("Failed to parse float type");
+      let ret = '';
+      if (consume('unrestricted')) ret = 'unrestricted ';
+      if (consume('float')) return ret + 'float';
+      if (consume('double')) return ret + 'double';
+      if (ret) error('Failed to parse float type');
     }
 
     function primitive_type() {
       const num_type = integer_type() || float_type();
       if (num_type) return num_type;
-      if (consume("boolean")) return "boolean";
-      if (consume("byte")) return "byte";
-      if (consume("octet")) return "octet";
+      if (consume('boolean')) return 'boolean';
+      if (consume('byte')) return 'byte';
+      if (consume('octet')) return 'octet';
     }
 
     function const_value() {
-      if (consume("true")) return { type: "boolean", value: true };
-      if (consume("false")) return { type: "boolean", value: false };
-      if (consume("null")) return { type: "null" };
-      if (consume("Infinity")) return { type: "Infinity", negative: false };
-      if (consume("-Infinity")) return { type: "Infinity", negative: true };
-      if (consume("NaN")) return { type: "NaN" };
+      if (consume('true')) return { type: 'boolean', value: true };
+      if (consume('false')) return { type: 'boolean', value: false };
+      if (consume('null')) return { type: 'null' };
+      if (consume('Infinity')) return { type: 'Infinity', negative: false };
+      if (consume('-Infinity')) return { type: 'Infinity', negative: true };
+      if (consume('NaN')) return { type: 'NaN' };
       const ret = consume(FLOAT, INT);
-      if (ret) return { type: "number", value: ret.value };
+      if (ret) return { type: 'number', value: ret.value };
     }
 
     function type_suffix(obj) {
-      obj.nullable = !!consume("?");
-      if (probe("?")) error("Can't nullable more than once");
+      obj.nullable = !!consume('?');
+      if (probe('?')) error("Can't nullable more than once");
     }
 
     function generic_type(typeName) {
-      const name = consume("FrozenArray", "Promise", "sequence", "record");
+      const name = consume('FrozenArray', 'Promise', 'sequence', 'record');
       if (!name) {
         return;
       }
       const ret = { generic: name.type };
-      consume("<") || error(`No opening bracket after ${name.type}`);
+      consume('<') || error(`No opening bracket after ${name.type}`);
       switch (name.type) {
-        case "Promise":
-          if (probe("[")) error("Promise type cannot have extended attribute");
+        case 'Promise':
+          if (probe('[')) error('Promise type cannot have extended attribute');
           ret.idlType = return_type(typeName);
           break;
-        case "sequence":
-        case "FrozenArray":
+        case 'sequence':
+        case 'FrozenArray':
           ret.idlType = type_with_extended_attributes(typeName);
           break;
-        case "record":
-          if (probe("[")) error("Record key cannot have extended attribute");
+        case 'record':
+          if (probe('[')) error('Record key cannot have extended attribute');
           ret.idlType = [];
           const keyType = consume(...stringTypes);
           if (!keyType) error(`Record key must be a string type`);
-          ret.idlType.push(Object.assign({ type: typeName }, EMPTY_IDLTYPE, { idlType: keyType.value }));
-          consume(",") || error("Missing comma after record key type");
-          const valueType = type_with_extended_attributes(typeName) || error("Error parsing generic type record");
+          ret.idlType.push(
+            Object.assign({ type: typeName }, EMPTY_IDLTYPE, {
+              idlType: keyType.value
+            })
+          );
+          consume(',') || error('Missing comma after record key type');
+          const valueType =
+            type_with_extended_attributes(typeName) ||
+            error('Error parsing generic type record');
           ret.idlType.push(valueType);
           break;
       }
       if (!ret.idlType) error(`Error parsing generic type ${name.type}`);
-      consume(">") || error(`Missing closing bracket after ${name.type}`);
-      if (name.type === "Promise" && probe("?")) {
-        error("Promise type cannot be nullable");
+      consume('>') || error(`Missing closing bracket after ${name.type}`);
+      if (name.type === 'Promise' && probe('?')) {
+        error('Promise type cannot be nullable');
       }
       type_suffix(ret);
       return ret;
@@ -357,28 +373,34 @@
       let name;
       if (prim) {
         ret.idlType = prim;
-      } else if (name = consume(ID, ...stringTypes)) {
+      } else if ((name = consume(ID, ...stringTypes))) {
         ret.idlType = name.value;
-        if (probe("<")) error(`Unsupported generic type ${name.value}`);
+        if (probe('<')) error(`Unsupported generic type ${name.value}`);
       } else {
         return;
       }
       type_suffix(ret);
-      if (ret.nullable && ret.idlType === "any") error("Type any cannot be made nullable");
+      if (ret.nullable && ret.idlType === 'any')
+        error('Type any cannot be made nullable');
       return ret;
     }
 
     function union_type(typeName) {
-      if (!consume("(")) return;
-      const ret = Object.assign({ type: typeName || null }, EMPTY_IDLTYPE, { union: true, idlType: [] });
+      if (!consume('(')) return;
+      const ret = Object.assign({ type: typeName || null }, EMPTY_IDLTYPE, {
+        union: true,
+        idlType: []
+      });
       do {
-        const typ = type_with_extended_attributes() || error("No type after open parenthesis or 'or' in union type");
+        const typ =
+          type_with_extended_attributes() ||
+          error("No type after open parenthesis or 'or' in union type");
         ret.idlType.push(typ);
-      } while (consume("or"));
+      } while (consume('or'));
       if (ret.idlType.length < 2) {
-        error("At least two types are expected in a union type but found less");
+        error('At least two types are expected in a union type but found less');
       }
-      if (!consume(")")) error("Unterminated union type");
+      if (!consume(')')) error('Unterminated union type');
       type_suffix(ret);
       return ret;
     }
@@ -398,16 +420,16 @@
       const start_position = consume_position;
       const ret = { optional: false, variadic: false, default: null };
       ret.extAttrs = extended_attrs();
-      const opt_token = consume("optional");
+      const opt_token = consume('optional');
       if (opt_token) {
         ret.optional = true;
       }
-      ret.idlType = type_with_extended_attributes("argument-type");
+      ret.idlType = type_with_extended_attributes('argument-type');
       if (!ret.idlType) {
         unconsume(start_position);
         return;
       }
-      if (!ret.optional && consume("...")) {
+      if (!ret.optional && consume('...')) {
         ret.variadic = true;
       }
       const name = consume(ID, ...argumentNameKeywords);
@@ -429,8 +451,8 @@
       if (!arg) return ret;
       ret.push(arg);
       while (true) {
-        if (!consume(",")) return ret;
-        const nxt = argument() || error("Trailing comma in arguments list");
+        if (!consume(',')) return ret;
+        const nxt = argument() || error('Trailing comma in arguments list');
         ret.push(nxt);
       }
     }
@@ -441,10 +463,10 @@
       const ret = {
         name: name.value,
         arguments: null,
-        type: "extended-attribute",
+        type: 'extended-attribute',
         rhs: null
       };
-      const eq = consume("=");
+      const eq = consume('=');
       if (eq) {
         ret.rhs = consume(ID, FLOAT, INT, STR);
         if (ret.rhs) {
@@ -452,21 +474,22 @@
           ret.rhs.trivia = undefined;
         }
       }
-      if (consume("(")) {
+      if (consume('(')) {
         if (eq && !ret.rhs) {
           // [Exposed=(Window,Worker)]
           ret.rhs = {
-            type: "identifier-list",
+            type: 'identifier-list',
             value: identifiers()
           };
-        }
-        else {
+        } else {
           // [NamedConstructor=Audio(DOMString src)] or [Constructor(DOMString str)]
           ret.arguments = argument_list();
         }
-        consume(")") || error("Unexpected token in extended attribute argument list");
+        consume(')') ||
+          error('Unexpected token in extended attribute argument list');
       }
-      if (eq && !ret.rhs) error("No right hand side to extended attribute assignment");
+      if (eq && !ret.rhs)
+        error('No right hand side to extended attribute assignment');
       return ret;
     }
 
@@ -474,25 +497,29 @@
     // seems to be used
     function extended_attrs() {
       const eas = [];
-      if (!consume("[")) return eas;
-      eas[0] = simple_extended_attr() || error("Extended attribute with not content");
-      while (consume(",")) {
-        eas.push(simple_extended_attr() || error("Trailing comma in extended attribute"));
+      if (!consume('[')) return eas;
+      eas[0] =
+        simple_extended_attr() || error('Extended attribute with not content');
+      while (consume(',')) {
+        eas.push(
+          simple_extended_attr() ||
+            error('Trailing comma in extended attribute')
+        );
       }
-      consume("]") || error("No end of extended attribute");
+      consume(']') || error('No end of extended attribute');
       return eas;
     }
 
     function default_() {
-      if (consume("=")) {
+      if (consume('=')) {
         const def = const_value();
         if (def) {
           return def;
-        } else if (consume("[")) {
-          if (!consume("]")) error("Default sequence value must be empty");
-          return { type: "sequence", value: [] };
+        } else if (consume('[')) {
+          if (!consume(']')) error('Default sequence value must be empty');
+          return { type: 'sequence', value: [] };
         } else {
-          const str = consume(STR) || error("No value for default");
+          const str = consume(STR) || error('No value for default');
           str.value = str.value.slice(1, -1);
           // No trivia exposure yet
           str.trivia = undefined;
@@ -502,28 +529,30 @@
     }
 
     function const_() {
-      if (!consume("const")) return;
-      const ret = { type: "const", nullable: false };
+      if (!consume('const')) return;
+      const ret = { type: 'const', nullable: false };
       let typ = primitive_type();
       if (!typ) {
-        typ = consume(ID) || error("No type for const");
+        typ = consume(ID) || error('No type for const');
         typ = typ.value;
       }
-      ret.idlType = Object.assign({ type: "const-type" }, EMPTY_IDLTYPE, { idlType: typ });
+      ret.idlType = Object.assign({ type: 'const-type' }, EMPTY_IDLTYPE, {
+        idlType: typ
+      });
       type_suffix(ret);
-      const name = consume(ID) || error("No name for const");
+      const name = consume(ID) || error('No name for const');
       ret.name = name.value;
-      consume("=") || error("No value assignment for const");
+      consume('=') || error('No value assignment for const');
       const cnt = const_value();
       if (cnt) ret.value = cnt;
-      else error("No value for const");
-      consume(";") || error("Unterminated const");
+      else error('No value for const');
+      consume(';') || error('Unterminated const');
       return ret;
     }
 
     function inheritance() {
-      if (consume(":")) {
-        const inh = consume(ID) || error("No type in inheritance");
+      if (consume(':')) {
+        const inh = consume(ID) || error('No type in inheritance');
         return inh.value;
       }
     }
@@ -533,48 +562,51 @@
       const name = consume(ID);
       ret.name = name ? unescape(name.value) : null;
       ret.escapedName = name ? name.value : null;
-      consume("(") || error("Invalid operation");
+      consume('(') || error('Invalid operation');
       ret.arguments = argument_list();
-      consume(")") || error("Unterminated operation");
-      consume(";") || error("Unterminated operation");
+      consume(')') || error('Unterminated operation');
+      consume(';') || error('Unterminated operation');
       return ret;
     }
 
     function callback() {
       let ret;
-      if (!consume("callback")) return;
-      const tok = consume("interface");
+      if (!consume('callback')) return;
+      const tok = consume('interface');
       if (tok) {
-        ret = interface_rest(false, "callback interface");
+        ret = interface_rest(false, 'callback interface');
         return ret;
       }
-      const name = consume(ID) || error("No name for callback");
-      ret = current = { type: "callback", name: sanitize_name(name.value, "callback") };
-      consume("=") || error("No assignment in callback");
-      ret.idlType = return_type() || error("Missing return type");
-      consume("(") || error("No arguments in callback");
+      const name = consume(ID) || error('No name for callback');
+      ret = current = {
+        type: 'callback',
+        name: sanitize_name(name.value, 'callback')
+      };
+      consume('=') || error('No assignment in callback');
+      ret.idlType = return_type() || error('Missing return type');
+      consume('(') || error('No arguments in callback');
       ret.arguments = argument_list();
-      consume(")") || error("Unterminated callback");
-      consume(";") || error("Unterminated callback");
+      consume(')') || error('Unterminated callback');
+      consume(';') || error('Unterminated callback');
       return ret;
     }
 
     function attribute({ noInherit = false, readonly = false } = {}) {
       const start_position = consume_position;
       const ret = {
-        type: "attribute",
+        type: 'attribute',
         static: false,
         stringifier: false,
         inherit: false,
         readonly: false
       };
-      if (!noInherit && consume("inherit")) {
+      if (!noInherit && consume('inherit')) {
         ret.inherit = true;
       }
-      if (consume("readonly")) {
+      if (consume('readonly')) {
         ret.readonly = true;
-      } else if (readonly && probe("attribute")) {
-        error("Attributes must be readonly in this context");
+      } else if (readonly && probe('attribute')) {
+        error('Attributes must be readonly in this context');
       }
       const rest = attribute_rest(ret);
       if (!rest) {
@@ -584,59 +616,67 @@
     }
 
     function attribute_rest(ret) {
-      if (!consume("attribute")) {
+      if (!consume('attribute')) {
         return;
       }
-      ret.idlType = type_with_extended_attributes("attribute-type") || error("No type in attribute");
-      if (ret.idlType.generic === "sequence") error("Attributes cannot accept sequence types");
-      if (ret.idlType.generic === "record") error("Attributes cannot accept record types");
-      const name = consume(ID, "required") || error("No name in attribute");
+      ret.idlType =
+        type_with_extended_attributes('attribute-type') ||
+        error('No type in attribute');
+      if (ret.idlType.generic === 'sequence')
+        error('Attributes cannot accept sequence types');
+      if (ret.idlType.generic === 'record')
+        error('Attributes cannot accept record types');
+      const name = consume(ID, 'required') || error('No name in attribute');
       ret.name = unescape(name.value);
       ret.escapedName = name.value;
-      consume(";") || error("Unterminated attribute");
+      consume(';') || error('Unterminated attribute');
       return ret;
     }
 
     function return_type(typeName) {
-      const typ = type(typeName || "return-type");
+      const typ = type(typeName || 'return-type');
       if (typ) {
         return typ;
       }
-      if (consume("void")) {
-        return Object.assign({ type: "return-type" }, EMPTY_IDLTYPE, { idlType: "void" });
+      if (consume('void')) {
+        return Object.assign({ type: 'return-type' }, EMPTY_IDLTYPE, {
+          idlType: 'void'
+        });
       }
     }
 
     function operation({ regular = false } = {}) {
       const ret = Object.assign({}, EMPTY_OPERATION);
       while (!regular) {
-        if (consume("getter")) ret.getter = true;
-        else if (consume("setter")) ret.setter = true;
-        else if (consume("deleter")) ret.deleter = true;
+        if (consume('getter')) ret.getter = true;
+        else if (consume('setter')) ret.setter = true;
+        else if (consume('deleter')) ret.deleter = true;
         else break;
       }
-      ret.idlType = return_type() || error("Missing return type");
+      ret.idlType = return_type() || error('Missing return type');
       operation_rest(ret);
       return ret;
     }
 
     function static_member() {
-      if (!consume("static")) return;
-      const member = attribute({ noInherit: true }) ||
+      if (!consume('static')) return;
+      const member =
+        attribute({ noInherit: true }) ||
         operation({ regular: true }) ||
-        error("No body in static member");
+        error('No body in static member');
       member.static = true;
       return member;
     }
 
     function stringifier() {
-      if (!consume("stringifier")) return;
-      if (consume(";")) {
+      if (!consume('stringifier')) return;
+      if (consume(';')) {
         return Object.assign({}, EMPTY_OPERATION, { stringifier: true });
       }
-      const member = attribute({ noInherit: true }) ||
+      const member =
+        attribute({ noInherit: true }) ||
         operation({ regular: true }) ||
-        error("Unterminated stringifier");
+        error('Unterminated stringifier');
       member.stringifier = true;
       return member;
     }
@@ -646,11 +686,11 @@
       const id = consume(ID);
       if (id) {
         arr.push(id.value);
-      }
-      else error("Expected identifiers but not found");
+      } else error('Expected identifiers but not found');
       while (true) {
-        if (consume(",")) {
-          const name = consume(ID) || error("Trailing comma in identifiers list");
+        if (consume(',')) {
+          const name =
+            consume(ID) || error('Trailing comma in identifiers list');
           arr.push(name.value);
         } else break;
       }
@@ -658,26 +698,28 @@
     }
 
     function iterable_type() {
-      if (consume("iterable")) return "iterable";
-      else if (consume("legacyiterable")) return "legacyiterable";
-      else if (consume("maplike")) return "maplike";
-      else if (consume("setlike")) return "setlike";
+      if (consume('iterable')) return 'iterable';
+      else if (consume('legacyiterable')) return 'legacyiterable';
+      else if (consume('maplike')) return 'maplike';
+      else if (consume('setlike')) return 'setlike';
       else return;
     }
 
     function readonly_iterable_type() {
-      if (consume("maplike")) return "maplike";
-      else if (consume("setlike")) return "setlike";
+      if (consume('maplike')) return 'maplike';
+      else if (consume('setlike')) return 'setlike';
       else return;
     }
 
     function iterable() {
       const start_position = consume_position;
       const ret = { type: null, idlType: null, readonly: false };
-      if (consume("readonly")) {
+      if (consume('readonly')) {
         ret.readonly = true;
       }
-      const consumeItType = ret.readonly ? readonly_iterable_type : iterable_type;
+      const consumeItType = ret.readonly
+        ? readonly_iterable_type
+        : iterable_type;
 
       const ittype = consumeItType();
       if (!ittype) {
@@ -685,119 +727,127 @@
         return;
       }
 
-      const secondTypeRequired = ittype === "maplike";
-      const secondTypeAllowed = secondTypeRequired || ittype === "iterable";
+      const secondTypeRequired = ittype === 'maplike';
+      const secondTypeAllowed = secondTypeRequired || ittype === 'iterable';
       ret.type = ittype;
-      if (ret.type !== 'maplike' && ret.type !== 'setlike')
-        delete ret.readonly;
-      if (consume("<")) {
-        ret.idlType = [type_with_extended_attributes()] || error(`Error parsing ${ittype} declaration`);
+      if (ret.type !== 'maplike' && ret.type !== 'setlike') delete ret.readonly;
+      if (consume('<')) {
+        ret.idlType =
+          [type_with_extended_attributes()] ||
+          error(`Error parsing ${ittype} declaration`);
         if (secondTypeAllowed) {
-          if (consume(",")) {
+          if (consume(',')) {
             ret.idlType.push(type_with_extended_attributes());
-          }
-          else if (secondTypeRequired)
+          } else if (secondTypeRequired)
             error(`Missing second type argument in ${ittype} declaration`);
         }
-        if (!consume(">")) error(`Unterminated ${ittype} declaration`);
-        if (!consume(";")) error(`Missing semicolon after ${ittype} declaration`);
-      } else
-        error(`Error parsing ${ittype} declaration`);
+        if (!consume('>')) error(`Unterminated ${ittype} declaration`);
+        if (!consume(';'))
+          error(`Missing semicolon after ${ittype} declaration`);
+      } else error(`Error parsing ${ittype} declaration`);
 
       return ret;
     }
 
-    function interface_rest(isPartial, typeName = "interface") {
-      const name = consume(ID) || error("No name for interface");
+    function interface_rest(isPartial, typeName = 'interface') {
+      const name = consume(ID) || error('No name for interface');
       const mems = [];
-      const ret = current = {
+      const ret = (current = {
         type: typeName,
-        name: isPartial ? name.value : sanitize_name(name.value, "interface"),
+        name: isPartial ? name.value : sanitize_name(name.value, 'interface'),
         partial: isPartial,
         members: mems
-      };
+      });
       if (!isPartial) ret.inheritance = inheritance() || null;
-      consume("{") || error("Bodyless interface");
+      consume('{') || error('Bodyless interface');
       while (true) {
-        if (consume("}")) {
-          consume(";") || error("Missing semicolon after interface");
+        if (consume('}')) {
+          consume(';') || error('Missing semicolon after interface');
           return ret;
         }
         const ea = extended_attrs();
-        const mem = const_() ||
+        const mem =
+          const_() ||
           static_member() ||
           stringifier() ||
           iterable() ||
           attribute() ||
           operation() ||
-          error("Unknown member");
+          error('Unknown member');
         mem.extAttrs = ea;
         ret.members.push(mem);
       }
     }
 
     function mixin_rest(isPartial) {
-      if (!consume("mixin")) return;
-      const name = consume(ID) || error("No name for interface mixin");
+      if (!consume('mixin')) return;
+      const name = consume(ID) || error('No name for interface mixin');
       const mems = [];
-      const ret = current = {
-        type: "interface mixin",
-        name: isPartial ? name.value : sanitize_name(name.value, "interface mixin"),
+      const ret = (current = {
+        type: 'interface mixin',
+        name: isPartial
+          ? name.value
+          : sanitize_name(name.value, 'interface mixin'),
         partial: isPartial,
         members: mems
-      };
-      consume("{") || error("Bodyless interface mixin");
+      });
+      consume('{') || error('Bodyless interface mixin');
       while (true) {
-        if (consume("}")) {
-          consume(";") || error("Missing semicolon after interface mixin");
+        if (consume('}')) {
+          consume(';') || error('Missing semicolon after interface mixin');
           return ret;
         }
         const ea = extended_attrs();
-        const mem = const_() ||
+        const mem =
+          const_() ||
           stringifier() ||
           attribute({ noInherit: true }) ||
           operation({ regular: true }) ||
-          error("Unknown member");
+          error('Unknown member');
         mem.extAttrs = ea;
         ret.members.push(mem);
       }
     }
 
     function interface_(isPartial) {
-      if (!consume("interface")) return;
-      return mixin_rest(isPartial) ||
+      if (!consume('interface')) return;
+      return (
+        mixin_rest(isPartial) ||
         interface_rest(isPartial) ||
-        error("Interface has no proper body");
+        error('Interface has no proper body')
+      );
     }
 
     function namespace(isPartial) {
-      if (!consume("namespace")) return;
-      const name = consume(ID) || error("No name for namespace");
+      if (!consume('namespace')) return;
+      const name = consume(ID) || error('No name for namespace');
       const mems = [];
-      const ret = current = {
-        type: "namespace",
-        name: isPartial ? name.value : sanitize_name(name.value, "namespace"),
+      const ret = (current = {
+        type: 'namespace',
+        name: isPartial ? name.value : sanitize_name(name.value, 'namespace'),
         partial: isPartial,
         members: mems
-      };
-      consume("{") || error("Bodyless namespace");
+      });
+      consume('{') || error('Bodyless namespace');
       while (true) {
-        if (consume("}")) {
-          consume(";") || error("Missing semicolon after namespace");
+        if (consume('}')) {
+          consume(';') || error('Missing semicolon after namespace');
           return ret;
         }
         const ea = extended_attrs();
-        const mem = attribute({ noInherit: true, readonly: true }) ||
+        const mem =
+          attribute({ noInherit: true, readonly: true }) ||
           operation({ regular: true }) ||
-          error("Unknown member");
+          error('Unknown member');
         mem.extAttrs = ea;
         ret.members.push(mem);
       }
     }
 
     function partial() {
-      if (!consume("partial")) return;
-      const thing = dictionary(true) ||
+      if (!consume('partial')) return;
+      const thing =
+        dictionary(true) ||
         interface_(true) ||
         namespace(true) ||
         error("Partial doesn't apply to anything");
@@ -805,30 +855,32 @@
     }
 
     function dictionary(isPartial) {
-      if (!consume("dictionary")) return;
-      const name = consume(ID) || error("No name for dictionary");
+      if (!consume('dictionary')) return;
+      const name = consume(ID) || error('No name for dictionary');
       const mems = [];
-      const ret = current = {
-        type: "dictionary",
-        name: isPartial ? name.value : sanitize_name(name.value, "dictionary"),
+      const ret = (current = {
+        type: 'dictionary',
+        name: isPartial ? name.value : sanitize_name(name.value, 'dictionary'),
         partial: isPartial,
         members: mems
-      };
+      });
       if (!isPartial) ret.inheritance = inheritance() || null;
-      consume("{") || error("Bodyless dictionary");
+      consume('{') || error('Bodyless dictionary');
       while (true) {
-        if (consume("}")) {
-          consume(";") || error("Missing semicolon after dictionary");
+        if (consume('}')) {
+          consume(';') || error('Missing semicolon after dictionary');
           return ret;
         }
         const ea = extended_attrs();
-        const required = consume("required");
-        const typ = type_with_extended_attributes("dictionary-type") || error("No type for dictionary member");
-        const name = consume(ID) || error("No name for dictionary member");
+        const required = consume('required');
+        const typ =
+          type_with_extended_attributes('dictionary-type') ||
+          error('No type for dictionary member');
+        const name = consume(ID) || error('No name for dictionary member');
         const dflt = default_() || null;
-        if (required && dflt) error("Required member must not have a default");
+        if (required && dflt) error('Required member must not have a default');
         const member = {
-          type: "field",
+          type: 'field',
           name: unescape(name.value),
           escapedName: name.value,
           required: !!required,
@@ -837,49 +889,50 @@
           default: dflt
         };
         ret.members.push(member);
-        consume(";") || error("Unterminated dictionary member");
+        consume(';') || error('Unterminated dictionary member');
       }
     }
 
     function enum_() {
-      if (!consume("enum")) return;
-      const name = consume(ID) || error("No name for enum");
+      if (!consume('enum')) return;
+      const name = consume(ID) || error('No name for enum');
       const vals = [];
-      const ret = current = {
-        type: "enum",
-        name: sanitize_name(name.value, "enum"),
+      const ret = (current = {
+        type: 'enum',
+        name: sanitize_name(name.value, 'enum'),
         values: vals
-      };
-      consume("{") || error("No curly for enum");
+      });
+      consume('{') || error('No curly for enum');
       let value_expected = true;
       while (true) {
-        if (consume("}")) {
-          if (!ret.values.length) error("No value in enum");
-          consume(";") || error("No semicolon after enum");
+        if (consume('}')) {
+          if (!ret.values.length) error('No value in enum');
+          consume(';') || error('No semicolon after enum');
           return ret;
+        } else if (!value_expected) {
+          error('No comma between enum values');
         }
-        else if (!value_expected) {
-          error("No comma between enum values");
-        }
-        const val = consume(STR) || error("Unexpected value in enum");
+        const val = consume(STR) || error('Unexpected value in enum');
         val.value = val.value.slice(1, -1);
         // No trivia exposure yet
         val.trivia = undefined;
         ret.values.push(val);
-        value_expected = !!consume(",");
+        value_expected = !!consume(',');
       }
     }
 
     function typedef() {
-      if (!consume("typedef")) return;
+      if (!consume('typedef')) return;
       const ret = {
-        type: "typedef"
+        type: 'typedef'
       };
-      ret.idlType = type_with_extended_attributes("typedef-type") || error("No type in typedef");
-      const name = consume(ID) || error("No name in typedef");
-      ret.name = sanitize_name(name.value, "typedef");
+      ret.idlType =
+        type_with_extended_attributes('typedef-type') ||
+        error('No type in typedef');
+      const name = consume(ID) || error('No name in typedef');
+      ret.name = sanitize_name(name.value, 'typedef');
       current = ret;
-      consume(";") || error("Unterminated typedef");
+      consume(';') || error('Unterminated typedef');
       return ret;
     }
 
@@ -887,14 +940,14 @@
       const start_position = consume_position;
       const target = consume(ID);
       if (!target) return;
-      if (consume("implements")) {
+      if (consume('implements')) {
         const ret = {
-          type: "implements",
+          type: 'implements',
           target: target.value
         };
-        const imp = consume(ID) || error("Incomplete implements statement");
+        const imp = consume(ID) || error('Incomplete implements statement');
         ret.implements = imp.value;
-        consume(";") || error("No terminating ; for implements statement");
+        consume(';') || error('No terminating ; for implements statement');
         return ret;
       } else {
         // rollback
@@ -906,14 +959,14 @@
       const start_position = consume_position;
       const target = consume(ID);
       if (!target) return;
-      if (consume("includes")) {
+      if (consume('includes')) {
         const ret = {
-          type: "includes",
+          type: 'includes',
           target: target.value
         };
-        const imp = consume(ID) || error("Incomplete includes statement");
+        const imp = consume(ID) || error('Incomplete includes statement');
         ret.includes = imp.value;
-        consume(";") || error("No terminating ; for includes statement");
+        consume(';') || error('No terminating ; for includes statement');
         return ret;
       } else {
         // rollback
@@ -922,7 +975,8 @@
     }
 
     function definition() {
-      return callback() ||
+      return (
+        callback() ||
         interface_(false) ||
         partial() ||
         dictionary(false) ||
@@ -930,7 +984,8 @@
         typedef() ||
         implements_() ||
         includes() ||
-        namespace(false);
+        namespace(false)
+      );
     }
 
     function definitions() {
@@ -940,7 +995,7 @@
         const ea = extended_attrs();
         const def = definition();
         if (!def) {
-          if (ea.length) error("Stray extended attributes");
+          if (ea.length) error('Stray extended attributes');
           break;
         }
         def.extAttrs = ea;
@@ -949,7 +1004,7 @@
       return defs;
     }
     const res = definitions();
-    if (consume_position < tokens.length) error("Unrecognised tokens");
+    if (consume_position < tokens.length) error('Unrecognised tokens');
     return res;
   }
 

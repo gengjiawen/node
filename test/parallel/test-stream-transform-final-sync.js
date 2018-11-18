@@ -87,24 +87,36 @@ const t = new stream.Transform({
     });
   }, 1)
 });
-t.on('finish', common.mustCall(function() {
-  state++;
-  // finishListener
-  assert.strictEqual(state, 13);
-}, 1));
-t.on('end', common.mustCall(function() {
-  state++;
-  // endEvent
-  assert.strictEqual(state, 16);
-}, 1));
-t.on('data', common.mustCall(function(d) {
-  // dataListener
-  assert.strictEqual(++state, d + 1);
-}, 3));
+t.on(
+  'finish',
+  common.mustCall(function() {
+    state++;
+    // finishListener
+    assert.strictEqual(state, 13);
+  }, 1)
+);
+t.on(
+  'end',
+  common.mustCall(function() {
+    state++;
+    // endEvent
+    assert.strictEqual(state, 16);
+  }, 1)
+);
+t.on(
+  'data',
+  common.mustCall(function(d) {
+    // dataListener
+    assert.strictEqual(++state, d + 1);
+  }, 3)
+);
 t.write(1);
 t.write(4);
-t.end(7, common.mustCall(function() {
-  state++;
-  // endMethodCallback
-  assert.strictEqual(state, 14);
-}, 1));
+t.end(
+  7,
+  common.mustCall(function() {
+    state++;
+    // endMethodCallback
+    assert.strictEqual(state, 14);
+  }, 1)
+);

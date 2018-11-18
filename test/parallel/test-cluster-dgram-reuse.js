@@ -8,16 +8,18 @@ const cluster = require('cluster');
 const dgram = require('dgram');
 
 if (cluster.isMaster) {
-  cluster.fork().on('exit', common.mustCall((code) => {
-    assert.strictEqual(code, 0);
-  }));
+  cluster.fork().on(
+    'exit',
+    common.mustCall((code) => {
+      assert.strictEqual(code, 0);
+    })
+  );
   return;
 }
 
 let waiting = 2;
 function close() {
-  if (--waiting === 0)
-    cluster.worker.disconnect();
+  if (--waiting === 0) cluster.worker.disconnect();
 }
 
 const options = { type: 'udp4', reuseAddr: true };

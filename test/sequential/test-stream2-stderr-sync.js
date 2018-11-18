@@ -39,8 +39,7 @@ function parent() {
     child.on('close', function() {
       assert.strictEqual(err, `child ${c}\nfoo\nbar\nbaz\n`);
       console.log(`ok ${++i} child #${c}`);
-      if (i === children.length)
-        console.log(`1..${i}`);
+      if (i === children.length) console.log(`1..${i}`);
     });
   });
 }
@@ -67,13 +66,13 @@ function child2() {
   const socket = new net.Socket({
     fd: 2,
     readable: false,
-    writable: true });
+    writable: true
+  });
   socket.write('child 2\n');
   socket.write('foo\n');
   socket.write('bar\n');
   socket.write('baz\n');
 }
-
 
 function child3() {
   console.error('child 3\nfoo\nbar\nbaz');
@@ -83,7 +82,7 @@ function child4() {
   process.stderr.write('child 4\nfoo\nbar\nbaz\n');
 }
 
-const children = [ child0, child1, child2, child3, child4 ];
+const children = [child0, child1, child2, child3, child4];
 
 if (!process.argv[2]) {
   parent();

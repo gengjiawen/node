@@ -24,10 +24,13 @@ c.stdout.on('data', function(s) {
   }
 });
 
-c.on('exit', common.mustCall(function(code) {
-  assert.ok(code !== 0);
-  console.log('killed infinite-loop.js');
-}));
+c.on(
+  'exit',
+  common.mustCall(function(code) {
+    assert.ok(code !== 0);
+    console.log('killed infinite-loop.js');
+  })
+);
 
 process.on('exit', function() {
   assert.ok(sentKill);

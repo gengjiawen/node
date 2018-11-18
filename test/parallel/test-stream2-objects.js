@@ -68,12 +68,13 @@ function fromArray(list) {
   // Verify that objects can be piped into the stream
   const r = fromArray([{ one: '1' }, { two: '2' }]);
 
-  r.pipe(toArray(common.mustCall(function(list) {
-    assert.deepStrictEqual(list, [
-      { one: '1' },
-      { two: '2' }
-    ]);
-  })));
+  r.pipe(
+    toArray(
+      common.mustCall(function(list) {
+        assert.deepStrictEqual(list, [{ one: '1' }, { two: '2' }]);
+      })
+    )
+  );
 }
 
 {
@@ -93,12 +94,13 @@ function fromArray(list) {
     r.push(item || null);
   };
 
-  r.pipe(toArray(common.mustCall(function(list) {
-    assert.deepStrictEqual(list, [
-      { one: '1' },
-      { two: '2' }
-    ]);
-  })));
+  r.pipe(
+    toArray(
+      common.mustCall(function(list) {
+        assert.deepStrictEqual(list, [{ one: '1' }, { two: '2' }]);
+      })
+    )
+  );
 }
 
 {
@@ -112,12 +114,13 @@ function fromArray(list) {
     });
   };
 
-  r.pipe(toArray(common.mustCall(function(list) {
-    assert.deepStrictEqual(list, [
-      { one: '1' },
-      { two: '2' }
-    ]);
-  })));
+  r.pipe(
+    toArray(
+      common.mustCall(function(list) {
+        assert.deepStrictEqual(list, [{ one: '1' }, { two: '2' }]);
+      })
+    )
+  );
 }
 
 {
@@ -132,9 +135,13 @@ function fromArray(list) {
   });
   r.push(null);
 
-  r.pipe(toArray(common.mustCall(function(array) {
-    assert.deepStrictEqual(array, list);
-  })));
+  r.pipe(
+    toArray(
+      common.mustCall(function(array) {
+        assert.deepStrictEqual(array, list);
+      })
+    )
+  );
 }
 
 {
@@ -147,9 +154,13 @@ function fromArray(list) {
   r.push('foobar');
   r.push(null);
 
-  r.pipe(toArray(common.mustCall(function(array) {
-    assert.deepStrictEqual(array, ['foobar']);
-  })));
+  r.pipe(
+    toArray(
+      common.mustCall(function(array) {
+        assert.deepStrictEqual(array, ['foobar']);
+      })
+    )
+  );
 }
 
 {
@@ -164,9 +175,13 @@ function fromArray(list) {
   r.push('');
   r.push(null);
 
-  r.pipe(toArray(common.mustCall(function(array) {
-    assert.deepStrictEqual(array, [false, 0, '']);
-  })));
+  r.pipe(
+    toArray(
+      common.mustCall(function(array) {
+        assert.deepStrictEqual(array, [false, 0, '']);
+      })
+    )
+  );
 }
 
 {
@@ -237,9 +252,12 @@ function fromArray(list) {
     cb();
   };
 
-  w.on('finish', common.mustCall(function() {
-    assert.deepStrictEqual(list, [0, 1, 2, 3, 4]);
-  }));
+  w.on(
+    'finish',
+    common.mustCall(function() {
+      assert.deepStrictEqual(list, [0, 1, 2, 3, 4]);
+    })
+  );
 
   w.write(0);
   w.write(1);
@@ -261,9 +279,12 @@ function fromArray(list) {
     process.nextTick(cb);
   };
 
-  w.on('finish', common.mustCall(function() {
-    assert.deepStrictEqual(list, ['0', '1', '2', '3', '4']);
-  }));
+  w.on(
+    'finish',
+    common.mustCall(function() {
+      assert.deepStrictEqual(list, ['0', '1', '2', '3', '4']);
+    })
+  );
 
   w.write('0');
   w.write('1');
@@ -289,9 +310,12 @@ function fromArray(list) {
     });
   };
 
-  w.on('finish', common.mustCall(function() {
-    assert.strictEqual(called, true);
-  }));
+  w.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(called, true);
+    })
+  );
 
   w.write('foo');
   w.end();

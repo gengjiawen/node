@@ -27,8 +27,7 @@
 // TLS server causes the child process to exit cleanly before having sent
 // the entire buffer.
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const spawn = require('child_process').spawn;
@@ -51,9 +50,11 @@ function makeRequest() {
   // process.execArgv to track down nextTick recursion errors
   // more easily.  Also, this is handy when using this test to
   // view V8 opt/deopt behavior.
-  const args = process.execArgv.concat([ childScript,
-                                         common.PORT,
-                                         bytesExpected ]);
+  const args = process.execArgv.concat([
+    childScript,
+    common.PORT,
+    bytesExpected
+  ]);
 
   const child = spawn(process.execPath, args);
 
@@ -67,14 +68,12 @@ function makeRequest() {
   child.stderr.pipe(process.stderr);
   child.stdout.pipe(process.stdout);
 
-
   // Buffer the stderr so that we can check that it got 'DONE'
   child.stderr.setEncoding('ascii');
   child.stderr.on('data', function(d) {
     stderrBuffer += d;
   });
 }
-
 
 const serverOptions = {
   key: fixtures.readKey('agent1-key.pem'),

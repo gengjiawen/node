@@ -8,13 +8,19 @@ const server = http.Server(function(req, res) {
   serverRes = res;
 });
 
-server.listen(0, common.mustCall(function() {
-  http.get({
-    port: this.address().port,
-    headers: { connection: 'keep-alive' }
-  }, common.mustCall(function(res) {
-    server.close();
-    serverRes.destroy();
-    res.on('aborted', common.mustCall());
-  }));
-}));
+server.listen(
+  0,
+  common.mustCall(function() {
+    http.get(
+      {
+        port: this.address().port,
+        headers: { connection: 'keep-alive' }
+      },
+      common.mustCall(function(res) {
+        server.close();
+        serverRes.destroy();
+        res.on('aborted', common.mustCall());
+      })
+    );
+  })
+);

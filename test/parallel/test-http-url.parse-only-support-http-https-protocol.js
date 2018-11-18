@@ -28,14 +28,16 @@ const invalidUrls = [
   'file:///whatever',
   'mailto:asdf@asdf.com',
   'ftp://www.example.com',
-  'javascript:alert(\'hello\');',
+  "javascript:alert('hello');",
   'xmpp:foo@bar.com',
   'f://some.host/path'
 ];
 
 invalidUrls.forEach((invalid) => {
   common.expectsError(
-    () => { http.request(url.parse(invalid)); },
+    () => {
+      http.request(url.parse(invalid));
+    },
     {
       code: 'ERR_INVALID_PROTOCOL',
       type: TypeError

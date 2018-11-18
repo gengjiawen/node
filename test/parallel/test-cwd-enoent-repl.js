@@ -24,7 +24,10 @@ proc.stderr.pipe(process.stderr);
 proc.stdin.write('require("path");\n');
 proc.stdin.write('process.exit(42);\n');
 
-proc.once('exit', common.mustCall(function(exitCode, signalCode) {
-  assert.strictEqual(exitCode, 42);
-  assert.strictEqual(signalCode, null);
-}));
+proc.once(
+  'exit',
+  common.mustCall(function(exitCode, signalCode) {
+    assert.strictEqual(exitCode, 42);
+    assert.strictEqual(signalCode, null);
+  })
+);

@@ -12,16 +12,20 @@ const stat = promisify(fs.stat);
 {
   const promise = stat(__filename);
   assert(promise instanceof Promise);
-  promise.then(common.mustCall((value) => {
-    assert.deepStrictEqual(value, fs.statSync(__filename));
-  }));
+  promise.then(
+    common.mustCall((value) => {
+      assert.deepStrictEqual(value, fs.statSync(__filename));
+    })
+  );
 }
 
 {
   const promise = stat('/dontexist');
-  promise.catch(common.mustCall((error) => {
-    assert(error.message.includes('ENOENT: no such file or directory, stat'));
-  }));
+  promise.catch(
+    common.mustCall((error) => {
+      assert(error.message.includes('ENOENT: no such file or directory, stat'));
+    })
+  );
 }
 
 {
@@ -35,10 +39,10 @@ const stat = promisify(fs.stat);
 {
   function fn() {}
   fn[promisify.custom] = 42;
-  common.expectsError(
-    () => promisify(fn),
-    { code: 'ERR_INVALID_ARG_TYPE', type: TypeError }
-  );
+  common.expectsError(() => promisify(fn), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
 }
 
 {
@@ -51,60 +55,74 @@ const stat = promisify(fs.stat);
 
   fn[customPromisifyArgs] = ['first', 'second'];
 
-  promisify(fn)().then(common.mustCall((obj) => {
-    assert.deepStrictEqual(obj, { first: firstValue, second: secondValue });
-  }));
+  promisify(fn)().then(
+    common.mustCall((obj) => {
+      assert.deepStrictEqual(obj, { first: firstValue, second: secondValue });
+    })
+  );
 }
 
 {
   const fn = vm.runInNewContext('(function() {})');
-  assert.notStrictEqual(Object.getPrototypeOf(promisify(fn)),
-                        Function.prototype);
+  assert.notStrictEqual(
+    Object.getPrototypeOf(promisify(fn)),
+    Function.prototype
+  );
 }
 
 {
   function fn(callback) {
     callback(null, 'foo', 'bar');
   }
-  promisify(fn)().then(common.mustCall((value) => {
-    assert.deepStrictEqual(value, 'foo');
-  }));
+  promisify(fn)().then(
+    common.mustCall((value) => {
+      assert.deepStrictEqual(value, 'foo');
+    })
+  );
 }
 
 {
   function fn(callback) {
     callback(null);
   }
-  promisify(fn)().then(common.mustCall((value) => {
-    assert.strictEqual(value, undefined);
-  }));
+  promisify(fn)().then(
+    common.mustCall((value) => {
+      assert.strictEqual(value, undefined);
+    })
+  );
 }
 
 {
   function fn(callback) {
     callback();
   }
-  promisify(fn)().then(common.mustCall((value) => {
-    assert.strictEqual(value, undefined);
-  }));
+  promisify(fn)().then(
+    common.mustCall((value) => {
+      assert.strictEqual(value, undefined);
+    })
+  );
 }
 
 {
   function fn(err, val, callback) {
     callback(err, val);
   }
-  promisify(fn)(null, 42).then(common.mustCall((value) => {
-    assert.strictEqual(value, 42);
-  }));
+  promisify(fn)(null, 42).then(
+    common.mustCall((value) => {
+      assert.strictEqual(value, 42);
+    })
+  );
 }
 
 {
   function fn(err, val, callback) {
     callback(err, val);
   }
-  promisify(fn)(new Error('oops'), null).catch(common.mustCall((err) => {
-    assert.strictEqual(err.message, 'oops');
-  }));
+  promisify(fn)(new Error('oops'), null).catch(
+    common.mustCall((err) => {
+      assert.strictEqual(err.message, 'oops');
+    })
+  );
 }
 
 {
@@ -121,15 +139,16 @@ const stat = promisify(fs.stat);
 {
   const o = {};
   const fn = promisify(function(cb) {
-
     cb(null, this === o);
   });
 
   o.fn = fn;
 
-  o.fn().then(common.mustCall(function(val) {
-    assert(val);
-  }));
+  o.fn().then(
+    common.mustCall(function(val) {
+      assert(val);
+    })
+  );
 }
 
 {
@@ -149,8 +168,8 @@ const stat = promisify(fs.stat);
 }
 
 {
-  function c() { }
-  const a = promisify(function() { });
+  function c() {}
+  const a = promisify(function() {});
   const b = promisify(a);
   assert.notStrictEqual(c, a);
   assert.strictEqual(a, b);
@@ -171,7 +190,9 @@ const stat = promisify(fs.stat);
   const err = new Error();
 
   const a = promisify((cb) => cb(err))();
-  const b = promisify(() => { throw err; })();
+  const b = promisify(() => {
+    throw err;
+  })();
 
   Promise.all([
     a.then(assert.fail, function(e) {
@@ -184,12 +205,11 @@ const stat = promisify(fs.stat);
 }
 
 [undefined, null, true, 0, 'str', {}, [], Symbol()].forEach((input) => {
-  common.expectsError(
-    () => promisify(input),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The "original" argument must be of type Function. ' +
-               `Received type ${typeof input}`
-    });
+  common.expectsError(() => promisify(input), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "original" argument must be of type Function. ' +
+      `Received type ${typeof input}`
+  });
 });

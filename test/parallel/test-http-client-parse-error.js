@@ -33,20 +33,29 @@ const payloads = [
 ];
 
 // Create a TCP server
-const server =
-  net.createServer(common.mustCall((c) => c.end(payloads.shift()), 2));
+const server = net.createServer(
+  common.mustCall((c) => c.end(payloads.shift()), 2)
+);
 
-server.listen(0, common.mustCall(() => {
-  for (let i = 0; i < 2; i++) {
-    http.get({
-      port: server.address().port,
-      path: '/'
-    }).on('error', common.mustCall((e) => {
-      common.expectsError({
-        code: 'HPE_INVALID_CONSTANT',
-        message: 'Parse Error'
-      })(e);
-      countdown.dec();
-    }));
-  }
-}));
+server.listen(
+  0,
+  common.mustCall(() => {
+    for (let i = 0; i < 2; i++) {
+      http
+        .get({
+          port: server.address().port,
+          path: '/'
+        })
+        .on(
+          'error',
+          common.mustCall((e) => {
+            common.expectsError({
+              code: 'HPE_INVALID_CONSTANT',
+              message: 'Parse Error'
+            })(e);
+            countdown.dec();
+          })
+        );
+    }
+  })
+);

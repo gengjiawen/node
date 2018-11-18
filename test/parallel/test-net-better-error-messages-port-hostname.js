@@ -9,10 +9,7 @@ const net = require('net');
 const assert = require('assert');
 
 const { addresses } = require('../common/internet');
-const {
-  errorLookupMock,
-  mockedErrorCode
-} = require('../common/dns');
+const { errorLookupMock, mockedErrorCode } = require('../common/dns');
 
 // Using port 0 as hostname used is already invalid.
 const c = net.createConnection({
@@ -23,8 +20,11 @@ const c = net.createConnection({
 
 c.on('connect', common.mustNotCall());
 
-c.on('error', common.mustCall(function(e) {
-  assert.strictEqual(e.code, mockedErrorCode);
-  assert.strictEqual(e.port, 0);
-  assert.strictEqual(e.hostname, addresses.INVALID_HOST);
-}));
+c.on(
+  'error',
+  common.mustCall(function(e) {
+    assert.strictEqual(e.code, mockedErrorCode);
+    assert.strictEqual(e.port, 0);
+    assert.strictEqual(e.hostname, addresses.INVALID_HOST);
+  })
+);

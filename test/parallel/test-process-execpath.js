@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (common.isWindows)
-  common.skip('symlinks are weird on windows');
+if (common.isWindows) common.skip('symlinks are weird on windows');
 
 const assert = require('assert');
 const child_process = require('child_process');

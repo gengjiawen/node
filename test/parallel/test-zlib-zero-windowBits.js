@@ -4,7 +4,6 @@ const common = require('../common');
 const assert = require('assert');
 const zlib = require('zlib');
 
-
 // windowBits is a special case in zlib. On the compression side, 0 is invalid.
 // On the decompression side, it indicates that zlib should use the value from
 // the header of the compressed stream.
@@ -27,7 +26,8 @@ const zlib = require('zlib');
   common.expectsError(() => zlib.createGzip({ windowBits: 0 }), {
     code: 'ERR_OUT_OF_RANGE',
     type: RangeError,
-    message: 'The value of "options.windowBits" is out of range. ' +
-             'It must be >= 8 and <= 15. Received 0'
+    message:
+      'The value of "options.windowBits" is out of range. ' +
+      'It must be >= 8 and <= 15. Received 0'
   });
 }

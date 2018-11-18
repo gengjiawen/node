@@ -80,7 +80,10 @@ process.on('exit', function() {
 
   const a = recv.split('');
 
-  const first = a.slice(0, 256).reverse().join('');
+  const first = a
+    .slice(0, 256)
+    .reverse()
+    .join('');
 
   const second = a.slice(256, 2 * 256).join('');
 

@@ -47,52 +47,65 @@ const srv = net.createServer(function(c) {
   });
 });
 
-srv.listen(0, '127.0.0.1', common.mustCall(function() {
-  const port = this.address().port;
-  const headers = [
-    {
-      connection: 'upgrade',
-      upgrade: 'websocket'
-    },
-    [
-      ['Host', 'echo.websocket.org'],
-      ['Connection', 'Upgrade'],
-      ['Upgrade', 'websocket'],
-      ['Origin', 'http://www.websocket.org']
-    ]
-  ];
-  const countdown = new Countdown(headers.length, () => srv.close());
-
-  headers.forEach(function(h) {
-    const req = http.get({
-      port: port,
-      headers: h
-    });
-    let sawUpgrade = false;
-    req.on('upgrade', common.mustCall(function(res, socket, upgradeHead) {
-      sawUpgrade = true;
-      let recvData = upgradeHead;
-      socket.on('data', function(d) {
-        recvData += d;
-      });
-
-      socket.on('close', common.mustCall(function() {
-        assert.strictEqual(recvData.toString(), 'nurtzo');
-      }));
-
-      console.log(res.headers);
-      const expectedHeaders = {
-        hello: 'world',
+srv.listen(
+  0,
+  '127.0.0.1',
+  common.mustCall(function() {
+    const port = this.address().port;
+    const headers = [
+      {
         connection: 'upgrade',
         upgrade: 'websocket'
-      };
-      assert.deepStrictEqual(expectedHeaders, res.headers);
+      },
+      [
+        ['Host', 'echo.websocket.org'],
+        ['Connection', 'Upgrade'],
+        ['Upgrade', 'websocket'],
+        ['Origin', 'http://www.websocket.org']
+      ]
+    ];
+    const countdown = new Countdown(headers.length, () => srv.close());
 
-      socket.end();
-      countdown.dec();
-    }));
-    req.on('close', common.mustCall(function() {
-      assert.strictEqual(sawUpgrade, true);
-    }));
-  });
-}));
+    headers.forEach(function(h) {
+      const req = http.get({
+        port: port,
+        headers: h
+      });
+      let sawUpgrade = false;
+      req.on(
+        'upgrade',
+        common.mustCall(function(res, socket, upgradeHead) {
+          sawUpgrade = true;
+          let recvData = upgradeHead;
+          socket.on('data', function(d) {
+            recvData += d;
+          });
+
+          socket.on(
+            'close',
+            common.mustCall(function() {
+              assert.strictEqual(recvData.toString(), 'nurtzo');
+            })
+          );
+
+          console.log(res.headers);
+          const expectedHeaders = {
+            hello: 'world',
+            connection: 'upgrade',
+            upgrade: 'websocket'
+          };
+          assert.deepStrictEqual(expectedHeaders, res.headers);
+
+          socket.end();
+          countdown.dec();
+        })
+      );
+      req.on(
+        'close',
+        common.mustCall(function() {
+          assert.strictEqual(sawUpgrade, true);
+        })
+      );
+    });
+  })
+);

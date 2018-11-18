@@ -11,29 +11,30 @@ const assert = require('assert');
  *  - Correctly interpreting values that are beyond the signed range as unsigned
  */
 
-{ // OOB
+{
+  // OOB
   const data = Buffer.alloc(8);
   ['UInt8', 'UInt16BE', 'UInt16LE', 'UInt32BE', 'UInt32LE'].forEach((fn) => {
-
     // Verify that default offset works fine.
     data[`write${fn}`](23, undefined);
     data[`write${fn}`](23);
 
     ['', '0', null, {}, [], () => {}, true, false].forEach((o) => {
-      assert.throws(
-        () => data[`write${fn}`](23, o),
-        { code: 'ERR_INVALID_ARG_TYPE' });
+      assert.throws(() => data[`write${fn}`](23, o), {
+        code: 'ERR_INVALID_ARG_TYPE'
+      });
     });
 
     [NaN, Infinity, -1, 1.01].forEach((o) => {
-      assert.throws(
-        () => data[`write${fn}`](23, o),
-        { code: 'ERR_OUT_OF_RANGE' });
+      assert.throws(() => data[`write${fn}`](23, o), {
+        code: 'ERR_OUT_OF_RANGE'
+      });
     });
   });
 }
 
-{ // Test 8 bit
+{
+  // Test 8 bit
   const data = Buffer.alloc(4);
 
   data.writeUInt8(23, 0);
@@ -87,14 +88,12 @@ const assert = require('assert');
 
   value = 0xfffff;
   ['writeUInt16BE', 'writeUInt16LE'].forEach((fn) => {
-    assert.throws(
-      () => data[fn](value, 0),
-      {
-        code: 'ERR_OUT_OF_RANGE',
-        message: 'The value of "value" is out of range. ' +
-                 `It must be >= 0 and <= 65535. Received ${value}`
-      }
-    );
+    assert.throws(() => data[fn](value, 0), {
+      code: 'ERR_OUT_OF_RANGE',
+      message:
+        'The value of "value" is out of range. ' +
+        `It must be >= 0 and <= 65535. Received ${value}`
+    });
   });
 }
 
@@ -141,75 +140,72 @@ const assert = require('assert');
   // Check byteLength.
   ['writeUIntBE', 'writeUIntLE'].forEach((fn) => {
     ['', '0', null, {}, [], () => {}, true, false, undefined].forEach((bl) => {
-      assert.throws(
-        () => data[fn](23, 0, bl),
-        { code: 'ERR_INVALID_ARG_TYPE' });
+      assert.throws(() => data[fn](23, 0, bl), {
+        code: 'ERR_INVALID_ARG_TYPE'
+      });
     });
 
     [Infinity, -1].forEach((byteLength) => {
-      assert.throws(
-        () => data[fn](23, 0, byteLength),
-        {
-          code: 'ERR_OUT_OF_RANGE',
-          message: 'The value of "byteLength" is out of range. ' +
-                   `It must be >= 1 and <= 6. Received ${byteLength}`
-        }
-      );
+      assert.throws(() => data[fn](23, 0, byteLength), {
+        code: 'ERR_OUT_OF_RANGE',
+        message:
+          'The value of "byteLength" is out of range. ' +
+          `It must be >= 1 and <= 6. Received ${byteLength}`
+      });
     });
 
     [NaN, 1.01].forEach((byteLength) => {
-      assert.throws(
-        () => data[fn](42, 0, byteLength),
-        {
-          code: 'ERR_OUT_OF_RANGE',
-          name: 'RangeError [ERR_OUT_OF_RANGE]',
-          message: 'The value of "byteLength" is out of range. ' +
-                   `It must be an integer. Received ${byteLength}`
-        });
+      assert.throws(() => data[fn](42, 0, byteLength), {
+        code: 'ERR_OUT_OF_RANGE',
+        name: 'RangeError [ERR_OUT_OF_RANGE]',
+        message:
+          'The value of "byteLength" is out of range. ' +
+          `It must be an integer. Received ${byteLength}`
+      });
     });
   });
 
   // Test 1 to 6 bytes.
   for (let i = 1; i < 6; i++) {
     ['writeUIntBE', 'writeUIntLE'].forEach((fn) => {
-      assert.throws(() => {
-        data[fn](val, 0, i);
-      }, {
-        code: 'ERR_OUT_OF_RANGE',
-        name: 'RangeError [ERR_OUT_OF_RANGE]',
-        message: 'The value of "value" is out of range. ' +
-                 `It must be >= 0 and <= ${val - 1}. Received ${val}`
-      });
+      assert.throws(
+        () => {
+          data[fn](val, 0, i);
+        },
+        {
+          code: 'ERR_OUT_OF_RANGE',
+          name: 'RangeError [ERR_OUT_OF_RANGE]',
+          message:
+            'The value of "value" is out of range. ' +
+            `It must be >= 0 and <= ${val - 1}. Received ${val}`
+        }
+      );
 
       ['', '0', null, {}, [], () => {}, true, false].forEach((o) => {
-        assert.throws(
-          () => data[fn](23, o, i),
-          {
-            code: 'ERR_INVALID_ARG_TYPE',
-            name: 'TypeError [ERR_INVALID_ARG_TYPE]'
-          });
+        assert.throws(() => data[fn](23, o, i), {
+          code: 'ERR_INVALID_ARG_TYPE',
+          name: 'TypeError [ERR_INVALID_ARG_TYPE]'
+        });
       });
 
       [Infinity, -1, -4294967295].forEach((offset) => {
-        assert.throws(
-          () => data[fn](val - 1, offset, i),
-          {
-            code: 'ERR_OUT_OF_RANGE',
-            name: 'RangeError [ERR_OUT_OF_RANGE]',
-            message: 'The value of "offset" is out of range. ' +
-                     `It must be >= 0 and <= ${8 - i}. Received ${offset}`
-          });
+        assert.throws(() => data[fn](val - 1, offset, i), {
+          code: 'ERR_OUT_OF_RANGE',
+          name: 'RangeError [ERR_OUT_OF_RANGE]',
+          message:
+            'The value of "offset" is out of range. ' +
+            `It must be >= 0 and <= ${8 - i}. Received ${offset}`
+        });
       });
 
       [NaN, 1.01].forEach((offset) => {
-        assert.throws(
-          () => data[fn](val - 1, offset, i),
-          {
-            code: 'ERR_OUT_OF_RANGE',
-            name: 'RangeError [ERR_OUT_OF_RANGE]',
-            message: 'The value of "offset" is out of range. ' +
-                     `It must be an integer. Received ${offset}`
-          });
+        assert.throws(() => data[fn](val - 1, offset, i), {
+          code: 'ERR_OUT_OF_RANGE',
+          name: 'RangeError [ERR_OUT_OF_RANGE]',
+          message:
+            'The value of "offset" is out of range. ' +
+            `It must be an integer. Received ${offset}`
+        });
       });
     });
 

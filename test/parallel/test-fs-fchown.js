@@ -19,8 +19,8 @@ function test(input, errObj) {
   const errObj = {
     code: 'ERR_INVALID_ARG_TYPE',
     name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "fd" argument must be of type number. Received type ' +
-             typeof input
+    message:
+      'The "fd" argument must be of type number. Received type ' + typeof input
   };
   test(input, errObj);
 });
@@ -29,8 +29,9 @@ function test(input, errObj) {
   const errObj = {
     code: 'ERR_OUT_OF_RANGE',
     name: 'RangeError [ERR_OUT_OF_RANGE]',
-    message: 'The value of "fd" is out of range. It must be an integer. ' +
-             `Received ${input}`
+    message:
+      'The value of "fd" is out of range. It must be an integer. ' +
+      `Received ${input}`
   };
   test(input, errObj);
 });
@@ -39,8 +40,9 @@ function test(input, errObj) {
   const errObj = {
     code: 'ERR_OUT_OF_RANGE',
     name: 'RangeError [ERR_OUT_OF_RANGE]',
-    message: 'The value of "fd" is out of range. It must be ' +
-             `>= 0 && < 4294967296. Received ${input}`
+    message:
+      'The value of "fd" is out of range. It must be ' +
+      `>= 0 && < 4294967296. Received ${input}`
   };
   test(input, errObj);
 });

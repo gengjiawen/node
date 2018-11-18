@@ -31,18 +31,24 @@ function serialFork() {
     worker.on('error', (err) => assert.fail(err));
     // no common.mustCall since 1 out of 3 should fail
     worker.on('online', () => {
-      worker.on('message', common.mustCall((message) => {
-        ports.push(message.debugPort);
-      }));
+      worker.on(
+        'message',
+        common.mustCall((message) => {
+          ports.push(message.debugPort);
+        })
+      );
     });
-    worker.on('exit', common.mustCall((code, signal) => {
-      assert.strictEqual(signal, null);
-      // worker 2 should fail because of port clash with `server`
-      if (code === 12) {
-        return assert.fail(`worker ${worker.id} failed to bind port`);
-      }
-      assert.strictEqual(code, 0);
-    }));
+    worker.on(
+      'exit',
+      common.mustCall((code, signal) => {
+        assert.strictEqual(signal, null);
+        // worker 2 should fail because of port clash with `server`
+        if (code === 12) {
+          return assert.fail(`worker ${worker.id} failed to bind port`);
+        }
+        assert.strictEqual(code, 0);
+      })
+    );
     worker.on('disconnect', common.mustCall(res));
   });
 }
@@ -52,12 +58,16 @@ if (cluster.isMaster) {
 
   // block one of the ports with a listening socket
   const server = net.createServer();
-  server.listen(clashPort, common.localhostIPv4, common.mustCall(() => {
-    // try to fork 3 workers No.2 should fail
-    Promise.all([serialFork(), serialFork(), serialFork()])
-      .then(common.mustNotCall())
-      .catch((err) => console.error(err));
-  }));
+  server.listen(
+    clashPort,
+    common.localhostIPv4,
+    common.mustCall(() => {
+      // try to fork 3 workers No.2 should fail
+      Promise.all([serialFork(), serialFork(), serialFork()])
+        .then(common.mustNotCall())
+        .catch((err) => console.error(err));
+    })
+  );
   server.unref();
 } else {
   const sentinel = common.mustCall();

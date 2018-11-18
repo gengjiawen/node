@@ -16,8 +16,11 @@ function _transform(chunk, encoding, cb) {
 
 assert.strictEqual(transform._writableState.needDrain, false);
 
-transform.write('asdasd', common.mustCall(() => {
-  assert.strictEqual(transform._writableState.needDrain, false);
-}));
+transform.write(
+  'asdasd',
+  common.mustCall(() => {
+    assert.strictEqual(transform._writableState.needDrain, false);
+  })
+);
 
 assert.strictEqual(transform._writableState.needDrain, true);

@@ -27,21 +27,29 @@ const server = http.createServer((req, res) => {
 
 const countdown = new Countdown(MAX_COUNT, () => server.close());
 
-server.listen(0, common.mustCall(() => {
-  for (let n = 1; n <= MAX_COUNT; n++) {
-    // This runs twice, the first time, the server will use
-    // setHeader, the second time it uses writeHead. In either
-    // case, the error handler must be called because the client
-    // is not allowed to accept multiple content-length headers.
-    http.get(
-      { port: server.address().port, headers: { 'x-num': n } },
-      (res) => {
-        assert.fail('client allowed multiple content-length headers.');
-      }
-    ).on('error', common.mustCall((err) => {
-      assert(/^Parse Error/.test(err.message));
-      assert.strictEqual(err.code, 'HPE_UNEXPECTED_CONTENT_LENGTH');
-      countdown.dec();
-    }));
-  }
-}));
+server.listen(
+  0,
+  common.mustCall(() => {
+    for (let n = 1; n <= MAX_COUNT; n++) {
+      // This runs twice, the first time, the server will use
+      // setHeader, the second time it uses writeHead. In either
+      // case, the error handler must be called because the client
+      // is not allowed to accept multiple content-length headers.
+      http
+        .get(
+          { port: server.address().port, headers: { 'x-num': n } },
+          (res) => {
+            assert.fail('client allowed multiple content-length headers.');
+          }
+        )
+        .on(
+          'error',
+          common.mustCall((err) => {
+            assert(/^Parse Error/.test(err.message));
+            assert.strictEqual(err.code, 'HPE_UNEXPECTED_CONTENT_LENGTH');
+            countdown.dec();
+          })
+        );
+    }
+  })
+);

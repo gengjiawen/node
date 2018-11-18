@@ -3,8 +3,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const https = require('https');
@@ -12,13 +11,13 @@ const https = require('https');
 function toArrayBuffer(buf) {
   const ab = new ArrayBuffer(buf.length);
   const view = new Uint8Array(ab);
-  return buf.map((b, i) => view[i] = b);
+  return buf.map((b, i) => (view[i] = b));
 }
 
 function toDataView(buf) {
   const ab = new ArrayBuffer(buf.length);
   const view = new DataView(ab);
-  return buf.map((b, i) => view[i] = b);
+  return buf.map((b, i) => (view[i] = b));
 }
 
 const keyBuff = fixtures.readKey('agent1-key.pem');
@@ -83,14 +82,18 @@ const caArrDataView = toDataView(caCert);
   [true, [certBuff, certBuff2]]
 ].forEach(([key, cert, index]) => {
   const type = typeof (index === undefined ? key : key[index]);
-  assert.throws(() => {
-    https.createServer({ key, cert });
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "options.key" property must be one of type string, Buffer, ' +
-             `TypedArray, or DataView. Received type ${type}`
-  });
+  assert.throws(
+    () => {
+      https.createServer({ key, cert });
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+      message:
+        'The "options.key" property must be one of type string, Buffer, ' +
+        `TypedArray, or DataView. Received type ${type}`
+    }
+  );
 });
 
 [
@@ -105,17 +108,21 @@ const caArrDataView = toDataView(caCert);
   [[keyBuff, keyBuff2], [true, certBuff2], 0],
   [[keyStr, keyStr2], [certStr, true], 1],
   [[keyStr, keyStr2], [true, false], 0],
-  [[keyStr, keyStr2], true],
+  [[keyStr, keyStr2], true]
 ].forEach(([key, cert, index]) => {
   const type = typeof (index === undefined ? cert : cert[index]);
-  assert.throws(() => {
-    https.createServer({ key, cert });
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "options.cert" property must be one of type string, Buffer,' +
-             ` TypedArray, or DataView. Received type ${type}`
-  });
+  assert.throws(
+    () => {
+      https.createServer({ key, cert });
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+      message:
+        'The "options.cert" property must be one of type string, Buffer,' +
+        ` TypedArray, or DataView. Received type ${type}`
+    }
+  );
 });
 
 // Checks to ensure https.createServer works with the CA parameter
@@ -127,7 +134,7 @@ const caArrDataView = toDataView(caCert);
   [keyBuff, certBuff, [caCertStr, caCertStr2]],
   [keyBuff, certBuff, caArrBuff],
   [keyBuff, certBuff, caArrDataView],
-  [keyBuff, certBuff, false],
+  [keyBuff, certBuff, false]
 ].forEach(([key, cert, ca]) => {
   https.createServer({ key, cert, ca });
 });
@@ -142,12 +149,16 @@ const caArrDataView = toDataView(caCert);
   [keyBuff, certBuff, [caCert, true], 1]
 ].forEach(([key, cert, ca, index]) => {
   const type = typeof (index ? ca[index] : ca);
-  assert.throws(() => {
-    https.createServer({ key, cert, ca });
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "options.ca" property must be one of type string, Buffer, ' +
-             `TypedArray, or DataView. Received type ${type}`
-  });
+  assert.throws(
+    () => {
+      https.createServer({ key, cert, ca });
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+      message:
+        'The "options.ca" property must be one of type string, Buffer, ' +
+        `TypedArray, or DataView. Received type ${type}`
+    }
+  );
 });

@@ -40,7 +40,7 @@ const writeStream = new WriteStream(fd);
   [{ TERM: 'fail' }, 1],
   [{ NODE_DISABLE_COLORS: '1' }, 1],
   [{ TERM: 'dumb' }, 1],
-  [{ TERM: 'dumb', COLORTERM: '1' }, 4],
+  [{ TERM: 'dumb', COLORTERM: '1' }, 4]
 ].forEach(([env, depth], i) => {
   const actual = writeStream.getColorDepth(env);
   assert.strictEqual(
@@ -53,8 +53,8 @@ const writeStream = new WriteStream(fd);
 // OS settings
 {
   const platform = Object.getOwnPropertyDescriptor(process, 'platform');
-  const [ value, depth1, depth2 ] = process.platform !== 'win32' ?
-    ['win32', 1, 4] : ['linux', 4, 1];
+  const [value, depth1, depth2] =
+    process.platform !== 'win32' ? ['win32', 1, 4] : ['linux', 4, 1];
 
   assert.strictEqual(writeStream.getColorDepth({}), depth1);
   Object.defineProperty(process, 'platform', { value });

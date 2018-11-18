@@ -16,20 +16,21 @@ if (process.argv[2] === 'child') {
   assert.ok(Number.isInteger(listeners));
 
   const script = `process.send('${method}'); while(true) {}`;
-  const args = method === 'runInContext' ?
-    [vm.createContext({ process })] :
-    [];
+  const args = method === 'runInContext' ? [vm.createContext({ process })] : [];
   const options = { breakOnSigint: true };
 
   for (let i = 0; i < listeners; i++)
     process.on('SIGINT', common.mustNotCall());
 
   common.expectsError(
-    () => { vm[method](script, ...args, options); },
+    () => {
+      vm[method](script, ...args, options);
+    },
     {
       code: 'ERR_SCRIPT_EXECUTION_INTERRUPTED',
       message: 'Script execution was interrupted by `SIGINT`'
-    });
+    }
+  );
   return;
 }
 
@@ -40,13 +41,19 @@ for (const method of ['runInThisContext', 'runInContext']) {
       stdio: [null, 'pipe', 'inherit', 'ipc']
     });
 
-    child.on('message', common.mustCall(() => {
-      process.kill(child.pid, 'SIGINT');
-    }));
+    child.on(
+      'message',
+      common.mustCall(() => {
+        process.kill(child.pid, 'SIGINT');
+      })
+    );
 
-    child.on('close', common.mustCall((code, signal) => {
-      assert.strictEqual(signal, null);
-      assert.strictEqual(code, 0);
-    }));
+    child.on(
+      'close',
+      common.mustCall((code, signal) => {
+        assert.strictEqual(signal, null);
+        assert.strictEqual(code, 0);
+      })
+    );
   }
 }

@@ -45,7 +45,10 @@ if (!fs.existsSync(configPath)) {
 let config = fs.readFileSync(configPath, 'utf8');
 
 // Clean up comment at the first line.
-config = config.split('\n').slice(1).join('\n');
+config = config
+  .split('\n')
+  .slice(1)
+  .join('\n');
 config = config.replace(/"/g, '\\"');
 config = config.replace(/'/g, '"');
 config = JSON.parse(config, function(key, value) {

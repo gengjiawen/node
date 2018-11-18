@@ -8,10 +8,13 @@ function doSetTimeout(callback, after) {
   };
 }
 
-const errMessage = common.expectsError({
-  code: 'ERR_INVALID_CALLBACK',
-  type: TypeError
-}, 18);
+const errMessage = common.expectsError(
+  {
+    code: 'ERR_INVALID_CALLBACK',
+    type: TypeError
+  },
+  18
+);
 
 assert.throws(doSetTimeout('foo'), errMessage);
 assert.throws(doSetTimeout({ foo: 'bar' }), errMessage);
@@ -19,7 +22,6 @@ assert.throws(doSetTimeout(), errMessage);
 assert.throws(doSetTimeout(undefined, 0), errMessage);
 assert.throws(doSetTimeout(null, 0), errMessage);
 assert.throws(doSetTimeout(false, 0), errMessage);
-
 
 function doSetInterval(callback, after) {
   return function() {
@@ -33,7 +35,6 @@ assert.throws(doSetInterval(), errMessage);
 assert.throws(doSetInterval(undefined, 0), errMessage);
 assert.throws(doSetInterval(null, 0), errMessage);
 assert.throws(doSetInterval(false, 0), errMessage);
-
 
 function doSetImmediate(callback, after) {
   return function() {

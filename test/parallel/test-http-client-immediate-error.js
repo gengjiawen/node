@@ -35,10 +35,15 @@ agent.createConnection = common.mustCall((cfg) => {
   return sock;
 });
 
-http.get({
-  host: '127.0.0.1',
-  port: 1,
-  agent
-}).on('error', common.mustCall((err) => {
-  assert.strictEqual(err.code, 'ENETUNREACH');
-}));
+http
+  .get({
+    host: '127.0.0.1',
+    port: 1,
+    agent
+  })
+  .on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err.code, 'ENETUNREACH');
+    })
+  );

@@ -30,14 +30,17 @@ const qs = require('querystring');
 // TODO: documentation does not allow Array as an option, so testing that
 // should fail, but currently http.Server does not typecheck further than
 // if `option` is `typeof object` - so we don't test that here right now
-const invalid_options = [ 'foo', 42, true ];
+const invalid_options = ['foo', 42, true];
 
 invalid_options.forEach((option) => {
-  assert.throws(() => {
-    new http.Server(option);
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE'
-  });
+  assert.throws(
+    () => {
+      new http.Server(option);
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE'
+    }
+  );
 });
 
 let request_number = 0;
@@ -75,7 +78,6 @@ const server = http.createServer(function(req, res) {
     res.write(url.parse(req.url).pathname);
     res.end();
   }, 1);
-
 });
 server.listen(0);
 
@@ -100,8 +102,10 @@ server.on('listening', function() {
     }
 
     if (requests_sent === 2) {
-      c.write('GET / HTTP/1.1\r\nX-X: foo\r\n\r\n' +
-              'GET / HTTP/1.1\r\nX-X: bar\r\n\r\n');
+      c.write(
+        'GET / HTTP/1.1\r\nX-X: foo\r\n\r\n' +
+          'GET / HTTP/1.1\r\nX-X: bar\r\n\r\n'
+      );
       // Note: we are making the connection half-closed here
       // before we've gotten the response from the server. This
       // is a pretty bad thing to do and not really supported
@@ -112,7 +116,6 @@ server.on('listening', function() {
       assert.strictEqual(c.readyState, 'readOnly');
       requests_sent += 2;
     }
-
   });
 
   c.on('end', function() {

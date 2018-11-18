@@ -5,8 +5,10 @@ const common = require('../common');
 const assert = require('assert');
 const _validateStdio = require('internal/child_process')._validateStdio;
 
-const expectedError =
-  common.expectsError({ code: 'ERR_INVALID_OPT_VALUE', type: TypeError }, 2);
+const expectedError = common.expectsError(
+  { code: 'ERR_INVALID_OPT_VALUE', type: TypeError },
+  2
+);
 
 // should throw if string and not ignore, pipe, or inherit
 assert.throws(() => _validateStdio('foo'), expectedError);
@@ -26,10 +28,10 @@ assert.throws(() => _validateStdio(600), expectedError);
 
 // should throw if stdio has ipc and sync is true
 const stdio2 = ['ipc', 'ipc', 'ipc'];
-common.expectsError(() => _validateStdio(stdio2, true),
-                    { code: 'ERR_IPC_SYNC_FORK', type: Error }
-);
-
+common.expectsError(() => _validateStdio(stdio2, true), {
+  code: 'ERR_IPC_SYNC_FORK',
+  type: Error
+});
 
 if (common.isMainThread) {
   const stdio3 = [process.stdin, process.stdout, process.stderr];
@@ -45,5 +47,6 @@ if (common.isMainThread) {
   });
 } else {
   common.printSkipMessage(
-    'stdio is not associated with file descriptors in Workers');
+    'stdio is not associated with file descriptors in Workers'
+  );
 }

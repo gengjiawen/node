@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 
@@ -34,23 +33,31 @@ const options = {
   cert: fixtures.readSync('test_cert.pem')
 };
 
-const server = https.createServer(options, common.mustCall(function(req, res) {
-  res.writeHead(200);
-  res.end();
-  req.resume();
-}, 2)).listen(0, function() {
-  unauthorized();
-});
+const server = https
+  .createServer(
+    options,
+    common.mustCall(function(req, res) {
+      res.writeHead(200);
+      res.end();
+      req.resume();
+    }, 2)
+  )
+  .listen(0, function() {
+    unauthorized();
+  });
 
 function unauthorized() {
-  const req = https.request({
-    port: server.address().port,
-    rejectUnauthorized: false
-  }, function(res) {
-    assert(!req.socket.authorized);
-    res.resume();
-    rejectUnauthorized();
-  });
+  const req = https.request(
+    {
+      port: server.address().port,
+      rejectUnauthorized: false
+    },
+    function(res) {
+      assert(!req.socket.authorized);
+      res.resume();
+      rejectUnauthorized();
+    }
+  );
   req.on('error', function(err) {
     throw err;
   });

@@ -40,21 +40,25 @@ const server = http.Server(function(req, res) {
     res.writeHead(200);
     res.end('hello world\n');
   });
-
 });
 
 server.listen(0, function() {
-  const req = http.request({
-    port: this.address().port,
-    path: '/',
-    method: 'POST'
-  }, function(res) {
-    console.log(res.statusCode);
-    res.resume();
-  }).on('error', function(e) {
-    console.log(e.message);
-    process.exit(1);
-  });
+  const req = http
+    .request(
+      {
+        port: this.address().port,
+        path: '/',
+        method: 'POST'
+      },
+      function(res) {
+        console.log(res.statusCode);
+        res.resume();
+      }
+    )
+    .on('error', function(e) {
+      console.log(e.message);
+      process.exit(1);
+    });
 
   const result = req.end(expected);
 

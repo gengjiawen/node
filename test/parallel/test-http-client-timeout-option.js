@@ -22,7 +22,7 @@ server.listen(0, options.host, function() {
   req.on('close', common.mustCall(() => server.close()));
 
   let timeout_events = 0;
-  req.on('timeout', common.mustCall(() => timeout_events += 1));
+  req.on('timeout', common.mustCall(() => (timeout_events += 1)));
   setTimeout(function() {
     req.destroy();
     assert.strictEqual(timeout_events, 1);

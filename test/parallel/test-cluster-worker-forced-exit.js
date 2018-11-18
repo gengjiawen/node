@@ -48,11 +48,12 @@ checkForced();
 
 function checkUnforced() {
   const worker = cluster.fork();
-  worker
-    .on('online', common.mustCall(() => worker.disconnect()))
-    .on('exit', common.mustCall((status) => {
+  worker.on('online', common.mustCall(() => worker.disconnect())).on(
+    'exit',
+    common.mustCall((status) => {
       assert.strictEqual(status, SENTINEL);
-    }));
+    })
+  );
 }
 
 function checkForced() {

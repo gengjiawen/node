@@ -25,7 +25,6 @@ const assert = require('assert');
 
 const http = require('http');
 
-
 let serverSocket = null;
 const server = http.createServer(function(req, res) {
   // They should all come in on the same server socket.
@@ -43,11 +42,9 @@ server.listen(0, function() {
 
 const agent = http.Agent({ keepAlive: true });
 
-
 let clientSocket = null;
 const expectRequests = 10;
 let actualRequests = 0;
-
 
 function makeRequest(n) {
   if (n === 0) {

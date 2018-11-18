@@ -13,12 +13,12 @@ const { Readable, Writable } = require('stream');
     write: (chunk, env, callback) => {
       receivedData += chunk;
       callback();
-    },
+    }
   });
 
   const data = ['foo', 'bar', 'baz'];
   const r = new Readable({
-    read: () => {},
+    read: () => {}
   });
 
   r.once('readable', common.mustCall());
@@ -29,9 +29,12 @@ const { Readable, Writable } = require('stream');
   r.push(data[2]);
   r.push(null);
 
-  w.on('finish', common.mustCall(() => {
-    assert.strictEqual(receivedData, data.join(''));
-  }));
+  w.on(
+    'finish',
+    common.mustCall(() => {
+      assert.strictEqual(receivedData, data.join(''));
+    })
+  );
 }
 
 {
@@ -40,12 +43,12 @@ const { Readable, Writable } = require('stream');
     write: (chunk, env, callback) => {
       receivedData += chunk;
       callback();
-    },
+    }
   });
 
   const data = ['foo', 'bar', 'baz'];
   const r = new Readable({
-    read: () => {},
+    read: () => {}
   });
 
   r.pipe(w);
@@ -55,7 +58,10 @@ const { Readable, Writable } = require('stream');
   r.push(null);
   r.once('readable', common.mustCall());
 
-  w.on('finish', common.mustCall(() => {
-    assert.strictEqual(receivedData, data.join(''));
-  }));
+  w.on(
+    'finish',
+    common.mustCall(() => {
+      assert.strictEqual(receivedData, data.join(''));
+    })
+  );
 }

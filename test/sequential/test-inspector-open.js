@@ -10,18 +10,21 @@ const fork = require('child_process').fork;
 const net = require('net');
 const url = require('url');
 
-if (process.env.BE_CHILD)
-  return beChild();
+if (process.env.BE_CHILD) return beChild();
 
-const child = fork(__filename,
-                   { env: Object.assign({}, process.env, { BE_CHILD: 1 }) });
+const child = fork(__filename, {
+  env: Object.assign({}, process.env, { BE_CHILD: 1 })
+});
 
-child.once('message', common.mustCall((msg) => {
-  assert.strictEqual(msg.cmd, 'started');
+child.once(
+  'message',
+  common.mustCall((msg) => {
+    assert.strictEqual(msg.cmd, 'started');
 
-  child.send({ cmd: 'open', args: [0] });
-  child.once('message', common.mustCall(firstOpen));
-}));
+    child.send({ cmd: 'open', args: [0] });
+    child.once('message', common.mustCall(firstOpen));
+  })
+);
 
 let firstPort;
 
@@ -76,9 +79,14 @@ function reopenAfterClose(msg) {
 }
 
 function ping(port, callback) {
-  net.connect(port)
-    .on('connect', function() { close(this); })
-    .on('error', function(err) { close(this, err); });
+  net
+    .connect(port)
+    .on('connect', function() {
+      close(this);
+    })
+    .on('error', function(err) {
+      close(this, err);
+    });
 
   function close(self, err) {
     self.end();

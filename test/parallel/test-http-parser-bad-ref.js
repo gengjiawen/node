@@ -46,7 +46,6 @@ function demoBug(part1, part2) {
     messagesComplete++;
   };
 
-
   // We use a function to eliminate references to the Buffer b
   // We want b to be GCed. The parser will hold a bad reference to it.
   (function() {
@@ -70,16 +69,18 @@ function demoBug(part1, part2) {
   flushPool();
 }
 
+demoBug(
+  'POST /1',
+  '/22 HTTP/1.1\r\n' +
+    'Content-Type: text/plain\r\n' +
+    'Content-Length: 4\r\n\r\n' +
+    'pong'
+);
 
-demoBug('POST /1', '/22 HTTP/1.1\r\n' +
-        'Content-Type: text/plain\r\n' +
-        'Content-Length: 4\r\n\r\n' +
-        'pong');
-
-demoBug('POST /1/22 HTTP/1.1\r\n' +
-        'Content-Type: tex', 't/plain\r\n' +
-        'Content-Length: 4\r\n\r\n' +
-        'pong');
+demoBug(
+  'POST /1/22 HTTP/1.1\r\n' + 'Content-Type: tex',
+  't/plain\r\n' + 'Content-Length: 4\r\n\r\n' + 'pong'
+);
 
 process.on('exit', function() {
   assert.strictEqual(headersComplete, 2);

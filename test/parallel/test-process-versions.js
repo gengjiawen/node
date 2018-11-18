@@ -2,8 +2,16 @@
 const common = require('../common');
 const assert = require('assert');
 
-const expected_keys = ['ares', 'modules', 'node',
-                       'uv', 'v8', 'zlib', 'nghttp2', 'napi'];
+const expected_keys = [
+  'ares',
+  'modules',
+  'node',
+  'uv',
+  'v8',
+  'zlib',
+  'nghttp2',
+  'napi'
+];
 
 if (common.hasCrypto) {
   expected_keys.push('openssl');
@@ -17,7 +25,8 @@ if (common.hasIntl) {
 }
 
 expected_keys.push(
-  process.versions.llhttp === undefined ? 'http_parser' : 'llhttp');
+  process.versions.llhttp === undefined ? 'http_parser' : 'llhttp'
+);
 
 expected_keys.sort();
 const actual_keys = Object.keys(process.versions).sort();
@@ -27,14 +36,22 @@ assert.deepStrictEqual(actual_keys, expected_keys);
 const commonTemplate = /^\d+\.\d+\.\d+(?:-.*)?$/;
 
 assert(commonTemplate.test(process.versions.ares));
-assert(commonTemplate.test(process.versions.llhttp === undefined ?
-  process.versions.http_parser : process.versions.llhttp));
+assert(
+  commonTemplate.test(
+    process.versions.llhttp === undefined
+      ? process.versions.http_parser
+      : process.versions.llhttp
+  )
+);
 assert(commonTemplate.test(process.versions.node));
 assert(commonTemplate.test(process.versions.uv));
 assert(commonTemplate.test(process.versions.zlib));
 
-assert(/^\d+\.\d+\.\d+(?:\.\d+)?-node\.\d+(?: \(candidate\))?$/
-  .test(process.versions.v8));
+assert(
+  /^\d+\.\d+\.\d+(?:\.\d+)?-node\.\d+(?: \(candidate\))?$/.test(
+    process.versions.v8
+  )
+);
 assert(/^\d+$/.test(process.versions.modules));
 
 if (common.hasCrypto) {

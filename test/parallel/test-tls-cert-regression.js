@@ -22,13 +22,11 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tls = require('tls');
 
-const cert =
-`-----BEGIN CERTIFICATE-----
+const cert = `-----BEGIN CERTIFICATE-----
 MIIDNDCCAp2gAwIBAgIJAJvXLQpGPpm7MA0GCSqGSIb3DQEBBQUAMHAxCzAJBgNV
 BAYTAkdCMRAwDgYDVQQIEwdHd3luZWRkMREwDwYDVQQHEwhXYXVuZmF3cjEUMBIG
 A1UEChMLQWNrbmFjayBMdGQxEjAQBgNVBAsTCVRlc3QgQ2VydDESMBAGA1UEAxMJ
@@ -49,8 +47,7 @@ SBuhNrHes4U8QxS8+x/KWjd/81gzsf9J1C2VzTlFaydAgigz3SkQYgs+TMnFkT2o
 US7eCSHZsVo=
 -----END CERTIFICATE-----`;
 
-const key =
-`-----BEGIN RSA PRIVATE KEY-----
+const key = `-----BEGIN RSA PRIVATE KEY-----
 MIICXgIBAAKBgQDXcpu5xntssOi5SXya0LQuU5ijhq0l4sqJWAmxjsuMWSOCg99X
 d9Pe44ZUBSchftdIMJBOtg7iXny7wWQ1LLy3tUfG85VYWZwVZ/t0CclCFkAC/g7E
 Y/D9yqA+5N+t0DeXSGgNRjgINr2XD8tRwlLLzoLw1xkVAmajSwMrfof3KQIDAQAB
@@ -67,14 +64,20 @@ sPWhSOb9VQjMXekI4Y2l8fqAVTS2Fn6+8jkVKxXBywSVCw==
 -----END RSA PRIVATE KEY-----`;
 
 function test(cert, key, cb) {
-  const server = tls.createServer({
-    cert,
-    key
-  }).listen(0, function() {
-    server.close(cb);
-  });
+  const server = tls
+    .createServer({
+      cert,
+      key
+    })
+    .listen(0, function() {
+      server.close(cb);
+    });
 }
 
-test(cert, key, common.mustCall(function() {
-  test(Buffer.from(cert), Buffer.from(key), common.mustCall());
-}));
+test(
+  cert,
+  key,
+  common.mustCall(function() {
+    test(Buffer.from(cert), Buffer.from(key), common.mustCall());
+  })
+);

@@ -33,14 +33,13 @@ const ch = require('child_process');
 const gen = +(process.argv[2] || 0);
 const maxGen = 5;
 
-
 if (gen === maxGen) {
   console.error('hit maxGen, exiting', maxGen);
   return;
 }
 
 const child = ch.spawn(process.execPath, [__filename, gen + 1], {
-  stdio: [ 'ignore', 'pipe', 'ignore' ]
+  stdio: ['ignore', 'pipe', 'ignore']
 });
 assert.ok(!child.stdin);
 assert.ok(child.stdout);

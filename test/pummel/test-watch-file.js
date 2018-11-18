@@ -41,7 +41,6 @@ function watchFile() {
 
 watchFile();
 
-
 const fd = fs.openSync(f, 'w+');
 fs.writeSync(fd, 'xyz\n');
 fs.closeSync(fd);

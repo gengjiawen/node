@@ -2,12 +2,10 @@
 
 // Parallel assignment to the exported variable and module.exports.
 
-function ok() {
-}
+function ok() {}
 
-const asserts = module.exports = ok;
+const asserts = (module.exports = ok);
 
 asserts.ok = ok;
 
-asserts.strictEqual = function() {
-}
+asserts.strictEqual = function() {};

@@ -13,11 +13,14 @@ typeErrorForFunction('destroy');
 typeErrorForFunction('promiseResolve');
 
 function typeErrorForFunction(functionName) {
-  common.expectsError(() => {
-    async_hooks.createHook({ [functionName]: non_function });
-  }, {
-    code: 'ERR_ASYNC_CALLBACK',
-    type: TypeError,
-    message: `hook.${functionName} must be a function`
-  });
+  common.expectsError(
+    () => {
+      async_hooks.createHook({ [functionName]: non_function });
+    },
+    {
+      code: 'ERR_ASYNC_CALLBACK',
+      type: TypeError,
+      message: `hook.${functionName} must be a function`
+    }
+  );
 }

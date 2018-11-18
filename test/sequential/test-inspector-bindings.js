@@ -20,12 +20,16 @@ function debuggedFunction() {
 let scopeCallback = null;
 
 function checkScope(session, scopeId) {
-  session.post('Runtime.getProperties', {
-    'objectId': scopeId,
-    'ownProperties': false,
-    'accessorPropertiesOnly': false,
-    'generatePreview': true
-  }, scopeCallback);
+  session.post(
+    'Runtime.getProperties',
+    {
+      objectId: scopeId,
+      ownProperties: false,
+      accessorPropertiesOnly: false,
+      generatePreview: true
+    },
+    scopeCallback
+  );
 }
 
 function debuggerPausedCallback(session, notification) {
@@ -52,7 +56,9 @@ async function testNoCrashWithExceptionInCallback() {
   const error = new Error('We expect this');
   console.log('Expecting warning to be emitted');
   const promise = new Promise(waitForWarningSkipAsyncStackTraces);
-  session.post('Console.enable', () => { throw error; });
+  session.post('Console.enable', () => {
+    throw error;
+  });
   assert.strictEqual(await promise, error);
   session.disconnect();
 }
@@ -71,25 +77,28 @@ function testSampleDebugSession() {
       actual = v.value.value;
       expected = expects[v.name][i];
       if (actual !== expected) {
-        failures.push(`Iteration ${i} variable: ${v.name} ` +
-          `expected: ${expected} actual: ${actual}`);
+        failures.push(
+          `Iteration ${i} variable: ${v.name} ` +
+            `expected: ${expected} actual: ${actual}`
+        );
       }
     }
   };
   const session = new inspector.Session();
   session.connect();
-  session.on('Debugger.paused',
-             (notification) => debuggerPausedCallback(session, notification));
+  session.on('Debugger.paused', (notification) =>
+    debuggerPausedCallback(session, notification)
+  );
   let cbAsSecondArgCalled = false;
   assert.throws(() => {
     session.post('Debugger.enable', function() {}, function() {});
   }, TypeError);
-  session.post('Debugger.enable', () => cbAsSecondArgCalled = true);
+  session.post('Debugger.enable', () => (cbAsSecondArgCalled = true));
   session.post('Debugger.setBreakpointByUrl', {
-    'lineNumber': 14,
-    'url': pathToFileURL(path.resolve(__dirname, __filename)).toString(),
-    'columnNumber': 0,
-    'condition': ''
+    lineNumber: 14,
+    url: pathToFileURL(path.resolve(__dirname, __filename)).toString(),
+    columnNumber: 0,
+    condition: ''
   });
 
   debuggedFunction();
@@ -107,8 +116,7 @@ async function testNoCrashConsoleLogBeforeThrow() {
   let attempt = 1;
   process.on('warning', common.mustCall(3));
   session.on('inspectorNotification', () => {
-    if (attempt++ > 3)
-      return;
+    if (attempt++ > 3) return;
     console.log('console.log in handler');
     throw new Error('Exception in handler');
   });

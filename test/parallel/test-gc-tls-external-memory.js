@@ -5,8 +5,7 @@
 // when a lot tls connections are opened and closed
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const makeDuplexPair = require('../common/duplexpair');
 const onGC = require('../common/ongc');
@@ -21,13 +20,14 @@ let runs = 0;
 
 // Count garbage-collected TLS sockets.
 let gced = 0;
-function ongc() { gced++; }
+function ongc() {
+  gced++;
+}
 
 connect();
 
 function connect() {
-  if (runs % 64 === 0)
-    global.gc();
+  if (runs % 64 === 0) global.gc();
   const externalMemoryUsage = process.memoryUsage().external;
   assert(externalMemoryUsage >= 0, `${externalMemoryUsage} < 0`);
   if (runs++ === 512) {

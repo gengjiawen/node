@@ -37,7 +37,9 @@ const QUEUE = 10;
 
 function run() {
   if (hit === 0) {
-    setTimeout(() => { ticked = true; }, 1);
+    setTimeout(() => {
+      ticked = true;
+    }, 1);
     const now = Date.now();
     while (Date.now() - now < 2);
   }
@@ -48,8 +50,7 @@ function run() {
   setImmediate(run);
 }
 
-for (let i = 0; i < QUEUE; i++)
-  setImmediate(run);
+for (let i = 0; i < QUEUE; i++) setImmediate(run);
 
 process.on('exit', function() {
   console.log('hit', hit);

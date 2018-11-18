@@ -9,10 +9,8 @@ const os = require('os');
 const URL = require('url').URL;
 
 function pathToFileURL(p) {
-  if (!path.isAbsolute(p))
-    throw new Error('Path must be absolute');
-  if (common.isWindows && p.startsWith('\\\\'))
-    p = p.slice(2);
+  if (!path.isAbsolute(p)) throw new Error('Path must be absolute');
+  if (common.isWindows && p.startsWith('\\\\')) p = p.slice(2);
   return new URL(`file://${p}`);
 }
 
@@ -22,10 +20,13 @@ const url = pathToFileURL(p);
 assert(url instanceof URL);
 
 // Check that we can pass in a URL object successfully
-fs.readFile(url, common.mustCall((err, data) => {
-  assert.ifError(err);
-  assert(Buffer.isBuffer(data));
-}));
+fs.readFile(
+  url,
+  common.mustCall((err, data) => {
+    assert.ifError(err);
+    assert(Buffer.isBuffer(data));
+  })
+);
 
 // Check that using a non file:// URL reports an error
 const httpUrl = new URL('http://example.org');
@@ -38,7 +39,8 @@ common.expectsError(
     code: 'ERR_INVALID_URL_SCHEME',
     type: TypeError,
     message: 'The URL must be of scheme file'
-  });
+  }
+);
 
 // pct-encoded characters in the path will be decoded and checked
 if (common.isWindows) {
@@ -62,8 +64,9 @@ if (common.isWindows) {
     {
       code: 'ERR_INVALID_ARG_VALUE',
       type: TypeError,
-      message: 'The argument \'path\' must be a string or Uint8Array without ' +
-               'null bytes. Received \'c:/tmp/\\u0000test\''
+      message:
+        "The argument 'path' must be a string or Uint8Array without " +
+        "null bytes. Received 'c:/tmp/\\u0000test'"
     }
   );
 } else {
@@ -77,7 +80,8 @@ if (common.isWindows) {
         code: 'ERR_INVALID_FILE_URL_PATH',
         type: TypeError,
         message: 'File URL path must not include encoded / characters'
-      });
+      }
+    );
   });
   common.expectsError(
     () => {
@@ -96,8 +100,9 @@ if (common.isWindows) {
     {
       code: 'ERR_INVALID_ARG_VALUE',
       type: TypeError,
-      message: 'The argument \'path\' must be a string or Uint8Array without ' +
-               'null bytes. Received \'/tmp/\\u0000test\''
+      message:
+        "The argument 'path' must be a string or Uint8Array without " +
+        "null bytes. Received '/tmp/\\u0000test'"
     }
   );
 }

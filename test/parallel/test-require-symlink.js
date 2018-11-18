@@ -2,8 +2,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.canCreateSymLink())
-  common.skip('insufficient privileges');
+if (!common.canCreateSymLink()) common.skip('insufficient privileges');
 if (!common.isMainThread)
   common.skip('process.chdir is not available in Workers');
 
@@ -45,11 +44,13 @@ copyDir(fixtureSource, tmpDirTarget);
 // path.
 process.chdir(tmpdir.path);
 
-const linkDir = path.join(dirName,
-                          'node_modules',
-                          'dep1',
-                          'node_modules',
-                          'dep2');
+const linkDir = path.join(
+  dirName,
+  'node_modules',
+  'dep1',
+  'node_modules',
+  'dep2'
+);
 
 const linkTarget = path.join('..', '..', 'dep2');
 

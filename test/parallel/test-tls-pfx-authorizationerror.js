@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('node compiled without crypto.');
+if (!common.hasCrypto) common.skip('node compiled without crypto.');
 const fixtures = require('../common/fixtures');
 
 // This test ensures that TLS does not fail to read a self-signed certificate
@@ -22,8 +21,10 @@ const server = tls
       rejectUnauthorized: false
     },
     common.mustCall(function(c) {
-      assert.strictEqual(c.getPeerCertificate().serialNumber,
-                         'ECC9B856270DA9A8');
+      assert.strictEqual(
+        c.getPeerCertificate().serialNumber,
+        'ECC9B856270DA9A8'
+      );
       assert.strictEqual(c.authorizationError, null);
       c.end();
     })
@@ -37,8 +38,10 @@ const server = tls
         rejectUnauthorized: false
       },
       function() {
-        assert.strictEqual(client.getCertificate().serialNumber,
-                           'ECC9B856270DA9A8');
+        assert.strictEqual(
+          client.getCertificate().serialNumber,
+          'ECC9B856270DA9A8'
+        );
         client.end();
         server.close();
       }

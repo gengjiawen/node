@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const h2 = require('http2');
 
 const server = h2.createServer();
@@ -20,13 +19,19 @@ function onStream(stream, headers, flags) {
 
 server.listen(0);
 
-server.on('listening', common.mustCall(function() {
-  const client = h2.connect(`http://localhost:${this.address().port}`);
-  const req = client.request();
-  req.resume();
-  req.on('trailers', common.mustNotCall());
-  req.on('close', common.mustCall(() => {
-    server.close();
-    client.close();
-  }));
-}));
+server.on(
+  'listening',
+  common.mustCall(function() {
+    const client = h2.connect(`http://localhost:${this.address().port}`);
+    const req = client.request();
+    req.resume();
+    req.on('trailers', common.mustNotCall());
+    req.on(
+      'close',
+      common.mustCall(() => {
+        server.close();
+        client.close();
+      })
+    );
+  })
+);

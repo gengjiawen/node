@@ -11,7 +11,10 @@ child.stdin.end('console.log(process.argv[2])');
 
 let actual = '';
 child.stdout.setEncoding('utf8');
-child.stdout.on('data', (chunk) => actual += chunk);
-child.stdout.on('end', common.mustCall(() => {
-  assert.strictEqual(actual.trim(), expected);
-}));
+child.stdout.on('data', (chunk) => (actual += chunk));
+child.stdout.on(
+  'end',
+  common.mustCall(() => {
+    assert.strictEqual(actual.trim(), expected);
+  })
+);

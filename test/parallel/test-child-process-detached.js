@@ -28,7 +28,7 @@ const spawn = require('child_process').spawn;
 const childPath = fixtures.path('parent-process-nonpersistent.js');
 let persistentPid = -1;
 
-const child = spawn(process.execPath, [ childPath ]);
+const child = spawn(process.execPath, [childPath]);
 
 child.stdout.on('data', function(data) {
   persistentPid = parseInt(data, 10);

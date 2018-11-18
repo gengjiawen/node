@@ -11,7 +11,7 @@ const theReferenceError = new ReferenceError('Some reference error');
 const theURIError = new URIError('Some URI error');
 const theEvalError = new EvalError('Some eval error');
 
-class MyError extends Error { }
+class MyError extends Error {}
 const myError = new MyError('Some MyError');
 
 // Test that native error object is correctly classed
@@ -66,7 +66,8 @@ function testThrowArbitrary(value) {
     (err) => {
       assert.strictEqual(err, value);
       return true;
-    });
+    }
+  );
 }
 
 testThrowArbitrary(42);
@@ -79,39 +80,37 @@ testThrowArbitrary(undefined);
 testThrowArbitrary(null);
 testThrowArbitrary(NaN);
 
-common.expectsError(
-  () => test_error.throwErrorCode(),
-  {
-    code: 'ERR_TEST_CODE',
-    message: 'Error [error]'
-  });
+common.expectsError(() => test_error.throwErrorCode(), {
+  code: 'ERR_TEST_CODE',
+  message: 'Error [error]'
+});
 
-common.expectsError(
-  () => test_error.throwRangeErrorCode(),
-  {
-    code: 'ERR_TEST_CODE',
-    message: 'RangeError [range error]'
-  });
+common.expectsError(() => test_error.throwRangeErrorCode(), {
+  code: 'ERR_TEST_CODE',
+  message: 'RangeError [range error]'
+});
 
-common.expectsError(
-  () => test_error.throwTypeErrorCode(),
-  {
-    code: 'ERR_TEST_CODE',
-    message: 'TypeError [type error]'
-  });
+common.expectsError(() => test_error.throwTypeErrorCode(), {
+  code: 'ERR_TEST_CODE',
+  message: 'TypeError [type error]'
+});
 
 let error = test_error.createError();
 assert.ok(error instanceof Error, 'expected error to be an instance of Error');
 assert.strictEqual(error.message, 'error');
 
 error = test_error.createRangeError();
-assert.ok(error instanceof RangeError,
-          'expected error to be an instance of RangeError');
+assert.ok(
+  error instanceof RangeError,
+  'expected error to be an instance of RangeError'
+);
 assert.strictEqual(error.message, 'range error');
 
 error = test_error.createTypeError();
-assert.ok(error instanceof TypeError,
-          'expected error to be an instance of TypeError');
+assert.ok(
+  error instanceof TypeError,
+  'expected error to be an instance of TypeError'
+);
 assert.strictEqual(error.message, 'type error');
 
 error = test_error.createErrorCode();
@@ -121,15 +120,19 @@ assert.strictEqual(error.message, 'Error [error]');
 assert.strictEqual(error.name, 'Error [ERR_TEST_CODE]');
 
 error = test_error.createRangeErrorCode();
-assert.ok(error instanceof RangeError,
-          'expected error to be an instance of RangeError');
+assert.ok(
+  error instanceof RangeError,
+  'expected error to be an instance of RangeError'
+);
 assert.strictEqual(error.message, 'RangeError [range error]');
 assert.strictEqual(error.code, 'ERR_TEST_CODE');
 assert.strictEqual(error.name, 'RangeError [ERR_TEST_CODE]');
 
 error = test_error.createTypeErrorCode();
-assert.ok(error instanceof TypeError,
-          'expected error to be an instance of TypeError');
+assert.ok(
+  error instanceof TypeError,
+  'expected error to be an instance of TypeError'
+);
 assert.strictEqual(error.message, 'TypeError [type error]');
 assert.strictEqual(error.code, 'ERR_TEST_CODE');
 assert.strictEqual(error.name, 'TypeError [ERR_TEST_CODE]');

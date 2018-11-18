@@ -2,8 +2,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasFipsCrypto)
-  common.skip('node compiled without FIPS OpenSSL.');
+if (!common.hasFipsCrypto) common.skip('node compiled without FIPS OpenSSL.');
 
 const assert = require('assert');
 const crypto = require('crypto');

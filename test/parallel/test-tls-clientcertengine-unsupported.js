@@ -2,8 +2,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 // Monkey-patch SecureContext
 const { internalBinding } = require('internal/test/binding');
@@ -20,7 +19,9 @@ const tls = require('tls');
 
 {
   common.expectsError(
-    () => { tls.createSecureContext({ clientCertEngine: 'Cannonmouth' }); },
+    () => {
+      tls.createSecureContext({ clientCertEngine: 'Cannonmouth' });
+    },
     {
       code: 'ERR_CRYPTO_CUSTOM_ENGINE_NOT_SUPPORTED',
       message: 'Custom engines not supported by this OpenSSL'

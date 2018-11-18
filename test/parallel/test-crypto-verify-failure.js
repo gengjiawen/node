@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const crypto = require('crypto');
 const tls = require('tls');
@@ -46,22 +45,34 @@ const server = tls.Server(options, (socket) => {
 });
 
 function verify() {
-  crypto.createVerify('SHA1')
+  crypto
+    .createVerify('SHA1')
     .update('Test')
     .verify(certPem, 'asdfasdfas', 'base64');
 }
 
-server.listen(0, common.mustCall(() => {
-  tls.connect({
-    port: server.address().port,
-    rejectUnauthorized: false
-  }, common.mustCall(() => {
-    verify();
-  }))
-    .on('error', common.mustNotCall())
-    .on('close', common.mustCall(() => {
-      server.close();
-    })).resume();
-}));
+server.listen(
+  0,
+  common.mustCall(() => {
+    tls
+      .connect(
+        {
+          port: server.address().port,
+          rejectUnauthorized: false
+        },
+        common.mustCall(() => {
+          verify();
+        })
+      )
+      .on('error', common.mustNotCall())
+      .on(
+        'close',
+        common.mustCall(() => {
+          server.close();
+        })
+      )
+      .resume();
+  })
+);
 
 server.unref();

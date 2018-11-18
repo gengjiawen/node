@@ -31,7 +31,6 @@ if (process.argv[2] === 'child') {
     console.log('child -> will this keep it alive?');
     process.on('message', common.mustNotCall());
   }, 400);
-
 } else {
   const child = fork(__filename, ['child']);
 

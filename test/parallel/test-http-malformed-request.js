@@ -27,15 +27,17 @@ const url = require('url');
 
 // Make sure no exceptions are thrown when receiving malformed HTTP
 // requests.
-const server = http.createServer(common.mustCall((req, res) => {
-  console.log(`req: ${JSON.stringify(url.parse(req.url))}`);
+const server = http.createServer(
+  common.mustCall((req, res) => {
+    console.log(`req: ${JSON.stringify(url.parse(req.url))}`);
 
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.write('Hello World');
-  res.end();
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.write('Hello World');
+    res.end();
 
-  server.close();
-}));
+    server.close();
+  })
+);
 server.listen(0);
 
 server.on('listening', function() {

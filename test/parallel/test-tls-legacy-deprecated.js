@@ -1,8 +1,7 @@
 // Flags: --no-warnings
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tls = require('tls');
 

@@ -3,8 +3,8 @@
 // An exported class using ES2015 class syntax.
 
 class Class {
-  constructor() {};
-  method() {};
+  constructor() {}
+  method() {}
 }
 
 module.exports = {

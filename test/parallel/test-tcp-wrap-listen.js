@@ -54,10 +54,8 @@ server.onconnection = (err, client) => {
       // 11 bytes should flush
       assert.strictEqual(client.writeQueueSize, 0);
 
-      if (req.async)
-        req.oncomplete = common.mustCall(done);
-      else
-        process.nextTick(done.bind(null, 0, client, req));
+      if (req.async) req.oncomplete = common.mustCall(done);
+      else process.nextTick(done.bind(null, 0, client, req));
 
       function done(status, client_, req_) {
         assert.strictEqual(client.pendingWrites.shift(), req);
@@ -72,7 +70,6 @@ server.onconnection = (err, client) => {
 
         maybeCloseClient();
       }
-
     } else {
       console.log('eof');
       client.gotEOF = true;
@@ -86,12 +83,20 @@ const net = require('net');
 
 const c = net.createConnection(port);
 
-c.on('connect', common.mustCall(() => { c.end('hello world'); }));
+c.on(
+  'connect',
+  common.mustCall(() => {
+    c.end('hello world');
+  })
+);
 
 c.setEncoding('utf8');
-c.on('data', common.mustCall((d) => {
-  assert.strictEqual(d, 'hello world');
-}));
+c.on(
+  'data',
+  common.mustCall((d) => {
+    assert.strictEqual(d, 'hello world');
+  })
+);
 
 c.on('close', () => {
   console.error('client closed');

@@ -28,18 +28,21 @@ const server = net.createServer(function(socket) {
   socket.end();
 });
 
-server.on('listening', common.mustCall(function() {
-  const client = http.createClient(common.PORT);
+server.on(
+  'listening',
+  common.mustCall(function() {
+    const client = http.createClient(common.PORT);
 
-  client.on('error', common.mustCall());
-  client.on('end', common.mustCall());
+    client.on('error', common.mustCall());
+    client.on('end', common.mustCall());
 
-  const request = client.request('GET', '/', { 'host': 'localhost' });
-  request.end();
-  request.on('response', function(response) {
-    console.log(`STATUS: ${response.statusCode}`);
-  });
-}));
+    const request = client.request('GET', '/', { host: 'localhost' });
+    request.end();
+    request.on('response', function(response) {
+      console.log(`STATUS: ${response.statusCode}`);
+    });
+  })
+);
 
 server.listen(common.PORT);
 

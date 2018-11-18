@@ -30,10 +30,13 @@ function listener2() {}
 {
   const ee = new EventEmitter();
   ee.on('hello', listener1);
-  ee.on('removeListener', common.mustCall((name, cb) => {
-    assert.strictEqual(name, 'hello');
-    assert.strictEqual(cb, listener1);
-  }));
+  ee.on(
+    'removeListener',
+    common.mustCall((name, cb) => {
+      assert.strictEqual(name, 'hello');
+      assert.strictEqual(cb, listener1);
+    })
+  );
   ee.removeListener('hello', listener1);
   assert.deepStrictEqual([], ee.listeners('hello'));
 }
@@ -50,18 +53,24 @@ function listener2() {}
   const ee = new EventEmitter();
   ee.on('hello', listener1);
   ee.on('hello', listener2);
-  ee.once('removeListener', common.mustCall((name, cb) => {
-    assert.strictEqual(name, 'hello');
-    assert.strictEqual(cb, listener1);
-    assert.deepStrictEqual([listener2], ee.listeners('hello'));
-  }));
+  ee.once(
+    'removeListener',
+    common.mustCall((name, cb) => {
+      assert.strictEqual(name, 'hello');
+      assert.strictEqual(cb, listener1);
+      assert.deepStrictEqual([listener2], ee.listeners('hello'));
+    })
+  );
   ee.removeListener('hello', listener1);
   assert.deepStrictEqual([listener2], ee.listeners('hello'));
-  ee.once('removeListener', common.mustCall((name, cb) => {
-    assert.strictEqual(name, 'hello');
-    assert.strictEqual(cb, listener2);
-    assert.deepStrictEqual([], ee.listeners('hello'));
-  }));
+  ee.once(
+    'removeListener',
+    common.mustCall((name, cb) => {
+      assert.strictEqual(name, 'hello');
+      assert.strictEqual(cb, listener2);
+      assert.deepStrictEqual([], ee.listeners('hello'));
+    })
+  );
   ee.removeListener('hello', listener2);
   assert.deepStrictEqual([], ee.listeners('hello'));
 }
@@ -77,11 +86,14 @@ function listener2() {}
     assert.fail('remove2 should not have been called');
   }
 
-  ee.on('removeListener', common.mustCall(function(name, cb) {
-    if (cb !== remove1) return;
-    this.removeListener('quux', remove2);
-    this.emit('quux');
-  }, 2));
+  ee.on(
+    'removeListener',
+    common.mustCall(function(name, cb) {
+      if (cb !== remove1) return;
+      this.removeListener('quux', remove2);
+      this.emit('quux');
+    }, 2)
+  );
   ee.on('quux', remove1);
   ee.on('quux', remove2);
   ee.removeListener('quux', remove1);
@@ -91,18 +103,24 @@ function listener2() {}
   const ee = new EventEmitter();
   ee.on('hello', listener1);
   ee.on('hello', listener2);
-  ee.once('removeListener', common.mustCall((name, cb) => {
-    assert.strictEqual(name, 'hello');
-    assert.strictEqual(cb, listener1);
-    assert.deepStrictEqual([listener2], ee.listeners('hello'));
-    ee.once('removeListener', common.mustCall((name, cb) => {
+  ee.once(
+    'removeListener',
+    common.mustCall((name, cb) => {
       assert.strictEqual(name, 'hello');
-      assert.strictEqual(cb, listener2);
+      assert.strictEqual(cb, listener1);
+      assert.deepStrictEqual([listener2], ee.listeners('hello'));
+      ee.once(
+        'removeListener',
+        common.mustCall((name, cb) => {
+          assert.strictEqual(name, 'hello');
+          assert.strictEqual(cb, listener2);
+          assert.deepStrictEqual([], ee.listeners('hello'));
+        })
+      );
+      ee.removeListener('hello', listener2);
       assert.deepStrictEqual([], ee.listeners('hello'));
-    }));
-    ee.removeListener('hello', listener2);
-    assert.deepStrictEqual([], ee.listeners('hello'));
-  }));
+    })
+  );
   ee.removeListener('hello', listener1);
   assert.deepStrictEqual([], ee.listeners('hello'));
 }
@@ -130,10 +148,13 @@ function listener2() {}
   const ee = new EventEmitter();
 
   ee.once('hello', listener1);
-  ee.on('removeListener', common.mustCall((eventName, listener) => {
-    assert.strictEqual(eventName, 'hello');
-    assert.strictEqual(listener, listener1);
-  }));
+  ee.on(
+    'removeListener',
+    common.mustCall((eventName, listener) => {
+      assert.strictEqual(eventName, 'hello');
+      assert.strictEqual(listener, listener1);
+    })
+  );
   ee.emit('hello');
 }
 
@@ -144,15 +165,19 @@ function listener2() {}
 }
 
 // Verify that the removed listener must be a function
-common.expectsError(() => {
-  const ee = new EventEmitter();
-  ee.removeListener('foo', null);
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError,
-  message: 'The "listener" argument must be of type Function. ' +
-           'Received type object'
-});
+common.expectsError(
+  () => {
+    const ee = new EventEmitter();
+    ee.removeListener('foo', null);
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "listener" argument must be of type Function. ' +
+      'Received type object'
+  }
+);
 
 {
   const ee = new EventEmitter();

@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -43,7 +42,7 @@ for (let i = 0; i < 2000; i++) {
     aSecret,
     bSecret,
     'Secrets should be equal.\n' +
-    `aSecret: ${aSecret.toString('base64')}\n` +
-    `bSecret: ${bSecret.toString('base64')}`
+      `aSecret: ${aSecret.toString('base64')}\n` +
+      `bSecret: ${bSecret.toString('base64')}`
   );
 }

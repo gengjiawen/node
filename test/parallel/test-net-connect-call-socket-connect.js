@@ -28,12 +28,20 @@ Socket.prototype.connect = common.mustCall(function() {
 
 const server = net.createServer();
 
-server.listen(common.mustCall(function() {
-  const port = server.address().port;
-  const client = net.connect({ port }, common.mustCall(function() {
-    client.end();
-  }));
-  client.on('end', common.mustCall(function() {
-    server.close();
-  }));
-}));
+server.listen(
+  common.mustCall(function() {
+    const port = server.address().port;
+    const client = net.connect(
+      { port },
+      common.mustCall(function() {
+        client.end();
+      })
+    );
+    client.on(
+      'end',
+      common.mustCall(function() {
+        server.close();
+      })
+    );
+  })
+);

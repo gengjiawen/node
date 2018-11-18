@@ -22,20 +22,14 @@ const fs = require('fs');
       message: `The "newPath" argument must be one ${type}`
     }
   );
-  assert.throws(
-    () => fs.renameSync(input, 'does-not-exist'),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-      message: `The "oldPath" argument must be one ${type}`
-    }
-  );
-  assert.throws(
-    () => fs.renameSync('does-not-exist', input),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-      message: `The "newPath" argument must be one ${type}`
-    }
-  );
+  assert.throws(() => fs.renameSync(input, 'does-not-exist'), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+    message: `The "oldPath" argument must be one ${type}`
+  });
+  assert.throws(() => fs.renameSync('does-not-exist', input), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+    message: `The "newPath" argument must be one ${type}`
+  });
 });

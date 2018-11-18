@@ -39,19 +39,16 @@ if (common.isMainThread) {
   assert.strictEqual(typeof process.stderr.fd, 'number');
 }
 
-common.expectWarning(
-  'Warning',
-  [
-    ['Count for \'noLabel\' does not exist', common.noWarnCode],
-    ['No such label \'noLabel\' for console.timeLog()', common.noWarnCode],
-    ['No such label \'noLabel\' for console.timeEnd()', common.noWarnCode],
-    ['Count for \'default\' does not exist', common.noWarnCode],
-    ['No such label \'default\' for console.timeLog()', common.noWarnCode],
-    ['No such label \'default\' for console.timeEnd()', common.noWarnCode],
-    ['Label \'default\' already exists for console.time()', common.noWarnCode],
-    ['Label \'test\' already exists for console.time()', common.noWarnCode]
-  ]
-);
+common.expectWarning('Warning', [
+  ["Count for 'noLabel' does not exist", common.noWarnCode],
+  ["No such label 'noLabel' for console.timeLog()", common.noWarnCode],
+  ["No such label 'noLabel' for console.timeEnd()", common.noWarnCode],
+  ["Count for 'default' does not exist", common.noWarnCode],
+  ["No such label 'default' for console.timeLog()", common.noWarnCode],
+  ["No such label 'default' for console.timeEnd()", common.noWarnCode],
+  ["Label 'default' already exists for console.time()", common.noWarnCode],
+  ["Label 'test' already exists for console.time()", common.noWarnCode]
+]);
 
 console.countReset('noLabel');
 console.timeLog('noLabel');
@@ -73,11 +70,8 @@ console.timeEnd();
 
 // Check that the `Error` is a `TypeError` but do not check the message as it
 // will be different in different JavaScript engines.
-assert.throws(() => console.time(Symbol('test')),
-              TypeError);
-assert.throws(() => console.timeEnd(Symbol('test')),
-              TypeError);
-
+assert.throws(() => console.time(Symbol('test')), TypeError);
+assert.throws(() => console.timeEnd(Symbol('test')), TypeError);
 
 // An Object with a custom inspect function.
 const custom_inspect = { foo: 'bar', [util.inspect.custom]: () => 'inspect' };
@@ -190,8 +184,10 @@ console.timeLog('log1', {}, [1, 2, 3]);
 console.timeEnd('log1');
 
 console.assert(false, '%s should', 'console.assert', 'not throw');
-assert.strictEqual(errStrings[errStrings.length - 1],
-                   'Assertion failed: console.assert should not throw\n');
+assert.strictEqual(
+  errStrings[errStrings.length - 1],
+  'Assertion failed: console.assert should not throw\n'
+);
 
 console.assert(true, 'this should not throw');
 
@@ -213,7 +209,11 @@ console.timeEnd('label3');
 assert.strictEqual(console._times.size, timesMapSize);
 
 const expectedStrings = [
-  'foo', 'foo bar', 'foo bar hop', "{ slashes: '\\\\\\\\' }", 'inspect'
+  'foo',
+  'foo bar',
+  'foo bar hop',
+  "{ slashes: '\\\\\\\\' }",
+  'inspect'
 ];
 
 for (const expected of expectedStrings) {
@@ -230,12 +230,16 @@ for (const expected of expectedStrings) {
   assert.strictEqual(strings.shift(), `${expected}\n`);
 }
 
-assert.strictEqual(strings.shift(),
-                   "{ foo: 'bar',\n  [Symbol(nodejs.util.inspect.custom)]: " +
-                    '[Function: [nodejs.util.inspect.custom]] }\n');
-assert.strictEqual(strings.shift(),
-                   "{ foo: 'bar',\n  [Symbol(nodejs.util.inspect.custom)]: " +
-                    '[Function: [nodejs.util.inspect.custom]] }\n');
+assert.strictEqual(
+  strings.shift(),
+  "{ foo: 'bar',\n  [Symbol(nodejs.util.inspect.custom)]: " +
+    '[Function: [nodejs.util.inspect.custom]] }\n'
+);
+assert.strictEqual(
+  strings.shift(),
+  "{ foo: 'bar',\n  [Symbol(nodejs.util.inspect.custom)]: " +
+    '[Function: [nodejs.util.inspect.custom]] }\n'
+);
 assert.ok(strings.shift().includes('foo: [Object]'));
 assert.strictEqual(strings.shift().includes('baz'), false);
 assert.strictEqual(strings.shift(), 'inspect inspect\n');
@@ -265,16 +269,23 @@ assert.ok(/^log1: \d+\.\d{3}ms$/.test(strings.shift().trim()));
 // Make sure that we checked all strings
 assert.strictEqual(strings.length, 0);
 
-assert.strictEqual(errStrings.shift().split('\n').shift(),
-                   'Trace: This is a {"formatted":"trace"} 10 foo');
+assert.strictEqual(
+  errStrings
+    .shift()
+    .split('\n')
+    .shift(),
+  'Trace: This is a {"formatted":"trace"} 10 foo'
+);
 
 // hijack stderr to catch `process.emitWarning` which is using
 // `process.nextTick`
-hijackStderr(common.mustCall(function(data) {
-  restoreStderr();
+hijackStderr(
+  common.mustCall(function(data) {
+    restoreStderr();
 
-  // stderr.write will catch sync error, so use `process.nextTick` here
-  process.nextTick(function() {
-    assert.strictEqual(data.includes('noLabel'), true);
-  });
-}));
+    // stderr.write will catch sync error, so use `process.nextTick` here
+    process.nextTick(function() {
+      assert.strictEqual(data.includes('noLabel'), true);
+    });
+  })
+);

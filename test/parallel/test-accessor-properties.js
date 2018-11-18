@@ -55,7 +55,8 @@ const UDP = internalBinding('udp_wrap').UDP;
     'object'
   );
 
-  if (common.hasCrypto) { // eslint-disable-line node-core/crypto-check
+  if (common.hasCrypto) {
+    // eslint-disable-line node-core/crypto-check
     // There are accessor properties in crypto too
     const crypto = process.binding('crypto');
 
@@ -65,7 +66,9 @@ const UDP = internalBinding('udp_wrap').UDP;
 
     assert.strictEqual(
       typeof Object.getOwnPropertyDescriptor(
-        crypto.SecureContext.prototype, '_external'),
+        crypto.SecureContext.prototype,
+        '_external'
+      ),
       'object'
     );
   }

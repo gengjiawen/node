@@ -14,22 +14,18 @@ const ctrlU = { ctrl: true, name: 'u' };
     prompt: ''
   });
 
-  const tests = [
-    [1, 'a'],
-    [2, 'ab'],
-    [2, '丁']
-  ];
+  const tests = [[1, 'a'], [2, 'ab'], [2, '丁']];
 
   // The non-ICU JS implementation of character width calculation is only aware
   // of the wide/narrow distinction. Only test these more advanced cases when
   // ICU is available.
   if (process.binding('config').hasIntl) {
     tests.push(
-      [0, '\u0301'],   // COMBINING ACUTE ACCENT
-      [1, 'a\u0301'],  // á
-      [0, '\u20DD'],   // COMBINING ENCLOSING CIRCLE
+      [0, '\u0301'], // COMBINING ACUTE ACCENT
+      [1, 'a\u0301'], // á
+      [0, '\u20DD'], // COMBINING ENCLOSING CIRCLE
       [2, 'a\u20DDb'], // a⃝b
-      [0, '\u200E']    // LEFT-TO-RIGHT MARK
+      [0, '\u200E'] // LEFT-TO-RIGHT MARK
     );
   }
 

@@ -25,8 +25,11 @@ function onlookupService() {
   assert.strictEqual(a.type, 'GETNAMEINFOREQWRAP');
   assert.strictEqual(typeof a.uid, 'number');
   assert.strictEqual(a.triggerAsyncId, 1);
-  checkInvocations(a, { init: 1, before: 1 },
-                   'while in onlookupService callback');
+  checkInvocations(
+    a,
+    { init: 1, before: 1 },
+    'while in onlookupService callback'
+  );
   tick(2);
 }
 
@@ -38,6 +41,9 @@ function onexit() {
 
   const as = hooks.activitiesOfTypes('GETNAMEINFOREQWRAP');
   const a = as[0];
-  checkInvocations(a, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'when process exits');
+  checkInvocations(
+    a,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'when process exits'
+  );
 }

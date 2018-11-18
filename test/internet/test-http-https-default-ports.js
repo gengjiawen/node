@@ -23,17 +23,22 @@
 const common = require('../common');
 const { addresses } = require('../common/internet');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const https = require('https');
 
 const http = require('http');
 
-https.get(`https://${addresses.INET_HOST}/`, common.mustCall((res) => {
-  res.resume();
-}));
+https.get(
+  `https://${addresses.INET_HOST}/`,
+  common.mustCall((res) => {
+    res.resume();
+  })
+);
 
-http.get(`http://${addresses.INET_HOST}/`, common.mustCall((res) => {
-  res.resume();
-}));
+http.get(
+  `http://${addresses.INET_HOST}/`,
+  common.mustCall((res) => {
+    res.resume();
+  })
+);

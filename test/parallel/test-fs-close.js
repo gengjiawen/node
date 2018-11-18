@@ -7,6 +7,9 @@ const fs = require('fs');
 
 const fd = fs.openSync(__filename, 'r');
 
-fs.close(fd, common.mustCall(function(...args) {
-  assert.deepStrictEqual(args, [null]);
-}));
+fs.close(
+  fd,
+  common.mustCall(function(...args) {
+    assert.deepStrictEqual(args, [null]);
+  })
+);

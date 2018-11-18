@@ -49,7 +49,7 @@ const multipleAllowed = [
 
   // make sure that unspecified headers is treated as multiple
   'Some-Random-Header',
-  'X-Some-Random-Header',
+  'X-Some-Random-Header'
 ];
 
 const multipleForbidden = [
@@ -63,7 +63,7 @@ const multipleForbidden = [
   'If-Unmodified-Since',
   'From',
   'Location',
-  'Max-Forwards',
+  'Max-Forwards'
 
   // special case, tested differently
   // 'Content-Length',
@@ -71,13 +71,19 @@ const multipleForbidden = [
 
 const srv = http.createServer(function(req, res) {
   multipleForbidden.forEach(function(header) {
-    assert.strictEqual(req.headers[header.toLowerCase()], 'foo',
-                       `header parsed incorrectly: ${header}`);
+    assert.strictEqual(
+      req.headers[header.toLowerCase()],
+      'foo',
+      `header parsed incorrectly: ${header}`
+    );
   });
   multipleAllowed.forEach(function(header) {
-    const sep = (header.toLowerCase() === 'cookie' ? '; ' : ', ');
-    assert.strictEqual(req.headers[header.toLowerCase()], `foo${sep}bar`,
-                       `header parsed incorrectly: ${header}`);
+    const sep = header.toLowerCase() === 'cookie' ? '; ' : ', ';
+    assert.strictEqual(
+      req.headers[header.toLowerCase()],
+      `foo${sep}bar`,
+      `header parsed incorrectly: ${header}`
+    );
   });
 
   res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -103,6 +109,6 @@ srv.listen(0, function() {
     host: 'localhost',
     port: this.address().port,
     path: '/',
-    headers: headers,
+    headers: headers
   });
 });

@@ -52,8 +52,7 @@ const interfaceAddress = ((networkInterfaces) => {
       if (!localInterface.internal && localInterface.family === FAM) {
         let interfaceAddress = localInterface.address;
         // On Windows, IPv6 would need: `%${localInterface.scopeid}`
-        if (FAM === 'IPv6')
-          interfaceAddress += `${interfaceAddress}%${name}`;
+        if (FAM === 'IPv6') interfaceAddress += `${interfaceAddress}%${name}`;
         return interfaceAddress;
       }
     }
@@ -65,14 +64,21 @@ assert.ok(interfaceAddress);
 const messages = [
   { tail: 'First message to send', mcast: MULTICASTS[FAM][0], rcv: true },
   { tail: 'Second message to send', mcast: MULTICASTS[FAM][0], rcv: true },
-  { tail: 'Third message to send', mcast: MULTICASTS[FAM][1], rcv: true,
-    newAddr: interfaceAddress },
+  {
+    tail: 'Third message to send',
+    mcast: MULTICASTS[FAM][1],
+    rcv: true,
+    newAddr: interfaceAddress
+  },
   { tail: 'Fourth message to send', mcast: MULTICASTS[FAM][2] },
   { tail: 'Fifth message to send', mcast: MULTICASTS[FAM][1], rcv: true },
-  { tail: 'Sixth message to send', mcast: MULTICASTS[FAM][2], rcv: true,
-    newAddr: LOOPBACK[FAM] }
+  {
+    tail: 'Sixth message to send',
+    mcast: MULTICASTS[FAM][2],
+    rcv: true,
+    newAddr: LOOPBACK[FAM]
+  }
 ];
-
 
 if (process.argv[2] !== 'child') {
   const IFACES = [ANY[FAM], interfaceAddress, LOOPBACK[FAM]];
@@ -85,8 +91,10 @@ if (process.argv[2] !== 'child') {
   let timer = null;
   // Exit the test if it doesn't succeed within the TIMEOUT.
   timer = setTimeout(function() {
-    console.error('[PARENT] Responses were not received within %d ms.',
-                  TIMEOUT);
+    console.error(
+      '[PARENT] Responses were not received within %d ms.',
+      TIMEOUT
+    );
     console.error('[PARENT] Skip');
 
     killSubprocesses(workers);
@@ -100,15 +108,16 @@ if (process.argv[2] !== 'child') {
     const IFACE = IFACES[i % IFACES.length];
     const MULTICAST = MULTICASTS[FAM][i % MULTICASTS[FAM].length];
 
-    const messagesNeeded = messages.filter((m) => m.rcv &&
-                                                  m.mcast === MULTICAST)
-                                   .map((m) => TMPL(m.tail));
-    const worker = fork(process.argv[1],
-                        ['child',
-                         IFACE,
-                         MULTICAST,
-                         messagesNeeded.length,
-                         NOW]);
+    const messagesNeeded = messages
+      .filter((m) => m.rcv && m.mcast === MULTICAST)
+      .map((m) => TMPL(m.tail));
+    const worker = fork(process.argv[1], [
+      'child',
+      IFACE,
+      MULTICAST,
+      messagesNeeded.length,
+      NOW
+    ]);
     workers[worker.pid] = worker;
 
     worker.messagesReceived = [];
@@ -123,10 +132,12 @@ if (process.argv[2] !== 'child') {
       }
 
       dead += 1;
-      console.error('[PARENT] Worker %d died. %d dead of %d',
-                    worker.pid,
-                    dead,
-                    listeners);
+      console.error(
+        '[PARENT] Worker %d died. %d dead of %d',
+        worker.pid,
+        dead,
+        listeners
+      );
 
       if (dead === listeners) {
         console.error('[PARENT] All workers have died.');
@@ -152,15 +163,19 @@ if (process.argv[2] !== 'child') {
         if (worker.messagesReceived.length === worker.messagesNeeded.length) {
           done += 1;
           worker.isDone = true;
-          console.error('[PARENT] %d received %d messages total.',
-                        worker.pid,
-                        worker.messagesReceived.length);
+          console.error(
+            '[PARENT] %d received %d messages total.',
+            worker.pid,
+            worker.messagesReceived.length
+          );
         }
 
         if (done === listeners) {
-          console.error('[PARENT] All workers have received the ' +
-                        'required number of ' +
-                        'messages. Will now compare.');
+          console.error(
+            '[PARENT] All workers have received the ' +
+              'required number of ' +
+              'messages. Will now compare.'
+          );
 
           Object.keys(workers).forEach(function(pid) {
             const worker = workers[pid];
@@ -176,13 +191,17 @@ if (process.argv[2] !== 'child') {
               }
             });
 
-            console.error('[PARENT] %d received %d matching messages.',
-                          worker.pid,
-                          count);
+            console.error(
+              '[PARENT] %d received %d matching messages.',
+              worker.pid,
+              count
+            );
 
-            assert.strictEqual(count, worker.messagesNeeded.length,
-                               'A worker received ' +
-                               'an invalid multicast message');
+            assert.strictEqual(
+              count,
+              worker.messagesNeeded.length,
+              'A worker received ' + 'an invalid multicast message'
+            );
           });
 
           clearTimeout(timer);
@@ -222,26 +241,23 @@ if (process.argv[2] !== 'child') {
       console.error(`changing outgoing multicast ${msg.newAddr}`);
       sendSocket.setMulticastInterface(msg.newAddr);
     }
-    sendSocket.send(
-      buf,
-      0,
-      buf.length,
-      PORTS[msg.mcast],
-      msg.mcast,
-      function(err) {
-        assert.ifError(err);
-        console.error('[PARENT] sent %s to %s:%s',
-                      util.inspect(buf.toString()),
-                      msg.mcast, PORTS[msg.mcast]);
+    sendSocket.send(buf, 0, buf.length, PORTS[msg.mcast], msg.mcast, function(
+      err
+    ) {
+      assert.ifError(err);
+      console.error(
+        '[PARENT] sent %s to %s:%s',
+        util.inspect(buf.toString()),
+        msg.mcast,
+        PORTS[msg.mcast]
+      );
 
-        process.nextTick(sendSocket.sendNext);
-      }
-    );
+      process.nextTick(sendSocket.sendNext);
+    });
   };
 
   function killSubprocesses(subprocesses) {
-    for (const i in subprocesses)
-      subprocesses[i].kill();
+    for (const i in subprocesses) subprocesses[i].kill();
   }
 }
 
@@ -262,10 +278,12 @@ if (process.argv[2] === 'child') {
     // Examine udp messages only when they were sent by the parent.
     if (!buf.toString().startsWith(SESSION)) return;
 
-    console.error('[CHILD] %s received %s from %j',
-                  process.pid,
-                  util.inspect(buf.toString()),
-                  rinfo);
+    console.error(
+      '[CHILD] %s received %s from %j',
+      process.pid,
+      util.inspect(buf.toString()),
+      rinfo
+    );
 
     receivedMessages.push(buf);
 
@@ -279,14 +297,11 @@ if (process.argv[2] === 'child') {
     process.send({ message: buf.toString() }, closecb);
   });
 
-
   listenSocket.on('listening', function() {
     listenSocket.addMembership(MULTICAST, IFACE);
     process.send({ listening: true });
   });
 
-  if (common.isWindows)
-    listenSocket.bind(PORTS[MULTICAST], ANY[FAM]);
-  else
-    listenSocket.bind(common.PORT, MULTICAST);
+  if (common.isWindows) listenSocket.bind(PORTS[MULTICAST], ANY[FAM]);
+  else listenSocket.bind(common.PORT, MULTICAST);
 }

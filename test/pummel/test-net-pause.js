@@ -69,13 +69,9 @@ server.on('listening', function() {
           console.log(`resume at: ${chars_recved}`);
           assert.strictEqual(chars_recved, recv.length);
           client.resume();
-
         }, 500);
-
       }, 500);
-
     }, 500);
-
   }, 500);
 
   client.on('end', function() {

@@ -8,17 +8,26 @@ assert.strictEqual(versionCheck('v8-version,1,2,3,4,0', '1.2.3'), undefined);
 assert.strictEqual(versionCheck('v8-version,1,2,3,4,0', '1.2.3.3'), undefined);
 assert.strictEqual(versionCheck('v8-version,1,2,3,4,0', '1.2.3.4'), undefined);
 assert.strictEqual(versionCheck('v8-version,1,2,3,4,0', '1.2.3.5'), undefined);
-assert.strictEqual(versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3'),
-                   undefined);
-assert.strictEqual(versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3.4'),
-                   undefined);
-assert.strictEqual(versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3-node.1'),
-                   undefined);
-assert.strictEqual(versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3-node.2'),
-                   undefined);
+assert.strictEqual(
+  versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3'),
+  undefined
+);
+assert.strictEqual(
+  versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3.4'),
+  undefined
+);
+assert.strictEqual(
+  versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3-node.1'),
+  undefined
+);
+assert.strictEqual(
+  versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3-node.2'),
+  undefined
+);
 assert.strictEqual(
   versionCheck('v8-version,1,2,3,4,-node.1,0', '1.2.3.4-node.2'),
-  undefined);
+  undefined
+);
 
 {
   const expected = 'Unable to read v8-version from log file.';
@@ -28,8 +37,10 @@ assert.strictEqual(
   assert.strictEqual(versionCheck('v8-version,1,2', '1.2.3'), expected);
   assert.strictEqual(versionCheck('v8-version,1,2,3', '1.2.3'), expected);
   assert.strictEqual(versionCheck('v8-version,1,2,3,4', '1.2.3'), expected);
-  assert.strictEqual(versionCheck('v8-version,1,2,3,4,5,6,7', '1.2.3'),
-                     expected);
+  assert.strictEqual(
+    versionCheck('v8-version,1,2,3,4,5,6,7', '1.2.3'),
+    expected
+  );
 }
 
 {

@@ -1,11 +1,9 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
-if (!common.hasIPv6)
-  common.skip('IPv6 support required');
+if (!common.hasIPv6) common.skip('IPv6 support required');
 
 const initHooks = require('./init-hooks');
 const verifyGraph = require('./verify-graph');
@@ -32,7 +30,10 @@ function onlistening() {
   // Creating client and connecting it to server
   //
   tls
-    .connect(server.address().port, { rejectUnauthorized: false })
+    .connect(
+      server.address().port,
+      { rejectUnauthorized: false }
+    )
     .on('secureConnect', common.mustCall(onsecureConnect));
 }
 
@@ -53,22 +54,23 @@ process.on('exit', onexit);
 function onexit() {
   hooks.disable();
 
-  verifyGraph(
-    hooks,
-    [ { type: 'TCPSERVERWRAP', id: 'tcpserver:1', triggerAsyncId: null },
-      { type: 'TCPWRAP', id: 'tcp:1', triggerAsyncId: 'tcpserver:1' },
-      { type: 'TLSWRAP', id: 'tls:1', triggerAsyncId: 'tcpserver:1' },
-      { type: 'GETADDRINFOREQWRAP',
-        id: 'getaddrinforeq:1', triggerAsyncId: 'tls:1' },
-      { type: 'TCPCONNECTWRAP',
-        id: 'tcpconnect:1', triggerAsyncId: 'tcp:1' },
-      { type: 'WRITEWRAP', id: 'write:1', triggerAsyncId: 'tcpconnect:1' },
-      { type: 'TCPWRAP', id: 'tcp:2', triggerAsyncId: 'tcpserver:1' },
-      { type: 'TLSWRAP', id: 'tls:2', triggerAsyncId: 'tcpserver:1' },
-      { type: 'WRITEWRAP', id: 'write:2', triggerAsyncId: null },
-      { type: 'WRITEWRAP', id: 'write:3', triggerAsyncId: null },
-      { type: 'WRITEWRAP', id: 'write:4', triggerAsyncId: null },
-      { type: 'Immediate', id: 'immediate:1', triggerAsyncId: 'tcp:1' },
-      { type: 'Immediate', id: 'immediate:2', triggerAsyncId: 'tcp:2' } ]
-  );
+  verifyGraph(hooks, [
+    { type: 'TCPSERVERWRAP', id: 'tcpserver:1', triggerAsyncId: null },
+    { type: 'TCPWRAP', id: 'tcp:1', triggerAsyncId: 'tcpserver:1' },
+    { type: 'TLSWRAP', id: 'tls:1', triggerAsyncId: 'tcpserver:1' },
+    {
+      type: 'GETADDRINFOREQWRAP',
+      id: 'getaddrinforeq:1',
+      triggerAsyncId: 'tls:1'
+    },
+    { type: 'TCPCONNECTWRAP', id: 'tcpconnect:1', triggerAsyncId: 'tcp:1' },
+    { type: 'WRITEWRAP', id: 'write:1', triggerAsyncId: 'tcpconnect:1' },
+    { type: 'TCPWRAP', id: 'tcp:2', triggerAsyncId: 'tcpserver:1' },
+    { type: 'TLSWRAP', id: 'tls:2', triggerAsyncId: 'tcpserver:1' },
+    { type: 'WRITEWRAP', id: 'write:2', triggerAsyncId: null },
+    { type: 'WRITEWRAP', id: 'write:3', triggerAsyncId: null },
+    { type: 'WRITEWRAP', id: 'write:4', triggerAsyncId: null },
+    { type: 'Immediate', id: 'immediate:1', triggerAsyncId: 'tcp:1' },
+    { type: 'Immediate', id: 'immediate:2', triggerAsyncId: 'tcp:2' }
+  ]);
 }

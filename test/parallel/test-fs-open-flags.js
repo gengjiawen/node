@@ -63,29 +63,29 @@ assert.strictEqual(stringToFlags('xa+'), O_APPEND | O_CREAT | O_RDWR | O_EXCL);
 assert.strictEqual(stringToFlags('as+'), O_APPEND | O_CREAT | O_RDWR | O_SYNC);
 assert.strictEqual(stringToFlags('sa+'), O_APPEND | O_CREAT | O_RDWR | O_SYNC);
 
-('+ +a +r +w rw wa war raw r++ a++ w++ x +x x+ rx rx+ wxx wax xwx xxx')
+'+ +a +r +w rw wa war raw r++ a++ w++ x +x x+ rx rx+ wxx wax xwx xxx'
   .split(' ')
   .forEach(function(flags) {
-    common.expectsError(
-      () => stringToFlags(flags),
-      { code: 'ERR_INVALID_OPT_VALUE', type: TypeError }
-    );
+    common.expectsError(() => stringToFlags(flags), {
+      code: 'ERR_INVALID_OPT_VALUE',
+      type: TypeError
+    });
   });
 
-common.expectsError(
-  () => stringToFlags({}),
-  { code: 'ERR_INVALID_OPT_VALUE', type: TypeError }
-);
+common.expectsError(() => stringToFlags({}), {
+  code: 'ERR_INVALID_OPT_VALUE',
+  type: TypeError
+});
 
-common.expectsError(
-  () => stringToFlags(true),
-  { code: 'ERR_INVALID_OPT_VALUE', type: TypeError }
-);
+common.expectsError(() => stringToFlags(true), {
+  code: 'ERR_INVALID_OPT_VALUE',
+  type: TypeError
+});
 
-common.expectsError(
-  () => stringToFlags(null),
-  { code: 'ERR_INVALID_OPT_VALUE', type: TypeError }
-);
+common.expectsError(() => stringToFlags(null), {
+  code: 'ERR_INVALID_OPT_VALUE',
+  type: TypeError
+});
 
 if (common.isLinux || common.isOSX) {
   const tmpdir = require('../common/tmpdir');

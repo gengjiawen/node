@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -25,16 +24,21 @@ process.on('exit', function() {
   util.inspect(ssl);
 });
 
-const server = tls.createServer(serverOptions, function(s) {
-  s.on('data', function() { });
-  s.on('end', function() {
-    server.close();
-    s.destroy();
+const server = tls
+  .createServer(serverOptions, function(s) {
+    s.on('data', function() {});
+    s.on('end', function() {
+      server.close();
+      s.destroy();
+    });
+  })
+  .listen(0, function() {
+    const c = new tls.TLSSocket();
+    ssl = c.ssl;
+    c.connect(
+      this.address().port,
+      function() {
+        c.end(sent);
+      }
+    );
   });
-}).listen(0, function() {
-  const c = new tls.TLSSocket();
-  ssl = c.ssl;
-  c.connect(this.address().port, function() {
-    c.end(sent);
-  });
-});

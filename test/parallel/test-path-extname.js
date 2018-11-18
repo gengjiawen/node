@@ -49,7 +49,7 @@ const slashRE = /\//g;
   ['file/', ''],
   ['file//', ''],
   ['file./', '.'],
-  ['file.//', '.'],
+  ['file.//', '.']
 ].forEach((test) => {
   const expected = test[1];
   [path.posix.extname, path.win32.extname].forEach((extname) => {
@@ -62,18 +62,22 @@ const slashRE = /\//g;
       os = 'posix';
     }
     const actual = extname(input);
-    const message = `path.${os}.extname(${JSON.stringify(input)})\n  expect=${
-      JSON.stringify(expected)}\n  actual=${JSON.stringify(actual)}`;
-    if (actual !== expected)
-      failures.push(`\n${message}`);
+    const message = `path.${os}.extname(${JSON.stringify(
+      input
+    )})\n  expect=${JSON.stringify(expected)}\n  actual=${JSON.stringify(
+      actual
+    )}`;
+    if (actual !== expected) failures.push(`\n${message}`);
   });
   {
     const input = `C:${test[0].replace(slashRE, '\\')}`;
     const actual = path.win32.extname(input);
-    const message = `path.win32.extname(${JSON.stringify(input)})\n  expect=${
-      JSON.stringify(expected)}\n  actual=${JSON.stringify(actual)}`;
-    if (actual !== expected)
-      failures.push(`\n${message}`);
+    const message = `path.win32.extname(${JSON.stringify(
+      input
+    )})\n  expect=${JSON.stringify(expected)}\n  actual=${JSON.stringify(
+      actual
+    )}`;
+    if (actual !== expected) failures.push(`\n${message}`);
   }
 });
 assert.strictEqual(failures.length, 0, failures.join(''));

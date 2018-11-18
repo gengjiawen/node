@@ -14,17 +14,20 @@ const rangeFile = fixtures.path('x.txt');
 
   const file = fs.ReadStream(fn);
 
-  file.on('open', common.mustCall(function(fd) {
-    file.length = 0;
-    assert.strictEqual(typeof fd, 'number');
-    assert.ok(file.readable);
+  file.on(
+    'open',
+    common.mustCall(function(fd) {
+      file.length = 0;
+      assert.strictEqual(typeof fd, 'number');
+      assert.ok(file.readable);
 
-    // GH-535
-    file.pause();
-    file.resume();
-    file.pause();
-    file.resume();
-  }));
+      // GH-535
+      file.pause();
+      file.resume();
+      file.pause();
+      file.resume();
+    })
+  );
 
   file.on('data', function(data) {
     assert.ok(data instanceof Buffer);
@@ -40,13 +43,14 @@ const rangeFile = fixtures.path('x.txt');
     }, 10);
   });
 
-
   file.on('end', common.mustCall());
 
-
-  file.on('close', common.mustCall(function() {
-    assert.strictEqual(file.length, 30000);
-  }));
+  file.on(
+    'close',
+    common.mustCall(function() {
+      assert.strictEqual(file.length, 30000);
+    })
+  );
 }
 
 {
@@ -62,9 +66,12 @@ const rangeFile = fixtures.path('x.txt');
     }
   });
 
-  file.on('close', common.mustCall(function() {
-    assert.strictEqual(file.length, 10000);
-  }));
+  file.on(
+    'close',
+    common.mustCall(function() {
+      assert.strictEqual(file.length, 10000);
+    })
+  );
 }
 
 {
@@ -76,9 +83,12 @@ const rangeFile = fixtures.path('x.txt');
   file.on('data', function(data) {
     contentRead += data.toString('utf-8');
   });
-  file.on('end', common.mustCall(function() {
-    assert.strictEqual(contentRead, 'yz');
-  }));
+  file.on(
+    'end',
+    common.mustCall(function() {
+      assert.strictEqual(contentRead, 'yz');
+    })
+  );
 }
 
 {
@@ -89,9 +99,12 @@ const rangeFile = fixtures.path('x.txt');
   file.on('data', function(data) {
     file.data += data.toString('utf-8');
   });
-  file.on('end', common.mustCall(function() {
-    assert.strictEqual(file.data, 'yz\n');
-  }));
+  file.on(
+    'end',
+    common.mustCall(function() {
+      assert.strictEqual(file.data, 'yz\n');
+    })
+  );
 }
 
 // https://github.com/joyent/node/issues/2320
@@ -103,9 +116,12 @@ const rangeFile = fixtures.path('x.txt');
   file.on('data', function(data) {
     file.data += data.toString('utf-8');
   });
-  file.on('end', common.mustCall(function() {
-    assert.strictEqual(file.data, 'yz\n');
-  }));
+  file.on(
+    'end',
+    common.mustCall(function() {
+      assert.strictEqual(file.data, 'yz\n');
+    })
+  );
 }
 
 {
@@ -121,7 +137,8 @@ const rangeFile = fixtures.path('x.txt');
       code: 'ERR_OUT_OF_RANGE',
       message,
       type: RangeError
-    });
+    }
+  );
 }
 
 {
@@ -135,9 +152,12 @@ const rangeFile = fixtures.path('x.txt');
     stream.data += chunk;
   });
 
-  stream.on('end', common.mustCall(function() {
-    assert.strictEqual(stream.data, 'x');
-  }));
+  stream.on(
+    'end',
+    common.mustCall(function() {
+      assert.strictEqual(stream.data, 'x');
+    })
+  );
 }
 
 // pause and then resume immediately.
@@ -149,18 +169,27 @@ const rangeFile = fixtures.path('x.txt');
 
 {
   let data = '';
-  let file =
-    fs.createReadStream(rangeFile, Object.create({ autoClose: false }));
+  let file = fs.createReadStream(
+    rangeFile,
+    Object.create({ autoClose: false })
+  );
   assert.strictEqual(file.autoClose, false);
-  file.on('data', (chunk) => { data += chunk; });
-  file.on('end', common.mustCall(function() {
-    process.nextTick(common.mustCall(function() {
-      assert(!file.closed);
-      assert(!file.destroyed);
-      assert.strictEqual(data, 'xyz\n');
-      fileNext();
-    }));
-  }));
+  file.on('data', (chunk) => {
+    data += chunk;
+  });
+  file.on(
+    'end',
+    common.mustCall(function() {
+      process.nextTick(
+        common.mustCall(function() {
+          assert(!file.closed);
+          assert(!file.destroyed);
+          assert.strictEqual(data, 'xyz\n');
+          fileNext();
+        })
+      );
+    })
+  );
 
   function fileNext() {
     // This will tell us if the fd is usable again or not.
@@ -169,9 +198,12 @@ const rangeFile = fixtures.path('x.txt');
     file.on('data', function(data) {
       file.data += data;
     });
-    file.on('end', common.mustCall(function() {
-      assert.strictEqual(file.data, 'xyz\n');
-    }));
+    file.on(
+      'end',
+      common.mustCall(function() {
+        assert.strictEqual(file.data, 'xyz\n');
+      })
+    );
   }
   process.on('exit', function() {
     assert(file.closed);

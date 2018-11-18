@@ -13,7 +13,7 @@ try {
     '\n' +
     '+ {}\n' +
     '- {\n' +
-    '-   foo: \'bar\'\n' +
+    "-   foo: 'bar'\n" +
     '- }';
   assert.strictEqual(error.message, expected);
 }

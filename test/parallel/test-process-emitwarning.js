@@ -10,13 +10,16 @@ const testCode = 'CODE001';
 const testDetail = 'Some detail';
 const testType = 'CustomWarning';
 
-process.on('warning', common.mustCall((warning) => {
-  assert(warning);
-  assert(/^(?:Warning|CustomWarning)/.test(warning.name));
-  assert.strictEqual(warning.message, testMsg);
-  if (warning.code) assert.strictEqual(warning.code, testCode);
-  if (warning.detail) assert.strictEqual(warning.detail, testDetail);
-}, 15));
+process.on(
+  'warning',
+  common.mustCall((warning) => {
+    assert(warning);
+    assert(/^(?:Warning|CustomWarning)/.test(warning.name));
+    assert.strictEqual(warning.message, testMsg);
+    if (warning.code) assert.strictEqual(warning.code, testCode);
+    if (warning.detail) assert.strictEqual(warning.detail, testDetail);
+  }, 15)
+);
 
 class CustomWarning extends Error {
   constructor() {
@@ -74,8 +77,8 @@ process.emitWarning(warningThrowToString);
   [undefined, 'foo', 'bar'],
   [undefined]
 ].forEach((args) => {
-  common.expectsError(
-    () => process.emitWarning(...args),
-    { code: 'ERR_INVALID_ARG_TYPE', type: TypeError }
-  );
+  common.expectsError(() => process.emitWarning(...args), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
 });

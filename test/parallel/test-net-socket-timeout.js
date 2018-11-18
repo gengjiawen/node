@@ -27,22 +27,37 @@ const assert = require('assert');
 // Verify that invalid delays throw
 const s = new net.Socket();
 const nonNumericDelays = [
-  '100', true, false, undefined, null, '', {}, () => {}, []
+  '100',
+  true,
+  false,
+  undefined,
+  null,
+  '',
+  {},
+  () => {},
+  []
 ];
 const badRangeDelays = [-0.001, -1, -Infinity, Infinity, NaN];
 const validDelays = [0, 0.001, 1, 1e6];
 
-
 for (let i = 0; i < nonNumericDelays.length; i++) {
-  assert.throws(function() {
-    s.setTimeout(nonNumericDelays[i], () => {});
-  }, TypeError, nonNumericDelays[i]);
+  assert.throws(
+    function() {
+      s.setTimeout(nonNumericDelays[i], () => {});
+    },
+    TypeError,
+    nonNumericDelays[i]
+  );
 }
 
 for (let i = 0; i < badRangeDelays.length; i++) {
-  assert.throws(function() {
-    s.setTimeout(badRangeDelays[i], () => {});
-  }, RangeError, badRangeDelays[i]);
+  assert.throws(
+    function() {
+      s.setTimeout(badRangeDelays[i], () => {});
+    },
+    RangeError,
+    badRangeDelays[i]
+  );
 }
 
 for (let i = 0; i < validDelays.length; i++) {
@@ -50,10 +65,16 @@ for (let i = 0; i < validDelays.length; i++) {
 }
 
 const server = net.Server();
-server.listen(0, common.mustCall(function() {
-  const socket = net.createConnection(this.address().port);
-  socket.setTimeout(1, common.mustCall(function() {
-    socket.destroy();
-    server.close();
-  }));
-}));
+server.listen(
+  0,
+  common.mustCall(function() {
+    const socket = net.createConnection(this.address().port);
+    socket.setTimeout(
+      1,
+      common.mustCall(function() {
+        socket.destroy();
+        server.close();
+      })
+    );
+  })
+);

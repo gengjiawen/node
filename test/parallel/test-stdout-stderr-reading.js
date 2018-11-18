@@ -7,17 +7,13 @@ const net = require('net');
 const read = net.Socket.prototype.read;
 
 net.Socket.prototype.read = function() {
-  if (this.fd === 1)
-    throw new Error('reading from stdout!');
-  if (this.fd === 2)
-    throw new Error('reading from stderr!');
+  if (this.fd === 1) throw new Error('reading from stdout!');
+  if (this.fd === 2) throw new Error('reading from stderr!');
   return read.apply(this, arguments);
 };
 
-if (process.argv[2] === 'child')
-  child();
-else
-  parent();
+if (process.argv[2] === 'child') child();
+else parent();
 
 function parent() {
   const spawn = require('child_process').spawn;
@@ -33,12 +29,15 @@ function parent() {
   c1.stderr.on('data', function(chunk) {
     console.error(`c1err: ${chunk.split('\n').join('\nc1err: ')}`);
   });
-  c1.on('close', common.mustCall(function(code, signal) {
-    assert(!code);
-    assert(!signal);
-    assert.strictEqual(c1out, 'ok\n');
-    console.log('ok');
-  }));
+  c1.on(
+    'close',
+    common.mustCall(function(code, signal) {
+      assert(!code);
+      assert(!signal);
+      assert.strictEqual(c1out, 'ok\n');
+      console.log('ok');
+    })
+  );
 
   const c2 = spawn(node, ['-e', 'console.log("ok")']);
   let c2out = '';
@@ -50,12 +49,15 @@ function parent() {
   c1.stderr.on('data', function(chunk) {
     console.error(`c1err: ${chunk.split('\n').join('\nc1err: ')}`);
   });
-  c2.on('close', common.mustCall(function(code, signal) {
-    assert(!code);
-    assert(!signal);
-    assert.strictEqual(c2out, 'ok\n');
-    console.log('ok');
-  }));
+  c2.on(
+    'close',
+    common.mustCall(function(code, signal) {
+      assert(!code);
+      assert(!signal);
+      assert.strictEqual(c2out, 'ok\n');
+      console.log('ok');
+    })
+  );
 }
 
 function child() {

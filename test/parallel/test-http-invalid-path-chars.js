@@ -4,11 +4,14 @@ const common = require('../common');
 const assert = require('assert');
 const http = require('http');
 
-const expectedError = common.expectsError({
-  code: 'ERR_UNESCAPED_CHARACTERS',
-  type: TypeError,
-  message: 'Request path contains unescaped characters'
-}, 1320);
+const expectedError = common.expectsError(
+  {
+    code: 'ERR_UNESCAPED_CHARACTERS',
+    type: TypeError,
+    message: 'Request path contains unescaped characters'
+  },
+  1320
+);
 const theExperimentallyDeterminedNumber = 39;
 
 function fail(path) {

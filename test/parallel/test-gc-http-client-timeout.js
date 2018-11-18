@@ -26,14 +26,16 @@ const server = http.createServer(serverHandler);
 server.listen(0, common.mustCall(getall));
 
 function getall() {
-  if (count >= todo)
-    return;
+  if (count >= todo) return;
 
-  const req = http.get({
-    hostname: 'localhost',
-    pathname: '/',
-    port: server.address().port
-  }, cb);
+  const req = http.get(
+    {
+      hostname: 'localhost',
+      pathname: '/',
+      port: server.address().port
+    },
+    cb
+  );
 
   req.setTimeout(10, function() {
     console.log('timeout (expected)');
@@ -45,8 +47,7 @@ function getall() {
   setImmediate(getall);
 }
 
-for (let i = 0; i < 10; i++)
-  getall();
+for (let i = 0; i < 10; i++) getall();
 
 function cb(res) {
   res.resume();

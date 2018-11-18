@@ -9,17 +9,24 @@ const net = require('net');
   const server = net.Server();
 
   // Run some server in order to simulate EADDRINUSE error.
-  dummyServer.listen(common.mustCall(() => {
-    // Try to listen used port.
-    server.listen(dummyServer.address().port);
-  }));
+  dummyServer.listen(
+    common.mustCall(() => {
+      // Try to listen used port.
+      server.listen(dummyServer.address().port);
+    })
+  );
 
-  server.on('error', common.mustCall((e) => {
-    server.listen(common.mustCall(() => {
-      dummyServer.close();
-      server.close();
-    }));
-  }));
+  server.on(
+    'error',
+    common.mustCall((e) => {
+      server.listen(
+        common.mustCall(() => {
+          dummyServer.close();
+          server.close();
+        })
+      );
+    })
+  );
 }
 
 // Second test. Check that second listen call throws an error.
@@ -39,8 +46,10 @@ const net = require('net');
 {
   const server = net.Server();
 
-  server.listen(common.mustCall(() => {
-    server.close();
-    server.listen(common.mustCall(() => server.close()));
-  }));
+  server.listen(
+    common.mustCall(() => {
+      server.close();
+      server.listen(common.mustCall(() => server.close()));
+    })
+  );
 }

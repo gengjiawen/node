@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const h2 = require('http2');
 
 const server = h2.createServer();
@@ -18,19 +17,28 @@ function onStream(stream, headers, flags) {
 
 server.listen(0);
 
-server.on('listening', common.mustCall(() => {
-  const client = h2.connect(`http://localhost:${server.address().port}`);
+server.on(
+  'listening',
+  common.mustCall(() => {
+    const client = h2.connect(`http://localhost:${server.address().port}`);
 
-  client.on('goaway', common.mustCall());
-  client.on('error', common.expectsError({
-    code: 'ERR_HTTP2_SESSION_ERROR'
-  }));
+    client.on('goaway', common.mustCall());
+    client.on(
+      'error',
+      common.expectsError({
+        code: 'ERR_HTTP2_SESSION_ERROR'
+      })
+    );
 
-  const req = client.request();
-  req.on('error', common.expectsError({
-    code: 'ERR_HTTP2_SESSION_ERROR'
-  }));
-  req.resume();
-  req.on('data', common.mustNotCall());
-  req.on('end', common.mustCall(() => server.close()));
-}));
+    const req = client.request();
+    req.on(
+      'error',
+      common.expectsError({
+        code: 'ERR_HTTP2_SESSION_ERROR'
+      })
+    );
+    req.resume();
+    req.on('data', common.mustNotCall());
+    req.on('end', common.mustCall(() => server.close()));
+  })
+);

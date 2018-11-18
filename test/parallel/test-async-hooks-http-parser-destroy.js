@@ -14,16 +14,18 @@ const KEEP_ALIVE = 100;
 
 const createdIds = [];
 const destroyedIds = [];
-async_hooks.createHook({
-  init: common.mustCallAtLeast((asyncId, type) => {
-    if (type === 'HTTPPARSER') {
-      createdIds.push(asyncId);
+async_hooks
+  .createHook({
+    init: common.mustCallAtLeast((asyncId, type) => {
+      if (type === 'HTTPPARSER') {
+        createdIds.push(asyncId);
+      }
+    }, N),
+    destroy: (asyncId) => {
+      destroyedIds.push(asyncId);
     }
-  }, N),
-  destroy: (asyncId) => {
-    destroyedIds.push(asyncId);
-  }
-}).enable();
+  })
+  .enable();
 
 const server = http.createServer(function(req, res) {
   res.end('Hello');
@@ -31,7 +33,7 @@ const server = http.createServer(function(req, res) {
 
 const keepAliveAgent = new http.Agent({
   keepAlive: true,
-  keepAliveMsecs: KEEP_ALIVE,
+  keepAliveMsecs: KEEP_ALIVE
 });
 
 const countdown = new Countdown(N, () => {
@@ -49,13 +51,16 @@ const countdown = new Countdown(N, () => {
 server.listen(0, function() {
   for (let i = 0; i < N; ++i) {
     (function makeRequest() {
-      http.get({
-        port: server.address().port,
-        agent: keepAliveAgent
-      }, function(res) {
-        countdown.dec();
-        res.resume();
-      });
+      http.get(
+        {
+          port: server.address().port,
+          agent: keepAliveAgent
+        },
+        function(res) {
+          countdown.dec();
+          res.resume();
+        }
+      );
     })();
   }
 });

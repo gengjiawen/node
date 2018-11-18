@@ -13,16 +13,20 @@ const childScript = fixtures.path('child-process-spawn-node');
 const malFormedOpts = { stdio: '33' };
 const payload = { hello: 'world' };
 
-common.expectsError(
-  () => fork(childScript, malFormedOpts),
-  { code: 'ERR_INVALID_OPT_VALUE', type: TypeError });
+common.expectsError(() => fork(childScript, malFormedOpts), {
+  code: 'ERR_INVALID_OPT_VALUE',
+  type: TypeError
+});
 
 function test(stringVariant) {
   const child = fork(childScript, { stdio: stringVariant });
 
-  child.on('message', common.mustCall((message) => {
-    assert.deepStrictEqual(message, { foo: 'bar' });
-  }));
+  child.on(
+    'message',
+    common.mustCall((message) => {
+      assert.deepStrictEqual(message, { foo: 'bar' });
+    })
+  );
 
   child.send(payload);
 

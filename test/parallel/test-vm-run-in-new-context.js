@@ -30,23 +30,21 @@ if (typeof global.gc !== 'function')
   assert.fail('Run this test with --expose-gc');
 
 // Run a string
-const result = vm.runInNewContext('\'passed\';');
+const result = vm.runInNewContext("'passed';");
 assert.strictEqual(result, 'passed');
 
 // Thrown error
 assert.throws(() => {
-  vm.runInNewContext('throw new Error(\'test\');');
+  vm.runInNewContext("throw new Error('test');");
 }, /^Error: test$/);
 
 global.hello = 5;
 vm.runInNewContext('hello = 2');
 assert.strictEqual(global.hello, 5);
 
-
 // Pass values in and out
-global.code = 'foo = 1;' +
-              'bar = 2;' +
-              'if (baz !== 3) throw new Error(\'test fail\');';
+global.code =
+  'foo = 1;' + 'bar = 2;' + "if (baz !== 3) throw new Error('test fail');";
 global.foo = 2;
 global.obj = { foo: 0, baz: 3 };
 /* eslint-disable no-unused-vars */
@@ -57,7 +55,9 @@ assert.strictEqual(global.obj.bar, 2);
 assert.strictEqual(global.foo, 2);
 
 // Call a function by reference
-function changeFoo() { global.foo = 100; }
+function changeFoo() {
+  global.foo = 100;
+}
 vm.runInNewContext('f()', { f: changeFoo });
 assert.strictEqual(global.foo, 100);
 
@@ -77,24 +77,22 @@ fn();
   const code = 'throw new Error("foo");';
   const file = 'test_file.vm';
 
-  assert.throws(() => {
-    vm.runInNewContext(code, {}, file);
-  }, (err) => {
-    const lines = err.stack.split('\n');
+  assert.throws(
+    () => {
+      vm.runInNewContext(code, {}, file);
+    },
+    (err) => {
+      const lines = err.stack.split('\n');
 
-    assert.strictEqual(lines[0].trim(), `${file}:1`);
-    assert.strictEqual(lines[1].trim(), code);
-    // Skip lines[2] and lines[3]. They're just a ^ and blank line.
-    assert.strictEqual(lines[4].trim(), 'Error: foo');
-    assert.strictEqual(lines[5].trim(), `at ${file}:1:7`);
-    // The rest of the stack is uninteresting.
-    return true;
-  });
+      assert.strictEqual(lines[0].trim(), `${file}:1`);
+      assert.strictEqual(lines[1].trim(), code);
+      // Skip lines[2] and lines[3]. They're just a ^ and blank line.
+      assert.strictEqual(lines[4].trim(), 'Error: foo');
+      assert.strictEqual(lines[5].trim(), `at ${file}:1:7`);
+      // The rest of the stack is uninteresting.
+      return true;
+    }
+  );
 }
 
-common.allowGlobals(
-  global.hello,
-  global.code,
-  global.foo,
-  global.obj
-);
+common.allowGlobals(global.hello, global.code, global.foo, global.obj);

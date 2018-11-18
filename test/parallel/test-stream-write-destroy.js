@@ -6,8 +6,8 @@ const { Writable } = require('stream');
 // Test interaction between calling .destroy() on a writable and pending
 // writes.
 
-for (const withPendingData of [ false, true ]) {
-  for (const useEnd of [ false, true ]) {
+for (const withPendingData of [false, true]) {
+  for (const useEnd of [false, true]) {
     const callbacks = [];
 
     const w = new Writable({
@@ -22,7 +22,7 @@ for (const withPendingData of [ false, true ]) {
     let drains = 0;
     let finished = false;
     w.on('drain', () => drains++);
-    w.on('finish', () => finished = true);
+    w.on('finish', () => (finished = true));
 
     w.write('abc', () => chunksWritten++);
     assert.strictEqual(chunksWritten, 0);

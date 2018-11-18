@@ -16,36 +16,50 @@ tmpdir.refresh();
 
 const procEnabled = cp.spawn(
   process.execPath,
-  [ '--trace-event-categories', 'custom',
+  [
+    '--trace-event-categories',
+    'custom',
     // make test less noisy since internal/test/binding
     // emits a warning.
     '--no-warnings',
     '--expose-internals',
-    '-e', CODE ],
+    '-e',
+    CODE
+  ],
   { cwd: tmpdir.path }
 );
 let procEnabledOutput = '';
 
-procEnabled.stdout.on('data', (data) => procEnabledOutput += data);
+procEnabled.stdout.on('data', (data) => (procEnabledOutput += data));
 procEnabled.stderr.pipe(process.stderr);
-procEnabled.once('exit', common.mustCall(() => {
-  assert.strictEqual(procEnabledOutput, 'true\n');
-}));
+procEnabled.once(
+  'exit',
+  common.mustCall(() => {
+    assert.strictEqual(procEnabledOutput, 'true\n');
+  })
+);
 
 const procDisabled = cp.spawn(
   process.execPath,
-  [ '--trace-event-categories', 'other',
+  [
+    '--trace-event-categories',
+    'other',
     // make test less noisy since internal/test/binding
     // emits a warning.
     '--no-warnings',
     '--expose-internals',
-    '-e', CODE ],
+    '-e',
+    CODE
+  ],
   { cwd: tmpdir.path }
 );
 let procDisabledOutput = '';
 
-procDisabled.stdout.on('data', (data) => procDisabledOutput += data);
+procDisabled.stdout.on('data', (data) => (procDisabledOutput += data));
 procDisabled.stderr.pipe(process.stderr);
-procDisabled.once('exit', common.mustCall(() => {
-  assert.strictEqual(procDisabledOutput, 'false\n');
-}));
+procDisabled.once(
+  'exit',
+  common.mustCall(() => {
+    assert.strictEqual(procDisabledOutput, 'false\n');
+  })
+);

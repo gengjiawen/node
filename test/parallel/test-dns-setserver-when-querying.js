@@ -4,10 +4,7 @@ const common = require('../common');
 
 const dns = require('dns');
 
-const goog = [
-  '8.8.8.8',
-  '8.8.4.4',
-];
+const goog = ['8.8.8.8', '8.8.4.4'];
 
 {
   // Fix https://github.com/nodejs/node/issues/14734

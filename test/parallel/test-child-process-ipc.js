@@ -60,7 +60,6 @@ child.stdout.on('end', function(data) {
   console.log('child end');
 });
 
-
 process.on('exit', function() {
   assert.ok(gotHelloWorld);
   assert.ok(gotEcho);

@@ -32,7 +32,8 @@ assert.throws(
   {
     code: 'ERR_SCRIPT_EXECUTION_TIMEOUT',
     message: 'Script execution timed out after 100ms'
-  });
+  }
+);
 
 // Timeout of 1000ms, script finishes first
 vm.runInThisContext('', { timeout: 1000 });
@@ -52,7 +53,8 @@ assert.throws(
   {
     code: 'ERR_SCRIPT_EXECUTION_TIMEOUT',
     message: 'Script execution timed out after 10ms'
-  });
+  }
+);
 
 // Nested vm timeouts, outer timeout is shorter and fires first.
 assert.throws(
@@ -68,13 +70,14 @@ assert.throws(
   {
     code: 'ERR_SCRIPT_EXECUTION_TIMEOUT',
     message: 'Script execution timed out after 100ms'
-  });
+  }
+);
 
 // Nested vm timeouts, inner script throws an error.
 assert.throws(function() {
   const context = {
     runInVM: function(timeout) {
-      vm.runInNewContext('throw new Error(\'foobar\')', context, { timeout });
+      vm.runInNewContext("throw new Error('foobar')", context, { timeout });
     }
   };
   vm.runInNewContext('runInVM(10000)', context, { timeout: 100000 });

@@ -13,8 +13,7 @@ const validateError = common.mustCall((e) => {
   if (process.platform === 'win32') {
     e.message = e.message.substring(2); // remove 'C:'
   }
-  const [ fileName, lineNumber ] = e.message
-                                    .substring(prefix.length).split(':');
+  const [fileName, lineNumber] = e.message.substring(prefix.length).split(':');
   assert.strictEqual(path.basename(fileName), 'test-common-must-not-call.js');
   assert.strictEqual(lineNumber, '8');
 });

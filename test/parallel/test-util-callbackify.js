@@ -32,10 +32,12 @@ const values = [
     }
 
     const cbAsyncFn = callbackify(asyncFn);
-    cbAsyncFn(common.mustCall((err, ret) => {
-      assert.ifError(err);
-      assert.strictEqual(ret, value);
-    }));
+    cbAsyncFn(
+      common.mustCall((err, ret) => {
+        assert.ifError(err);
+        assert.strictEqual(ret, value);
+      })
+    );
 
     // Test Promise factory
     function promiseFn() {
@@ -43,10 +45,12 @@ const values = [
     }
 
     const cbPromiseFn = callbackify(promiseFn);
-    cbPromiseFn(common.mustCall((err, ret) => {
-      assert.ifError(err);
-      assert.strictEqual(ret, value);
-    }));
+    cbPromiseFn(
+      common.mustCall((err, ret) => {
+        assert.ifError(err);
+        assert.strictEqual(ret, value);
+      })
+    );
 
     // Test Thenable
     function thenableFn() {
@@ -58,10 +62,12 @@ const values = [
     }
 
     const cbThenableFn = callbackify(thenableFn);
-    cbThenableFn(common.mustCall((err, ret) => {
-      assert.ifError(err);
-      assert.strictEqual(ret, value);
-    }));
+    cbThenableFn(
+      common.mustCall((err, ret) => {
+        assert.ifError(err);
+        assert.strictEqual(ret, value);
+      })
+    );
   }
 }
 
@@ -74,20 +80,22 @@ const values = [
     }
 
     const cbAsyncFn = callbackify(asyncFn);
-    cbAsyncFn(common.mustCall((err, ret) => {
-      assert.strictEqual(ret, undefined);
-      if (err instanceof Error) {
-        if ('reason' in err) {
-          assert(!value);
-          assert.strictEqual(err.code, 'ERR_FALSY_VALUE_REJECTION');
-          assert.strictEqual(err.reason, value);
+    cbAsyncFn(
+      common.mustCall((err, ret) => {
+        assert.strictEqual(ret, undefined);
+        if (err instanceof Error) {
+          if ('reason' in err) {
+            assert(!value);
+            assert.strictEqual(err.code, 'ERR_FALSY_VALUE_REJECTION');
+            assert.strictEqual(err.reason, value);
+          } else {
+            assert.strictEqual(String(value).endsWith(err.message), true);
+          }
         } else {
-          assert.strictEqual(String(value).endsWith(err.message), true);
+          assert.strictEqual(err, value);
         }
-      } else {
-        assert.strictEqual(err, value);
-      }
-    }));
+      })
+    );
 
     // test a Promise factory
     function promiseFn() {
@@ -95,20 +103,22 @@ const values = [
     }
 
     const cbPromiseFn = callbackify(promiseFn);
-    cbPromiseFn(common.mustCall((err, ret) => {
-      assert.strictEqual(ret, undefined);
-      if (err instanceof Error) {
-        if ('reason' in err) {
-          assert(!value);
-          assert.strictEqual(err.code, 'ERR_FALSY_VALUE_REJECTION');
-          assert.strictEqual(err.reason, value);
+    cbPromiseFn(
+      common.mustCall((err, ret) => {
+        assert.strictEqual(ret, undefined);
+        if (err instanceof Error) {
+          if ('reason' in err) {
+            assert(!value);
+            assert.strictEqual(err.code, 'ERR_FALSY_VALUE_REJECTION');
+            assert.strictEqual(err.reason, value);
+          } else {
+            assert.strictEqual(String(value).endsWith(err.message), true);
+          }
         } else {
-          assert.strictEqual(String(value).endsWith(err.message), true);
+          assert.strictEqual(err, value);
         }
-      } else {
-        assert.strictEqual(err, value);
-      }
-    }));
+      })
+    );
 
     // Test Thenable
     function thenableFn() {
@@ -120,20 +130,22 @@ const values = [
     }
 
     const cbThenableFn = callbackify(thenableFn);
-    cbThenableFn(common.mustCall((err, ret) => {
-      assert.strictEqual(ret, undefined);
-      if (err instanceof Error) {
-        if ('reason' in err) {
-          assert(!value);
-          assert.strictEqual(err.code, 'ERR_FALSY_VALUE_REJECTION');
-          assert.strictEqual(err.reason, value);
+    cbThenableFn(
+      common.mustCall((err, ret) => {
+        assert.strictEqual(ret, undefined);
+        if (err instanceof Error) {
+          if ('reason' in err) {
+            assert(!value);
+            assert.strictEqual(err.code, 'ERR_FALSY_VALUE_REJECTION');
+            assert.strictEqual(err.reason, value);
+          } else {
+            assert.strictEqual(String(value).endsWith(err.message), true);
+          }
         } else {
-          assert.strictEqual(String(value).endsWith(err.message), true);
+          assert.strictEqual(err, value);
         }
-      } else {
-        assert.strictEqual(err, value);
-      }
-    }));
+      })
+    );
   }
 }
 
@@ -146,10 +158,13 @@ const values = [
     }
 
     const cbAsyncFn = callbackify(asyncFn);
-    cbAsyncFn(value, common.mustCall((err, ret) => {
-      assert.ifError(err);
-      assert.strictEqual(ret, value);
-    }));
+    cbAsyncFn(
+      value,
+      common.mustCall((err, ret) => {
+        assert.ifError(err);
+        assert.strictEqual(ret, value);
+      })
+    );
 
     function promiseFn(arg) {
       assert.strictEqual(arg, value);
@@ -157,10 +172,13 @@ const values = [
     }
 
     const cbPromiseFn = callbackify(promiseFn);
-    cbPromiseFn(value, common.mustCall((err, ret) => {
-      assert.ifError(err);
-      assert.strictEqual(ret, value);
-    }));
+    cbPromiseFn(
+      value,
+      common.mustCall((err, ret) => {
+        assert.ifError(err);
+        assert.strictEqual(ret, value);
+      })
+    );
   }
 }
 
@@ -171,27 +189,33 @@ const values = [
       fn(arg) {
         assert.strictEqual(this, iAmThis);
         return Promise.resolve(arg);
-      },
+      }
     };
     iAmThis.cbFn = callbackify(iAmThis.fn);
-    iAmThis.cbFn(value, common.mustCall(function(err, ret) {
-      assert.ifError(err);
-      assert.strictEqual(ret, value);
-      assert.strictEqual(this, iAmThis);
-    }));
+    iAmThis.cbFn(
+      value,
+      common.mustCall(function(err, ret) {
+        assert.ifError(err);
+        assert.strictEqual(ret, value);
+        assert.strictEqual(this, iAmThis);
+      })
+    );
 
     const iAmThat = {
       async fn(arg) {
         assert.strictEqual(this, iAmThat);
         return arg;
-      },
+      }
     };
     iAmThat.cbFn = callbackify(iAmThat.fn);
-    iAmThat.cbFn(value, common.mustCall(function(err, ret) {
-      assert.ifError(err);
-      assert.strictEqual(ret, value);
-      assert.strictEqual(this, iAmThat);
-    }));
+    iAmThat.cbFn(
+      value,
+      common.mustCall(function(err, ret) {
+        assert.ifError(err);
+        assert.strictEqual(ret, value);
+        assert.strictEqual(this, iAmThat);
+      })
+    );
   }
 }
 
@@ -222,7 +246,8 @@ const values = [
       assert.ifError(err);
       assert.strictEqual(
         stdout.trim(),
-        `ifError got unwanted exception: ${fixture}`);
+        `ifError got unwanted exception: ${fixture}`
+      );
       assert.strictEqual(stderr, '');
     })
   );
@@ -231,14 +256,18 @@ const values = [
 {
   // Verify that non-function inputs throw.
   ['foo', null, undefined, false, 0, {}, Symbol(), []].forEach((value) => {
-    common.expectsError(() => {
-      callbackify(value);
-    }, {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The "original" argument must be of type Function. ' +
-               `Received type ${typeof value}`
-    });
+    common.expectsError(
+      () => {
+        callbackify(value);
+      },
+      {
+        code: 'ERR_INVALID_ARG_TYPE',
+        type: TypeError,
+        message:
+          'The "original" argument must be of type Function. ' +
+          `Received type ${typeof value}`
+      }
+    );
   });
 }
 
@@ -253,13 +282,17 @@ const values = [
   // Verify that the last argument to the callbackified function is a function.
   ['foo', null, undefined, false, 0, {}, Symbol(), []].forEach((value) => {
     args.push(value);
-    common.expectsError(() => {
-      cb(...args);
-    }, {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The last argument must be of type Function. ' +
-               `Received type ${typeof value}`
-    });
+    common.expectsError(
+      () => {
+        cb(...args);
+      },
+      {
+        code: 'ERR_INVALID_ARG_TYPE',
+        type: TypeError,
+        message:
+          'The last argument must be of type Function. ' +
+          `Received type ${typeof value}`
+      }
+    );
   });
 }

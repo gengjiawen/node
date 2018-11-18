@@ -37,10 +37,7 @@ function CustomWritable() {
     this instanceof CustomWritable,
     `${this} does not inherit from CustomWritable`
   );
-  assert.ok(
-    this instanceof Writable,
-    `${this} does not inherit from Writable`
-  );
+  assert.ok(this instanceof Writable, `${this} does not inherit from Writable`);
 }
 
 Object.setPrototypeOf(CustomWritable, Writable);
@@ -48,14 +45,11 @@ Object.setPrototypeOf(CustomWritable.prototype, Writable.prototype);
 
 new CustomWritable();
 
-common.expectsError(
-  CustomWritable,
-  {
-    code: 'ERR_ASSERTION',
-    type: assert.AssertionError,
-    message: 'undefined does not inherit from CustomWritable'
-  }
-);
+common.expectsError(CustomWritable, {
+  code: 'ERR_ASSERTION',
+  type: assert.AssertionError,
+  message: 'undefined does not inherit from CustomWritable'
+});
 
 class OtherCustomWritable extends Writable {}
 

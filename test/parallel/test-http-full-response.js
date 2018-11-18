@@ -65,17 +65,29 @@ function runAb(opts, callback) {
   });
 }
 
-server.listen(0, common.mustCall(function() {
-  runAb('-c 1 -n 10', common.mustCall(function() {
-    console.log('-c 1 -n 10 okay');
+server.listen(
+  0,
+  common.mustCall(function() {
+    runAb(
+      '-c 1 -n 10',
+      common.mustCall(function() {
+        console.log('-c 1 -n 10 okay');
 
-    runAb('-c 1 -n 100', common.mustCall(function() {
-      console.log('-c 1 -n 100 okay');
+        runAb(
+          '-c 1 -n 100',
+          common.mustCall(function() {
+            console.log('-c 1 -n 100 okay');
 
-      runAb('-c 1 -n 1000', common.mustCall(function() {
-        console.log('-c 1 -n 1000 okay');
-        server.close();
-      }));
-    }));
-  }));
-}));
+            runAb(
+              '-c 1 -n 1000',
+              common.mustCall(function() {
+                console.log('-c 1 -n 1000 okay');
+                server.close();
+              })
+            );
+          })
+        );
+      })
+    );
+  })
+);

@@ -10,7 +10,8 @@ const fs = require('fs');
     {
       code: 'ERR_INVALID_ARG_TYPE',
       type: TypeError
-    });
+    }
+  );
 });
 
 common.expectsError(
@@ -20,7 +21,8 @@ common.expectsError(
   {
     code: 'ERR_INVALID_ARG_TYPE',
     type: TypeError
-  });
+  }
+);
 
 const okInputs = [1, -1, '1', '-1', Date.now()];
 okInputs.forEach((input) => {

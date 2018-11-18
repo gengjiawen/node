@@ -16,22 +16,29 @@ if (cluster.isMaster) {
   const _getServer = cluster._getServer;
 
   cluster._getServer = common.mustCall(function(self, options, callback) {
-    socket.close(common.mustCall(() => {
-      _getServer.call(this, self, options, common.mustCall((err, handle) => {
-        assert.strictEqual(err, 0);
+    socket.close(
+      common.mustCall(() => {
+        _getServer.call(
+          this,
+          self,
+          options,
+          common.mustCall((err, handle) => {
+            assert.strictEqual(err, 0);
 
-        // When the socket determines that it was already closed, it will
-        // close the handle. Use handle.close() to terminate the test.
-        const close = handle.close;
+            // When the socket determines that it was already closed, it will
+            // close the handle. Use handle.close() to terminate the test.
+            const close = handle.close;
 
-        handle.close = common.mustCall(function() {
-          setImmediate(() => cluster.worker.disconnect());
-          return close.call(this);
-        });
+            handle.close = common.mustCall(function() {
+              setImmediate(() => cluster.worker.disconnect());
+              return close.call(this);
+            });
 
-        callback(err, handle);
-      }));
-    }));
+            callback(err, handle);
+          })
+        );
+      })
+    );
   });
 
   socket.bind(common.mustNotCall('Socket should not bind.'));

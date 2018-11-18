@@ -9,10 +9,11 @@ function getSource(tag) {
 }
 
 function produce(source, count) {
-  if (!count)
-    count = 1;
+  if (!count) count = 1;
 
-  const out = spawnSync(process.execPath, [ '-e', `
+  const out = spawnSync(process.execPath, [
+    '-e',
+    `
     'use strict';
     const assert = require('assert');
     const vm = require('vm');
@@ -29,7 +30,9 @@ function produce(source, count) {
         data = script.cachedData.toString('base64');
     }
     console.log(data);
-  `, source]);
+  `,
+    source
+  ]);
 
   assert.strictEqual(out.status, 0, String(out.stderr));
 
@@ -86,12 +89,15 @@ function testRejectSlice() {
 testRejectSlice();
 
 // It should throw on non-Buffer cachedData
-common.expectsError(() => {
-  new vm.Script('function abc() {}', {
-    cachedData: 'ohai'
-  });
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError,
-  message: /must be one of type Buffer, TypedArray, or DataView/
-});
+common.expectsError(
+  () => {
+    new vm.Script('function abc() {}', {
+      cachedData: 'ohai'
+    });
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message: /must be one of type Buffer, TypedArray, or DataView/
+  }
+);

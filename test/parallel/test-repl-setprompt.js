@@ -27,7 +27,7 @@ const os = require('os');
 
 const args = [
   '-e',
-  'var e = new (require("repl")).REPLServer("foo.. "); e.context.e = e;',
+  'var e = new (require("repl")).REPLServer("foo.. "); e.context.e = e;'
 ];
 
 const p = 'bar.. ';
@@ -37,7 +37,9 @@ const child = spawn(process.execPath, args);
 child.stdout.setEncoding('utf8');
 
 let data = '';
-child.stdout.on('data', function(d) { data += d; });
+child.stdout.on('data', function(d) {
+  data += d;
+});
 
 child.stdin.end(`e.setPrompt("${p}");${os.EOL}`);
 

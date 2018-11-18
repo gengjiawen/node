@@ -4,11 +4,9 @@ const common = require('../common');
 // This test ensures that the value "auto" on ecdhCurve option is
 // supported to enable automatic curve selection in TLS server.
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
-if (!common.opensslCli)
-  common.skip('missing openssl-cli');
+if (!common.opensslCli) common.skip('missing openssl-cli');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -35,16 +33,19 @@ const server = tls.createServer(options, function(conn) {
 let gotReply = false;
 
 server.listen(0, function() {
-  const args = ['s_client',
-                '-cipher', `${options.ciphers}`,
-                '-connect', `127.0.0.1:${this.address().port}`];
+  const args = [
+    's_client',
+    '-cipher',
+    `${options.ciphers}`,
+    '-connect',
+    `127.0.0.1:${this.address().port}`
+  ];
 
   const client = spawn(common.opensslCli, args);
 
   client.stdout.on('data', function(data) {
     const message = data.toString();
-    if (message.includes(reply))
-      gotReply = true;
+    if (message.includes(reply)) gotReply = true;
   });
 
   client.on('exit', function(code) {

@@ -84,13 +84,16 @@ function isWarned(emitter) {
   rli.close();
 }
 
-[ true, false ].forEach(function(terminal) {
+[true, false].forEach(function(terminal) {
   // disable history
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal, historySize: 0 }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal,
+      historySize: 0
+    });
     assert.strictEqual(rli.historySize, 0);
 
     fi.emit('data', 'asdf\n');
@@ -101,9 +104,11 @@ function isWarned(emitter) {
   // default history size 30
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     assert.strictEqual(rli.historySize, 30);
 
     fi.emit('data', 'asdf\n');
@@ -114,9 +119,11 @@ function isWarned(emitter) {
   // sending a full line
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     let called = false;
     rli.on('line', function(line) {
       called = true;
@@ -129,9 +136,11 @@ function isWarned(emitter) {
   // sending a blank line
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     let called = false;
     rli.on('line', function(line) {
       called = true;
@@ -157,9 +166,11 @@ function isWarned(emitter) {
   // sending a single character with no newline and then a newline
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     let called = false;
     rli.on('line', function(line) {
       called = true;
@@ -175,9 +186,11 @@ function isWarned(emitter) {
   // sending multiple newlines at once
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     const expectedLines = ['foo', 'bar', 'baz'];
     let callCount = 0;
     rli.on('line', function(line) {
@@ -192,9 +205,11 @@ function isWarned(emitter) {
   // sending multiple newlines at once that does not end with a new line
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     const expectedLines = ['foo', 'bar', 'baz', 'bat'];
     let callCount = 0;
     rli.on('line', function(line) {
@@ -210,9 +225,11 @@ function isWarned(emitter) {
   // line and a `end` event
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     const expectedLines = ['foo', 'bar', 'baz', ''];
     let callCount = 0;
     rli.on('line', function(line) {
@@ -234,9 +251,11 @@ function isWarned(emitter) {
   // \r should behave like \n when alone
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: true }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: true
+    });
     const expectedLines = ['foo', 'bar', 'baz', 'bat'];
     let callCount = 0;
     rli.on('line', function(line) {
@@ -251,10 +270,12 @@ function isWarned(emitter) {
   // \r at start of input should output blank line
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: true }
-    );
-    const expectedLines = ['', 'foo' ];
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: true
+    });
+    const expectedLines = ['', 'foo'];
     let callCount = 0;
     rli.on('line', function(line) {
       assert.strictEqual(line, expectedLines[callCount]);
@@ -281,11 +302,14 @@ function isWarned(emitter) {
       callCount++;
     });
     fi.emit('data', '\r');
-    setTimeout(common.mustCall(() => {
-      fi.emit('data', '\n');
-      assert.strictEqual(callCount, 2);
-      rli.close();
-    }), delay * 2);
+    setTimeout(
+      common.mustCall(() => {
+        fi.emit('data', '\n');
+        assert.strictEqual(callCount, 2);
+        rli.close();
+      }),
+      delay * 2
+    );
   }
 
   // set crlfDelay to `Infinity` is allowed
@@ -304,20 +328,25 @@ function isWarned(emitter) {
       callCount++;
     });
     fi.emit('data', '\r');
-    setTimeout(common.mustCall(() => {
-      fi.emit('data', '\n');
-      assert.strictEqual(callCount, 1);
-      rli.close();
-    }), delay);
+    setTimeout(
+      common.mustCall(() => {
+        fi.emit('data', '\n');
+        assert.strictEqual(callCount, 1);
+        rli.close();
+      }),
+      delay
+    );
   }
 
   // \t when there is no completer function should behave like an ordinary
   // character
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: true }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: true
+    });
     let called = false;
     rli.on('line', function(line) {
       assert.strictEqual(line, '\t');
@@ -357,46 +386,61 @@ function isWarned(emitter) {
   // constructor throws if completer is not a function or undefined
   {
     const fi = new FakeInput();
-    common.expectsError(function() {
-      readline.createInterface({
-        input: fi,
-        completer: 'string is not valid'
-      });
-    }, {
-      type: TypeError,
-      code: 'ERR_INVALID_OPT_VALUE'
-    });
+    common.expectsError(
+      function() {
+        readline.createInterface({
+          input: fi,
+          completer: 'string is not valid'
+        });
+      },
+      {
+        type: TypeError,
+        code: 'ERR_INVALID_OPT_VALUE'
+      }
+    );
   }
 
   // constructor throws if historySize is not a positive number
   {
     const fi = new FakeInput();
-    common.expectsError(function() {
-      readline.createInterface({
-        input: fi, historySize: 'not a number'
-      });
-    }, {
-      type: RangeError,
-      code: 'ERR_INVALID_OPT_VALUE'
-    });
+    common.expectsError(
+      function() {
+        readline.createInterface({
+          input: fi,
+          historySize: 'not a number'
+        });
+      },
+      {
+        type: RangeError,
+        code: 'ERR_INVALID_OPT_VALUE'
+      }
+    );
 
-    common.expectsError(function() {
-      readline.createInterface({
-        input: fi, historySize: -1
-      });
-    }, {
-      type: RangeError,
-      code: 'ERR_INVALID_OPT_VALUE'
-    });
+    common.expectsError(
+      function() {
+        readline.createInterface({
+          input: fi,
+          historySize: -1
+        });
+      },
+      {
+        type: RangeError,
+        code: 'ERR_INVALID_OPT_VALUE'
+      }
+    );
 
-    common.expectsError(function() {
-      readline.createInterface({
-        input: fi, historySize: NaN
-      });
-    }, {
-      type: RangeError,
-      code: 'ERR_INVALID_OPT_VALUE'
-    });
+    common.expectsError(
+      function() {
+        readline.createInterface({
+          input: fi,
+          historySize: NaN
+        });
+      },
+      {
+        type: RangeError,
+        code: 'ERR_INVALID_OPT_VALUE'
+      }
+    );
   }
 
   // duplicate lines are removed from history when
@@ -476,9 +520,11 @@ function isWarned(emitter) {
   {
     const buf = Buffer.from('☮', 'utf8');
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     let callCount = 0;
     rli.on('line', function(line) {
       callCount++;
@@ -497,9 +543,11 @@ function isWarned(emitter) {
   // check that nothing fails if 'keypress' event throws.
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: true }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: true
+    });
     const keys = [];
     fi.on('keypress', function(key) {
       keys.push(key);
@@ -509,7 +557,7 @@ function isWarned(emitter) {
     });
     try {
       fi.emit('data', 'fooX');
-    } catch { }
+    } catch {}
     fi.emit('data', 'bar');
     assert.strictEqual(keys.join(''), 'fooXbar');
     rli.close();
@@ -518,9 +566,11 @@ function isWarned(emitter) {
   // calling readline without `new`
   {
     const fi = new FakeInput();
-    const rli = readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     let called = false;
     rli.on('line', function(line) {
       called = true;
@@ -535,9 +585,11 @@ function isWarned(emitter) {
   {
     let called = false;
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: fi, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal
+    });
     rli.question('foo?', function(answer) {
       called = true;
       assert.strictEqual(answer, 'bar');
@@ -551,9 +603,12 @@ function isWarned(emitter) {
     // history is bound
     {
       const fi = new FakeInput();
-      const rli = new readline.Interface(
-        { input: fi, output: fi, terminal, historySize: 2 }
-      );
+      const rli = new readline.Interface({
+        input: fi,
+        output: fi,
+        terminal,
+        historySize: 2
+      });
       const lines = ['line 1', 'line 2', 'line 3'];
       fi.emit('data', lines.join('\n') + '\n');
       assert.strictEqual(rli.history.length, 2);
@@ -563,9 +618,11 @@ function isWarned(emitter) {
     // question
     {
       const fi = new FakeInput();
-      const rli = new readline.Interface(
-        { input: fi, output: fi, terminal: terminal }
-      );
+      const rli = new readline.Interface({
+        input: fi,
+        output: fi,
+        terminal: terminal
+      });
       const expectedLines = ['foo'];
       rli.question(expectedLines[0], function() {
         rli.close();
@@ -579,9 +636,11 @@ function isWarned(emitter) {
     // sending a multi-line question
     {
       const fi = new FakeInput();
-      const rli = new readline.Interface(
-        { input: fi, output: fi, terminal: terminal }
-      );
+      const rli = new readline.Interface({
+        input: fi,
+        output: fi,
+        terminal: terminal
+      });
       const expectedLines = ['foo', 'bar'];
       rli.question(expectedLines.join('\n'), function() {
         rli.close();
@@ -685,41 +744,46 @@ function isWarned(emitter) {
         { ctrl: true, name: 'w' },
         { ctrl: true, name: 'backspace' },
         { meta: true, name: 'backspace' }
-      ]
-        .forEach((deleteWordLeftKey) => {
-          let fi = new FakeInput();
-          let rli = new readline.Interface({
-            input: fi,
-            output: fi,
-            prompt: '',
-            terminal: terminal
-          });
-          fi.emit('data', 'the quick brown fox');
-          fi.emit('keypress', '.', { ctrl: true, name: 'left' });
-          rli.on('line', common.mustCall((line) => {
-            assert.strictEqual(line, 'the quick fox');
-          }));
-          fi.emit('keypress', '.', deleteWordLeftKey);
-          fi.emit('data', '\n');
-          rli.close();
-
-          // No effect if pressed at beginning of line
-          fi = new FakeInput();
-          rli = new readline.Interface({
-            input: fi,
-            output: fi,
-            prompt: '',
-            terminal: terminal
-          });
-          fi.emit('data', 'the quick brown fox');
-          fi.emit('keypress', '.', { ctrl: true, name: 'a' });
-          rli.on('line', common.mustCall((line) => {
-            assert.strictEqual(line, 'the quick brown fox');
-          }));
-          fi.emit('keypress', '.', deleteWordLeftKey);
-          fi.emit('data', '\n');
-          rli.close();
+      ].forEach((deleteWordLeftKey) => {
+        let fi = new FakeInput();
+        let rli = new readline.Interface({
+          input: fi,
+          output: fi,
+          prompt: '',
+          terminal: terminal
         });
+        fi.emit('data', 'the quick brown fox');
+        fi.emit('keypress', '.', { ctrl: true, name: 'left' });
+        rli.on(
+          'line',
+          common.mustCall((line) => {
+            assert.strictEqual(line, 'the quick fox');
+          })
+        );
+        fi.emit('keypress', '.', deleteWordLeftKey);
+        fi.emit('data', '\n');
+        rli.close();
+
+        // No effect if pressed at beginning of line
+        fi = new FakeInput();
+        rli = new readline.Interface({
+          input: fi,
+          output: fi,
+          prompt: '',
+          terminal: terminal
+        });
+        fi.emit('data', 'the quick brown fox');
+        fi.emit('keypress', '.', { ctrl: true, name: 'a' });
+        rli.on(
+          'line',
+          common.mustCall((line) => {
+            assert.strictEqual(line, 'the quick brown fox');
+          })
+        );
+        fi.emit('keypress', '.', deleteWordLeftKey);
+        fi.emit('data', '\n');
+        rli.close();
+      });
     }
 
     {
@@ -728,41 +792,46 @@ function isWarned(emitter) {
         { ctrl: true, name: 'delete' },
         { meta: true, name: 'delete' },
         { meta: true, name: 'd' }
-      ]
-        .forEach((deleteWordRightKey) => {
-          let fi = new FakeInput();
-          let rli = new readline.Interface({
-            input: fi,
-            output: fi,
-            prompt: '',
-            terminal: terminal
-          });
-          fi.emit('data', 'the quick brown fox');
-          fi.emit('keypress', '.', { ctrl: true, name: 'left' });
-          fi.emit('keypress', '.', { ctrl: true, name: 'left' });
-          rli.on('line', common.mustCall((line) => {
-            assert.strictEqual(line, 'the quick fox');
-          }));
-          fi.emit('keypress', '.', deleteWordRightKey);
-          fi.emit('data', '\n');
-          rli.close();
-
-          // No effect if pressed at end of line
-          fi = new FakeInput();
-          rli = new readline.Interface({
-            input: fi,
-            output: fi,
-            prompt: '',
-            terminal: terminal
-          });
-          fi.emit('data', 'the quick brown fox');
-          rli.on('line', common.mustCall((line) => {
-            assert.strictEqual(line, 'the quick brown fox');
-          }));
-          fi.emit('keypress', '.', deleteWordRightKey);
-          fi.emit('data', '\n');
-          rli.close();
+      ].forEach((deleteWordRightKey) => {
+        let fi = new FakeInput();
+        let rli = new readline.Interface({
+          input: fi,
+          output: fi,
+          prompt: '',
+          terminal: terminal
         });
+        fi.emit('data', 'the quick brown fox');
+        fi.emit('keypress', '.', { ctrl: true, name: 'left' });
+        fi.emit('keypress', '.', { ctrl: true, name: 'left' });
+        rli.on(
+          'line',
+          common.mustCall((line) => {
+            assert.strictEqual(line, 'the quick fox');
+          })
+        );
+        fi.emit('keypress', '.', deleteWordRightKey);
+        fi.emit('data', '\n');
+        rli.close();
+
+        // No effect if pressed at end of line
+        fi = new FakeInput();
+        rli = new readline.Interface({
+          input: fi,
+          output: fi,
+          prompt: '',
+          terminal: terminal
+        });
+        fi.emit('data', 'the quick brown fox');
+        rli.on(
+          'line',
+          common.mustCall((line) => {
+            assert.strictEqual(line, 'the quick brown fox');
+          })
+        );
+        fi.emit('keypress', '.', deleteWordRightKey);
+        fi.emit('data', '\n');
+        rli.close();
+      });
     }
 
     // deleteLeft
@@ -784,9 +853,12 @@ function isWarned(emitter) {
       cursorPos = rli._getCursorPos();
       assert.strictEqual(cursorPos.rows, 0);
       assert.strictEqual(cursorPos.cols, 18);
-      rli.on('line', common.mustCall((line) => {
-        assert.strictEqual(line, 'the quick brown fo');
-      }));
+      rli.on(
+        'line',
+        common.mustCall((line) => {
+          assert.strictEqual(line, 'the quick brown fo');
+        })
+      );
       fi.emit('data', '\n');
       rli.close();
     }
@@ -813,13 +885,15 @@ function isWarned(emitter) {
       cursorPos = rli._getCursorPos();
       assert.strictEqual(cursorPos.rows, 0);
       assert.strictEqual(cursorPos.cols, 0);
-      rli.on('line', common.mustCall((line) => {
-        assert.strictEqual(line, 'he quick brown fox');
-      }));
+      rli.on(
+        'line',
+        common.mustCall((line) => {
+          assert.strictEqual(line, 'he quick brown fox');
+        })
+      );
       fi.emit('data', '\n');
       rli.close();
     }
-
 
     // deleteLineLeft
     {
@@ -840,9 +914,12 @@ function isWarned(emitter) {
       cursorPos = rli._getCursorPos();
       assert.strictEqual(cursorPos.rows, 0);
       assert.strictEqual(cursorPos.cols, 0);
-      rli.on('line', common.mustCall((line) => {
-        assert.strictEqual(line, '');
-      }));
+      rli.on(
+        'line',
+        common.mustCall((line) => {
+          assert.strictEqual(line, '');
+        })
+      );
       fi.emit('data', '\n');
       rli.close();
     }
@@ -869,9 +946,12 @@ function isWarned(emitter) {
       cursorPos = rli._getCursorPos();
       assert.strictEqual(cursorPos.rows, 0);
       assert.strictEqual(cursorPos.cols, 0);
-      rli.on('line', common.mustCall((line) => {
-        assert.strictEqual(line, '');
-      }));
+      rli.on(
+        'line',
+        common.mustCall((line) => {
+          assert.strictEqual(line, '');
+        })
+      );
       fi.emit('data', '\n');
       rli.close();
     }
@@ -908,9 +988,12 @@ function isWarned(emitter) {
       const cursorPos = rli._getCursorPos();
       assert.strictEqual(cursorPos.rows, 0);
       assert.strictEqual(cursorPos.cols, 6);
-      rli.on('line', common.mustCall((line) => {
-        assert.strictEqual(line, 'line 3');
-      }));
+      rli.on(
+        'line',
+        common.mustCall((line) => {
+          assert.strictEqual(line, 'line 3');
+        })
+      );
       fi.emit('data', '\n');
       rli.close();
     }
@@ -922,14 +1005,22 @@ function isWarned(emitter) {
   });
 
   // wide characters should be treated as two columns.
-  assert.strictEqual(internalReadline.isFullWidthCodePoint('a'.charCodeAt(0)),
-                     false);
-  assert.strictEqual(internalReadline.isFullWidthCodePoint('あ'.charCodeAt(0)),
-                     true);
-  assert.strictEqual(internalReadline.isFullWidthCodePoint('谢'.charCodeAt(0)),
-                     true);
-  assert.strictEqual(internalReadline.isFullWidthCodePoint('고'.charCodeAt(0)),
-                     true);
+  assert.strictEqual(
+    internalReadline.isFullWidthCodePoint('a'.charCodeAt(0)),
+    false
+  );
+  assert.strictEqual(
+    internalReadline.isFullWidthCodePoint('あ'.charCodeAt(0)),
+    true
+  );
+  assert.strictEqual(
+    internalReadline.isFullWidthCodePoint('谢'.charCodeAt(0)),
+    true
+  );
+  assert.strictEqual(
+    internalReadline.isFullWidthCodePoint('고'.charCodeAt(0)),
+    true
+  );
   assert.strictEqual(internalReadline.isFullWidthCodePoint(0x1f251), true);
   assert.strictEqual(internalReadline.getStringWidth('abcde'), 5);
   assert.strictEqual(internalReadline.getStringWidth('古池や'), 6);
@@ -951,16 +1042,19 @@ function isWarned(emitter) {
     internalReadline.stripVTControlCharacters('\u001b[31m\u001b[39m'),
     ''
   );
+  assert.strictEqual(internalReadline.stripVTControlCharacters('> '), '> ');
   assert.strictEqual(
-    internalReadline.stripVTControlCharacters('> '),
-    '> '
+    internalReadline.getStringWidth('\u001b[31m> \u001b[39m'),
+    2
   );
-  assert.strictEqual(internalReadline
-    .getStringWidth('\u001b[31m> \u001b[39m'), 2);
-  assert.strictEqual(internalReadline
-    .getStringWidth('\u001b[31m> \u001b[39m> '), 4);
-  assert.strictEqual(internalReadline
-    .getStringWidth('\u001b[31m\u001b[39m'), 0);
+  assert.strictEqual(
+    internalReadline.getStringWidth('\u001b[31m> \u001b[39m> '),
+    4
+  );
+  assert.strictEqual(
+    internalReadline.getStringWidth('\u001b[31m\u001b[39m'),
+    0
+  );
   assert.strictEqual(internalReadline.getStringWidth('> '), 2);
 
   {
@@ -982,9 +1076,11 @@ function isWarned(emitter) {
   // can create a new readline Interface with a null output argument
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      { input: fi, output: null, terminal: terminal }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: null,
+      terminal: terminal
+    });
 
     let called = false;
     rli.on('line', function(line) {
@@ -1004,9 +1100,9 @@ function isWarned(emitter) {
   }
 
   {
-    const expected = terminal ?
-      ['\u001b[1G', '\u001b[0J', '$ ', '\u001b[3G'] :
-      ['$ '];
+    const expected = terminal
+      ? ['\u001b[1G', '\u001b[0J', '$ ', '\u001b[3G']
+      : ['$ '];
 
     let counter = 0;
     const output = new Writable({
@@ -1036,21 +1132,19 @@ function isWarned(emitter) {
 // CPU stress.
 const crlfDelay = Infinity;
 
-[ true, false ].forEach(function(terminal) {
+[true, false].forEach(function(terminal) {
   // sending multiple newlines at once that does not end with a new line
   // and a `end` event(last line is)
 
   // \r\n should emit one line event, not two
   {
     const fi = new FakeInput();
-    const rli = new readline.Interface(
-      {
-        input: fi,
-        output: fi,
-        terminal: terminal,
-        crlfDelay
-      }
-    );
+    const rli = new readline.Interface({
+      input: fi,
+      output: fi,
+      terminal: terminal,
+      crlfDelay
+    });
     const expectedLines = ['foo', 'bar', 'baz', 'bat'];
     let callCount = 0;
     rli.on('line', function(line) {
@@ -1099,10 +1193,13 @@ const crlfDelay = Infinity;
     let callCount = 0;
     rli.on('line', () => callCount++);
     fi.emit('data', '\r');
-    setTimeout(common.mustCall(() => {
-      fi.emit('data', '\n');
-      assert.strictEqual(callCount, 1);
-      rli.close();
-    }), delay);
+    setTimeout(
+      common.mustCall(() => {
+        fi.emit('data', '\n');
+        assert.strictEqual(callCount, 1);
+        rli.close();
+      }),
+      delay
+    );
   }
 });

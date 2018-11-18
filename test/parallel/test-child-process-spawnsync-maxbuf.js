@@ -9,10 +9,7 @@ const spawnSync = require('child_process').spawnSync;
 const msgOut = 'this is stdout';
 const msgOutBuf = Buffer.from(`${msgOut}\n`);
 
-const args = [
-  '-e',
-  `console.log("${msgOut}");`
-];
+const args = ['-e', `console.log("${msgOut}");`];
 
 // Verify that an error is returned if maxBuffer is surpassed.
 {

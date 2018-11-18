@@ -48,31 +48,39 @@ const server = http.createServer(function(req, res) {
 });
 server.listen(0);
 
-server.on('listening', common.mustCall(function() {
-  const c = net.createConnection(this.address().port);
-  let server_response = '';
+server.on(
+  'listening',
+  common.mustCall(function() {
+    const c = net.createConnection(this.address().port);
+    let server_response = '';
 
-  c.setEncoding('utf8');
+    c.setEncoding('utf8');
 
-  c.on('connect', function() {
-    c.write('GET / HTTP/1.0\r\n' +
-            'Connection: Keep-Alive\r\n\r\n');
-  });
+    c.on('connect', function() {
+      c.write('GET / HTTP/1.0\r\n' + 'Connection: Keep-Alive\r\n\r\n');
+    });
 
-  c.on('data', function(chunk) {
-    console.log(chunk);
-    server_response += chunk;
-  });
+    c.on('data', function(chunk) {
+      console.log(chunk);
+      server_response += chunk;
+    });
 
-  c.on('end', common.mustCall(function() {
-    const m = server_response.split('\r\n\r\n');
-    assert.strictEqual(m[1], 'hello world\n');
-    console.log('got end');
-    c.end();
-  }));
+    c.on(
+      'end',
+      common.mustCall(function() {
+        const m = server_response.split('\r\n\r\n');
+        assert.strictEqual(m[1], 'hello world\n');
+        console.log('got end');
+        c.end();
+      })
+    );
 
-  c.on('close', common.mustCall(function() {
-    console.log('got close');
-    server.close();
-  }));
-}));
+    c.on(
+      'close',
+      common.mustCall(function() {
+        console.log('got close');
+        server.close();
+      })
+    );
+  })
+);

@@ -47,10 +47,16 @@ function run(test) {
   REPL.createInternalRepl(env, opts, function(err, repl) {
     assert.ifError(err);
 
-    assert.strictEqual(expected.terminal, repl.terminal,
-                       `Expected ${inspect(expected)} with ${inspect(env)}`);
-    assert.strictEqual(expected.useColors, repl.useColors,
-                       `Expected ${inspect(expected)} with ${inspect(env)}`);
+    assert.strictEqual(
+      expected.terminal,
+      repl.terminal,
+      `Expected ${inspect(expected)} with ${inspect(env)}`
+    );
+    assert.strictEqual(
+      expected.useColors,
+      repl.useColors,
+      `Expected ${inspect(expected)} with ${inspect(env)}`
+    );
     repl.close();
   });
 }

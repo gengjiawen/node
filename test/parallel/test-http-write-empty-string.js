@@ -38,17 +38,26 @@ const server = http.createServer(function(request, response) {
   this.close();
 });
 
-server.listen(0, common.mustCall(function() {
-  http.get({ port: this.address().port }, common.mustCall(function(res) {
-    let response = '';
+server.listen(
+  0,
+  common.mustCall(function() {
+    http.get(
+      { port: this.address().port },
+      common.mustCall(function(res) {
+        let response = '';
 
-    assert.strictEqual(res.statusCode, 200);
-    res.setEncoding('ascii');
-    res.on('data', function(chunk) {
-      response += chunk;
-    });
-    res.on('end', common.mustCall(function() {
-      assert.strictEqual(response, '1\n2\n3\n');
-    }));
-  }));
-}));
+        assert.strictEqual(res.statusCode, 200);
+        res.setEncoding('ascii');
+        res.on('data', function(chunk) {
+          response += chunk;
+        });
+        res.on(
+          'end',
+          common.mustCall(function() {
+            assert.strictEqual(response, '1\n2\n3\n');
+          })
+        );
+      })
+    );
+  })
+);

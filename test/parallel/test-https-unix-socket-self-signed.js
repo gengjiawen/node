@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tmpdir = require('../common/tmpdir');
 tmpdir.refresh();
@@ -14,14 +13,20 @@ const options = {
   key: fixtures.readSync('test_key.pem')
 };
 
-const server = https.createServer(options, common.mustCall((req, res) => {
-  res.end('bye\n');
-  server.close();
-}));
+const server = https.createServer(
+  options,
+  common.mustCall((req, res) => {
+    res.end('bye\n');
+    server.close();
+  })
+);
 
-server.listen(common.PIPE, common.mustCall(() => {
-  https.get({
-    socketPath: common.PIPE,
-    rejectUnauthorized: false
-  });
-}));
+server.listen(
+  common.PIPE,
+  common.mustCall(() => {
+    https.get({
+      socketPath: common.PIPE,
+      rejectUnauthorized: false
+    });
+  })
+);

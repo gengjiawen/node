@@ -47,4 +47,6 @@ putIn.run([
 ]);
 
 // In Node.js 10.11.0, this next line will terminate the repl silently...
-testMe.complete('inner.o', () => { throw new Error('fhqwhgads'); });
+testMe.complete('inner.o', () => {
+  throw new Error('fhqwhgads');
+});

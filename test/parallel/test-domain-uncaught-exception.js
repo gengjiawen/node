@@ -172,31 +172,39 @@ if (process.argv[2] === 'child') {
     const testProcess = child_process.fork(__filename, ['child', testIndex]);
 
     testProcess.on('message', function onMsg(msg) {
-      if (test.messagesReceived === undefined)
-        test.messagesReceived = [];
+      if (test.messagesReceived === undefined) test.messagesReceived = [];
 
       test.messagesReceived.push(msg);
     });
 
-    testProcess.on('disconnect', common.mustCall(function onExit() {
-      // Make sure that all expected messages were sent from the
-      // child process
-      test.expectedMessages.forEach(function(expectedMessage) {
-        const msgs = test.messagesReceived;
-        if (msgs === undefined || !msgs.includes(expectedMessage)) {
-          assert.fail(`test ${test.fn.name} should have sent message: ${
-            expectedMessage} but didn't`);
-        }
-      });
-
-      if (test.messagesReceived) {
-        test.messagesReceived.forEach(function(receivedMessage) {
-          if (!test.expectedMessages.includes(receivedMessage)) {
-            assert.fail(`test ${test.fn.name} should not have sent message: ${
-              receivedMessage} but did`);
+    testProcess.on(
+      'disconnect',
+      common.mustCall(function onExit() {
+        // Make sure that all expected messages were sent from the
+        // child process
+        test.expectedMessages.forEach(function(expectedMessage) {
+          const msgs = test.messagesReceived;
+          if (msgs === undefined || !msgs.includes(expectedMessage)) {
+            assert.fail(
+              `test ${
+                test.fn.name
+              } should have sent message: ${expectedMessage} but didn't`
+            );
           }
         });
-      }
-    }));
+
+        if (test.messagesReceived) {
+          test.messagesReceived.forEach(function(receivedMessage) {
+            if (!test.expectedMessages.includes(receivedMessage)) {
+              assert.fail(
+                `test ${
+                  test.fn.name
+                } should not have sent message: ${receivedMessage} but did`
+              );
+            }
+          });
+        }
+      })
+    );
   });
 }

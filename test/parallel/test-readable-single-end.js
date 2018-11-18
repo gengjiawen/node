@@ -7,7 +7,7 @@ const { Readable } = require('stream');
 // event when stream has ended (only 1 event signalling about end)
 
 const r = new Readable({
-  read: () => {},
+  read: () => {}
 });
 
 r.push(null);

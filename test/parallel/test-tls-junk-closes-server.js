@@ -23,8 +23,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tls = require('tls');
 const net = require('net');
@@ -36,14 +35,23 @@ const options = {
 
 const server = tls.createServer(options, common.mustNotCall());
 
-server.listen(0, common.mustCall(function() {
-  const c = net.createConnection(this.address().port);
+server.listen(
+  0,
+  common.mustCall(function() {
+    const c = net.createConnection(this.address().port);
 
-  c.on('connect', common.mustCall(function() {
-    c.write('blah\nblah\nblah\n');
-  }));
+    c.on(
+      'connect',
+      common.mustCall(function() {
+        c.write('blah\nblah\nblah\n');
+      })
+    );
 
-  c.on('end', common.mustCall(function() {
-    server.close();
-  }));
-}));
+    c.on(
+      'end',
+      common.mustCall(function() {
+        server.close();
+      })
+    );
+  })
+);

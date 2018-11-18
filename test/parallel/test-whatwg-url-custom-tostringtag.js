@@ -21,13 +21,19 @@ const test = [
   // spec is changed.
   [Object.getPrototypeOf(url), 'URL'],
   [Object.getPrototypeOf(sp), 'URLSearchParams'],
-  [Object.getPrototypeOf(spIterator), 'URLSearchParams Iterator'],
+  [Object.getPrototypeOf(spIterator), 'URLSearchParams Iterator']
 ];
 
 test.forEach(([obj, expected]) => {
-  assert.strictEqual(obj[Symbol.toStringTag], expected,
-                     `${obj[Symbol.toStringTag]} !== ${expected}`);
+  assert.strictEqual(
+    obj[Symbol.toStringTag],
+    expected,
+    `${obj[Symbol.toStringTag]} !== ${expected}`
+  );
   const str = toString.call(obj);
-  assert.strictEqual(str, `[object ${expected}]`,
-                     `${str} !== [object ${expected}]`);
+  assert.strictEqual(
+    str,
+    `[object ${expected}]`,
+    `${str} !== [object ${expected}]`
+  );
 });

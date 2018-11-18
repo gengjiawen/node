@@ -17,12 +17,10 @@ const allMD = fs.readdirSync(mdPath);
 const allDocs = fs.readdirSync(apiPath);
 assert.ok(allDocs.includes('index.html'));
 
-const actualDocs = allDocs.filter(
-  (name) => {
-    const extension = path.extname(name);
-    return extension === '.html' || extension === '.json';
-  }
-);
+const actualDocs = allDocs.filter((name) => {
+  const extension = path.extname(name);
+  return extension === '.html' || extension === '.json';
+});
 
 for (const name of actualDocs) {
   if (name.startsWith('all.')) continue;
@@ -41,8 +39,7 @@ assert.notStrictEqual(links, null);
 
 // Filter out duplicate links, leave just filenames, add expected JSON files.
 const linkedHtmls = [...new Set(links)].map((link) => link.match(re)[1]);
-const expectedJsons = linkedHtmls
-                       .map((name) => name.replace('.html', '.json'));
+const expectedJsons = linkedHtmls.map((name) => name.replace('.html', '.json'));
 const expectedDocs = linkedHtmls.concat(expectedJsons);
 
 // Test that all the relative links in the TOC match to the actual documents.
@@ -54,7 +51,9 @@ for (const expectedDoc of expectedDocs) {
 // and that they are not empty files.
 for (const actualDoc of actualDocs) {
   assert.ok(
-    expectedDocs.includes(actualDoc), `${actualDoc} does not match TOC`);
+    expectedDocs.includes(actualDoc),
+    `${actualDoc} does not match TOC`
+  );
 
   assert.ok(
     fs.statSync(path.join(apiPath, actualDoc)).size !== 0,

@@ -2,10 +2,9 @@
 
 // Buffer instance methods are exported as 'buf'.
 
-function Buffer() {
-}
+function Buffer() {}
 
-Buffer.prototype.instanceMethod = function() {}
+Buffer.prototype.instanceMethod = function() {};
 
 module.exports = {
   Buffer

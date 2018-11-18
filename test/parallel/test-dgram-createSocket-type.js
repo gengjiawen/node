@@ -13,23 +13,21 @@ const invalidTypes = [
   null,
   undefined
 ];
-const validTypes = [
-  'udp4',
-  'udp6',
-  { type: 'udp4' },
-  { type: 'udp6' }
-];
+const validTypes = ['udp4', 'udp6', { type: 'udp4' }, { type: 'udp6' }];
 const errMessage = /^Bad socket type specified\. Valid types are: udp4, udp6$/;
 
 // Error must be thrown with invalid types
 invalidTypes.forEach((invalidType) => {
-  common.expectsError(() => {
-    dgram.createSocket(invalidType);
-  }, {
-    code: 'ERR_SOCKET_BAD_TYPE',
-    type: TypeError,
-    message: errMessage
-  });
+  common.expectsError(
+    () => {
+      dgram.createSocket(invalidType);
+    },
+    {
+      code: 'ERR_SOCKET_BAD_TYPE',
+      type: TypeError,
+      message: errMessage
+    }
+  );
 });
 
 // Error must not be thrown with valid types
@@ -46,16 +44,20 @@ validTypes.forEach((validType) => {
     sendBufferSize: 15000
   });
 
-  socket.bind(common.mustCall(() => {
-    // note: linux will double the buffer size
-    assert.ok(socket.getRecvBufferSize() === 10000 ||
-              socket.getRecvBufferSize() === 20000,
-              'SO_RCVBUF not 10000 or 20000, ' +
-                `was ${socket.getRecvBufferSize()}`);
-    assert.ok(socket.getSendBufferSize() === 15000 ||
-              socket.getSendBufferSize() === 30000,
-              'SO_SNDBUF not 15000 or 30000, ' +
-                `was ${socket.getRecvBufferSize()}`);
-    socket.close();
-  }));
+  socket.bind(
+    common.mustCall(() => {
+      // note: linux will double the buffer size
+      assert.ok(
+        socket.getRecvBufferSize() === 10000 ||
+          socket.getRecvBufferSize() === 20000,
+        'SO_RCVBUF not 10000 or 20000, ' + `was ${socket.getRecvBufferSize()}`
+      );
+      assert.ok(
+        socket.getSendBufferSize() === 15000 ||
+          socket.getSendBufferSize() === 30000,
+        'SO_SNDBUF not 15000 or 30000, ' + `was ${socket.getRecvBufferSize()}`
+      );
+      socket.close();
+    })
+  );
 }

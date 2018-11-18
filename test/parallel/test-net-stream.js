@@ -40,33 +40,36 @@ assert.strictEqual(s.server.connections, 9);
 s.destroy();
 assert.strictEqual(s.server.connections, 9);
 
-const SIZE = 2E6;
+const SIZE = 2e6;
 const N = 10;
 const buf = Buffer.alloc(SIZE, 'a');
 
-const server = net.createServer(function(socket) {
-  socket.setNoDelay();
+const server = net
+  .createServer(function(socket) {
+    socket.setNoDelay();
 
-  socket.on('error', function(err) {
-    socket.destroy();
-  }).on('close', function() {
-    server.close();
+    socket
+      .on('error', function(err) {
+        socket.destroy();
+      })
+      .on('close', function() {
+        server.close();
+      });
+
+    for (let i = 0; i < N; ++i) {
+      socket.write(buf, () => {});
+    }
+    socket.end();
+  })
+  .listen(0, function() {
+    const conn = net.connect(this.address().port);
+    conn.on('data', function(buf) {
+      assert.strictEqual(conn, conn.pause());
+      setTimeout(function() {
+        conn.destroy();
+      }, 20);
+    });
   });
-
-  for (let i = 0; i < N; ++i) {
-    socket.write(buf, () => {});
-  }
-  socket.end();
-
-}).listen(0, function() {
-  const conn = net.connect(this.address().port);
-  conn.on('data', function(buf) {
-    assert.strictEqual(conn, conn.pause());
-    setTimeout(function() {
-      conn.destroy();
-    }, 20);
-  });
-});
 
 process.on('exit', function() {
   assert.strictEqual(server.connections, 0);

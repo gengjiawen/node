@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -25,40 +24,41 @@ assert.strictEqual(dh2.verifyError, 0);
 {
   const DiffieHellman = crypto.DiffieHellman;
   const dh = DiffieHellman(p1, 'buffer');
-  assert(dh instanceof DiffieHellman, 'DiffieHellman is expected to return a ' +
-                                      'new instance when called without `new`');
+  assert(
+    dh instanceof DiffieHellman,
+    'DiffieHellman is expected to return a ' +
+      'new instance when called without `new`'
+  );
 }
 
 {
   const DiffieHellmanGroup = crypto.DiffieHellmanGroup;
   const dhg = DiffieHellmanGroup('modp5');
-  assert(dhg instanceof DiffieHellmanGroup, 'DiffieHellmanGroup is expected ' +
-                                            'to return a new instance when ' +
-                                            'called without `new`');
+  assert(
+    dhg instanceof DiffieHellmanGroup,
+    'DiffieHellmanGroup is expected ' +
+      'to return a new instance when ' +
+      'called without `new`'
+  );
 }
 
 {
   const ECDH = crypto.ECDH;
   const ecdh = ECDH('prime256v1');
-  assert(ecdh instanceof ECDH, 'ECDH is expected to return a new instance ' +
-                               'when called without `new`');
+  assert(
+    ecdh instanceof ECDH,
+    'ECDH is expected to return a new instance ' + 'when called without `new`'
+  );
 }
 
-[
-  [0x1, 0x2],
-  () => { },
-  /abc/,
-  {}
-].forEach((input) => {
-  common.expectsError(
-    () => crypto.createDiffieHellman(input),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The "sizeOrKey" argument must be one of type number, string, ' +
-               `Buffer, TypedArray, or DataView. Received type ${typeof input}`
-    }
-  );
+[[0x1, 0x2], () => {}, /abc/, {}].forEach((input) => {
+  common.expectsError(() => crypto.createDiffieHellman(input), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "sizeOrKey" argument must be one of type number, string, ' +
+      `Buffer, TypedArray, or DataView. Received type ${typeof input}`
+  });
 });
 
 // Create "another dh1" using generated keys from dh1,
@@ -91,8 +91,7 @@ const secret4 = dh4.computeSecret(key2, 'hex', 'base64');
 
 assert.strictEqual(secret1, secret4);
 
-const wrongBlockLength =
-  /^Error: error:0606506D:digital envelope routines:EVP_DecryptFinal_ex:wrong final block length$/;
+const wrongBlockLength = /^Error: error:0606506D:digital envelope routines:EVP_DecryptFinal_ex:wrong final block length$/;
 
 // Run this one twice to make sure that the dh3 clears its error properly
 {
@@ -129,29 +128,146 @@ assert.strictEqual(bob.verifyError, DH_NOT_SUITABLE_GENERATOR);
  * RFC 2412 E.2, see https://tools.ietf.org/html/rfc2412. */
 const modp2 = crypto.createDiffieHellmanGroup('modp2');
 const modp2buf = Buffer.from([
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xc9, 0x0f,
-  0xda, 0xa2, 0x21, 0x68, 0xc2, 0x34, 0xc4, 0xc6, 0x62, 0x8b,
-  0x80, 0xdc, 0x1c, 0xd1, 0x29, 0x02, 0x4e, 0x08, 0x8a, 0x67,
-  0xcc, 0x74, 0x02, 0x0b, 0xbe, 0xa6, 0x3b, 0x13, 0x9b, 0x22,
-  0x51, 0x4a, 0x08, 0x79, 0x8e, 0x34, 0x04, 0xdd, 0xef, 0x95,
-  0x19, 0xb3, 0xcd, 0x3a, 0x43, 0x1b, 0x30, 0x2b, 0x0a, 0x6d,
-  0xf2, 0x5f, 0x14, 0x37, 0x4f, 0xe1, 0x35, 0x6d, 0x6d, 0x51,
-  0xc2, 0x45, 0xe4, 0x85, 0xb5, 0x76, 0x62, 0x5e, 0x7e, 0xc6,
-  0xf4, 0x4c, 0x42, 0xe9, 0xa6, 0x37, 0xed, 0x6b, 0x0b, 0xff,
-  0x5c, 0xb6, 0xf4, 0x06, 0xb7, 0xed, 0xee, 0x38, 0x6b, 0xfb,
-  0x5a, 0x89, 0x9f, 0xa5, 0xae, 0x9f, 0x24, 0x11, 0x7c, 0x4b,
-  0x1f, 0xe6, 0x49, 0x28, 0x66, 0x51, 0xec, 0xe6, 0x53, 0x81,
-  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xc9,
+  0x0f,
+  0xda,
+  0xa2,
+  0x21,
+  0x68,
+  0xc2,
+  0x34,
+  0xc4,
+  0xc6,
+  0x62,
+  0x8b,
+  0x80,
+  0xdc,
+  0x1c,
+  0xd1,
+  0x29,
+  0x02,
+  0x4e,
+  0x08,
+  0x8a,
+  0x67,
+  0xcc,
+  0x74,
+  0x02,
+  0x0b,
+  0xbe,
+  0xa6,
+  0x3b,
+  0x13,
+  0x9b,
+  0x22,
+  0x51,
+  0x4a,
+  0x08,
+  0x79,
+  0x8e,
+  0x34,
+  0x04,
+  0xdd,
+  0xef,
+  0x95,
+  0x19,
+  0xb3,
+  0xcd,
+  0x3a,
+  0x43,
+  0x1b,
+  0x30,
+  0x2b,
+  0x0a,
+  0x6d,
+  0xf2,
+  0x5f,
+  0x14,
+  0x37,
+  0x4f,
+  0xe1,
+  0x35,
+  0x6d,
+  0x6d,
+  0x51,
+  0xc2,
+  0x45,
+  0xe4,
+  0x85,
+  0xb5,
+  0x76,
+  0x62,
+  0x5e,
+  0x7e,
+  0xc6,
+  0xf4,
+  0x4c,
+  0x42,
+  0xe9,
+  0xa6,
+  0x37,
+  0xed,
+  0x6b,
+  0x0b,
+  0xff,
+  0x5c,
+  0xb6,
+  0xf4,
+  0x06,
+  0xb7,
+  0xed,
+  0xee,
+  0x38,
+  0x6b,
+  0xfb,
+  0x5a,
+  0x89,
+  0x9f,
+  0xa5,
+  0xae,
+  0x9f,
+  0x24,
+  0x11,
+  0x7c,
+  0x4b,
+  0x1f,
+  0xe6,
+  0x49,
+  0x28,
+  0x66,
+  0x51,
+  0xec,
+  0xe6,
+  0x53,
+  0x81,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff,
+  0xff
 ]);
 
 {
   const exmodp2 = crypto.createDiffieHellman(modp2buf, Buffer.from([2]));
   modp2.generateKeys();
   exmodp2.generateKeys();
-  const modp2Secret = modp2.computeSecret(exmodp2.getPublicKey())
-      .toString('hex');
-  const exmodp2Secret = exmodp2.computeSecret(modp2.getPublicKey())
-      .toString('hex');
+  const modp2Secret = modp2
+    .computeSecret(exmodp2.getPublicKey())
+    .toString('hex');
+  const exmodp2Secret = exmodp2
+    .computeSecret(modp2.getPublicKey())
+    .toString('hex');
   assert.strictEqual(modp2Secret, exmodp2Secret);
   assert.strictEqual(modp2.verifyError, DH_NOT_SUITABLE_GENERATOR);
   assert.strictEqual(exmodp2.verifyError, DH_NOT_SUITABLE_GENERATOR);
@@ -162,10 +278,12 @@ for (const buf of [modp2buf, ...common.getArrayBufferViews(modp2buf)]) {
   // any ArrayBufferViews as the first argument to createDiffieHellman().
   const exmodp2 = crypto.createDiffieHellman(buf, '02', 'hex');
   exmodp2.generateKeys();
-  const modp2Secret = modp2.computeSecret(exmodp2.getPublicKey())
-      .toString('hex');
-  const exmodp2Secret = exmodp2.computeSecret(modp2.getPublicKey())
-      .toString('hex');
+  const modp2Secret = modp2
+    .computeSecret(exmodp2.getPublicKey())
+    .toString('hex');
+  const exmodp2Secret = exmodp2
+    .computeSecret(modp2.getPublicKey())
+    .toString('hex');
   assert.strictEqual(modp2Secret, exmodp2Secret);
   assert.strictEqual(exmodp2.verifyError, DH_NOT_SUITABLE_GENERATOR);
 }
@@ -174,10 +292,12 @@ for (const buf of [modp2buf, ...common.getArrayBufferViews(modp2buf)]) {
   // Ensure specific generator (string without encoding) works as expected.
   const exmodp2 = crypto.createDiffieHellman(modp2buf, '\x02');
   exmodp2.generateKeys();
-  const modp2Secret = modp2.computeSecret(exmodp2.getPublicKey())
-      .toString('hex');
-  const exmodp2Secret = exmodp2.computeSecret(modp2.getPublicKey())
-      .toString('hex');
+  const modp2Secret = modp2
+    .computeSecret(exmodp2.getPublicKey())
+    .toString('hex');
+  const exmodp2Secret = exmodp2
+    .computeSecret(modp2.getPublicKey())
+    .toString('hex');
   assert.strictEqual(modp2Secret, exmodp2Secret);
   assert.strictEqual(exmodp2.verifyError, DH_NOT_SUITABLE_GENERATOR);
 }
@@ -186,22 +306,23 @@ for (const buf of [modp2buf, ...common.getArrayBufferViews(modp2buf)]) {
   // Ensure specific generator (numeric) works as expected.
   const exmodp2 = crypto.createDiffieHellman(modp2buf, 2);
   exmodp2.generateKeys();
-  const modp2Secret = modp2.computeSecret(exmodp2.getPublicKey())
-      .toString('hex');
-  const exmodp2Secret = exmodp2.computeSecret(modp2.getPublicKey())
-      .toString('hex');
+  const modp2Secret = modp2
+    .computeSecret(exmodp2.getPublicKey())
+    .toString('hex');
+  const exmodp2Secret = exmodp2
+    .computeSecret(modp2.getPublicKey())
+    .toString('hex');
   assert.strictEqual(modp2Secret, exmodp2Secret);
   assert.strictEqual(exmodp2.verifyError, DH_NOT_SUITABLE_GENERATOR);
 }
 
-
-const p = 'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' +
-          '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' +
-          '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' +
-          'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF';
+const p =
+  'FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129024E088A67CC74' +
+  '020BBEA63B139B22514A08798E3404DDEF9519B3CD3A431B302B0A6DF25F1437' +
+  '4FE1356D6D51C245E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED' +
+  'EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE65381FFFFFFFFFFFFFFFF';
 const bad_dh = crypto.createDiffieHellman(p, 'hex');
 assert.strictEqual(bad_dh.verifyError, DH_NOT_SUITABLE_GENERATOR);
-
 
 const availableCurves = new Set(crypto.getCurves());
 const availableHashes = new Set(crypto.getHashes());
@@ -232,25 +353,21 @@ if (availableCurves.has('prime256v1') && availableCurves.has('secp256k1')) {
   assert(firstByte === 6 || firstByte === 7);
   // format value should be string
 
-  common.expectsError(
-    () => ecdh1.getPublicKey('buffer', 10),
-    {
-      code: 'ERR_CRYPTO_ECDH_INVALID_FORMAT',
-      type: TypeError,
-      message: 'Invalid ECDH format: 10'
-    });
+  common.expectsError(() => ecdh1.getPublicKey('buffer', 10), {
+    code: 'ERR_CRYPTO_ECDH_INVALID_FORMAT',
+    type: TypeError,
+    message: 'Invalid ECDH format: 10'
+  });
 
   // ECDH should check that point is on curve
   const ecdh3 = crypto.createECDH('secp256k1');
   const key3 = ecdh3.generateKeys();
 
-  common.expectsError(
-    () => ecdh2.computeSecret(key3, 'latin1', 'buffer'),
-    {
-      code: 'ERR_CRYPTO_ECDH_INVALID_PUBLIC_KEY',
-      type: Error,
-      message: 'Public key is not valid for specified curve'
-    });
+  common.expectsError(() => ecdh2.computeSecret(key3, 'latin1', 'buffer'), {
+    code: 'ERR_CRYPTO_ECDH_INVALID_PUBLIC_KEY',
+    type: Error,
+    message: 'Public key is not valid for specified curve'
+  });
 
   // ECDH should allow .setPrivateKey()/.setPublicKey()
   const ecdh4 = crypto.createECDH('prime256v1');
@@ -278,10 +395,10 @@ if (availableCurves.has('prime256v1') && availableCurves.has('secp256k1')) {
   const cafebabeKey = 'cafebabe'.repeat(8);
   // Associated compressed and uncompressed public keys (points).
   const cafebabePubPtComp =
-  '03672a31bfc59d3f04548ec9b7daeeba2f61814e8ccc40448045007f5479f693a3';
+    '03672a31bfc59d3f04548ec9b7daeeba2f61814e8ccc40448045007f5479f693a3';
   const cafebabePubPtUnComp =
-  '04672a31bfc59d3f04548ec9b7daeeba2f61814e8ccc40448045007f5479f693a3' +
-  '2e02c7f93d13dc2732b760ca377a5897b9dd41a1c1b29dc0442fdce6d0a04d1d';
+    '04672a31bfc59d3f04548ec9b7daeeba2f61814e8ccc40448045007f5479f693a3' +
+    '2e02c7f93d13dc2732b760ca377a5897b9dd41a1c1b29dc0442fdce6d0a04d1d';
   ecdh5.setPrivateKey(cafebabeKey, 'hex');
   assert.strictEqual(ecdh5.getPrivateKey('hex'), cafebabeKey);
   // Show that the public point (key) is generated while setting the
@@ -292,18 +409,22 @@ if (availableCurves.has('prime256v1') && availableCurves.has('secp256k1')) {
   // private key.
   // 0xDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF
   const peerPubPtComp =
-  '02c6b754b20826eb925e052ee2c25285b162b51fdca732bcf67e39d647fb6830ae';
+    '02c6b754b20826eb925e052ee2c25285b162b51fdca732bcf67e39d647fb6830ae';
   const peerPubPtUnComp =
-  '04c6b754b20826eb925e052ee2c25285b162b51fdca732bcf67e39d647fb6830ae' +
-  'b651944a574a362082a77e3f2b5d9223eb54d7f2f76846522bf75f3bedb8178e';
+    '04c6b754b20826eb925e052ee2c25285b162b51fdca732bcf67e39d647fb6830ae' +
+    'b651944a574a362082a77e3f2b5d9223eb54d7f2f76846522bf75f3bedb8178e';
 
   const sharedSecret =
-  '1da220b5329bbe8bfd19ceef5a5898593f411a6f12ea40f2a8eead9a5cf59970';
+    '1da220b5329bbe8bfd19ceef5a5898593f411a6f12ea40f2a8eead9a5cf59970';
 
-  assert.strictEqual(ecdh5.computeSecret(peerPubPtComp, 'hex', 'hex'),
-                     sharedSecret);
-  assert.strictEqual(ecdh5.computeSecret(peerPubPtUnComp, 'hex', 'hex'),
-                     sharedSecret);
+  assert.strictEqual(
+    ecdh5.computeSecret(peerPubPtComp, 'hex', 'hex'),
+    sharedSecret
+  );
+  assert.strictEqual(
+    ecdh5.computeSecret(peerPubPtUnComp, 'hex', 'hex'),
+    sharedSecret
+  );
 
   // Verify that we still have the same key pair as before the computation.
   assert.strictEqual(ecdh5.getPrivateKey('hex'), cafebabeKey);
@@ -338,9 +459,10 @@ if (availableCurves.has('prime256v1') && availableCurves.has('secp256k1')) {
 
   // Some invalid private keys for the secp256k1 curve.
   const errMessage = /^Error: Private key is not valid for specified curve\.$/;
-  ['0000000000000000000000000000000000000000000000000000000000000000',
-   'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141',
-   'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+  [
+    '0000000000000000000000000000000000000000000000000000000000000000',
+    'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141',
+    'FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF'
   ].forEach((element) => {
     assert.throws(() => {
       ecdh5.setPrivateKey(element, 'hex');
@@ -357,13 +479,11 @@ if (availableCurves.has('prime256v1') && availableHashes.has('sha256')) {
   const invalidKey = Buffer.alloc(65);
   invalidKey.fill('\0');
   curve.generateKeys();
-  common.expectsError(
-    () => curve.computeSecret(invalidKey),
-    {
-      code: 'ERR_CRYPTO_ECDH_INVALID_PUBLIC_KEY',
-      type: Error,
-      message: 'Public key is not valid for specified curve'
-    });
+  common.expectsError(() => curve.computeSecret(invalidKey), {
+    code: 'ERR_CRYPTO_ECDH_INVALID_PUBLIC_KEY',
+    type: Error,
+    message: 'Public key is not valid for specified curve'
+  });
   // Check that signing operations are not impacted by the above error.
   const ecPrivateKey =
     '-----BEGIN EC PRIVATE KEY-----\n' +
@@ -375,11 +495,9 @@ if (availableCurves.has('prime256v1') && availableHashes.has('sha256')) {
 }
 
 // invalid test: curve argument is undefined
-common.expectsError(
-  () => crypto.createECDH(),
-  {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError,
-    message: 'The "curve" argument must be of type string. ' +
-             'Received type undefined'
-  });
+common.expectsError(() => crypto.createECDH(), {
+  code: 'ERR_INVALID_ARG_TYPE',
+  type: TypeError,
+  message:
+    'The "curve" argument must be of type string. ' + 'Received type undefined'
+});

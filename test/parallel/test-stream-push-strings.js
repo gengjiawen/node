@@ -55,11 +55,10 @@ const ms = new MyStream();
 const results = [];
 ms.on('readable', function() {
   let chunk;
-  while (null !== (chunk = ms.read()))
-    results.push(String(chunk));
+  while (null !== (chunk = ms.read())) results.push(String(chunk));
 });
 
-const expect = [ 'first chunksecond to last chunk', 'last chunk' ];
+const expect = ['first chunksecond to last chunk', 'last chunk'];
 process.on('exit', function() {
   assert.strictEqual(ms._chunks, -1);
   assert.deepStrictEqual(results, expect);

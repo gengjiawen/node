@@ -26,10 +26,13 @@ const { MessageChannel } = require('worker_threads');
 
 {
   const err = new Error('eyecatcher');
-  process.on('uncaughtException', common.mustCall((exception) => {
-    port1.unref();
-    assert.strictEqual(exception, err);
-  }));
+  process.on(
+    'uncaughtException',
+    common.mustCall((exception) => {
+      port1.unref();
+      assert.strictEqual(exception, err);
+    })
+  );
 
   const { port1, port2 } = new MessageChannel();
 

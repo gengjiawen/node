@@ -19,4 +19,4 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-module.exports = "hello from module-stub!"
+module.exports = 'hello from module-stub!';

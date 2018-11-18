@@ -19,21 +19,21 @@ function compareIgnoringOrder(array1, array2) {
 function post(message, data) {
   return new Promise((resolve, reject) => {
     session.post(message, data, (err, result) => {
-      if (err)
-        reject(new Error(JSON.stringify(err)));
-      else
-        resolve(result);
+      if (err) reject(new Error(JSON.stringify(err)));
+      else resolve(result);
     });
   });
 }
 
 function generateTrace() {
-  return new Promise((resolve) => setTimeout(() => {
-    for (let i = 0; i < 1000000; i++) {
-      'test' + i;
-    }
-    resolve();
-  }, 1));
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      for (let i = 0; i < 1000000; i++) {
+        'test' + i;
+      }
+      resolve();
+    }, 1)
+  );
 }
 
 async function test() {
@@ -45,19 +45,27 @@ async function test() {
   session.connect();
   let traceNotification = null;
   let tracingComplete = false;
-  session.on('NodeTracing.dataCollected', (n) => traceNotification = n);
-  session.on('NodeTracing.tracingComplete', () => tracingComplete = true);
+  session.on('NodeTracing.dataCollected', (n) => (traceNotification = n));
+  session.on('NodeTracing.tracingComplete', () => (tracingComplete = true));
   const { categories } = await post('NodeTracing.getCategories');
-  compareIgnoringOrder(['node', 'node.async', 'node.bootstrap', 'node.fs.sync',
-                        'node.perf', 'node.perf.usertiming',
-                        'node.perf.timerify', 'v8'],
-                       categories);
+  compareIgnoringOrder(
+    [
+      'node',
+      'node.async',
+      'node.bootstrap',
+      'node.fs.sync',
+      'node.perf',
+      'node.perf.usertiming',
+      'node.perf.timerify',
+      'v8'
+    ],
+    categories
+  );
 
   const traceConfig = { includedCategories: ['v8'] };
   await post('NodeTracing.start', { traceConfig });
 
-  for (let i = 0; i < 5; i++)
-    await generateTrace();
+  for (let i = 0; i < 5; i++) await generateTrace();
   JSON.stringify(await post('NodeTracing.stop', { traceConfig }));
   session.disconnect();
   assert(traceNotification.data.value.length > 0);

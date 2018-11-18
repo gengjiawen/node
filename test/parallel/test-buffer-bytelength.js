@@ -5,21 +5,14 @@ const assert = require('assert');
 const SlowBuffer = require('buffer').SlowBuffer;
 const vm = require('vm');
 
-[
-  [32, 'latin1'],
-  [NaN, 'utf8'],
-  [{}, 'latin1'],
-  []
-].forEach((args) => {
-  common.expectsError(
-    () => Buffer.byteLength(...args),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The "string" argument must be one of type string, ' +
-               `Buffer, or ArrayBuffer. Received type ${typeof args[0]}`
-    }
-  );
+[[32, 'latin1'], [NaN, 'utf8'], [{}, 'latin1'], []].forEach((args) => {
+  common.expectsError(() => Buffer.byteLength(...args), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "string" argument must be one of type string, ' +
+      `Buffer, or ArrayBuffer. Received type ${typeof args[0]}`
+  });
 });
 
 assert.strictEqual(Buffer.byteLength('', undefined, true), -1);
@@ -88,7 +81,8 @@ assert.strictEqual(Buffer.byteLength('aGVsbG8gd29ybGQ=', 'BASE64'), 11);
 assert.strictEqual(Buffer.byteLength('bm9kZS5qcyByb2NrcyE=', 'base64'), 14);
 assert.strictEqual(Buffer.byteLength('aGkk', 'base64'), 3);
 assert.strictEqual(
-  Buffer.byteLength('bHNrZGZsa3NqZmtsc2xrZmFqc2RsZmtqcw==', 'base64'), 25
+  Buffer.byteLength('bHNrZGZsa3NqZmtsc2xrZmFqc2RsZmtqcw==', 'base64'),
+  25
 );
 // special padding
 assert.strictEqual(Buffer.byteLength('aaa=', 'base64'), 2);
@@ -118,6 +112,8 @@ for (let i = 1; i < 10; i++) {
   const encoding = String(i).repeat(i);
 
   assert.ok(!Buffer.isEncoding(encoding));
-  assert.strictEqual(Buffer.byteLength('foo', encoding),
-                     Buffer.byteLength('foo', 'utf8'));
+  assert.strictEqual(
+    Buffer.byteLength('foo', encoding),
+    Buffer.byteLength('foo', 'utf8')
+  );
 }

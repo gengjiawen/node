@@ -33,9 +33,11 @@ process.on('exit', function() {
 function handle(socket) {
   socket.resume();
 
-  socket.on('error', function(err) {
-    socket.destroy();
-  }).on('close', function() {
-    server.close();
-  });
+  socket
+    .on('error', function(err) {
+      socket.destroy();
+    })
+    .on('close', function() {
+      server.close();
+    });
 }

@@ -1,7 +1,7 @@
 'use strict';
 const common = require('../../common');
-if (common.isWindows && (process.env.PROCESSOR_ARCHITEW6432 !== undefined))
-  common.skip('doesn\'t work on WOW64');
+if (common.isWindows && process.env.PROCESSOR_ARCHITEW6432 !== undefined)
+  common.skip("doesn't work on WOW64");
 
 const fs = require('fs');
 const path = require('path');
@@ -20,10 +20,12 @@ for (let i = 0; i < 10; i++) {
   fs.mkdirSync(addonDestinationDir);
 }
 
-const addonPath = path.join(__dirname,
-                            'build',
-                            common.buildType,
-                            'binding.node');
+const addonPath = path.join(
+  __dirname,
+  'build',
+  common.buildType,
+  'binding.node'
+);
 const addonDestinationPath = path.join(addonDestinationDir, 'binding.node');
 
 // Copy binary to long path destination

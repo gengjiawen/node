@@ -26,39 +26,39 @@ const http = require('http');
 
 const server = http.createServer();
 
-server.once('request', common.mustCall((req, res) => {
-  server.on('request', common.mustCall((req, res) => {
-    res.end(Buffer.from('asdf'));
-  }));
-  // write should accept string
-  res.write('string');
-  // write should accept buffer
-  res.write(Buffer.from('asdf'));
+server.once(
+  'request',
+  common.mustCall((req, res) => {
+    server.on(
+      'request',
+      common.mustCall((req, res) => {
+        res.end(Buffer.from('asdf'));
+      })
+    );
+    // write should accept string
+    res.write('string');
+    // write should accept buffer
+    res.write(Buffer.from('asdf'));
 
-  const expectedError = {
-    code: 'ERR_INVALID_ARG_TYPE',
-    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-  };
+    const expectedError = {
+      code: 'ERR_INVALID_ARG_TYPE',
+      name: 'TypeError [ERR_INVALID_ARG_TYPE]'
+    };
 
-  // write should not accept an Array
-  assert.throws(
-    () => {
+    // write should not accept an Array
+    assert.throws(() => {
       res.write(['array']);
-    },
-    expectedError
-  );
+    }, expectedError);
 
-  // end should not accept an Array
-  assert.throws(
-    () => {
+    // end should not accept an Array
+    assert.throws(() => {
       res.end(['moo']);
-    },
-    expectedError
-  );
+    }, expectedError);
 
-  // end should accept string
-  res.end('string');
-}));
+    // end should accept string
+    res.end('string');
+  })
+);
 
 server.listen(0, function() {
   // just make a request, other tests handle responses

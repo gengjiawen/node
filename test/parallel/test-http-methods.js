@@ -61,7 +61,7 @@ const methods = [
   'MKCALENDAR',
   'LINK',
   'UNLINK',
-  'SOURCE',
+  'SOURCE'
 ];
 
 assert.deepStrictEqual(http.METHODS, methods.sort());

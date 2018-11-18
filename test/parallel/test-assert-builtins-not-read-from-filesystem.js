@@ -23,10 +23,11 @@ if (process.argv[2] !== 'child') {
     // Spawn a child process to avoid the error having been cached in the assert
     // module's `errorCache` Map.
 
-    const { output, status, error } =
-      spawnSync(process.execPath,
-                [process.argv[1], 'child', filename, line, column],
-                { cwd: tmpdir.path, env: process.env });
+    const { output, status, error } = spawnSync(
+      process.execPath,
+      [process.argv[1], 'child', filename, line, column],
+      { cwd: tmpdir.path, env: process.env }
+    );
     assert.ifError(error);
     assert.strictEqual(status, 0, `Exit code: ${status}\n${output}`);
     threw = true;
@@ -35,14 +36,11 @@ if (process.argv[2] !== 'child') {
 } else {
   const { writeFileSync } = require('fs');
   const [, , , filename, line, column] = process.argv;
-  const data = `${'\n'.repeat(line - 1)}${' '.repeat(column - 1)}` +
-               'ok(failed(badly));';
+  const data =
+    `${'\n'.repeat(line - 1)}${' '.repeat(column - 1)}` + 'ok(failed(badly));';
 
   writeFileSync(filename, data);
-  assert.throws(
-    () => e.emit('hello', false),
-    {
-      message: 'false == true'
-    }
-  );
+  assert.throws(() => e.emit('hello', false), {
+    message: 'false == true'
+  });
 }

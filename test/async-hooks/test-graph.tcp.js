@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasIPv6)
-  common.skip('IPv6 support required');
+if (!common.hasIPv6) common.skip('IPv6 support required');
 
 const initHooks = require('./init-hooks');
 const verifyGraph = require('./verify-graph');
@@ -17,8 +16,10 @@ const server = net
 
 server.listen(0);
 
-net.connect({ port: server.address().port, host: '::1' },
-            common.mustCall(onconnected));
+net.connect(
+  { port: server.address().port, host: '::1' },
+  common.mustCall(onconnected)
+);
 
 function onlistening() {}
 
@@ -36,13 +37,11 @@ process.on('exit', onexit);
 function onexit() {
   hooks.disable();
 
-  verifyGraph(
-    hooks,
-    [ { type: 'TCPSERVERWRAP', id: 'tcpserver:1', triggerAsyncId: null },
-      { type: 'TCPWRAP', id: 'tcp:1', triggerAsyncId: null },
-      { type: 'TCPCONNECTWRAP',
-        id: 'tcpconnect:1', triggerAsyncId: 'tcp:1' },
-      { type: 'TCPWRAP', id: 'tcp:2', triggerAsyncId: 'tcpserver:1' },
-      { type: 'SHUTDOWNWRAP', id: 'shutdown:1', triggerAsyncId: 'tcp:2' } ]
-  );
+  verifyGraph(hooks, [
+    { type: 'TCPSERVERWRAP', id: 'tcpserver:1', triggerAsyncId: null },
+    { type: 'TCPWRAP', id: 'tcp:1', triggerAsyncId: null },
+    { type: 'TCPCONNECTWRAP', id: 'tcpconnect:1', triggerAsyncId: 'tcp:1' },
+    { type: 'TCPWRAP', id: 'tcp:2', triggerAsyncId: 'tcpserver:1' },
+    { type: 'SHUTDOWNWRAP', id: 'shutdown:1', triggerAsyncId: 'tcp:2' }
+  ]);
 }

@@ -36,12 +36,9 @@ const r = new Readable({ highWaterMark: 1000 });
 let chunks = totalChunks;
 r._read = function(n) {
   console.log('_read called', chunks);
-  if (!(chunks % 2))
-    setImmediate(push);
-  else if (!(chunks % 3))
-    process.nextTick(push);
-  else
-    push();
+  if (!(chunks % 2)) setImmediate(push);
+  else if (!(chunks % 3)) process.nextTick(push);
+  else push();
 };
 
 let totalPushed = 0;
@@ -67,8 +64,7 @@ function readn(n, then) {
   (function read() {
     const c = r.read(n);
     console.error('c', c);
-    if (!c)
-      r.once('readable', read);
+    if (!c) r.once('readable', read);
     else {
       assert.strictEqual(c.length, n);
       assert(!r.readableFlowing);
@@ -150,7 +146,6 @@ function resumePause() {
   r.pause();
   setImmediate(pipe);
 }
-
 
 function pipe() {
   console.error('pipe the rest');

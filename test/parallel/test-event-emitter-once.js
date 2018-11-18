@@ -41,24 +41,31 @@ e.once('foo', remove);
 e.removeListener('foo', remove);
 e.emit('foo');
 
-e.once('e', common.mustCall(function() {
-  e.emit('e');
-}));
+e.once(
+  'e',
+  common.mustCall(function() {
+    e.emit('e');
+  })
+);
 
 e.once('e', common.mustCall());
 
 e.emit('e');
 
 // Verify that the listener must be a function
-common.expectsError(() => {
-  const ee = new EventEmitter();
-  ee.once('foo', null);
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError,
-  message: 'The "listener" argument must be of type Function. ' +
-           'Received type object'
-});
+common.expectsError(
+  () => {
+    const ee = new EventEmitter();
+    ee.once('foo', null);
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "listener" argument must be of type Function. ' +
+      'Received type object'
+  }
+);
 
 {
   // once() has different code paths based on the number of arguments being
@@ -69,12 +76,14 @@ common.expectsError(() => {
     const ee = new EventEmitter();
     const args = ['foo'];
 
-    for (let j = 0; j < i; ++j)
-      args.push(j);
+    for (let j = 0; j < i; ++j) args.push(j);
 
-    ee.once('foo', common.mustCall((...params) => {
-      assert.deepStrictEqual(params, args.slice(1));
-    }));
+    ee.once(
+      'foo',
+      common.mustCall((...params) => {
+        assert.deepStrictEqual(params, args.slice(1));
+      })
+    );
 
     EventEmitter.prototype.emit.apply(ee, args);
   }

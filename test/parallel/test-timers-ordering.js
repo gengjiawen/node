@@ -40,8 +40,7 @@ function f(i) {
 
     // check that this iteration is fired at least 1ms later than the previous
     const now = getLibuvNow();
-    assert(now >= last_ts + 1,
-           `current ts ${now} < prev ts ${last_ts} + 1`);
+    assert(now >= last_ts + 1, `current ts ${now} < prev ts ${last_ts} + 1`);
     last_ts = now;
 
     // schedule next iteration

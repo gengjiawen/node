@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tls = require('tls');
 const net = require('net');
@@ -37,11 +36,17 @@ const options = {
 
 const server = tls.createServer(options, common.mustNotCall());
 
-server.on('tlsClientError', common.mustCall(function(err, conn) {
-  conn.destroy();
-  server.close();
-}));
+server.on(
+  'tlsClientError',
+  common.mustCall(function(err, conn) {
+    conn.destroy();
+    server.close();
+  })
+);
 
-server.listen(0, common.mustCall(function() {
-  net.connect({ host: '127.0.0.1', port: this.address().port });
-}));
+server.listen(
+  0,
+  common.mustCall(function() {
+    net.connect({ host: '127.0.0.1', port: this.address().port });
+  })
+);

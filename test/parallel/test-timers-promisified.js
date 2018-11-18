@@ -11,28 +11,36 @@ const setImmediate = promisify(timers.setImmediate);
 
 {
   const promise = setTimeout(1);
-  promise.then(common.mustCall((value) => {
-    assert.strictEqual(value, undefined);
-  }));
+  promise.then(
+    common.mustCall((value) => {
+      assert.strictEqual(value, undefined);
+    })
+  );
 }
 
 {
   const promise = setTimeout(1, 'foobar');
-  promise.then(common.mustCall((value) => {
-    assert.strictEqual(value, 'foobar');
-  }));
+  promise.then(
+    common.mustCall((value) => {
+      assert.strictEqual(value, 'foobar');
+    })
+  );
 }
 
 {
   const promise = setImmediate();
-  promise.then(common.mustCall((value) => {
-    assert.strictEqual(value, undefined);
-  }));
+  promise.then(
+    common.mustCall((value) => {
+      assert.strictEqual(value, undefined);
+    })
+  );
 }
 
 {
   const promise = setImmediate('foobar');
-  promise.then(common.mustCall((value) => {
-    assert.strictEqual(value, 'foobar');
-  }));
+  promise.then(
+    common.mustCall((value) => {
+      assert.strictEqual(value, 'foobar');
+    })
+  );
 }

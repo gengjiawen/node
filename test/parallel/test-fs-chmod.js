@@ -61,11 +61,10 @@ function closeSync() {
   return fs._closeSync.apply(fs, arguments);
 }
 
-
 // On Windows chmod is only able to manipulate write permission
 if (common.isWindows) {
-  mode_async = 0o400;   // read-only
-  mode_sync = 0o600;    // read-write
+  mode_async = 0o400; // read-only
+  mode_sync = 0o600; // read-write
 } else {
   mode_async = 0o777;
   mode_sync = 0o644;
@@ -80,55 +79,65 @@ const file2 = path.join(tmpdir.path, 'a1.js');
 // Create file1.
 fs.closeSync(fs.openSync(file1, 'w'));
 
-fs.chmod(file1, mode_async.toString(8), common.mustCall((err) => {
-  assert.ifError(err);
-
-  if (common.isWindows) {
-    assert.ok((fs.statSync(file1).mode & 0o777) & mode_async);
-  } else {
-    assert.strictEqual(fs.statSync(file1).mode & 0o777, mode_async);
-  }
-
-  fs.chmodSync(file1, mode_sync);
-  if (common.isWindows) {
-    assert.ok((fs.statSync(file1).mode & 0o777) & mode_sync);
-  } else {
-    assert.strictEqual(fs.statSync(file1).mode & 0o777, mode_sync);
-  }
-}));
-
-fs.open(file2, 'w', common.mustCall((err, fd) => {
-  assert.ifError(err);
-
-  fs.fchmod(fd, mode_async.toString(8), common.mustCall((err) => {
+fs.chmod(
+  file1,
+  mode_async.toString(8),
+  common.mustCall((err) => {
     assert.ifError(err);
 
     if (common.isWindows) {
-      assert.ok((fs.fstatSync(fd).mode & 0o777) & mode_async);
+      assert.ok(fs.statSync(file1).mode & 0o777 & mode_async);
     } else {
-      assert.strictEqual(fs.fstatSync(fd).mode & 0o777, mode_async);
+      assert.strictEqual(fs.statSync(file1).mode & 0o777, mode_async);
     }
 
-    common.expectsError(
-      () => fs.fchmod(fd, {}),
-      {
-        code: 'ERR_INVALID_ARG_VALUE',
-        type: TypeError,
-        message: 'The argument \'mode\' must be a 32-bit unsigned integer ' +
-                 'or an octal string. Received {}'
-      }
-    );
-
-    fs.fchmodSync(fd, mode_sync);
+    fs.chmodSync(file1, mode_sync);
     if (common.isWindows) {
-      assert.ok((fs.fstatSync(fd).mode & 0o777) & mode_sync);
+      assert.ok(fs.statSync(file1).mode & 0o777 & mode_sync);
     } else {
-      assert.strictEqual(fs.fstatSync(fd).mode & 0o777, mode_sync);
+      assert.strictEqual(fs.statSync(file1).mode & 0o777, mode_sync);
     }
+  })
+);
 
-    fs.close(fd, assert.ifError);
-  }));
-}));
+fs.open(
+  file2,
+  'w',
+  common.mustCall((err, fd) => {
+    assert.ifError(err);
+
+    fs.fchmod(
+      fd,
+      mode_async.toString(8),
+      common.mustCall((err) => {
+        assert.ifError(err);
+
+        if (common.isWindows) {
+          assert.ok(fs.fstatSync(fd).mode & 0o777 & mode_async);
+        } else {
+          assert.strictEqual(fs.fstatSync(fd).mode & 0o777, mode_async);
+        }
+
+        common.expectsError(() => fs.fchmod(fd, {}), {
+          code: 'ERR_INVALID_ARG_VALUE',
+          type: TypeError,
+          message:
+            "The argument 'mode' must be a 32-bit unsigned integer " +
+            'or an octal string. Received {}'
+        });
+
+        fs.fchmodSync(fd, mode_sync);
+        if (common.isWindows) {
+          assert.ok(fs.fstatSync(fd).mode & 0o777 & mode_sync);
+        } else {
+          assert.strictEqual(fs.fstatSync(fd).mode & 0o777, mode_sync);
+        }
+
+        fs.close(fd, assert.ifError);
+      })
+    );
+  })
+);
 
 // lchmod
 if (fs.lchmod) {
@@ -136,23 +145,27 @@ if (fs.lchmod) {
 
   fs.symlinkSync(file2, link);
 
-  fs.lchmod(link, mode_async, common.mustCall((err) => {
-    assert.ifError(err);
+  fs.lchmod(
+    link,
+    mode_async,
+    common.mustCall((err) => {
+      assert.ifError(err);
 
-    assert.strictEqual(fs.lstatSync(link).mode & 0o777, mode_async);
+      assert.strictEqual(fs.lstatSync(link).mode & 0o777, mode_async);
 
-    fs.lchmodSync(link, mode_sync);
-    assert.strictEqual(fs.lstatSync(link).mode & 0o777, mode_sync);
-
-  }));
+      fs.lchmodSync(link, mode_sync);
+      assert.strictEqual(fs.lstatSync(link).mode & 0o777, mode_sync);
+    })
+  );
 }
 
 ['', false, null, undefined, {}, []].forEach((input) => {
   const errObj = {
     code: 'ERR_INVALID_ARG_TYPE',
     name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "fd" argument must be of type number. ' +
-             `Received type ${typeof input}`
+    message:
+      'The "fd" argument must be of type number. ' +
+      `Received type ${typeof input}`
   };
   assert.throws(() => fs.fchmod(input, 0o000), errObj);
   assert.throws(() => fs.fchmodSync(input, 0o000), errObj);
@@ -162,8 +175,9 @@ if (fs.lchmod) {
   const errObj = {
     code: 'ERR_INVALID_ARG_TYPE',
     name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "path" argument must be one of type string, Buffer, or URL.' +
-             ` Received type ${typeof input}`
+    message:
+      'The "path" argument must be one of type string, Buffer, or URL.' +
+      ` Received type ${typeof input}`
   };
   assert.throws(() => fs.chmod(input, 1, common.mustNotCall()), errObj);
   assert.throws(() => fs.chmodSync(input, 1), errObj);

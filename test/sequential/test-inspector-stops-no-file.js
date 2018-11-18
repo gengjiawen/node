@@ -3,9 +3,9 @@ require('../common');
 
 const spawn = require('child_process').spawn;
 
-const child = spawn(process.execPath,
-                    [ '--inspect', 'no-such-script.js' ],
-                    { 'stdio': 'inherit' });
+const child = spawn(process.execPath, ['--inspect', 'no-such-script.js'], {
+  stdio: 'inherit'
+});
 
 function signalHandler() {
   child.kill();

@@ -48,14 +48,11 @@ assert.strictEqual('ç'.toLocaleUpperCase('tr'), 'Ç');
 assert.strictEqual('ç'.toUpperCase(), 'Ç');
 
 if (!common.hasIntl) {
-  const erMsg =
-    `"Intl" object is NOT present but v8_enable_i18n_support is ${enablei18n}`;
+  const erMsg = `"Intl" object is NOT present but v8_enable_i18n_support is ${enablei18n}`;
   assert.strictEqual(enablei18n, 0, erMsg);
   common.skip('Intl tests because Intl object not present.');
 } else {
-  const erMsg =
-    `"Intl" object is present but v8_enable_i18n_support is ${
-      enablei18n}. Is this test out of date?`;
+  const erMsg = `"Intl" object is present but v8_enable_i18n_support is ${enablei18n}. Is this test out of date?`;
   assert.strictEqual(enablei18n, 1, erMsg);
 
   // Construct a new date at the beginning of Unix time
@@ -74,7 +71,8 @@ if (!common.hasIntl) {
   // If list is specified and doesn't contain 'en' then return.
   if (process.config.variables.icu_locales && !haveLocale('en')) {
     common.printSkipMessage(
-      'detailed Intl tests because English is not listed as supported.');
+      'detailed Intl tests because English is not listed as supported.'
+    );
     // Smoke test. Does it format anything, or fail?
     console.log(`Date(0) formatted to: ${dtf.format(date0)}`);
     return;
@@ -100,7 +98,7 @@ if (!common.hasIntl) {
   }
   // number format
   {
-    const numberFormat = new Intl.NumberFormat(['en']).format(12345.67890);
+    const numberFormat = new Intl.NumberFormat(['en']).format(12345.6789);
     assert.strictEqual(numberFormat, '12,345.679');
   }
   // Significant Digits

@@ -15,7 +15,7 @@ const server = http.createServer((req, res) => {
   console.error('Server sending full response...');
   res.writeHead(200, {
     'Content-Type': 'text/plain',
-    'ABCD': '1'
+    ABCD: '1'
   });
   res.end(test_res_body);
 });
@@ -38,10 +38,15 @@ server.listen(0, function() {
   req.on('response', function(res) {
     // Check that all 102 Processing received before full response received.
     assert.strictEqual(countdown.remaining, 1);
-    assert.strictEqual(res.statusCode, 200,
-                       `Final status code was ${res.statusCode}, not 200.`);
+    assert.strictEqual(
+      res.statusCode,
+      200,
+      `Final status code was ${res.statusCode}, not 200.`
+    );
     res.setEncoding('utf8');
-    res.on('data', function(chunk) { body += chunk; });
+    res.on('data', function(chunk) {
+      body += chunk;
+    });
     res.on('end', function() {
       console.error('Got full response.');
       assert.strictEqual(body, test_res_body);

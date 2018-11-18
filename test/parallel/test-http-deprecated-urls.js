@@ -8,19 +8,21 @@ const http = require('http');
 const modules = { http };
 
 const deprecations = [
-  ['The provided URL http://[www.nodejs.org] is not a valid URL, and is supported ' +
-  'in the http module solely for compatibility.',
-   'DEP0109'],
+  [
+    'The provided URL http://[www.nodejs.org] is not a valid URL, and is supported ' +
+      'in the http module solely for compatibility.',
+    'DEP0109'
+  ]
 ];
 
 if (common.hasCrypto) {
   const https = require('https');
   modules.https = https;
-  deprecations.push(
-    ['The provided URL https://[www.nodejs.org] is not a valid URL, and is supported ' +
-    'in the https module solely for compatibility.',
-     'DEP0109'],
-  );
+  deprecations.push([
+    'The provided URL https://[www.nodejs.org] is not a valid URL, and is supported ' +
+      'in the https module solely for compatibility.',
+    'DEP0109'
+  ]);
 }
 
 common.expectWarning('DeprecationWarning', deprecations);

@@ -6,16 +6,24 @@ const domain = require('domain');
 
 const d = new domain.Domain();
 
-d.on('error', common.mustCall((err) => {
-  assert.strictEqual(err.message, 'foobar');
-  assert.strictEqual(err.domain, d);
-  assert.strictEqual(err.domainEmitter, undefined);
-  assert.strictEqual(err.domainBound, undefined);
-  assert.strictEqual(err.domainThrown, true);
-}));
+d.on(
+  'error',
+  common.mustCall((err) => {
+    assert.strictEqual(err.message, 'foobar');
+    assert.strictEqual(err.domain, d);
+    assert.strictEqual(err.domainEmitter, undefined);
+    assert.strictEqual(err.domainBound, undefined);
+    assert.strictEqual(err.domainThrown, true);
+  })
+);
 
-d.run(common.mustCall(() => {
-  setTimeout(common.mustCall(() => {
-    throw new Error('foobar');
-  }), 1);
-}));
+d.run(
+  common.mustCall(() => {
+    setTimeout(
+      common.mustCall(() => {
+        throw new Error('foobar');
+      }),
+      1
+    );
+  })
+);

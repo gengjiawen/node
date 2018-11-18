@@ -14,21 +14,17 @@ const prefix = `.removeme-fs-readfile-${process.pid}`;
 tmpdir.refresh();
 
 const fileInfo = [
-  { name: path.join(tmpdir.path, `${prefix}-1K.txt`),
-    len: 1024,
+  { name: path.join(tmpdir.path, `${prefix}-1K.txt`), len: 1024 },
+  { name: path.join(tmpdir.path, `${prefix}-64K.txt`), len: 64 * 1024 },
+  {
+    name: path.join(tmpdir.path, `${prefix}-64KLessOne.txt`),
+    len: 64 * 1024 - 1
   },
-  { name: path.join(tmpdir.path, `${prefix}-64K.txt`),
-    len: 64 * 1024,
-  },
-  { name: path.join(tmpdir.path, `${prefix}-64KLessOne.txt`),
-    len: (64 * 1024) - 1,
-  },
-  { name: path.join(tmpdir.path, `${prefix}-1M.txt`),
-    len: 1 * 1024 * 1024,
-  },
-  { name: path.join(tmpdir.path, `${prefix}-1MPlusOne.txt`),
-    len: (1 * 1024 * 1024) + 1,
-  },
+  { name: path.join(tmpdir.path, `${prefix}-1M.txt`), len: 1 * 1024 * 1024 },
+  {
+    name: path.join(tmpdir.path, `${prefix}-1MPlusOne.txt`),
+    len: 1 * 1024 * 1024 + 1
+  }
 ];
 
 // Populate each fileInfo (and file) with unique fill.
@@ -51,9 +47,12 @@ for (const e of fileInfo) {
 
 // Test readFile on each size.
 for (const e of fileInfo) {
-  fs.readFile(e.name, common.mustCall((err, buf) => {
-    console.log(`Validating readFile on file ${e.name} of length ${e.len}`);
-    assert.ifError(err);
-    assert.deepStrictEqual(buf, e.contents);
-  }));
+  fs.readFile(
+    e.name,
+    common.mustCall((err, buf) => {
+      console.log(`Validating readFile on file ${e.name} of length ${e.len}`);
+      assert.ifError(err);
+      assert.deepStrictEqual(buf, e.contents);
+    })
+  );
 }

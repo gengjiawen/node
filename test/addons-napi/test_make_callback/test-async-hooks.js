@@ -12,7 +12,7 @@ const hook_result = {
   init_called: false,
   before_called: false,
   after_called: false,
-  destroy_called: false,
+  destroy_called: false
 };
 const test_hook = async_hooks.createHook({
   init: (id, type) => {
@@ -29,7 +29,7 @@ const test_hook = async_hooks.createHook({
   },
   destroy: (id) => {
     if (id === hook_result.id) hook_result.destroy_called = true;
-  },
+  }
 });
 
 test_hook.enable();

@@ -12,9 +12,12 @@ const URL = require('url').URL;
 const assert = require('assert');
 const fixtures = require('../common/fixtures');
 
-const tests = require(
-  fixtures.path('wpt', 'url', 'resources', 'urltestdata.json')
-);
+const tests = require(fixtures.path(
+  'wpt',
+  'url',
+  'resources',
+  'urltestdata.json'
+));
 
 const originalFailures = tests.filter((test) => test.failure);
 
@@ -38,38 +41,38 @@ const typeFailures = [
 // > must give failure. This tests that the logic for converting
 // > base URLs into strings properly fails the whole parsing
 // > algorithm if the base URL cannot be parsed.
-const aboutBlankFailures = originalFailures
-  .map((test) => ({
-    input: 'about:blank',
-    base: test.input,
-    failure: true
-  }));
+const aboutBlankFailures = originalFailures.map((test) => ({
+  input: 'about:blank',
+  base: test.input,
+  failure: true
+}));
 
 const failureTests = originalFailures
   .concat(typeFailures)
   .concat(aboutBlankFailures);
 
 const expectedError = common.expectsError(
-  { code: 'ERR_INVALID_URL', type: TypeError }, failureTests.length);
+  { code: 'ERR_INVALID_URL', type: TypeError },
+  failureTests.length
+);
 
 for (const test of failureTests) {
   assert.throws(
     () => new URL(test.input, test.base),
     (error) => {
-      if (!expectedError(error))
-        return false;
+      if (!expectedError(error)) return false;
 
       // The input could be processed, so we don't do strict matching here
-      const match = (`${error}`).match(/Invalid URL: (.*)$/);
+      const match = `${error}`.match(/Invalid URL: (.*)$/);
       if (!match) {
         return false;
       }
       return error.input === match[1];
-    });
+    }
+  );
 }
 
-const additional_tests =
-  require(fixtures.path('url-tests-additional.js'));
+const additional_tests = require(fixtures.path('url-tests-additional.js'));
 
 for (const test of additional_tests) {
   const url = new URL(test.url);

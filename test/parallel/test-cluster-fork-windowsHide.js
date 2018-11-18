@@ -18,11 +18,11 @@ if (!process.argv[2]) {
   const master = child_process.spawn(
     process.argv[0],
     [process.argv[1], '--cluster'],
-    { detached: true, stdio: ['ignore', 'ignore', 'ignore', 'ipc'] });
+    { detached: true, stdio: ['ignore', 'ignore', 'ignore', 'ipc'] }
+  );
 
   const messageHandlers = {
-    workerOnline: common.mustCall((msg) => {
-    }),
+    workerOnline: common.mustCall((msg) => {}),
     mainWindowHandle: common.mustCall((msg) => {
       assert.ok(/0\s*/.test(msg.value));
     }),
@@ -38,11 +38,13 @@ if (!process.argv[2]) {
     handler(msg);
   });
 
-  master.on('exit', common.mustCall((code, signal) => {
-    assert.strictEqual(code, 0);
-    assert.strictEqual(signal, null);
-  }));
-
+  master.on(
+    'exit',
+    common.mustCall((code, signal) => {
+      assert.strictEqual(code, 0);
+      assert.strictEqual(signal, null);
+    })
+  );
 } else if (cluster.isMaster) {
   cluster.setupMaster({
     silent: true,
@@ -61,14 +63,14 @@ if (!process.argv[2]) {
     if (process.platform === 'win32') {
       output = child_process.execSync(
         'powershell -NoProfile -c ' +
-        `"(Get-Process -Id ${worker.process.pid}).MainWindowHandle"`,
-        { windowsHide: true, encoding: 'utf8' });
+          `"(Get-Process -Id ${worker.process.pid}).MainWindowHandle"`,
+        { windowsHide: true, encoding: 'utf8' }
+      );
     }
 
     process.send({ type: 'mainWindowHandle', value: output });
     worker.send('shutdown');
   });
-
 } else {
   cluster.worker.on('message', (msg) => {
     cluster.worker.disconnect();

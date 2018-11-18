@@ -1,6 +1,5 @@
 const util = require('util');
 
-function deprecatedFunction() {
-}
+function deprecatedFunction() {}
 
 util.deprecate(deprecatedFunction, 'deprecatedFunction is deprecated.')();

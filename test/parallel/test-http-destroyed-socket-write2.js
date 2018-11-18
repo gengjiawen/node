@@ -46,33 +46,34 @@ server.listen(0, function() {
     });
   }
 
-  req.on('error', common.mustCall(function(er) {
-    switch (er.code) {
-      // This is the expected case
-      case 'ECONNRESET':
-        break;
+  req.on(
+    'error',
+    common.mustCall(function(er) {
+      switch (er.code) {
+        // This is the expected case
+        case 'ECONNRESET':
+          break;
 
-      // On Windows, this sometimes manifests as ECONNABORTED
-      case 'ECONNABORTED':
-        break;
+        // On Windows, this sometimes manifests as ECONNABORTED
+        case 'ECONNABORTED':
+          break;
 
-      // This test is timing sensitive so an EPIPE is not out of the question.
-      // It should be infrequent, given the 50 ms timeout, but not impossible.
-      case 'EPIPE':
-        break;
+        // This test is timing sensitive so an EPIPE is not out of the question.
+        // It should be infrequent, given the 50 ms timeout, but not impossible.
+        case 'EPIPE':
+          break;
 
-      default:
-        // Write to a torn down client should RESET or ABORT
-        assert.strictEqual(er.code,
-                           'ECONNRESET');
-        break;
-    }
+        default:
+          // Write to a torn down client should RESET or ABORT
+          assert.strictEqual(er.code, 'ECONNRESET');
+          break;
+      }
 
-
-    assert.strictEqual(req.output.length, 0);
-    assert.strictEqual(req.outputEncodings.length, 0);
-    server.close();
-  }));
+      assert.strictEqual(req.output.length, 0);
+      assert.strictEqual(req.outputEncodings.length, 0);
+      server.close();
+    })
+  );
 
   req.on('response', function(res) {
     res.on('data', common.mustNotCall('Should not receive response data'));

@@ -10,8 +10,9 @@ if (!common.isMainThread)
 
 // This test uses the deprecated `customFds` option. We expect a deprecation
 // warning, but only once (per node process).
-const msg = 'child_process: options.customFds option is deprecated. ' +
-            'Use options.stdio instead.';
+const msg =
+  'child_process: options.customFds option is deprecated. ' +
+  'Use options.stdio instead.';
 common.expectWarning('DeprecationWarning', msg, 'DEP0006');
 
 // Verify that customFds is used if stdio is not provided.

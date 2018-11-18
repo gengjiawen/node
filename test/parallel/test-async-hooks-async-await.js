@@ -7,11 +7,13 @@ const async_hooks = require('async_hooks');
 const assert = require('assert');
 
 const asyncIds = [];
-async_hooks.createHook({
-  init: (asyncId, type, triggerAsyncId) => {
-    asyncIds.push([triggerAsyncId, asyncId]);
-  }
-}).enable();
+async_hooks
+  .createHook({
+    init: (asyncId, type, triggerAsyncId) => {
+      asyncIds.push([triggerAsyncId, asyncId]);
+    }
+  })
+  .enable();
 
 async function main() {
   await null;

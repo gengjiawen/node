@@ -9,22 +9,16 @@ function rimrafSync(p) {
   try {
     st = fs.lstatSync(p);
   } catch (e) {
-    if (e.code === 'ENOENT')
-      return;
+    if (e.code === 'ENOENT') return;
   }
 
   try {
-    if (st && st.isDirectory())
-      rmdirSync(p, null);
-    else
-      fs.unlinkSync(p);
+    if (st && st.isDirectory()) rmdirSync(p, null);
+    else fs.unlinkSync(p);
   } catch (e) {
-    if (e.code === 'ENOENT')
-      return;
-    if (e.code === 'EPERM')
-      return rmdirSync(p, e);
-    if (e.code !== 'EISDIR')
-      throw e;
+    if (e.code === 'ENOENT') return;
+    if (e.code === 'EPERM') return rmdirSync(p, e);
+    if (e.code !== 'EISDIR') throw e;
     rmdirSync(p, e);
   }
 }
@@ -33,8 +27,7 @@ function rmdirSync(p, originalEr) {
   try {
     fs.rmdirSync(p);
   } catch (e) {
-    if (e.code === 'ENOTDIR')
-      throw originalEr;
+    if (e.code === 'ENOTDIR') throw originalEr;
     if (e.code === 'ENOTEMPTY' || e.code === 'EEXIST' || e.code === 'EPERM') {
       const enc = process.platform === 'linux' ? 'buffer' : 'utf8';
       fs.readdirSync(p, enc).forEach((f) => {
@@ -50,8 +43,9 @@ function rmdirSync(p, originalEr) {
   }
 }
 
-const testRoot = process.env.NODE_TEST_DIR ?
-  fs.realpathSync(process.env.NODE_TEST_DIR) : path.resolve(__dirname, '..');
+const testRoot = process.env.NODE_TEST_DIR
+  ? fs.realpathSync(process.env.NODE_TEST_DIR)
+  : path.resolve(__dirname, '..');
 
 // Using a `.` prefixed name, which is the convention for "hidden" on POSIX,
 // gets tools to ignore it by default or by simple rules, especially eslint.

@@ -17,12 +17,16 @@ const { Session } = require('inspector');
 
 const session = new Session();
 session.connect();
-session.post('NodeTracing.start', {
-  traceConfig: { includedCategories: ['node.perf'] }
-}, common.mustCall((err) => {
-  assert.deepStrictEqual(err, {
-    code: -32000,
-    message:
-      'Tracing properties can only be changed through main thread sessions'
-  });
-}));
+session.post(
+  'NodeTracing.start',
+  {
+    traceConfig: { includedCategories: ['node.perf'] }
+  },
+  common.mustCall((err) => {
+    assert.deepStrictEqual(err, {
+      code: -32000,
+      message:
+        'Tracing properties can only be changed through main thread sessions'
+    });
+  })
+);

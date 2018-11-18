@@ -3,11 +3,14 @@
 const common = require('../common');
 const assert = require('assert');
 
-const msg = common.expectsError({
-  code: 'ERR_INVALID_OPT_VALUE',
-  type: RangeError,
-  message: /^The value "[^"]*" is invalid for option "size"$/
-}, 12);
+const msg = common.expectsError(
+  {
+    code: 'ERR_INVALID_OPT_VALUE',
+    type: RangeError,
+    message: /^The value "[^"]*" is invalid for option "size"$/
+  },
+  12
+);
 
 // Test that negative Buffer length inputs throw errors.
 

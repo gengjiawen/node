@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -26,10 +25,13 @@ class OldStream extends Stream {
 
 const stream = new OldStream();
 
-stream.pipe(hasher2).on('finish', common.mustCall(function() {
-  const hash = hasher2.read().toString('hex');
-  assert.strictEqual(expected, hash);
-}));
+stream.pipe(hasher2).on(
+  'finish',
+  common.mustCall(function() {
+    const hash = hasher2.read().toString('hex');
+    assert.strictEqual(expected, hash);
+  })
+);
 
 stream.emit('data', Buffer.from('hello'));
 stream.emit('data', Buffer.from(' world'));

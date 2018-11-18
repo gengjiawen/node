@@ -27,18 +27,28 @@ if (!process.env.HAS_STARTED_WORKER) {
 function parent() {
   const test = (arg, name = 'worker', exit, error = null) => {
     const w = new Worker(__filename);
-    w.on('exit', common.mustCall((code) => {
-      assert.strictEqual(
-        code, exit,
-        `wrong exit for ${arg}-${name}\nexpected:${exit} but got:${code}`);
-      console.log(`ok - ${arg} exited with ${exit}`);
-    }));
+    w.on(
+      'exit',
+      common.mustCall((code) => {
+        assert.strictEqual(
+          code,
+          exit,
+          `wrong exit for ${arg}-${name}\nexpected:${exit} but got:${code}`
+        );
+        console.log(`ok - ${arg} exited with ${exit}`);
+      })
+    );
     if (error) {
-      w.on('error', common.mustCall((err) => {
-        console.log(err);
-        assert(error.test(err),
-               `wrong error for ${arg}\nexpected:${error} but got:${err}`);
-      }));
+      w.on(
+        'error',
+        common.mustCall((err) => {
+          console.log(err);
+          assert(
+            error.test(err),
+            `wrong error for ${arg}\nexpected:${error} but got:${err}`
+          );
+        })
+      );
     }
     w.postMessage(arg);
   };

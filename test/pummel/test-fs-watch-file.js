@@ -56,7 +56,6 @@ process.on('exit', function() {
   assert.strictEqual(watchSeenFour, 1);
 });
 
-
 fs.writeFileSync(filepathOne, 'hello');
 
 assert.throws(
@@ -78,7 +77,6 @@ setTimeout(function() {
   fs.writeFileSync(filepathOne, 'world');
 }, 1000);
 
-
 process.chdir(testDir);
 
 fs.writeFileSync(filepathTwoAbs, 'howdy');
@@ -92,7 +90,8 @@ assert.throws(
   }
 );
 
-{ // Does not throw.
+{
+  // Does not throw.
   function a() {
     fs.unwatchFile(filepathTwo, a);
     ++watchSeenTwo;
@@ -109,7 +108,8 @@ setTimeout(function() {
   fs.writeFileSync(filepathTwoAbs, 'pardner');
 }, 1000);
 
-{ // Does not throw.
+{
+  // Does not throw.
   function b() {
     fs.unwatchFile(filenameThree, b);
     ++watchSeenThree;
@@ -131,7 +131,8 @@ setTimeout(function() {
   fs.writeFileSync(filenameFour, 'hey');
 }, 500);
 
-{ // Does not throw.
+{
+  // Does not throw.
   function a() {
     ++watchSeenFour;
     assert.strictEqual(watchSeenFour, 1);

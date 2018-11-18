@@ -10,7 +10,7 @@ const { SourceTextModule, createContext } = require('vm');
   const context = createContext({
     foo: 'bar',
     baz: undefined,
-    typeofProcess: undefined,
+    typeofProcess: undefined
   });
   const m = new SourceTextModule(
     'baz = foo; typeofProcess = typeof process; typeof Object;',
@@ -29,7 +29,7 @@ const { SourceTextModule, createContext } = require('vm');
     typeofProcess: 'undefined'
   });
   assert.strictEqual(result.result, 'function');
-}());
+})();
 
 (async () => {
   const m = new SourceTextModule(
@@ -47,14 +47,13 @@ const { SourceTextModule, createContext } = require('vm');
   const m = new SourceTextModule('while (true) {}');
   await m.link(common.mustNotCall());
   m.instantiate();
-  await m.evaluate({ timeout: 500 })
-    .then(() => assert(false), () => {});
+  await m.evaluate({ timeout: 500 }).then(() => assert(false), () => {});
 })();
 
 // Check the generated url for each module
 (async () => {
-  const context1 = createContext({ });
-  const context2 = createContext({ });
+  const context1 = createContext({});
+  const context2 = createContext({});
 
   const m1 = new SourceTextModule('1', { context: context1 });
   assert.strictEqual(m1.url, 'vm:module(0)');

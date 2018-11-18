@@ -16,9 +16,12 @@ if (process.argv[2] === 'heapBomb') {
 
 // --max-old-space-size=3 is the min 'old space' in V8, explodes fast
 const cmd = `"${process.execPath}" --max-old-space-size=3 "${__filename}"`;
-exec(`${cmd} heapBomb`, common.mustCall((err) => {
-  const msg = `Wrong exit code of ${err.code}! Expected 134 for abort`;
-  // Note: common.nodeProcessAborted() is not asserted here because it
-  // returns true on 134 as well as 0xC0000005 (V8's base::OS::Abort)
-  assert.strictEqual(err.code, 134, msg);
-}));
+exec(
+  `${cmd} heapBomb`,
+  common.mustCall((err) => {
+    const msg = `Wrong exit code of ${err.code}! Expected 134 for abort`;
+    // Note: common.nodeProcessAborted() is not asserted here because it
+    // returns true on 134 as well as 0xC0000005 (V8's base::OS::Abort)
+    assert.strictEqual(err.code, 134, msg);
+  })
+);

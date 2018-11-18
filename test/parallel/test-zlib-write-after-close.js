@@ -23,15 +23,15 @@
 const common = require('../common');
 const zlib = require('zlib');
 
-zlib.gzip('hello', common.mustCall(function(err, out) {
-  const unzip = zlib.createGunzip();
-  unzip.close(common.mustCall());
-  common.expectsError(
-    () => unzip.write(out),
-    {
+zlib.gzip(
+  'hello',
+  common.mustCall(function(err, out) {
+    const unzip = zlib.createGunzip();
+    unzip.close(common.mustCall());
+    common.expectsError(() => unzip.write(out), {
       code: 'ERR_STREAM_DESTROYED',
       type: Error,
       message: 'Cannot call write after a stream was destroyed'
-    }
-  );
-}));
+    });
+  })
+);

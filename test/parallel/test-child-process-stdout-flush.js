@@ -41,8 +41,11 @@ child.stdout.on('data', (data) => {
   count += data.length;
 });
 
-child.on('close', common.mustCall((code, signal) => {
-  assert.strictEqual(code, 0);
-  assert.strictEqual(signal, null);
-  assert.strictEqual(n, count);
-}));
+child.on(
+  'close',
+  common.mustCall((code, signal) => {
+    assert.strictEqual(code, 0);
+    assert.strictEqual(signal, null);
+    assert.strictEqual(n, count);
+  })
+);

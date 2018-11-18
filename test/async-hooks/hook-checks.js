@@ -19,13 +19,14 @@ require('../common');
 exports.checkInvocations = function checkInvocations(activity, hooks, stage) {
   const stageInfo = `Checking invocations at stage "${stage}":\n   `;
 
-  assert.ok(activity != null,
-            `${stageInfo} Trying to check invocation for an activity, ` +
-            'but it was empty/undefined.'
+  assert.ok(
+    activity != null,
+    `${stageInfo} Trying to check invocation for an activity, ` +
+      'but it was empty/undefined.'
   );
 
   // Check that actual invocations for all hooks match the expected invocations
-  [ 'init', 'before', 'after', 'destroy', 'promiseResolve' ].forEach(checkHook);
+  ['init', 'before', 'after', 'destroy', 'promiseResolve'].forEach(checkHook);
 
   function checkHook(k) {
     const val = hooks[k];
@@ -35,19 +36,22 @@ exports.checkInvocations = function checkInvocations(activity, hooks, stage) {
     if (val === 0) {
       // Didn't expect any invocations, but it was actually invoked
       const invocations = activity[k].length;
-      const msg = `${stageInfo} Called "${k}" ${invocations} time(s), ` +
-                  'but expected no invocations.';
+      const msg =
+        `${stageInfo} Called "${k}" ${invocations} time(s), ` +
+        'but expected no invocations.';
       assert(activity[k] === null && activity[k] === undefined, msg);
     } else {
       // Expected some invocations, make sure that it was invoked at all
-      const msg1 = `${stageInfo} Never called "${k}", ` +
-                   `but expected ${val} invocation(s).`;
+      const msg1 =
+        `${stageInfo} Never called "${k}", ` +
+        `but expected ${val} invocation(s).`;
       assert(activity[k] !== null && activity[k] !== undefined, msg1);
 
       // Now make sure that the expected count and
       // the actual invocation count match
-      const msg2 = `${stageInfo}  Called "${k}" ${activity[k].length} ` +
-                   `time(s), but expected ${val} invocation(s).`;
+      const msg2 =
+        `${stageInfo}  Called "${k}" ${activity[k].length} ` +
+        `time(s), but expected ${val} invocation(s).`;
       assert.strictEqual(activity[k].length, val, msg2);
     }
   }

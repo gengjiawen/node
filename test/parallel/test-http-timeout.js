@@ -35,7 +35,6 @@ const agent = new http.Agent({ maxSockets: 1 });
 const countdown = new Countdown(MAX_COUNT, () => server.close());
 
 server.listen(0, function() {
-
   for (let i = 0; i < MAX_COUNT; ++i) {
     createRequest().end();
   }

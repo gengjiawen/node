@@ -5,8 +5,7 @@ const fixtures = require('../common/fixtures');
 // This tests that both tls and net will ignore host and port if path is
 // provided.
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tmpdir = require('../common/tmpdir');
 tmpdir.refresh();
@@ -21,9 +20,9 @@ function libName(lib) {
 
 function mkServer(lib, tcp, cb) {
   const handler = (socket) => {
-    socket.write(`${libName(lib)}:${
-      server.address().port || server.address()
-    }`);
+    socket.write(
+      `${libName(lib)}:${server.address().port || server.address()}`
+    );
     socket.end();
   };
   const args = [handler];
@@ -40,24 +39,36 @@ function mkServer(lib, tcp, cb) {
 function testLib(lib, cb) {
   mkServer(lib, true, (tcpServer) => {
     mkServer(lib, false, (unixServer) => {
-      const client = lib.connect({
-        path: unixServer.address(),
-        port: tcpServer.address().port,
-        host: 'localhost',
-        rejectUnauthorized: false
-      }, () => {
-        const bufs = [];
-        client.on('data', common.mustCall((d) => {
-          bufs.push(d);
-        }));
-        client.on('end', common.mustCall(() => {
-          const resp = Buffer.concat(bufs).toString();
-          assert.strictEqual(`${libName(lib)}:${unixServer.address()}`, resp);
-          tcpServer.close();
-          unixServer.close();
-          cb();
-        }));
-      });
+      const client = lib.connect(
+        {
+          path: unixServer.address(),
+          port: tcpServer.address().port,
+          host: 'localhost',
+          rejectUnauthorized: false
+        },
+        () => {
+          const bufs = [];
+          client.on(
+            'data',
+            common.mustCall((d) => {
+              bufs.push(d);
+            })
+          );
+          client.on(
+            'end',
+            common.mustCall(() => {
+              const resp = Buffer.concat(bufs).toString();
+              assert.strictEqual(
+                `${libName(lib)}:${unixServer.address()}`,
+                resp
+              );
+              tcpServer.close();
+              unixServer.close();
+              cb();
+            })
+          );
+        }
+      );
     });
   });
 }

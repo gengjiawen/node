@@ -28,7 +28,7 @@ function onError(err, options) {
   assert.strictEqual(
     err.message,
     `connect ${err.code} ${err.address}:${err.port} ` +
-    `- Local (${err.localAddress}:${err.localPort})`
+      `- Local (${err.localAddress}:${err.localPort})`
   );
 }
 

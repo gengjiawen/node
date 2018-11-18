@@ -25,12 +25,9 @@ const http = require('http');
 
 for (let i = 0; i <= 32; i += 1) {
   const path = `bad${String.fromCharCode(i)}path`;
-  common.expectsError(
-    () => http.get({ path }, common.mustNotCall()),
-    {
-      code: 'ERR_UNESCAPED_CHARACTERS',
-      type: TypeError,
-      message: 'Request path contains unescaped characters'
-    }
-  );
+  common.expectsError(() => http.get({ path }, common.mustNotCall()), {
+    code: 'ERR_UNESCAPED_CHARACTERS',
+    type: TypeError,
+    message: 'Request path contains unescaped characters'
+  });
 }

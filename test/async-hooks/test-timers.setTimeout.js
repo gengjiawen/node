@@ -29,10 +29,12 @@ function ontimeout() {
   const as = hooks.activitiesOfTypes('Timeout');
   t2 = as[1];
   assert.strictEqual(as.length, 2);
-  checkInvocations(t1, { init: 1, before: 1 },
-                   't1: when second timer installed');
-  checkInvocations(t2, { init: 1 },
-                   't2: when second timer installed');
+  checkInvocations(
+    t1,
+    { init: 1, before: 1 },
+    't1: when second timer installed'
+  );
+  checkInvocations(t2, { init: 1 }, 't2: when second timer installed');
 
   timer = setTimeout(common.mustNotCall(), 2 ** 31 - 1);
 }
@@ -40,10 +42,12 @@ function ontimeout() {
 function onSecondTimeout() {
   const as = hooks.activitiesOfTypes('Timeout');
   assert.strictEqual(as.length, 3);
-  checkInvocations(t1, { init: 1, before: 1, after: 1 },
-                   't1: when second timer fired');
-  checkInvocations(t2, { init: 1, before: 1 },
-                   't2: when second timer fired');
+  checkInvocations(
+    t1,
+    { init: 1, before: 1, after: 1 },
+    't1: when second timer fired'
+  );
+  checkInvocations(t2, { init: 1, before: 1 }, 't2: when second timer fired');
   clearTimeout(timer);
   tick(2);
 }
@@ -54,8 +58,14 @@ function onexit() {
   hooks.disable();
   hooks.sanityCheck('Timeout');
 
-  checkInvocations(t1, { init: 1, before: 1, after: 1, destroy: 1 },
-                   't1: when process exits');
-  checkInvocations(t2, { init: 1, before: 1, after: 1, destroy: 1 },
-                   't2: when process exits');
+  checkInvocations(
+    t1,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    't1: when process exits'
+  );
+  checkInvocations(
+    t2,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    't2: when process exits'
+  );
 }

@@ -32,16 +32,20 @@ const server = net.createServer(function onClient(client) {
   }
 });
 
-server.listen(0, common.localhostIPv4, common.mustCall(() => {
-  const countdown = new Countdown(2, () => server.close());
+server.listen(
+  0,
+  common.localhostIPv4,
+  common.mustCall(() => {
+    const countdown = new Countdown(2, () => server.close());
 
-  {
-    const client = net.connect({ port: server.address().port });
-    client.on('end', () => countdown.dec());
-  }
+    {
+      const client = net.connect({ port: server.address().port });
+      client.on('end', () => countdown.dec());
+    }
 
-  {
-    const client = net.connect({ port: server.address().port });
-    client.on('end', () => countdown.dec());
-  }
-}));
+    {
+      const client = net.connect({ port: server.address().port });
+      client.on('end', () => countdown.dec());
+    }
+  })
+);

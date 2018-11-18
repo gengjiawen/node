@@ -8,10 +8,12 @@ const runBenchmark = require('../common/benchmark');
 // sequential rather than parallel to make sure it does not conflict with
 // tests that choose random available ports.
 
-runBenchmark('dgram', ['address=true',
-                       'chunks=2',
-                       'dur=0.1',
-                       'len=1',
-                       'n=1',
-                       'num=1',
-                       'type=send']);
+runBenchmark('dgram', [
+  'address=true',
+  'chunks=2',
+  'dur=0.1',
+  'len=1',
+  'n=1',
+  'num=1',
+  'type=send'
+]);

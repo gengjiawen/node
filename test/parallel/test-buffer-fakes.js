@@ -3,7 +3,7 @@
 require('../common');
 const assert = require('assert');
 
-function FakeBuffer() { }
+function FakeBuffer() {}
 Object.setPrototypeOf(FakeBuffer, Buffer);
 Object.setPrototypeOf(FakeBuffer.prototype, Buffer.prototype);
 

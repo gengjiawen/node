@@ -29,8 +29,10 @@ const errorMessagesByPlatform = {
   linux: ['file too short', 'Exec format error'],
   sunos: ['unknown file type', 'not an ELF file'],
   darwin: ['file too short'],
-  aix: ['Cannot load module',
-        'Cannot run a file that does not have a valid format.']
+  aix: [
+    'Cannot load module',
+    'Cannot run a file that does not have a valid format.'
+  ]
 };
 // If we don't know a priori what the error would be, we accept anything.
 const errorMessages = errorMessagesByPlatform[process.platform] || [''];
@@ -44,14 +46,19 @@ if (common.isWindows) {
     '"(Get-UICulture).TwoLetterISOLanguageName"';
   try {
     // If MUI != 'en' we'll ignore the content of the message
-    localeOk = execSync(powerShellFindMUI).toString('utf8').trim() === 'en';
+    localeOk =
+      execSync(powerShellFindMUI)
+        .toString('utf8')
+        .trim() === 'en';
   } catch {
     // It's only a best effort try to find the MUI
   }
 }
 
 assert.throws(
-  () => { require('../fixtures/module-loading-error.node'); },
+  () => {
+    require('../fixtures/module-loading-error.node');
+  },
   (e) => {
     if (localeOk && !errorMessages.some((msg) => e.message.includes(msg)))
       return false;
@@ -62,26 +69,34 @@ assert.throws(
 const re = /^The "id" argument must be of type string\. Received type \w+$/;
 [1, false, null, undefined, {}].forEach((value) => {
   common.expectsError(
-    () => { require(value); },
+    () => {
+      require(value);
+    },
     {
       type: TypeError,
       code: 'ERR_INVALID_ARG_TYPE',
       message: re
-    });
+    }
+  );
 });
 
-
 common.expectsError(
-  () => { require(''); },
+  () => {
+    require('');
+  },
   {
     type: TypeError,
     code: 'ERR_INVALID_ARG_VALUE',
-    message: 'The argument \'id\' must be a non-empty string. Received \'\''
-  });
+    message: "The argument 'id' must be a non-empty string. Received ''"
+  }
+);
 
 common.expectsError(
-  () => { require('../fixtures/packages/is-dir'); },
+  () => {
+    require('../fixtures/packages/is-dir');
+  },
   {
     code: 'MODULE_NOT_FOUND',
-    message: 'Cannot find module \'../fixtures/packages/is-dir\''
-  });
+    message: "Cannot find module '../fixtures/packages/is-dir'"
+  }
+);

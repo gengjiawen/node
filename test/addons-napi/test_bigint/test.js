@@ -6,7 +6,7 @@ const {
   TestInt64,
   TestUint64,
   TestWords,
-  CreateTooBigBigInt,
+  CreateTooBigBigInt
 } = require(`./build/${common.buildType}/test_bigint`);
 
 [
@@ -20,7 +20,7 @@ const {
   986583n,
   -976675n,
   98765432213456789876546896323445679887645323232436587988766545658n,
-  -4350987086545760976737453646576078997096876957864353245245769809n,
+  -4350987086545760976737453646576078997096876957864353245245769809n
 ].forEach((num) => {
   if (num > -(2n ** 63n) && num < 2n ** 63n) {
     assert.strictEqual(TestInt64(num), num);
@@ -41,5 +41,5 @@ const {
 
 assert.throws(CreateTooBigBigInt, {
   name: 'RangeError',
-  message: 'Maximum BigInt size exceeded',
+  message: 'Maximum BigInt size exceeded'
 });

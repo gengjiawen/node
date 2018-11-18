@@ -41,7 +41,7 @@ let readAll = false;
 const seen = [];
 r.on('readable', function() {
   let chunk;
-  while (chunk = r.read()) {
+  while ((chunk = r.read())) {
     seen.push(chunk.toString());
     // simulate only reading a certain amount of the data,
     // and then putting the rest of the chunk back into the
@@ -54,25 +54,26 @@ r.on('readable', function() {
   }
 });
 
-const expect =
-  [ 'xxxxxxxxxx',
-    'yyyyy',
-    'xxxxxxxxxx',
-    'yyyyy',
-    'xxxxxxxxxx',
-    'yyyyy',
-    'xxxxxxxxxx',
-    'yyyyy',
-    'xxxxxxxxxx',
-    'yyyyy',
-    'xxxxxxxxxx',
-    'yyyyy',
-    'xxxxxxxxxx',
-    'yyyyy',
-    'xxxxxxxxxx',
-    'yyyyy',
-    'xxxxxxxxxx',
-    'yyyyy' ];
+const expect = [
+  'xxxxxxxxxx',
+  'yyyyy',
+  'xxxxxxxxxx',
+  'yyyyy',
+  'xxxxxxxxxx',
+  'yyyyy',
+  'xxxxxxxxxx',
+  'yyyyy',
+  'xxxxxxxxxx',
+  'yyyyy',
+  'xxxxxxxxxx',
+  'yyyyy',
+  'xxxxxxxxxx',
+  'yyyyy',
+  'xxxxxxxxxx',
+  'yyyyy',
+  'xxxxxxxxxx',
+  'yyyyy'
+];
 
 r.on('end', function() {
   assert.deepStrictEqual(seen, expect);

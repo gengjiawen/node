@@ -46,20 +46,24 @@ function testCwd(options, expectCode = 0, expectData) {
     assert.strictEqual(expectCode, code);
   });
 
-  child.on('close', common.mustCall(function() {
-    expectData && assert.strictEqual(data.trim(), expectData);
-  }));
+  child.on(
+    'close',
+    common.mustCall(function() {
+      expectData && assert.strictEqual(data.trim(), expectData);
+    })
+  );
 
   return child;
 }
 
-
 // Assume does-not-exist doesn't exist, expect exitCode=-1 and errno=ENOENT
 {
-  testCwd({ cwd: 'does-not-exist' }, -1)
-    .on('error', common.mustCall(function(e) {
+  testCwd({ cwd: 'does-not-exist' }, -1).on(
+    'error',
+    common.mustCall(function(e) {
       assert.strictEqual(e.code, 'ENOENT');
-    }));
+    })
+  );
 }
 
 // Assume these exist, and 'pwd' gives us the right directory back

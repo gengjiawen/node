@@ -78,64 +78,73 @@ assert(!Buffer.from('ff').includes(Buffer.from('f'), 1, 'ucs2'));
 
 // test hex encoding
 assert.strictEqual(
-  Buffer.from(b.toString('hex'), 'hex')
-    .includes('64', 0, 'hex'),
+  Buffer.from(b.toString('hex'), 'hex').includes('64', 0, 'hex'),
   true
 );
 assert.strictEqual(
-  Buffer.from(b.toString('hex'), 'hex')
-    .includes(Buffer.from('64', 'hex'), 0, 'hex'),
+  Buffer.from(b.toString('hex'), 'hex').includes(
+    Buffer.from('64', 'hex'),
+    0,
+    'hex'
+  ),
   true
 );
 
 // test base64 encoding
 assert.strictEqual(
-  Buffer.from(b.toString('base64'), 'base64')
-    .includes('ZA==', 0, 'base64'),
+  Buffer.from(b.toString('base64'), 'base64').includes('ZA==', 0, 'base64'),
   true
 );
 assert.strictEqual(
-  Buffer.from(b.toString('base64'), 'base64')
-    .includes(Buffer.from('ZA==', 'base64'), 0, 'base64'),
+  Buffer.from(b.toString('base64'), 'base64').includes(
+    Buffer.from('ZA==', 'base64'),
+    0,
+    'base64'
+  ),
   true
 );
 
 // test ascii encoding
 assert.strictEqual(
-  Buffer.from(b.toString('ascii'), 'ascii')
-    .includes('d', 0, 'ascii'),
+  Buffer.from(b.toString('ascii'), 'ascii').includes('d', 0, 'ascii'),
   true
 );
 assert.strictEqual(
-  Buffer.from(b.toString('ascii'), 'ascii')
-    .includes(Buffer.from('d', 'ascii'), 0, 'ascii'),
+  Buffer.from(b.toString('ascii'), 'ascii').includes(
+    Buffer.from('d', 'ascii'),
+    0,
+    'ascii'
+  ),
   true
 );
 
 // test latin1 encoding
 assert.strictEqual(
-  Buffer.from(b.toString('latin1'), 'latin1')
-    .includes('d', 0, 'latin1'),
+  Buffer.from(b.toString('latin1'), 'latin1').includes('d', 0, 'latin1'),
   true
 );
 assert.strictEqual(
-  Buffer.from(b.toString('latin1'), 'latin1')
-    .includes(Buffer.from('d', 'latin1'), 0, 'latin1'),
+  Buffer.from(b.toString('latin1'), 'latin1').includes(
+    Buffer.from('d', 'latin1'),
+    0,
+    'latin1'
+  ),
   true
 );
 
 // test binary encoding
 assert.strictEqual(
-  Buffer.from(b.toString('binary'), 'binary')
-    .includes('d', 0, 'binary'),
+  Buffer.from(b.toString('binary'), 'binary').includes('d', 0, 'binary'),
   true
 );
 assert.strictEqual(
-  Buffer.from(b.toString('binary'), 'binary')
-    .includes(Buffer.from('d', 'binary'), 0, 'binary'),
+  Buffer.from(b.toString('binary'), 'binary').includes(
+    Buffer.from('d', 'binary'),
+    0,
+    'binary'
+  ),
   true
 );
-
 
 // test ucs2 encoding
 let twoByteString = Buffer.from('\u039a\u0391\u03a3\u03a3\u0395', 'ucs2');
@@ -143,22 +152,24 @@ let twoByteString = Buffer.from('\u039a\u0391\u03a3\u03a3\u0395', 'ucs2');
 assert(twoByteString.includes('\u0395', 4, 'ucs2'));
 assert(twoByteString.includes('\u03a3', -4, 'ucs2'));
 assert(twoByteString.includes('\u03a3', -6, 'ucs2'));
-assert(twoByteString.includes(
-  Buffer.from('\u03a3', 'ucs2'), -6, 'ucs2'));
+assert(twoByteString.includes(Buffer.from('\u03a3', 'ucs2'), -6, 'ucs2'));
 assert(!twoByteString.includes('\u03a3', -2, 'ucs2'));
 
-const mixedByteStringUcs2 =
-  Buffer.from('\u039a\u0391abc\u03a3\u03a3\u0395', 'ucs2');
+const mixedByteStringUcs2 = Buffer.from(
+  '\u039a\u0391abc\u03a3\u03a3\u0395',
+  'ucs2'
+);
 assert(mixedByteStringUcs2.includes('bc', 0, 'ucs2'));
 assert(mixedByteStringUcs2.includes('\u03a3', 0, 'ucs2'));
 assert(!mixedByteStringUcs2.includes('\u0396', 0, 'ucs2'));
 
+assert.ok(mixedByteStringUcs2.includes(Buffer.from('bc', 'ucs2'), 0, 'ucs2'));
 assert.ok(
-  mixedByteStringUcs2.includes(Buffer.from('bc', 'ucs2'), 0, 'ucs2'));
+  mixedByteStringUcs2.includes(Buffer.from('\u03a3', 'ucs2'), 0, 'ucs2')
+);
 assert.ok(
-  mixedByteStringUcs2.includes(Buffer.from('\u03a3', 'ucs2'), 0, 'ucs2'));
-assert.ok(
-  !mixedByteStringUcs2.includes(Buffer.from('\u0396', 'ucs2'), 0, 'ucs2'));
+  !mixedByteStringUcs2.includes(Buffer.from('\u0396', 'ucs2'), 0, 'ucs2')
+);
 
 twoByteString = Buffer.from('\u039a\u0391\u03a3\u03a3\u0395', 'ucs2');
 
@@ -183,11 +194,11 @@ assert(mixedByteStringUtf8.includes('bc', -8));
 assert(mixedByteStringUtf8.includes('\u03a3'));
 assert(!mixedByteStringUtf8.includes('\u0396'));
 
-
 // Test complex string includes algorithms. Only trigger for long strings.
 // Long string that isn't a simple repeat of a shorter string.
 let longString = 'A';
-for (let i = 66; i < 76; i++) {  // from 'B' to 'K'
+for (let i = 66; i < 76; i++) {
+  // from 'B' to 'K'
   longString = longString + String.fromCharCode(i) + longString;
 }
 
@@ -208,7 +219,8 @@ assert(longBufferString.includes(pattern, 512), 'Long JABACABA..., Second J');
 
 // Search for a non-ASCII string in a pure ASCII string.
 const asciiString = Buffer.from(
-  'arglebargleglopglyfarglebargleglopglyfarglebargleglopglyf');
+  'arglebargleglopglyfarglebargleglopglyfarglebargleglopglyf'
+);
 assert(!asciiString.includes('\x2061'));
 assert(asciiString.includes('leb', 0));
 
@@ -225,22 +237,22 @@ assert(!allCharsBufferUtf8.includes('notfound'));
 assert(!allCharsBufferUcs2.includes('notfound'));
 
 // Find substrings in Utf8.
-let lengths = [1, 3, 15];  // Single char, simple and complex.
-let indices = [0x5, 0x60, 0x400, 0x680, 0x7ee, 0xFF02, 0x16610, 0x2f77b];
+let lengths = [1, 3, 15]; // Single char, simple and complex.
+let indices = [0x5, 0x60, 0x400, 0x680, 0x7ee, 0xff02, 0x16610, 0x2f77b];
 for (let lengthIndex = 0; lengthIndex < lengths.length; lengthIndex++) {
   for (let i = 0; i < indices.length; i++) {
     const index = indices[i];
     let length = lengths[lengthIndex];
 
-    if (index + length > 0x7F) {
+    if (index + length > 0x7f) {
       length = 2 * length;
     }
 
-    if (index + length > 0x7FF) {
+    if (index + length > 0x7ff) {
       length = 3 * length;
     }
 
-    if (index + length > 0xFFFF) {
+    if (index + length > 0xffff) {
       length = 4 * length;
     }
 
@@ -253,38 +265,29 @@ for (let lengthIndex = 0; lengthIndex < lengths.length; lengthIndex++) {
 }
 
 // Find substrings in Usc2.
-lengths = [2, 4, 16];  // Single char, simple and complex.
+lengths = [2, 4, 16]; // Single char, simple and complex.
 indices = [0x5, 0x65, 0x105, 0x205, 0x285, 0x2005, 0x2085, 0xfff0];
 for (let lengthIndex = 0; lengthIndex < lengths.length; lengthIndex++) {
   for (let i = 0; i < indices.length; i++) {
     const index = indices[i] * 2;
     const length = lengths[lengthIndex];
 
-    const patternBufferUcs2 =
-      allCharsBufferUcs2.slice(index, index + length);
-    assert.ok(
-      allCharsBufferUcs2.includes(patternBufferUcs2, 0, 'ucs2'));
+    const patternBufferUcs2 = allCharsBufferUcs2.slice(index, index + length);
+    assert.ok(allCharsBufferUcs2.includes(patternBufferUcs2, 0, 'ucs2'));
 
     const patternStringUcs2 = patternBufferUcs2.toString('ucs2');
-    assert.ok(
-      allCharsBufferUcs2.includes(patternStringUcs2, 0, 'ucs2'));
+    assert.ok(allCharsBufferUcs2.includes(patternStringUcs2, 0, 'ucs2'));
   }
 }
 
-[
-  () => { },
-  {},
-  []
-].forEach((val) => {
-  common.expectsError(
-    () => b.includes(val),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message: 'The "value" argument must be one of type string, ' +
-               `Buffer, or Uint8Array. Received type ${typeof val}`
-    }
-  );
+[() => {}, {}, []].forEach((val) => {
+  common.expectsError(() => b.includes(val), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message:
+      'The "value" argument must be one of type string, ' +
+      `Buffer, or Uint8Array. Received type ${typeof val}`
+  });
 });
 
 // test truncation of Number arguments to uint8

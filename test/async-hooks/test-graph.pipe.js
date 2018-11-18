@@ -8,7 +8,7 @@ const spawn = require('child_process').spawn;
 const hooks = initHooks();
 
 hooks.enable();
-const sleep = spawn('sleep', [ '0.1' ]);
+const sleep = spawn('sleep', ['0.1']);
 
 sleep
   .on('exit', common.mustCall(onsleepExit))
@@ -22,11 +22,10 @@ process.on('exit', onexit);
 
 function onexit() {
   hooks.disable();
-  verifyGraph(
-    hooks,
-    [ { type: 'PROCESSWRAP', id: 'process:1', triggerAsyncId: null },
-      { type: 'PIPEWRAP', id: 'pipe:1', triggerAsyncId: null },
-      { type: 'PIPEWRAP', id: 'pipe:2', triggerAsyncId: null },
-      { type: 'PIPEWRAP', id: 'pipe:3', triggerAsyncId: null } ]
-  );
+  verifyGraph(hooks, [
+    { type: 'PROCESSWRAP', id: 'process:1', triggerAsyncId: null },
+    { type: 'PIPEWRAP', id: 'pipe:1', triggerAsyncId: null },
+    { type: 'PIPEWRAP', id: 'pipe:2', triggerAsyncId: null },
+    { type: 'PIPEWRAP', id: 'pipe:3', triggerAsyncId: null }
+  ]);
 }

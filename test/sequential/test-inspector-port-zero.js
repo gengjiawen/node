@@ -14,8 +14,8 @@ function test(arg, port = '') {
   proc.stderr.setEncoding('utf8');
   let stdout = '';
   let stderr = '';
-  proc.stdout.on('data', (data) => stdout += data);
-  proc.stderr.on('data', (data) => stderr += data);
+  proc.stdout.on('data', (data) => (stdout += data));
+  proc.stderr.on('data', (data) => (stderr += data));
   proc.stdout.on('close', (hadErr) => assert(!hadErr));
   proc.stderr.on('close', (hadErr) => assert(!hadErr));
   proc.stderr.on('data', () => {
@@ -34,10 +34,16 @@ function test(arg, port = '') {
     };
     proc.stdout.on('close', mustCall(() => onclose()));
     proc.stderr.on('close', mustCall(() => onclose()));
-    proc.on('exit', mustCall((exitCode, signal) => assert.strictEqual(
-      exitCode,
-      0,
-      `exitCode: ${exitCode}, signal: ${signal}`)));
+    proc.on(
+      'exit',
+      mustCall((exitCode, signal) =>
+        assert.strictEqual(
+          exitCode,
+          0,
+          `exitCode: ${exitCode}, signal: ${signal}`
+        )
+      )
+    );
   }
 }
 

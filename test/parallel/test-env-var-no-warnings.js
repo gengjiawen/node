@@ -10,15 +10,17 @@ if (process.argv[2] === 'child') {
     const env = Object.assign({}, process.env, newEnv);
     const cmd = `"${process.execPath}" "${__filename}" child`;
 
-    cp.exec(cmd, { env }, common.mustCall((err, stdout, stderr) => {
-      assert.strictEqual(err, null);
-      assert.strictEqual(stdout, '');
+    cp.exec(
+      cmd,
+      { env },
+      common.mustCall((err, stdout, stderr) => {
+        assert.strictEqual(err, null);
+        assert.strictEqual(stdout, '');
 
-      if (env.NODE_NO_WARNINGS === '1')
-        assert.strictEqual(stderr, '');
-      else
-        assert(/Warning: foo$/.test(stderr.trim()));
-    }));
+        if (env.NODE_NO_WARNINGS === '1') assert.strictEqual(stderr, '');
+        else assert(/Warning: foo$/.test(stderr.trim()));
+      })
+    );
   }
 
   test({});

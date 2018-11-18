@@ -55,23 +55,28 @@ const { spawn } = require('child_process');
     output += s;
   });
 
-  child.on('exit', common.mustCall(function(code) {
-    assert.strictEqual(code, 0);
-  }));
+  child.on(
+    'exit',
+    common.mustCall(function(code) {
+      assert.strictEqual(code, 0);
+    })
+  );
 
-  child.on('close', common.mustCall(function() {
-    assert.strictEqual(output.length > 1, true);
-    assert.strictEqual(output[output.length - 1], '\n');
-  }));
+  child.on(
+    'close',
+    common.mustCall(function() {
+      assert.strictEqual(output.length > 1, true);
+      assert.strictEqual(output[output.length - 1], '\n');
+    })
+  );
 }
 
 // Assert only one IPC pipe allowed.
 common.expectsError(
   () => {
-    spawn(
-      ...common.pwdCommand,
-      { stdio: ['pipe', 'pipe', 'pipe', 'ipc', 'ipc'] }
-    );
+    spawn(...common.pwdCommand, {
+      stdio: ['pipe', 'pipe', 'pipe', 'ipc', 'ipc']
+    });
   },
   { code: 'ERR_IPC_ONE_PIPE', type: Error }
 );

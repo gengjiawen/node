@@ -45,7 +45,6 @@ if (process.argv[2] === 'server') {
   server.listen(common.PORT, '127.0.0.1', function() {
     console.log('Server running.');
   });
-
 } else {
   // Client
 
@@ -64,8 +63,8 @@ if (process.argv[2] === 'server') {
       }
 
       // Block the event loop for 1 second
-      const start = (new Date()).getTime();
-      while ((new Date()).getTime() < start + 1000) {}
+      const start = new Date().getTime();
+      while (new Date().getTime() < start + 1000) {}
 
       client.write(alittle);
 

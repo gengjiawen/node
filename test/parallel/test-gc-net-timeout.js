@@ -33,8 +33,7 @@ const server = net.createServer(serverHandler);
 server.listen(0, getall);
 
 function getall() {
-  if (count >= todo)
-    return;
+  if (count >= todo) return;
 
   const req = net.connect(server.address().port);
   req.resume();
@@ -49,8 +48,7 @@ function getall() {
   setImmediate(getall);
 }
 
-for (let i = 0; i < 10; i++)
-  getall();
+for (let i = 0; i < 10; i++) getall();
 
 function ongc() {
   countGC++;

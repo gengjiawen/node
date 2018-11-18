@@ -22,9 +22,12 @@ function test(clazz, cb) {
       throw err;
     });
 
-    conn.connect(common.PIPE, function() {
-      conn.write('PING', 'utf-8');
-    });
+    conn.connect(
+      common.PIPE,
+      function() {
+        conn.write('PING', 'utf-8');
+      }
+    );
 
     conn.on('data', function(data) {
       assert.strictEqual(data.toString(), 'PONG');

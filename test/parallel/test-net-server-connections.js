@@ -27,8 +27,9 @@ const net = require('net');
 
 const server = new net.Server();
 
-const expectedWarning = 'Server.connections property is deprecated. ' +
-                        'Use Server.getConnections method instead.';
+const expectedWarning =
+  'Server.connections property is deprecated. ' +
+  'Use Server.getConnections method instead.';
 
 common.expectWarning('DeprecationWarning', expectedWarning, 'DEP0020');
 

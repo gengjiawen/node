@@ -35,8 +35,7 @@ async function validateReadFileProc() {
   // - https://github.com/nodejs/node/issues/21331
 
   // Test is Linux-specific.
-  if (!common.isLinux)
-    return;
+  if (!common.isLinux) return;
 
   const fileHandle = await open('/proc/sys/kernel/hostname', 'r');
   const hostname = await fileHandle.readFile();

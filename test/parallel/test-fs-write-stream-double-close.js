@@ -23,17 +23,23 @@ tmpdir.refresh();
     emits++;
   });
 
-  s.close(common.mustCall(() => {
-    assert.strictEqual(emits, 1);
-    s.close(common.mustCall(() => {
+  s.close(
+    common.mustCall(() => {
       assert.strictEqual(emits, 1);
-    }));
-    process.nextTick(() => {
-      s.close(common.mustCall(() => {
-        assert.strictEqual(emits, 1);
-      }));
-    });
-  }));
+      s.close(
+        common.mustCall(() => {
+          assert.strictEqual(emits, 1);
+        })
+      );
+      process.nextTick(() => {
+        s.close(
+          common.mustCall(() => {
+            assert.strictEqual(emits, 1);
+          })
+        );
+      });
+    })
+  );
 }
 
 {

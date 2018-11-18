@@ -7,7 +7,7 @@ const assert = require('assert');
 
 const spawn = require('child_process').spawn;
 // use -i to force node into interactive mode, despite stdout not being a TTY
-const args = [ '-i' ];
+const args = ['-i'];
 const child = spawn(process.execPath, args);
 
 const input = 'var foo = "bar\\\nbaz"';

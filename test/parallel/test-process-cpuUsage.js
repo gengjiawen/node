@@ -33,46 +33,32 @@ for (let i = 0; i < 10; i++) {
 }
 
 // Ensure that an invalid shape for the previous value argument throws an error.
-assert.throws(
-  () => process.cpuUsage(1),
-  {
-    code: 'ERR_INVALID_ARG_TYPE',
-    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-    message: 'The "prevValue" argument must be of type object. ' +
-             'Received type number'
-  }
-);
-
-// Check invalid types.
-[
-  {},
-  { user: 'a' },
-  { user: null, system: 'c' },
-].forEach((value) => {
-  assert.throws(
-    () => process.cpuUsage(value),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-      message: 'The "prevValue.user" property must be of type number. ' +
-               `Received type ${typeof value.user}`
-    }
-  );
+assert.throws(() => process.cpuUsage(1), {
+  code: 'ERR_INVALID_ARG_TYPE',
+  name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+  message:
+    'The "prevValue" argument must be of type object. ' + 'Received type number'
 });
 
-[
-  { user: 3, system: 'b' },
-  { user: 3, system: null }
-].forEach((value) => {
-  assert.throws(
-    () => process.cpuUsage(value),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      name: 'TypeError [ERR_INVALID_ARG_TYPE]',
-      message: 'The "prevValue.system" property must be of type number. ' +
-               `Received type ${typeof value.system}`
-    }
-  );
+// Check invalid types.
+[{}, { user: 'a' }, { user: null, system: 'c' }].forEach((value) => {
+  assert.throws(() => process.cpuUsage(value), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+    message:
+      'The "prevValue.user" property must be of type number. ' +
+      `Received type ${typeof value.user}`
+  });
+});
+
+[{ user: 3, system: 'b' }, { user: 3, system: null }].forEach((value) => {
+  assert.throws(() => process.cpuUsage(value), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    name: 'TypeError [ERR_INVALID_ARG_TYPE]',
+    message:
+      'The "prevValue.system" property must be of type number. ' +
+      `Received type ${typeof value.system}`
+  });
 });
 
 // Check invalid values.
@@ -80,30 +66,25 @@ assert.throws(
   { user: -1, system: 2 },
   { user: Number.POSITIVE_INFINITY, system: 4 }
 ].forEach((value) => {
-  assert.throws(
-    () => process.cpuUsage(value),
-    {
-      code: 'ERR_INVALID_OPT_VALUE',
-      name: 'RangeError [ERR_INVALID_OPT_VALUE]',
-      message: `The value "${value.user}" is invalid ` +
-               'for option "prevValue.user"'
-    }
-  );
+  assert.throws(() => process.cpuUsage(value), {
+    code: 'ERR_INVALID_OPT_VALUE',
+    name: 'RangeError [ERR_INVALID_OPT_VALUE]',
+    message:
+      `The value "${value.user}" is invalid ` + 'for option "prevValue.user"'
+  });
 });
 
 [
   { user: 3, system: -2 },
   { user: 5, system: Number.NEGATIVE_INFINITY }
 ].forEach((value) => {
-  assert.throws(
-    () => process.cpuUsage(value),
-    {
-      code: 'ERR_INVALID_OPT_VALUE',
-      name: 'RangeError [ERR_INVALID_OPT_VALUE]',
-      message: `The value "${value.system}" is invalid ` +
-               'for option "prevValue.system"'
-    }
-  );
+  assert.throws(() => process.cpuUsage(value), {
+    code: 'ERR_INVALID_OPT_VALUE',
+    name: 'RangeError [ERR_INVALID_OPT_VALUE]',
+    message:
+      `The value "${value.system}" is invalid ` +
+      'for option "prevValue.system"'
+  });
 });
 
 // Ensure that the return value is the expected shape.

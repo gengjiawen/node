@@ -10,8 +10,8 @@ const repl = require('repl');
     eval: common.mustCall((cmd, context) => {
       // Assertions here will not cause the test to exit with an error code
       // so set a boolean that is checked later instead.
-      evalCalledWithExpectedArgs = (cmd === 'function f() {}\n' &&
-                                    context.foo === 'bar');
+      evalCalledWithExpectedArgs =
+        cmd === 'function f() {}\n' && context.foo === 'bar';
     })
   };
 

@@ -17,9 +17,12 @@ const dgram = require('dgram');
   // Can call setBroadcast() after binding the socket.
   const socket = dgram.createSocket('udp4');
 
-  socket.bind(0, common.mustCall(() => {
-    socket.setBroadcast(true);
-    socket.setBroadcast(false);
-    socket.close();
-  }));
+  socket.bind(
+    0,
+    common.mustCall(() => {
+      socket.setBroadcast(true);
+      socket.setBroadcast(false);
+      socket.close();
+    })
+  );
 }

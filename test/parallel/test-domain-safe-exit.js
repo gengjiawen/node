@@ -32,9 +32,15 @@ const b = domain.create();
 
 a.enter(); // push
 b.enter(); // push
-assert.deepStrictEqual(domain._stack, [a, b], 'Unexpected stack shape ' +
-                       `(domain._stack = ${util.inspect(domain._stack)})`);
+assert.deepStrictEqual(
+  domain._stack,
+  [a, b],
+  'Unexpected stack shape ' + `(domain._stack = ${util.inspect(domain._stack)})`
+);
 
 domain.create().exit(); // no-op
-assert.deepStrictEqual(domain._stack, [a, b], 'Unexpected stack shape ' +
-                       `(domain._stack = ${util.inspect(domain._stack)})`);
+assert.deepStrictEqual(
+  domain._stack,
+  [a, b],
+  'Unexpected stack shape ' + `(domain._stack = ${util.inspect(domain._stack)})`
+);

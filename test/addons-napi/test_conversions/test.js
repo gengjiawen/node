@@ -109,9 +109,9 @@ assert.ok(Number.isNaN(test.toNumber(undefined)));
 assert.throws(() => test.toNumber(testSym), TypeError);
 
 assert.deepStrictEqual({}, test.toObject({}));
-assert.deepStrictEqual({ 'test': 1 }, test.toObject({ 'test': 1 }));
+assert.deepStrictEqual({ test: 1 }, test.toObject({ test: 1 }));
 assert.deepStrictEqual([], test.toObject([]));
-assert.deepStrictEqual([ 1, 2, 3 ], test.toObject([ 1, 2, 3 ]));
+assert.deepStrictEqual([1, 2, 3], test.toObject([1, 2, 3]));
 assert.deepStrictEqual(new Boolean(false), test.toObject(false));
 assert.deepStrictEqual(new Boolean(true), test.toObject(true));
 assert.deepStrictEqual(new String(''), test.toObject(''));
@@ -136,5 +136,5 @@ assert.strictEqual(test.toString(Number.NaN), 'NaN');
 assert.strictEqual(test.toString({}), '[object Object]');
 assert.strictEqual(test.toString({ toString: () => 'test' }), 'test');
 assert.strictEqual(test.toString([]), '');
-assert.strictEqual(test.toString([ 1, 2, 3 ]), '1,2,3');
+assert.strictEqual(test.toString([1, 2, 3]), '1,2,3');
 assert.throws(() => test.toString(testSym), TypeError);

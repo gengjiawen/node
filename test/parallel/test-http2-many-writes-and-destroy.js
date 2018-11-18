@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const http2 = require('http2');
 
 {
@@ -19,11 +18,14 @@ const http2 = require('http2');
       req.write(Buffer.alloc(6));
     }
 
-    req.on('close', common.mustCall(() => {
-      console.log('(req onclose)');
-      server.close();
-      client.close();
-    }));
+    req.on(
+      'close',
+      common.mustCall(() => {
+        console.log('(req onclose)');
+        server.close();
+        client.close();
+      })
+    );
 
     req.once('data', common.mustCall(() => req.destroy()));
   });

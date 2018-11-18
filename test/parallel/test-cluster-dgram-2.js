@@ -31,42 +31,42 @@ const cluster = require('cluster');
 const dgram = require('dgram');
 const assert = require('assert');
 
-if (cluster.isMaster)
-  master();
-else
-  worker();
-
+if (cluster.isMaster) master();
+else worker();
 
 function master() {
   let received = 0;
 
   // Start listening on a socket.
   const socket = dgram.createSocket('udp4');
-  socket.bind({ port: 0 }, common.mustCall(() => {
-
-    // Fork workers.
-    for (let i = 0; i < NUM_WORKERS; i++) {
-      const worker = cluster.fork();
-      worker.send({ port: socket.address().port });
-    }
-  }));
+  socket.bind(
+    { port: 0 },
+    common.mustCall(() => {
+      // Fork workers.
+      for (let i = 0; i < NUM_WORKERS; i++) {
+        const worker = cluster.fork();
+        worker.send({ port: socket.address().port });
+      }
+    })
+  );
 
   // Disconnect workers when the expected number of messages have been
   // received.
-  socket.on('message', common.mustCall((data, info) => {
-    received++;
+  socket.on(
+    'message',
+    common.mustCall((data, info) => {
+      received++;
 
-    if (received === PACKETS_PER_WORKER * NUM_WORKERS) {
+      if (received === PACKETS_PER_WORKER * NUM_WORKERS) {
+        // Close the socket.
+        socket.close();
 
-      // Close the socket.
-      socket.close();
-
-      // Disconnect all workers.
-      cluster.disconnect();
-    }
-  }, NUM_WORKERS * PACKETS_PER_WORKER));
+        // Disconnect all workers.
+        cluster.disconnect();
+      }
+    }, NUM_WORKERS * PACKETS_PER_WORKER)
+  );
 }
-
 
 function worker() {
   // Create udp socket and send packets to master.
@@ -78,17 +78,20 @@ function worker() {
   // send(), explicitly bind them to an ephemeral port.
   socket.bind(0);
 
-  process.on('message', common.mustCall((msg) => {
-    assert(msg.port);
+  process.on(
+    'message',
+    common.mustCall((msg) => {
+      assert(msg.port);
 
-    // There is no guarantee that a sent dgram packet will be received so keep
-    // sending until disconnect.
-    const interval = setInterval(() => {
-      socket.send(buf, 0, buf.length, msg.port, '127.0.0.1');
-    }, 1);
+      // There is no guarantee that a sent dgram packet will be received so keep
+      // sending until disconnect.
+      const interval = setInterval(() => {
+        socket.send(buf, 0, buf.length, msg.port, '127.0.0.1');
+      }, 1);
 
-    cluster.worker.on('disconnect', () => {
-      clearInterval(interval);
-    });
-  }));
+      cluster.worker.on('disconnect', () => {
+        clearInterval(interval);
+      });
+    })
+  );
 }

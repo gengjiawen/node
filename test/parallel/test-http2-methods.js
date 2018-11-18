@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const h2 = require('http2');
 
@@ -27,23 +26,28 @@ function onStream(stream, headers, flags) {
 
 server.listen(0);
 
-server.on('listening', common.mustCall(() => {
+server.on(
+  'listening',
+  common.mustCall(() => {
+    const client = h2.connect(`http://localhost:${server.address().port}`);
 
-  const client = h2.connect(`http://localhost:${server.address().port}`);
+    const headers = { ':path': '/' };
 
-  const headers = { ':path': '/' };
-
-  methods.forEach((method) => {
-    headers[':method'] = method;
-    const req = client.request(headers);
-    req.on('response', common.mustCall());
-    req.resume();
-    req.on('end', common.mustCall(() => {
-      if (--expected === 0) {
-        server.close();
-        client.close();
-      }
-    }));
-    req.end();
-  });
-}));
+    methods.forEach((method) => {
+      headers[':method'] = method;
+      const req = client.request(headers);
+      req.on('response', common.mustCall());
+      req.resume();
+      req.on(
+        'end',
+        common.mustCall(() => {
+          if (--expected === 0) {
+            server.close();
+            client.close();
+          }
+        })
+      );
+      req.end();
+    });
+  })
+);

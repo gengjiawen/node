@@ -15,22 +15,28 @@ class Agent extends http.Agent {
 
 const server = http.createServer((req, res) => res.end());
 
-server.listen(0, common.mustCall(() => {
-  const port = server.address().port;
-  const agent = new Agent({
-    keepAlive: true,
-    maxSockets: 1
-  });
+server.listen(
+  0,
+  common.mustCall(() => {
+    const port = server.address().port;
+    const agent = new Agent({
+      keepAlive: true,
+      maxSockets: 1
+    });
 
-  http.get({ agent, port }, (res) => res.resume());
+    http.get({ agent, port }, (res) => res.resume());
 
-  const req = http.get({ agent, port }, common.mustNotCall());
-  req.abort();
+    const req = http.get({ agent, port }, common.mustNotCall());
+    req.abort();
 
-  http.get({ agent, port }, common.mustCall((res) => {
-    res.resume();
-    assert.strictEqual(socketsCreated, 1);
-    agent.destroy();
-    server.close();
-  }));
-}));
+    http.get(
+      { agent, port },
+      common.mustCall((res) => {
+        res.resume();
+        assert.strictEqual(socketsCreated, 1);
+        agent.destroy();
+        server.close();
+      })
+    );
+  })
+);

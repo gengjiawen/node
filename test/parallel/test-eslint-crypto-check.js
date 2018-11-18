@@ -7,8 +7,9 @@ common.skipIfEslintMissing();
 const RuleTester = require('../../tools/node_modules/eslint').RuleTester;
 const rule = require('../../tools/eslint-rules/crypto-check');
 
-const message = 'Please add a hasCrypto check to allow this test to be ' +
-                'skipped when Node is built "--without-ssl".';
+const message =
+  'Please add a hasCrypto check to allow this test to be ' +
+  'skipped when Node is built "--without-ssl".';
 
 new RuleTester().run('crypto-check', rule, {
   valid: [
@@ -23,26 +24,26 @@ new RuleTester().run('crypto-check', rule, {
   ],
   invalid: [
     {
-      code: 'require("common")\n' +
-            'require("crypto")',
+      code: 'require("common")\n' + 'require("crypto")',
       errors: [{ message }],
-      output: 'require("common")\n' +
-              'if (!common.hasCrypto) {' +
-              ' common.skip("missing crypto");' +
-              '}\n' +
-              'require("crypto")'
+      output:
+        'require("common")\n' +
+        'if (!common.hasCrypto) {' +
+        ' common.skip("missing crypto");' +
+        '}\n' +
+        'require("crypto")'
     },
     {
-      code: 'require("common")\n' +
-            'if (common.foo) {}\n' +
-            'require("crypto")',
+      code:
+        'require("common")\n' + 'if (common.foo) {}\n' + 'require("crypto")',
       errors: [{ message }],
-      output: 'require("common")\n' +
-              'if (!common.hasCrypto) {' +
-              ' common.skip("missing crypto");' +
-              '}\n' +
-              'if (common.foo) {}\n' +
-              'require("crypto")'
+      output:
+        'require("common")\n' +
+        'if (!common.hasCrypto) {' +
+        ' common.skip("missing crypto");' +
+        '}\n' +
+        'if (common.foo) {}\n' +
+        'require("crypto")'
     }
   ]
 });

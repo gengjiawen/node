@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (common.isWindows)
-  common.skip('no RLIMIT_NOFILE on Windows');
+if (common.isWindows) common.skip('no RLIMIT_NOFILE on Windows');
 
 const assert = require('assert');
 const exec = require('child_process').exec;

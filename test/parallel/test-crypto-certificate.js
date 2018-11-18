@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -35,7 +34,6 @@ const spkacFail = fixtures.readSync('spkac.fail');
 const spkacPem = fixtures.readSync('spkac.pem');
 
 function checkMethods(certificate) {
-
   assert.strictEqual(certificate.verifySpkac(spkacValid), true);
   assert.strictEqual(certificate.verifySpkac(spkacFail), false);
 
@@ -70,21 +68,20 @@ function stripLineEndings(obj) {
 assert(Certificate() instanceof Certificate);
 
 [1, {}, [], Infinity, true, 'test', undefined, null].forEach((val) => {
-  assert.throws(
-    () => Certificate.verifySpkac(val),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      message: 'The "spkac" argument must be one of type Buffer, TypedArray, ' +
-               `or DataView. Received type ${typeof val}`
-    }
-  );
+  assert.throws(() => Certificate.verifySpkac(val), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    message:
+      'The "spkac" argument must be one of type Buffer, TypedArray, ' +
+      `or DataView. Received type ${typeof val}`
+  });
 });
 
 [1, {}, [], Infinity, true, undefined, null].forEach((val) => {
   const errObj = {
     code: 'ERR_INVALID_ARG_TYPE',
-    message: 'The "spkac" argument must be one of type string, Buffer,' +
-             ` TypedArray, or DataView. Received type ${typeof val}`
+    message:
+      'The "spkac" argument must be one of type string, Buffer,' +
+      ` TypedArray, or DataView. Received type ${typeof val}`
   };
   assert.throws(() => Certificate.exportPublicKey(val), errObj);
   assert.throws(() => Certificate.exportChallenge(val), errObj);

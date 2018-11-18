@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -43,10 +42,8 @@ const serverOptions = {
     // Just to test asynchronous callback
     setTimeout(function() {
       if (context) {
-        if (context.emptyRegression)
-          callback(null, {});
-        else
-          callback(null, tls.createSecureContext(context));
+        if (context.emptyRegression) callback(null, {});
+        else callback(null, tls.createSecureContext(context));
       } else {
         callback(null, null);
       }
@@ -58,7 +55,7 @@ const SNIContexts = {
   'a.example.com': {
     key: loadPEM('agent1-key'),
     cert: loadPEM('agent1-cert'),
-    ca: [ loadPEM('ca2-cert') ]
+    ca: [loadPEM('ca2-cert')]
   },
   'b.example.com': {
     key: loadPEM('agent3-key'),
@@ -69,42 +66,48 @@ const SNIContexts = {
   }
 };
 
-const clientsOptions = [{
-  port: undefined,
-  key: loadPEM('agent1-key'),
-  cert: loadPEM('agent1-cert'),
-  ca: [loadPEM('ca1-cert')],
-  servername: 'a.example.com',
-  rejectUnauthorized: false
-}, {
-  port: undefined,
-  key: loadPEM('agent4-key'),
-  cert: loadPEM('agent4-cert'),
-  ca: [loadPEM('ca1-cert')],
-  servername: 'a.example.com',
-  rejectUnauthorized: false
-}, {
-  port: undefined,
-  key: loadPEM('agent2-key'),
-  cert: loadPEM('agent2-cert'),
-  ca: [loadPEM('ca2-cert')],
-  servername: 'b.example.com',
-  rejectUnauthorized: false
-}, {
-  port: undefined,
-  key: loadPEM('agent3-key'),
-  cert: loadPEM('agent3-cert'),
-  ca: [loadPEM('ca1-cert')],
-  servername: 'c.wrong.com',
-  rejectUnauthorized: false
-}, {
-  port: undefined,
-  key: loadPEM('agent3-key'),
-  cert: loadPEM('agent3-cert'),
-  ca: [loadPEM('ca1-cert')],
-  servername: 'c.another.com',
-  rejectUnauthorized: false
-}];
+const clientsOptions = [
+  {
+    port: undefined,
+    key: loadPEM('agent1-key'),
+    cert: loadPEM('agent1-cert'),
+    ca: [loadPEM('ca1-cert')],
+    servername: 'a.example.com',
+    rejectUnauthorized: false
+  },
+  {
+    port: undefined,
+    key: loadPEM('agent4-key'),
+    cert: loadPEM('agent4-cert'),
+    ca: [loadPEM('ca1-cert')],
+    servername: 'a.example.com',
+    rejectUnauthorized: false
+  },
+  {
+    port: undefined,
+    key: loadPEM('agent2-key'),
+    cert: loadPEM('agent2-cert'),
+    ca: [loadPEM('ca2-cert')],
+    servername: 'b.example.com',
+    rejectUnauthorized: false
+  },
+  {
+    port: undefined,
+    key: loadPEM('agent3-key'),
+    cert: loadPEM('agent3-cert'),
+    ca: [loadPEM('ca1-cert')],
+    servername: 'c.wrong.com',
+    rejectUnauthorized: false
+  },
+  {
+    port: undefined,
+    key: loadPEM('agent3-key'),
+    cert: loadPEM('agent3-cert'),
+    ca: [loadPEM('ca1-cert')],
+    servername: 'c.another.com',
+    rejectUnauthorized: false
+  }
+];
 
 const serverResults = [];
 const clientResults = [];
@@ -131,14 +134,18 @@ function startTest() {
     serverError = null;
 
     options.port = server.address().port;
-    const client = tls.connect(options, function() {
-      clientResults.push(
-        client.authorizationError &&
-         (client.authorizationError === 'ERR_TLS_CERT_ALTNAME_INVALID'));
-      client.destroy();
+    const client = tls.connect(
+      options,
+      function() {
+        clientResults.push(
+          client.authorizationError &&
+            client.authorizationError === 'ERR_TLS_CERT_ALTNAME_INVALID'
+        );
+        client.destroy();
 
-      next();
-    });
+        next();
+      }
+    );
 
     client.on('error', function(err) {
       clientResults.push(false);
@@ -150,10 +157,8 @@ function startTest() {
       clientErrors.push(clientError);
       serverErrors.push(serverError);
 
-      if (i === clientsOptions.length - 1)
-        callback();
-      else
-        connectClient(i + 1, callback);
+      if (i === clientsOptions.length - 1) callback();
+      else connectClient(i + 1, callback);
     }
   }
 
@@ -172,11 +177,18 @@ process.on('exit', function() {
   ]);
   assert.deepStrictEqual(clientResults, [true, true, true, false, false]);
   assert.deepStrictEqual(clientErrors, [
-    null, null, null, null,
+    null,
+    null,
+    null,
+    null,
     'Client network socket disconnected before secure TLS ' +
-    'connection was established'
+      'connection was established'
   ]);
   assert.deepStrictEqual(serverErrors, [
-    null, null, null, null, 'Invalid SNI context'
+    null,
+    null,
+    null,
+    null,
+    'Invalid SNI context'
   ]);
 });

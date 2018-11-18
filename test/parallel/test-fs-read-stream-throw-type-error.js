@@ -71,6 +71,4 @@ const NOT_SAFE_INTEGER = 2 ** 53;
 [
   { start: NOT_SAFE_INTEGER, end: Infinity },
   { start: 0, end: NOT_SAFE_INTEGER }
-].forEach((opts) =>
-  createReadStreamErr(example, opts, rangeError)
-);
+].forEach((opts) => createReadStreamErr(example, opts, rangeError));

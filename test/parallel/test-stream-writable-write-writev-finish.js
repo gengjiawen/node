@@ -15,16 +15,22 @@ const stream = require('stream');
   };
 
   let firstError = false;
-  writable.on('finish', common.mustCall(function() {
-    assert.strictEqual(firstError, true);
-  }));
+  writable.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(firstError, true);
+    })
+  );
 
   writable.on('prefinish', common.mustCall());
 
-  writable.on('error', common.mustCall((er) => {
-    assert.strictEqual(er.message, 'write test error');
-    firstError = true;
-  }));
+  writable.on(
+    'error',
+    common.mustCall((er) => {
+      assert.strictEqual(er.message, 'write test error');
+      firstError = true;
+    })
+  );
 
   writable.end('test');
 }
@@ -37,16 +43,22 @@ const stream = require('stream');
   };
 
   let firstError = false;
-  writable.on('finish', common.mustCall(function() {
-    assert.strictEqual(firstError, true);
-  }));
+  writable.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(firstError, true);
+    })
+  );
 
   writable.on('prefinish', common.mustCall());
 
-  writable.on('error', common.mustCall((er) => {
-    assert.strictEqual(er.message, 'write test error');
-    firstError = true;
-  }));
+  writable.on(
+    'error',
+    common.mustCall((er) => {
+      assert.strictEqual(er.message, 'write test error');
+      firstError = true;
+    })
+  );
 
   writable.end('test');
 }
@@ -63,16 +75,22 @@ const stream = require('stream');
   };
 
   let firstError = false;
-  writable.on('finish', common.mustCall(function() {
-    assert.strictEqual(firstError, true);
-  }));
+  writable.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(firstError, true);
+    })
+  );
 
   writable.on('prefinish', common.mustCall());
 
-  writable.on('error', common.mustCall((er) => {
-    assert.strictEqual(er.message, 'writev test error');
-    firstError = true;
-  }));
+  writable.on(
+    'error',
+    common.mustCall((er) => {
+      assert.strictEqual(er.message, 'writev test error');
+      firstError = true;
+    })
+  );
 
   writable.cork();
   writable.write('test');
@@ -94,16 +112,22 @@ const stream = require('stream');
   };
 
   let firstError = false;
-  writable.on('finish', common.mustCall(function() {
-    assert.strictEqual(firstError, true);
-  }));
+  writable.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(firstError, true);
+    })
+  );
 
   writable.on('prefinish', common.mustCall());
 
-  writable.on('error', common.mustCall((er) => {
-    assert.strictEqual(er.message, 'writev test error');
-    firstError = true;
-  }));
+  writable.on(
+    'error',
+    common.mustCall((er) => {
+      assert.strictEqual(er.message, 'writev test error');
+      firstError = true;
+    })
+  );
 
   writable.cork();
   writable.write('test');
@@ -125,12 +149,18 @@ const stream = require('stream');
   const ws = new stream.Writable();
   let firstError = false;
 
-  ws.on('finish', common.mustCall(function() {
-    assert.strictEqual(firstError, true);
-  }));
-  ws.on('error', common.mustCall(function() {
-    firstError = true;
-  }));
+  ws.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(firstError, true);
+    })
+  );
+  ws.on(
+    'error',
+    common.mustCall(function() {
+      firstError = true;
+    })
+  );
 
   ws._write = (chunk, encoding, done) => {
     setImmediate(done, new Error());

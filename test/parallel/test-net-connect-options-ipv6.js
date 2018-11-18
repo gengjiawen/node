@@ -23,8 +23,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasIPv6)
-  common.skip('no IPv6 support');
+if (!common.hasIPv6) common.skip('no IPv6 support');
 
 const assert = require('assert');
 const net = require('net');
@@ -51,17 +50,20 @@ function tryConnect() {
     })
   };
   // No `mustCall`, since test could skip, and it's the only path to `close`.
-  const client = net.connect(connectOpt, () => {
-    client.resume();
-    client.on('end', () => {
-      // Wait for next uv tick and make sure the socket stream is writable.
-      setTimeout(function() {
-        assert(client.writable);
-        client.end();
-      }, 10);
-    });
-    client.on('close', () => server.close());
-  });
+  const client = net.connect(
+    connectOpt,
+    () => {
+      client.resume();
+      client.on('end', () => {
+        // Wait for next uv tick and make sure the socket stream is writable.
+        setTimeout(function() {
+          assert(client.writable);
+          client.end();
+        }, 10);
+      });
+      client.on('close', () => server.close());
+    }
+  );
 }
 
 server.listen(0, hostAddrIPv6, tryConnect);

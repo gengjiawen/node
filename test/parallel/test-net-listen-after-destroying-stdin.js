@@ -8,12 +8,13 @@ const net = require('net');
 
 process.stdin.destroy();
 
-const server = net.createServer(common.mustCall(function(socket) {
-  console.log('accepted');
-  socket.end();
-  server.close();
-}));
-
+const server = net.createServer(
+  common.mustCall(function(socket) {
+    console.log('accepted');
+    socket.end();
+    server.close();
+  })
+);
 
 server.listen(0, function() {
   console.log('listening...');

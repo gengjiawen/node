@@ -6,8 +6,7 @@
 // a similar tool.
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const { TLSSocket } = require('tls');
 const makeDuplexPair = require('../common/duplexpair');

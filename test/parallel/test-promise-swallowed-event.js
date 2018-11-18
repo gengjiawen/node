@@ -22,9 +22,11 @@ const p2 = new Promise((resolve, reject) => {
   reject(rejectPromise);
   resolve(swallowedResolve2);
   reject(rejection2);
-}).catch(common.mustCall((exception) => {
-  assert.strictEqual(exception, rejectPromise);
-}));
+}).catch(
+  common.mustCall((exception) => {
+    assert.strictEqual(exception, rejectPromise);
+  })
+);
 
 const expected = [
   'resolve',

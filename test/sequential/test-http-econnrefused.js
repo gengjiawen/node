@@ -32,7 +32,6 @@ const common = require('../common');
 const http = require('http');
 const assert = require('assert');
 
-
 const server = http.createServer(function(req, res) {
   let body = '';
 
@@ -48,15 +47,12 @@ const server = http.createServer(function(req, res) {
   });
 });
 
-
 server.on('listening', pingping);
-
 
 function serverOn() {
   console.error('Server ON');
   server.listen(common.PORT);
 }
-
 
 function serverOff() {
   console.error('Server OFF');
@@ -65,7 +61,6 @@ function serverOff() {
 }
 
 const responses = [];
-
 
 function afterPing(result) {
   responses.push(result);
@@ -99,7 +94,6 @@ function afterPing(result) {
       break;
   }
 }
-
 
 function ping() {
   console.error('making req');
@@ -138,7 +132,6 @@ function ping() {
     afterPing(error.message);
   });
 }
-
 
 function pingping() {
   ping();

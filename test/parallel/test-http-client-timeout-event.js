@@ -41,11 +41,14 @@ server.listen(0, options.host, function() {
   req.on('close', common.mustCall(() => server.close()));
 
   req.setTimeout(1);
-  req.on('timeout', common.mustCall(() => {
-    req.end(() => {
-      setTimeout(() => {
-        req.destroy();
-      }, 100);
-    });
-  }));
+  req.on(
+    'timeout',
+    common.mustCall(() => {
+      req.end(() => {
+        setTimeout(() => {
+          req.destroy();
+        }, 100);
+      });
+    })
+  );
 });

@@ -6,10 +6,12 @@ const assert = require('assert');
 const { E, SystemError, codes } = require('internal/errors');
 
 assert.throws(
-  () => { throw new SystemError(); },
+  () => {
+    throw new SystemError();
+  },
   {
     name: 'TypeError',
-    message: 'Cannot read property \'match\' of undefined'
+    message: "Cannot read property 'match' of undefined"
   }
 );
 
@@ -26,12 +28,15 @@ const { ERR_TEST } = codes;
   };
 
   assert.throws(
-    () => { throw new ERR_TEST(ctx); },
+    () => {
+      throw new ERR_TEST(ctx);
+    },
     {
       code: 'ERR_TEST',
       name: 'SystemError [ERR_TEST]',
-      message: 'custom message: syscall_test returned ETEST (code message)' +
-               ' /str => /str2',
+      message:
+        'custom message: syscall_test returned ETEST (code message)' +
+        ' /str => /str2',
       info: ctx
     }
   );
@@ -46,12 +51,15 @@ const { ERR_TEST } = codes;
     dest: '/str2'
   };
   assert.throws(
-    () => { throw new ERR_TEST(ctx); },
+    () => {
+      throw new ERR_TEST(ctx);
+    },
     {
       code: 'ERR_TEST',
       name: 'SystemError [ERR_TEST]',
-      message: 'custom message: syscall_test returned ETEST (code message)' +
-               ' /buf => /str2',
+      message:
+        'custom message: syscall_test returned ETEST (code message)' +
+        ' /buf => /str2',
       info: ctx
     }
   );
@@ -66,12 +74,15 @@ const { ERR_TEST } = codes;
     dest: Buffer.from('/buf2')
   };
   assert.throws(
-    () => { throw new ERR_TEST(ctx); },
+    () => {
+      throw new ERR_TEST(ctx);
+    },
     {
       code: 'ERR_TEST',
       name: 'SystemError [ERR_TEST]',
-      message: 'custom message: syscall_test returned ETEST (code message)' +
-               ' /buf => /buf2',
+      message:
+        'custom message: syscall_test returned ETEST (code message)' +
+        ' /buf => /buf2',
       info: ctx
     }
   );
@@ -127,8 +138,8 @@ const { ERR_TEST } = codes;
     {
       code: 'ERR_TEST',
       name: 'SystemError [CUSTOM_ERR_TEST]',
-      message: 'custom message: syscall_test returned ERR_TEST ' +
-               '(Error occurred)',
+      message:
+        'custom message: syscall_test returned ERR_TEST ' + '(Error occurred)',
       info: ctx
     }
   );

@@ -54,7 +54,8 @@ TEST(async function test_resolve4(done) {
       assert.ifError(err);
       validateResult(ips);
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -77,7 +78,8 @@ TEST(async function test_reverse_ipv4(done) {
       assert.ifError(err);
       validateResult(domains);
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -91,12 +93,14 @@ TEST(async function test_lookup_ipv4_explicit(done) {
   validateResult(await dnsPromises.lookup(addresses.INET4_HOST, 4));
 
   const req = dns.lookup(
-    addresses.INET4_HOST, 4,
+    addresses.INET4_HOST,
+    4,
     common.mustCall((err, ip, family) => {
       assert.ifError(err);
       validateResult({ address: ip, family });
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -115,7 +119,8 @@ TEST(async function test_lookup_ipv4_implicit(done) {
       assert.ifError(err);
       validateResult({ address: ip, family });
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -128,13 +133,17 @@ TEST(async function test_lookup_ipv4_explicit_object(done) {
 
   validateResult(await dnsPromises.lookup(addresses.INET4_HOST, { family: 4 }));
 
-  const req = dns.lookup(addresses.INET4_HOST, {
-    family: 4
-  }, common.mustCall((err, ip, family) => {
-    assert.ifError(err);
-    validateResult({ address: ip, family });
-    done();
-  }));
+  const req = dns.lookup(
+    addresses.INET4_HOST,
+    {
+      family: 4
+    },
+    common.mustCall((err, ip, family) => {
+      assert.ifError(err);
+      validateResult({ address: ip, family });
+      done();
+    })
+  );
 
   checkWrap(req);
 });
@@ -145,17 +154,23 @@ TEST(async function test_lookup_ipv4_hint_addrconfig(done) {
     assert.strictEqual(res.family, 4);
   }
 
-  validateResult(await dnsPromises.lookup(addresses.INET4_HOST, {
-    hints: dns.ADDRCONFIG
-  }));
+  validateResult(
+    await dnsPromises.lookup(addresses.INET4_HOST, {
+      hints: dns.ADDRCONFIG
+    })
+  );
 
-  const req = dns.lookup(addresses.INET4_HOST, {
-    hints: dns.ADDRCONFIG
-  }, common.mustCall((err, ip, family) => {
-    assert.ifError(err);
-    validateResult({ address: ip, family });
-    done();
-  }));
+  const req = dns.lookup(
+    addresses.INET4_HOST,
+    {
+      hints: dns.ADDRCONFIG
+    },
+    common.mustCall((err, ip, family) => {
+      assert.ifError(err);
+      validateResult({ address: ip, family });
+      done();
+    })
+  );
 
   checkWrap(req);
 });
@@ -168,12 +183,14 @@ TEST(async function test_lookup_ip_ipv4(done) {
 
   validateResult(await dnsPromises.lookup('127.0.0.1'));
 
-  const req = dns.lookup('127.0.0.1',
-                         common.mustCall((err, ip, family) => {
-                           assert.ifError(err);
-                           validateResult({ address: ip, family });
-                           done();
-                         }));
+  const req = dns.lookup(
+    '127.0.0.1',
+    common.mustCall((err, ip, family) => {
+      assert.ifError(err);
+      validateResult({ address: ip, family });
+      done();
+    })
+  );
 
   checkWrap(req);
 });
@@ -186,12 +203,15 @@ TEST(async function test_lookup_localhost_ipv4(done) {
 
   validateResult(await dnsPromises.lookup('localhost', 4));
 
-  const req = dns.lookup('localhost', 4,
-                         common.mustCall((err, ip, family) => {
-                           assert.ifError(err);
-                           validateResult({ address: ip, family });
-                           done();
-                         }));
+  const req = dns.lookup(
+    'localhost',
+    4,
+    common.mustCall((err, ip, family) => {
+      assert.ifError(err);
+      validateResult({ address: ip, family });
+      done();
+    })
+  );
 
   checkWrap(req);
 });
@@ -207,10 +227,12 @@ TEST(async function test_lookup_all_ipv4(done) {
     });
   }
 
-  validateResult(await dnsPromises.lookup(addresses.INET4_HOST, {
-    all: true,
-    family: 4
-  }));
+  validateResult(
+    await dnsPromises.lookup(addresses.INET4_HOST, {
+      all: true,
+      family: 4
+    })
+  );
 
   const req = dns.lookup(
     addresses.INET4_HOST,
@@ -235,7 +257,8 @@ TEST(async function test_lookupservice_ip_ipv4(done) {
   validateResult(await dnsPromises.lookupService('127.0.0.1', 80));
 
   const req = dns.lookupService(
-    '127.0.0.1', 80,
+    '127.0.0.1',
+    80,
     common.mustCall((err, hostname, service) => {
       assert.ifError(err);
       validateResult({ hostname, service });
@@ -247,11 +270,14 @@ TEST(async function test_lookupservice_ip_ipv4(done) {
 });
 
 TEST(function test_lookupservice_ip_ipv4_promise(done) {
-  util.promisify(dns.lookupService)('127.0.0.1', 80)
-    .then(common.mustCall(({ hostname, service }) => {
-      assert.strictEqual(typeof hostname, 'string');
-      assert(hostname.length > 0);
-      assert(['http', 'www', '80'].includes(service));
-      done();
-    }));
+  util
+    .promisify(dns.lookupService)('127.0.0.1', 80)
+    .then(
+      common.mustCall(({ hostname, service }) => {
+        assert.strictEqual(typeof hostname, 'string');
+        assert(hostname.length > 0);
+        assert(['http', 'www', '80'].includes(service));
+        done();
+      })
+    );
 });

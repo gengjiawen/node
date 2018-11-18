@@ -24,8 +24,7 @@
 // seconds. Makes sure that pause and resume work properly.
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -40,9 +39,12 @@ const options = {
   cert: fixtures.readKey('agent2-cert.pem')
 };
 
-const server = tls.Server(options, common.mustCall(function(socket) {
-  socket.end(body);
-}));
+const server = tls.Server(
+  options,
+  common.mustCall(function(socket) {
+    socket.end(body);
+  })
+);
 
 let recvCount = 0;
 
@@ -62,7 +64,6 @@ server.listen(common.PORT, function() {
     });
   });
 
-
   client.on('close', function() {
     console.error('close');
     server.close();
@@ -70,15 +71,12 @@ server.listen(common.PORT, function() {
   });
 });
 
-
 function displayCounts() {
   console.log(`body.length: ${body.length}`);
   console.log(`  recvCount: ${recvCount}`);
 }
 
-
 const timeout = setTimeout(displayCounts, 10 * 1000);
-
 
 process.on('exit', function() {
   displayCounts();

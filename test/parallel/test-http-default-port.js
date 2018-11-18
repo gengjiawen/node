@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 const http = require('http');
@@ -39,22 +38,30 @@ for (const { mod, createServer } of [
   { mod: http, createServer: http.createServer },
   { mod: https, createServer: https.createServer.bind(null, options) }
 ]) {
-  const server = createServer(common.mustCall((req, res) => {
-    assert.strictEqual(req.headers.host, hostExpect);
-    assert.strictEqual(req.headers['x-port'], `${server.address().port}`);
-    res.writeHead(200);
-    res.end('ok');
-    server.close();
-  })).listen(0, common.mustCall(() => {
-    mod.globalAgent.defaultPort = server.address().port;
-    mod.get({
-      host: 'localhost',
-      rejectUnauthorized: false,
-      headers: {
-        'x-port': server.address().port
-      }
-    }, common.mustCall((res) => {
-      res.resume();
-    }));
-  }));
+  const server = createServer(
+    common.mustCall((req, res) => {
+      assert.strictEqual(req.headers.host, hostExpect);
+      assert.strictEqual(req.headers['x-port'], `${server.address().port}`);
+      res.writeHead(200);
+      res.end('ok');
+      server.close();
+    })
+  ).listen(
+    0,
+    common.mustCall(() => {
+      mod.globalAgent.defaultPort = server.address().port;
+      mod.get(
+        {
+          host: 'localhost',
+          rejectUnauthorized: false,
+          headers: {
+            'x-port': server.address().port
+          }
+        },
+        common.mustCall((res) => {
+          res.resume();
+        })
+      );
+    })
+  );
 }

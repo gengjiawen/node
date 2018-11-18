@@ -11,32 +11,42 @@ let internal;
 let external;
 
 // Proxy server
-const server = createServer(common.mustCall((req, res) => {
-  const listener = common.mustCall(() => {
-    assert.strictEqual(res.writable, true);
-  });
+const server = createServer(
+  common.mustCall((req, res) => {
+    const listener = common.mustCall(() => {
+      assert.strictEqual(res.writable, true);
+    });
 
-  // on CentOS 5, 'finish' is emitted
-  res.on('finish', listener);
-  // everywhere else, 'close' is emitted
-  res.on('close', listener);
+    // on CentOS 5, 'finish' is emitted
+    res.on('finish', listener);
+    // everywhere else, 'close' is emitted
+    res.on('close', listener);
 
-  get(`http://127.0.0.1:${internal.address().port}`, common.mustCall((inner) => {
-    inner.pipe(res);
-  }));
-})).listen(0, () => {
+    get(
+      `http://127.0.0.1:${internal.address().port}`,
+      common.mustCall((inner) => {
+        inner.pipe(res);
+      })
+    );
+  })
+).listen(0, () => {
   // Http server
   internal = createServer((req, res) => {
     res.writeHead(200);
-    setImmediate(common.mustCall(() => {
-      external.abort();
-      res.end('Hello World\n');
-    }));
+    setImmediate(
+      common.mustCall(() => {
+        external.abort();
+        res.end('Hello World\n');
+      })
+    );
   }).listen(0, () => {
     external = get(`http://127.0.0.1:${server.address().port}`);
-    external.on('error', common.mustCall(() => {
-      server.close();
-      internal.close();
-    }));
+    external.on(
+      'error',
+      common.mustCall(() => {
+        server.close();
+        internal.close();
+      })
+    );
   });
 });

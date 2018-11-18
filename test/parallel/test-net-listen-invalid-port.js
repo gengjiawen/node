@@ -19,25 +19,34 @@ net.Server().listen(0, function() {
 });
 
 // The first argument is a configuration object
-common.expectsError(() => {
-  net.Server().listen({ port: invalidPort }, common.mustNotCall());
-}, {
-  code: 'ERR_SOCKET_BAD_PORT',
-  type: RangeError
-});
+common.expectsError(
+  () => {
+    net.Server().listen({ port: invalidPort }, common.mustNotCall());
+  },
+  {
+    code: 'ERR_SOCKET_BAD_PORT',
+    type: RangeError
+  }
+);
 
 // The first argument is the port, no IP given.
-common.expectsError(() => {
-  net.Server().listen(invalidPort, common.mustNotCall());
-}, {
-  code: 'ERR_SOCKET_BAD_PORT',
-  type: RangeError
-});
+common.expectsError(
+  () => {
+    net.Server().listen(invalidPort, common.mustNotCall());
+  },
+  {
+    code: 'ERR_SOCKET_BAD_PORT',
+    type: RangeError
+  }
+);
 
 // The first argument is the port, the second an IP.
-common.expectsError(() => {
-  net.Server().listen(invalidPort, '0.0.0.0', common.mustNotCall());
-}, {
-  code: 'ERR_SOCKET_BAD_PORT',
-  type: RangeError
-});
+common.expectsError(
+  () => {
+    net.Server().listen(invalidPort, '0.0.0.0', common.mustNotCall());
+  },
+  {
+    code: 'ERR_SOCKET_BAD_PORT',
+    type: RangeError
+  }
+);

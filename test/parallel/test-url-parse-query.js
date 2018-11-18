@@ -13,8 +13,10 @@ function createWithNoPrototype(properties = []) {
 
 function check(actual, expected) {
   assert.notStrictEqual(Object.getPrototypeOf(actual), Object.prototype);
-  assert.deepStrictEqual(Object.keys(actual).sort(),
-                         Object.keys(expected).sort());
+  assert.deepStrictEqual(
+    Object.keys(actual).sort(),
+    Object.keys(expected).sort()
+  );
   Object.keys(expected).forEach(function(key) {
     assert.deepStrictEqual(actual[key], expected[key]);
   });

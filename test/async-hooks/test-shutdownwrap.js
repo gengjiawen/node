@@ -15,7 +15,10 @@ const server = net
   .on('listening', common.mustCall(onlistening));
 server.listen();
 function onlistening() {
-  net.connect(server.address().port, common.mustCall(onconnected));
+  net.connect(
+    server.address().port,
+    common.mustCall(onconnected)
+  );
 }
 
 // It is non-deterministic in which order onconnection and onconnected fire.
@@ -36,7 +39,6 @@ function onconnection(c) {
 function onconnected() {
   if (endedConnection) {
     assert.strictEqual(hooks.activitiesOfTypes('SHUTDOWNWRAP').length, 1);
-
   } else {
     assert.strictEqual(hooks.activitiesOfTypes('SHUTDOWNWRAP').length, 0);
   }
@@ -44,8 +46,11 @@ function onconnected() {
 
 function onserverClosed() {
   const as = hooks.activitiesOfTypes('SHUTDOWNWRAP');
-  checkInvocations(as[0], { init: 1, before: 1, after: 1, destroy: 1 },
-                   'when server closed');
+  checkInvocations(
+    as[0],
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'when server closed'
+  );
 }
 
 process.on('exit', onexit);
@@ -58,6 +63,9 @@ function onexit() {
   assert.strictEqual(a.type, 'SHUTDOWNWRAP');
   assert.strictEqual(typeof a.uid, 'number');
   assert.strictEqual(typeof a.triggerAsyncId, 'number');
-  checkInvocations(as[0], { init: 1, before: 1, after: 1, destroy: 1 },
-                   'when process exits');
+  checkInvocations(
+    as[0],
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'when process exits'
+  );
 }

@@ -33,34 +33,46 @@ validateTuple(tuple);
 validateTuple(process.hrtime(tuple));
 
 // Test that only an Array may be passed to process.hrtime()
-common.expectsError(() => {
-  process.hrtime(1);
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError,
-  message: 'The "time" argument must be of type Array. Received type number'
-});
-common.expectsError(() => {
-  process.hrtime([]);
-}, {
-  code: 'ERR_OUT_OF_RANGE',
-  type: RangeError,
-  message: 'The value of "time" is out of range. It must be 2. Received 0'
-});
-common.expectsError(() => {
-  process.hrtime([1]);
-}, {
-  code: 'ERR_OUT_OF_RANGE',
-  type: RangeError,
-  message: 'The value of "time" is out of range. It must be 2. Received 1'
-});
-common.expectsError(() => {
-  process.hrtime([1, 2, 3]);
-}, {
-  code: 'ERR_OUT_OF_RANGE',
-  type: RangeError,
-  message: 'The value of "time" is out of range. It must be 2. Received 3'
-});
+common.expectsError(
+  () => {
+    process.hrtime(1);
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError,
+    message: 'The "time" argument must be of type Array. Received type number'
+  }
+);
+common.expectsError(
+  () => {
+    process.hrtime([]);
+  },
+  {
+    code: 'ERR_OUT_OF_RANGE',
+    type: RangeError,
+    message: 'The value of "time" is out of range. It must be 2. Received 0'
+  }
+);
+common.expectsError(
+  () => {
+    process.hrtime([1]);
+  },
+  {
+    code: 'ERR_OUT_OF_RANGE',
+    type: RangeError,
+    message: 'The value of "time" is out of range. It must be 2. Received 1'
+  }
+);
+common.expectsError(
+  () => {
+    process.hrtime([1, 2, 3]);
+  },
+  {
+    code: 'ERR_OUT_OF_RANGE',
+    type: RangeError,
+    message: 'The value of "time" is out of range. It must be 2. Received 3'
+  }
+);
 
 function validateTuple(tuple) {
   assert(Array.isArray(tuple));

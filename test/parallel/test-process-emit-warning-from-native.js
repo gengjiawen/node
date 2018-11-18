@@ -2,8 +2,7 @@
 const common = require('../common');
 const assert = require('assert');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 if (common.hasFipsCrypto)
   common.skip('crypto.createCipher() is not supported in FIPS mode');
 
@@ -12,9 +11,7 @@ const key = '0123456789';
 
 {
   common.expectWarning({
-    DeprecationWarning: [
-      ['crypto.createCipher is deprecated.', 'DEP0106']
-    ],
+    DeprecationWarning: [['crypto.createCipher is deprecated.', 'DEP0106']],
     Warning: [
       ['Use Cipheriv for counter mode of aes-256-gcm', common.noWarnCode]
     ]
@@ -28,7 +25,9 @@ const realEmitWarning = process.emitWarning;
 
 {
   // It's a good idea to make this overridable from userland.
-  process.emitWarning = () => { throw new Error('foo'); };
+  process.emitWarning = () => {
+    throw new Error('foo');
+  };
   assert.throws(() => {
     crypto.createCipher('aes-256-gcm', key);
   }, /^Error: foo$/);
@@ -36,7 +35,9 @@ const realEmitWarning = process.emitWarning;
 
 {
   Object.defineProperty(process, 'emitWarning', {
-    get() { throw new Error('bar'); },
+    get() {
+      throw new Error('bar');
+    },
     configurable: true
   });
   assert.throws(() => {

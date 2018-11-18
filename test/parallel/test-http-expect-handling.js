@@ -18,7 +18,7 @@ s.listen(0, nextTest);
 function nextTest() {
   const options = {
     port: s.address().port,
-    headers: { 'Expect': 'meoww' }
+    headers: { Expect: 'meoww' }
   };
 
   if (testIdx === tests.length) {
@@ -28,10 +28,13 @@ function nextTest() {
   const test = tests[testIdx];
 
   if (testIdx > 0) {
-    s.on('checkExpectation', common.mustCall((req, res) => {
-      res.statusCode = 417;
-      res.end();
-    }));
+    s.on(
+      'checkExpectation',
+      common.mustCall((req, res) => {
+        res.statusCode = 417;
+        res.end();
+      })
+    );
   }
 
   http.get(options, function(response) {
@@ -48,7 +51,6 @@ function nextTest() {
     response.resume();
   });
 }
-
 
 process.on('exit', function() {
   assert.strictEqual(testsComplete, 2);

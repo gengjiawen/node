@@ -30,4 +30,3 @@ exports.D = function() {
 process.on('exit', function() {
   string = 'D done';
 });
-

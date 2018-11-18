@@ -33,9 +33,12 @@ function monkeyPatchGetWindowSize(fn) {
   // window size from the handle.
   const stream = WriteStream(1);
 
-  stream.on('error', common.mustCall((err) => {
-    assert.strictEqual(err.syscall, 'getWindowSize');
-  }));
+  stream.on(
+    'error',
+    common.mustCall((err) => {
+      assert.strictEqual(err.syscall, 'getWindowSize');
+    })
+  );
 
   monkeyPatchGetWindowSize(function() {
     return -1;
@@ -54,10 +57,13 @@ function monkeyPatchGetWindowSize(fn) {
 
   const stream = WriteStream(1);
 
-  stream.on('resize', common.mustCall(() => {
-    assert.strictEqual(stream.columns, 82);
-    assert.strictEqual(stream.rows, 26);
-  }));
+  stream.on(
+    'resize',
+    common.mustCall(() => {
+      assert.strictEqual(stream.columns, 82);
+      assert.strictEqual(stream.rows, 26);
+    })
+  );
 
   assert.strictEqual(stream.columns, 80);
   assert.strictEqual(stream.rows, 24);

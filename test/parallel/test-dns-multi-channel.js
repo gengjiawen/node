@@ -18,23 +18,32 @@ const servers = [
 
 let waiting = servers.length;
 for (const { socket, reply } of servers) {
-  socket.on('message', common.mustCall((msg, { address, port }) => {
-    const parsed = dnstools.parseDNSPacket(msg);
-    const domain = parsed.questions[0].domain;
-    assert.strictEqual(domain, 'example.org');
+  socket.on(
+    'message',
+    common.mustCall((msg, { address, port }) => {
+      const parsed = dnstools.parseDNSPacket(msg);
+      const domain = parsed.questions[0].domain;
+      assert.strictEqual(domain, 'example.org');
 
-    socket.send(dnstools.writeDNSPacket({
-      id: parsed.id,
-      questions: parsed.questions,
-      answers: [reply],
-    }), port, address);
-  }));
+      socket.send(
+        dnstools.writeDNSPacket({
+          id: parsed.id,
+          questions: parsed.questions,
+          answers: [reply]
+        }),
+        port,
+        address
+      );
+    })
+  );
 
-  socket.bind(0, common.mustCall(() => {
-    if (--waiting === 0) ready();
-  }));
+  socket.bind(
+    0,
+    common.mustCall(() => {
+      if (--waiting === 0) ready();
+    })
+  );
 }
-
 
 function ready() {
   const resolvers = servers.map((server) => ({
@@ -42,12 +51,18 @@ function ready() {
     resolver: new Resolver()
   }));
 
-  for (const { server: { socket, reply }, resolver } of resolvers) {
+  for (const {
+    server: { socket, reply },
+    resolver
+  } of resolvers) {
     resolver.setServers([`127.0.0.1:${socket.address().port}`]);
-    resolver.resolve4('example.org', common.mustCall((err, res) => {
-      assert.ifError(err);
-      assert.deepStrictEqual(res, [reply.address]);
-      socket.close();
-    }));
+    resolver.resolve4(
+      'example.org',
+      common.mustCall((err, res) => {
+        assert.ifError(err);
+        assert.deepStrictEqual(res, [reply.address]);
+        socket.close();
+      })
+    );
   }
 }

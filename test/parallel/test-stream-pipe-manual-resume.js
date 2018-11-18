@@ -11,10 +11,8 @@ function test(throwCodeInbetween) {
   const rs = stream.Readable({
     objectMode: true,
     read: common.mustCallAtLeast(() => {
-      if (--counter >= 0)
-        rs.push({ counter });
-      else
-        rs.push(null);
+      if (--counter >= 0) rs.push({ counter });
+      else rs.push(null);
     }, n)
   });
 

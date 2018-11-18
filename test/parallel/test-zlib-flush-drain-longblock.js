@@ -16,9 +16,12 @@ zipper.write('A'.repeat(17000));
 zipper.flush();
 
 let received = 0;
-unzipper.on('data', common.mustCall((d) => {
-  received += d.length;
-}, 2));
+unzipper.on(
+  'data',
+  common.mustCall((d) => {
+    received += d.length;
+  }, 2)
+);
 
 // Properly `.end()`ing the streams would interfere with checking that
 // `.flush()` works.

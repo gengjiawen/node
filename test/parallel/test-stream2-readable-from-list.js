@@ -29,28 +29,30 @@ const util = require('util');
 
 function bufferListFromArray(arr) {
   const bl = new BufferList();
-  for (let i = 0; i < arr.length; ++i)
-    bl.push(arr[i]);
+  for (let i = 0; i < arr.length; ++i) bl.push(arr[i]);
   return bl;
 }
 
 {
   // Verify behavior with buffers
-  let list = [ Buffer.from('foog'),
-               Buffer.from('bark'),
-               Buffer.from('bazy'),
-               Buffer.from('kuel') ];
+  let list = [
+    Buffer.from('foog'),
+    Buffer.from('bark'),
+    Buffer.from('bazy'),
+    Buffer.from('kuel')
+  ];
   list = bufferListFromArray(list);
 
   assert.strictEqual(
-    util.inspect([ list ], { compact: false }),
+    util.inspect([list], { compact: false }),
     `[
   BufferList {
     head: [Object],
     tail: [Object],
     length: 4
   }
-]`);
+]`
+  );
 
   // read more than the first element.
   let ret = fromList(6, { buffer: list, length: 16 });
@@ -74,10 +76,7 @@ function bufferListFromArray(arr) {
 
 {
   // Verify behavior with strings
-  let list = [ 'foog',
-               'bark',
-               'bazy',
-               'kuel' ];
+  let list = ['foog', 'bark', 'bazy', 'kuel'];
   list = bufferListFromArray(list);
 
   // read more than the first element.

@@ -17,8 +17,14 @@ socket.once('error', onEvent);
 // * error is never emitter for missing dns entries
 //   if a callback that handles error is present
 // * error is emitted if a callback with no argument is passed
-socket.send(buffer, 0, buffer.length, 100,
-            'dne.example.com', mustCall(callbackOnly));
+socket.send(
+  buffer,
+  0,
+  buffer.length,
+  100,
+  'dne.example.com',
+  mustCall(callbackOnly)
+);
 
 function callbackOnly(err) {
   assert.ok(err);

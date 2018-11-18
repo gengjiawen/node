@@ -4,10 +4,7 @@ const assert = require('assert');
 const active = require('timers').active;
 
 // active() should create timers for these
-const legitTimers = [
-  { _idleTimeout: 0 },
-  { _idleTimeout: 1 }
-];
+const legitTimers = [{ _idleTimeout: 0 }, { _idleTimeout: 1 }];
 
 legitTimers.forEach(function(legit) {
   const savedTimeout = legit._idleTimeout;
@@ -19,12 +16,8 @@ legitTimers.forEach(function(legit) {
   assert(legit._idlePrev);
 });
 
-
 // active() should not create a timer for these
-const bogusTimers = [
-  { _idleTimeout: -1 },
-  { _idleTimeout: undefined },
-];
+const bogusTimers = [{ _idleTimeout: -1 }, { _idleTimeout: undefined }];
 
 bogusTimers.forEach(function(bogus) {
   const savedTimeout = bogus._idleTimeout;

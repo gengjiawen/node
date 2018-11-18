@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 // Verify that multiple CA certificates can be provided, and that for
 // convenience that can also be in newline-separated strings.

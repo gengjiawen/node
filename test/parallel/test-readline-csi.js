@@ -54,7 +54,7 @@ assert.deepStrictEqual(writable.data, CSI.kClearLine);
   [1, 1, '\x1b[1C\x1b[1B'],
   [-1, 1, '\x1b[1D\x1b[1B'],
   [-1, -1, '\x1b[1D\x1b[1A'],
-  [1, -1, '\x1b[1C\x1b[1A'],
+  [1, -1, '\x1b[1C\x1b[1A']
 ].forEach((set) => {
   writable.data = '';
   readline.moveCursor(writable, set[0], set[1]);
@@ -74,13 +74,11 @@ readline.cursorTo(writable, 'a', 'b');
 assert.strictEqual(writable.data, '');
 
 writable.data = '';
-common.expectsError(
-  () => readline.cursorTo(writable, 'a', 1),
-  {
-    type: TypeError,
-    code: 'ERR_INVALID_CURSOR_POS',
-    message: 'Cannot set cursor row without setting its column'
-  });
+common.expectsError(() => readline.cursorTo(writable, 'a', 1), {
+  type: TypeError,
+  code: 'ERR_INVALID_CURSOR_POS',
+  message: 'Cannot set cursor row without setting its column'
+});
 assert.strictEqual(writable.data, '');
 
 writable.data = '';

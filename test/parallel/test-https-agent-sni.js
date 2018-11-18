@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 const fixtures = require('../common/fixtures');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const https = require('https');
@@ -36,14 +35,17 @@ server.listen(0, function() {
     maxSockets: 1
   });
   for (let j = 0; j < TOTAL; j++) {
-    https.get({
-      agent: agent,
+    https.get(
+      {
+        agent: agent,
 
-      path: '/',
-      port: this.address().port,
-      host: '127.0.0.1',
-      servername: `sni.${j}`,
-      rejectUnauthorized: false
-    }, expectResponse(j));
+        path: '/',
+        port: this.address().port,
+        host: '127.0.0.1',
+        servername: `sni.${j}`,
+        rejectUnauthorized: false
+      },
+      expectResponse(j)
+    );
   }
 });

@@ -41,7 +41,8 @@ const echo_server = net.createServer(function(socket) {
 
   socket.on('error', function(e) {
     throw new Error(
-      'Server side socket should not get error. We disconnect willingly.');
+      'Server side socket should not get error. We disconnect willingly.'
+    );
   });
 
   socket.on('data', function(d) {

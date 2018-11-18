@@ -18,35 +18,52 @@ if (process.argv[2] !== 'child') {
   const child = cp.fork(__filename, ['child']);
 
   // Verify that the child exits successfully
-  child.on('exit', common.mustCall((exitCode, signalCode) => {
-    assert.strictEqual(exitCode, 0);
-    assert.strictEqual(signalCode, null);
-  }));
+  child.on(
+    'exit',
+    common.mustCall((exitCode, signalCode) => {
+      assert.strictEqual(exitCode, 0);
+      assert.strictEqual(signalCode, null);
+    })
+  );
 
   const server = net.createServer((socket) => {
-    child.on('message', common.mustCall((msg) => {
-      assert.strictEqual(msg, 'child_done');
-      socket.end('parent', () => {
-        server.close();
-        child.disconnect();
-      });
-    }));
+    child.on(
+      'message',
+      common.mustCall((msg) => {
+        assert.strictEqual(msg, 'child_done');
+        socket.end('parent', () => {
+          server.close();
+          child.disconnect();
+        });
+      })
+    );
 
-    child.send('socket', socket, { keepOpen: true }, common.mustCall((err) => {
-      assert.ifError(err);
-    }));
+    child.send(
+      'socket',
+      socket,
+      { keepOpen: true },
+      common.mustCall((err) => {
+        assert.ifError(err);
+      })
+    );
   });
 
   server.listen(0, () => {
-    const socket = net.connect(server.address().port, common.localhostIPv4);
+    const socket = net.connect(
+      server.address().port,
+      common.localhostIPv4
+    );
     socket.setEncoding('utf8');
-    socket.on('data', (data) => result += data);
+    socket.on('data', (data) => (result += data));
   });
 } else {
   // The child process receives the socket from the parent, writes data to
   // the socket, then signals the parent process to write
-  process.on('message', common.mustCall((msg, socket) => {
-    assert.strictEqual(msg, 'socket');
-    socket.write('child', () => process.send('child_done'));
-  }));
+  process.on(
+    'message',
+    common.mustCall((msg, socket) => {
+      assert.strictEqual(msg, 'socket');
+      socket.write('child', () => process.send('child_done'));
+    })
+  );
 }

@@ -27,7 +27,7 @@ const http = require('http');
 const server = http.createServer(function(req, res) {
   res.writeHead(200, {
     'Content-Type': 'text/plain',
-    'Connection': 'close'
+    Connection: 'close'
   });
   res.write('hello ');
   res.write('world\n');
@@ -37,41 +37,52 @@ const server = http.createServer(function(req, res) {
 const tmpdir = require('../common/tmpdir');
 tmpdir.refresh();
 
-server.listen(common.PIPE, common.mustCall(function() {
+server.listen(
+  common.PIPE,
+  common.mustCall(function() {
+    const options = {
+      socketPath: common.PIPE,
+      path: '/'
+    };
 
-  const options = {
-    socketPath: common.PIPE,
-    path: '/'
-  };
+    const req = http.get(
+      options,
+      common.mustCall(function(res) {
+        assert.strictEqual(res.statusCode, 200);
+        assert.strictEqual(res.headers['content-type'], 'text/plain');
 
-  const req = http.get(options, common.mustCall(function(res) {
-    assert.strictEqual(res.statusCode, 200);
-    assert.strictEqual(res.headers['content-type'], 'text/plain');
+        res.body = '';
+        res.setEncoding('utf8');
 
-    res.body = '';
-    res.setEncoding('utf8');
+        res.on('data', function(chunk) {
+          res.body += chunk;
+        });
 
-    res.on('data', function(chunk) {
-      res.body += chunk;
+        res.on(
+          'end',
+          common.mustCall(function() {
+            assert.strictEqual(res.body, 'hello world\n');
+            server.close(
+              common.mustCall(function(error) {
+                assert.strictEqual(error, undefined);
+                server.close(
+                  common.expectsError({
+                    code: 'ERR_SERVER_NOT_RUNNING',
+                    message: 'Server is not running.',
+                    type: Error
+                  })
+                );
+              })
+            );
+          })
+        );
+      })
+    );
+
+    req.on('error', function(e) {
+      assert.fail(e.stack);
     });
 
-    res.on('end', common.mustCall(function() {
-      assert.strictEqual(res.body, 'hello world\n');
-      server.close(common.mustCall(function(error) {
-        assert.strictEqual(error, undefined);
-        server.close(common.expectsError({
-          code: 'ERR_SERVER_NOT_RUNNING',
-          message: 'Server is not running.',
-          type: Error
-        }));
-      }));
-    }));
-  }));
-
-  req.on('error', function(e) {
-    assert.fail(e.stack);
-  });
-
-  req.end();
-
-}));
+    req.end();
+  })
+);

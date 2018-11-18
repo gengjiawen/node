@@ -44,39 +44,48 @@ if (cluster.isMaster && process.argv.length !== 3) {
   // makes sure the worker is ready
   worker.on('online', common.mustCall());
 
-  worker.on('message', common.mustCall(function(err) {
-    // disconnect first, so that we will not leave zombies
-    worker.disconnect();
-    assert.strictEqual(err.code, 'EADDRINUSE');
-  }));
+  worker.on(
+    'message',
+    common.mustCall(function(err) {
+      // disconnect first, so that we will not leave zombies
+      worker.disconnect();
+      assert.strictEqual(err.code, 'EADDRINUSE');
+    })
+  );
 } else if (process.argv.length !== 3) {
   // cluster.worker
   const PIPE_NAME = process.env.PIPE_NAME;
   const cp = fork(__filename, [PIPE_NAME], { stdio: 'inherit' });
 
   // message from the child indicates it's ready and listening
-  cp.on('message', common.mustCall(function() {
-    const server = net.createServer().listen(PIPE_NAME, function() {
-      // message child process so that it can exit
-      cp.send('end');
-      // inform master about the unexpected situation
-      process.send('PIPE should have been in use.');
-    });
+  cp.on(
+    'message',
+    common.mustCall(function() {
+      const server = net.createServer().listen(PIPE_NAME, function() {
+        // message child process so that it can exit
+        cp.send('end');
+        // inform master about the unexpected situation
+        process.send('PIPE should have been in use.');
+      });
 
-    server.on('error', function(err) {
-      // message to child process tells it to exit
-      cp.send('end');
-      // propagate error to parent
-      process.send(err);
-    });
-  }));
+      server.on('error', function(err) {
+        // message to child process tells it to exit
+        cp.send('end');
+        // propagate error to parent
+        process.send(err);
+      });
+    })
+  );
 } else if (process.argv.length === 3) {
   // child process (of cluster.worker)
   const PIPE_NAME = process.argv[2];
 
-  const server = net.createServer().listen(PIPE_NAME, common.mustCall(() => {
-    process.send('listening');
-  }));
+  const server = net.createServer().listen(
+    PIPE_NAME,
+    common.mustCall(() => {
+      process.send('listening');
+    })
+  );
   process.once('message', common.mustCall(() => server.close()));
 } else {
   assert.fail('Impossible state');

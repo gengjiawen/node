@@ -16,34 +16,38 @@ let before = 0;
 let after = 0;
 let destroy = 0;
 
-async_hooks.createHook({
-  init(id, type, triggerAsyncId, resource) {
-    assert.strictEqual(typeof id, 'number');
-    assert.strictEqual(typeof resource, 'object');
-    assert(id > 1);
-    if (type === 'foobär') {
-      assert.strictEqual(resource.kObjectTag, kObjectTag);
-      assert.strictEqual(triggerAsyncId, expectedTriggerId);
-      bindingUids.push(id);
+async_hooks
+  .createHook({
+    init(id, type, triggerAsyncId, resource) {
+      assert.strictEqual(typeof id, 'number');
+      assert.strictEqual(typeof resource, 'object');
+      assert(id > 1);
+      if (type === 'foobär') {
+        assert.strictEqual(resource.kObjectTag, kObjectTag);
+        assert.strictEqual(triggerAsyncId, expectedTriggerId);
+        bindingUids.push(id);
+      }
+    },
+
+    before(id) {
+      if (bindingUids.includes(id)) before++;
+    },
+
+    after(id) {
+      if (bindingUids.includes(id)) after++;
+    },
+
+    destroy(id) {
+      if (bindingUids.includes(id)) destroy++;
     }
-  },
+  })
+  .enable();
 
-  before(id) {
-    if (bindingUids.includes(id)) before++;
-  },
-
-  after(id) {
-    if (bindingUids.includes(id)) after++;
-  },
-
-  destroy(id) {
-    if (bindingUids.includes(id)) destroy++;
-  }
-}).enable();
-
-for (const call of [binding.callViaFunction,
-                    binding.callViaString,
-                    binding.callViaUtf8Name]) {
+for (const call of [
+  binding.callViaFunction,
+  binding.callViaString,
+  binding.callViaUtf8Name
+]) {
   for (const passedTriggerId of [undefined, 12345]) {
     let uid;
     const object = {
@@ -56,10 +60,8 @@ for (const call of [binding.callViaFunction,
       kObjectTag
     };
 
-    if (passedTriggerId === undefined)
-      expectedTriggerId = rootAsyncId;
-    else
-      expectedTriggerId = passedTriggerId;
+    if (passedTriggerId === undefined) expectedTriggerId = rootAsyncId;
+    else expectedTriggerId = passedTriggerId;
 
     const resource = binding.createAsyncResource(object, passedTriggerId);
     uid = bindingUids[bindingUids.length - 1];
@@ -74,9 +76,11 @@ for (const call of [binding.callViaFunction,
   }
 }
 
-setImmediate(common.mustCall(() => {
-  assert.strictEqual(bindingUids.length, 6);
-  assert.strictEqual(before, bindingUids.length);
-  assert.strictEqual(after, bindingUids.length);
-  assert.strictEqual(destroy, bindingUids.length);
-}));
+setImmediate(
+  common.mustCall(() => {
+    assert.strictEqual(bindingUids.length, 6);
+    assert.strictEqual(before, bindingUids.length);
+    assert.strictEqual(after, bindingUids.length);
+    assert.strictEqual(destroy, bindingUids.length);
+  })
+);

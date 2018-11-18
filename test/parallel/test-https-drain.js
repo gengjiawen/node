@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 const assert = require('assert');
@@ -44,45 +43,48 @@ const server = https.createServer(options, function(req, res) {
 
 server.listen(0, function() {
   let resumed = false;
-  const req = https.request({
-    method: 'POST',
-    port: this.address().port,
-    rejectUnauthorized: false
-  }, function(res) {
-    let timer;
-    res.pause();
-    console.error('paused');
-    send();
-    function send() {
-      if (req.write(Buffer.allocUnsafe(bufSize))) {
+  const req = https.request(
+    {
+      method: 'POST',
+      port: this.address().port,
+      rejectUnauthorized: false
+    },
+    function(res) {
+      let timer;
+      res.pause();
+      console.error('paused');
+      send();
+      function send() {
+        if (req.write(Buffer.allocUnsafe(bufSize))) {
+          sent += bufSize;
+          assert.ok(sent < 100 * 1024 * 1024); // max 100MB
+          return process.nextTick(send);
+        }
         sent += bufSize;
-        assert.ok(sent < 100 * 1024 * 1024); // max 100MB
-        return process.nextTick(send);
+        console.error(`sent: ${sent}`);
+        resumed = true;
+        res.resume();
+        console.error('resumed');
+        timer = setTimeout(function() {
+          process.exit(1);
+        }, 1000);
       }
-      sent += bufSize;
-      console.error(`sent: ${sent}`);
-      resumed = true;
-      res.resume();
-      console.error('resumed');
-      timer = setTimeout(function() {
-        process.exit(1);
-      }, 1000);
-    }
 
-    res.on('data', function(data) {
-      assert.ok(resumed);
-      if (timer) {
-        clearTimeout(timer);
-        timer = null;
-      }
-      received += data.length;
-      if (received >= sent) {
-        console.error(`received: ${received}`);
-        req.end();
-        server.close();
-      }
-    });
-  });
+      res.on('data', function(data) {
+        assert.ok(resumed);
+        if (timer) {
+          clearTimeout(timer);
+          timer = null;
+        }
+        received += data.length;
+        if (received >= sent) {
+          console.error(`received: ${received}`);
+          req.end();
+          server.close();
+        }
+      });
+    }
+  );
   req.write('a');
   ++sent;
 });

@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const fixtures = require('../common/fixtures');
 const http2 = require('http2');
 
@@ -15,26 +14,40 @@ const server = http2.createSecureServer({
   key: fixtures.readKey('agent1-key.pem'),
   cert: fixtures.readKey('agent1-cert.pem')
 });
-server.on('stream', common.mustCall((stream) => {
-  stream.respond({
-    'Content-Type': 'application/octet-stream',
-    'Content-Length': (content.length.toString() * 2),
-    'Vary': 'Accept-Encoding'
-  }, { waitForTrailers: true });
+server.on(
+  'stream',
+  common.mustCall((stream) => {
+    stream.respond(
+      {
+        'Content-Type': 'application/octet-stream',
+        'Content-Length': content.length.toString() * 2,
+        Vary: 'Accept-Encoding'
+      },
+      { waitForTrailers: true }
+    );
 
-  stream.write(content);
-  stream.destroy();
-}));
+    stream.write(content);
+    stream.destroy();
+  })
+);
 
-server.listen(0, common.mustCall(() => {
-  const client = http2.connect(`https://localhost:${server.address().port}`,
-                               { rejectUnauthorized: false });
+server.listen(
+  0,
+  common.mustCall(() => {
+    const client = http2.connect(
+      `https://localhost:${server.address().port}`,
+      { rejectUnauthorized: false }
+    );
 
-  const req = client.request({ ':path': '/' });
-  req.end();
+    const req = client.request({ ':path': '/' });
+    req.end();
 
-  req.on('close', common.mustCall(() => {
-    client.close();
-    server.close();
-  }));
-}));
+    req.on(
+      'close',
+      common.mustCall(() => {
+        client.close();
+        server.close();
+      })
+    );
+  })
+);

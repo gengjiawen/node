@@ -13,21 +13,36 @@ function myMultiArgFunc(arg1, arg2, arg3) {
   return 42;
 }
 
-assert.strictEqual(makeCallback(process, common.mustCall(function() {
-  assert.strictEqual(arguments.length, 0);
-  assert.strictEqual(this, process);
-  return 42;
-})), 42);
+assert.strictEqual(
+  makeCallback(
+    process,
+    common.mustCall(function() {
+      assert.strictEqual(arguments.length, 0);
+      assert.strictEqual(this, process);
+      return 42;
+    })
+  ),
+  42
+);
 
-assert.strictEqual(makeCallback(process, common.mustCall(function(x) {
-  assert.strictEqual(arguments.length, 1);
-  assert.strictEqual(this, process);
-  assert.strictEqual(x, 1337);
-  return 42;
-}), 1337), 42);
+assert.strictEqual(
+  makeCallback(
+    process,
+    common.mustCall(function(x) {
+      assert.strictEqual(arguments.length, 1);
+      assert.strictEqual(this, process);
+      assert.strictEqual(x, 1337);
+      return 42;
+    }),
+    1337
+  ),
+  42
+);
 
-assert.strictEqual(makeCallback(this,
-                                common.mustCall(myMultiArgFunc), 1, 2, 3), 42);
+assert.strictEqual(
+  makeCallback(this, common.mustCall(myMultiArgFunc), 1, 2, 3),
+  42
+);
 
 // TODO(node-api): napi_make_callback needs to support
 // strings passed for the func argument
@@ -73,8 +88,7 @@ const forward = vm.runInNewContext(`
 
 // Runs in outer context.
 function endpoint($Object) {
-  if (Object === $Object)
-    throw new Error('bad');
+  if (Object === $Object) throw new Error('bad');
   return Object;
 }
 

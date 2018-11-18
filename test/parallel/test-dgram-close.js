@@ -35,11 +35,17 @@ let socket = dgram.createSocket('udp4');
 const { handle } = socket[kStateSymbol];
 
 // get a random port for send
-const portGetter = dgram.createSocket('udp4')
-  .bind(0, 'localhost', common.mustCall(() => {
-    socket.send(buf, 0, buf.length,
-                portGetter.address().port,
-                portGetter.address().address);
+const portGetter = dgram.createSocket('udp4').bind(
+  0,
+  'localhost',
+  common.mustCall(() => {
+    socket.send(
+      buf,
+      0,
+      buf.length,
+      portGetter.address().port,
+      portGetter.address().address
+    );
 
     assert.strictEqual(socket.close(common.mustCall()), socket);
     socket.on('close', common.mustCall());
@@ -53,4 +59,5 @@ const portGetter = dgram.createSocket('udp4')
     });
 
     portGetter.close();
-  }));
+  })
+);

@@ -54,10 +54,13 @@ for (let i = 0; i < chunks.length; i++) {
     highWaterMark: 100
   });
 
-  tw.on('finish', common.mustCall(function() {
-    // got chunks in the right order
-    assert.deepStrictEqual(tw.buffer, chunks);
-  }));
+  tw.on(
+    'finish',
+    common.mustCall(function() {
+      // got chunks in the right order
+      assert.deepStrictEqual(tw.buffer, chunks);
+    })
+  );
 
   chunks.forEach(function(chunk) {
     // Ignore backpressure. Just buffer it all up.
@@ -72,18 +75,19 @@ for (let i = 0; i < chunks.length; i++) {
     highWaterMark: 100
   });
 
-  tw.on('finish', common.mustCall(function() {
-    //  got chunks in the right order
-    assert.deepStrictEqual(tw.buffer, chunks);
-  }));
+  tw.on(
+    'finish',
+    common.mustCall(function() {
+      //  got chunks in the right order
+      assert.deepStrictEqual(tw.buffer, chunks);
+    })
+  );
 
   let i = 0;
   (function W() {
     tw.write(chunks[i++]);
-    if (i < chunks.length)
-      setTimeout(W, 10);
-    else
-      tw.end();
+    if (i < chunks.length) setTimeout(W, 10);
+    else tw.end();
   })();
 }
 
@@ -95,11 +99,14 @@ for (let i = 0; i < chunks.length; i++) {
 
   let drains = 0;
 
-  tw.on('finish', common.mustCall(function() {
-    // got chunks in the right order
-    assert.deepStrictEqual(tw.buffer, chunks);
-    assert.strictEqual(drains, 17);
-  }));
+  tw.on(
+    'finish',
+    common.mustCall(function() {
+      // got chunks in the right order
+      assert.deepStrictEqual(tw.buffer, chunks);
+      assert.strictEqual(drains, 17);
+    })
+  );
 
   tw.on('drain', function() {
     drains++;
@@ -127,19 +134,20 @@ for (let i = 0; i < chunks.length; i++) {
     highWaterMark: 100
   });
 
-  const encodings =
-    [ 'hex',
-      'utf8',
-      'utf-8',
-      'ascii',
-      'latin1',
-      'binary',
-      'base64',
-      'ucs2',
-      'ucs-2',
-      'utf16le',
-      'utf-16le',
-      undefined ];
+  const encodings = [
+    'hex',
+    'utf8',
+    'utf-8',
+    'ascii',
+    'latin1',
+    'binary',
+    'base64',
+    'ucs2',
+    'ucs-2',
+    'utf16le',
+    'utf-16le',
+    undefined
+  ];
 
   tw.on('finish', function() {
     // got the expected chunks
@@ -166,19 +174,20 @@ for (let i = 0; i < chunks.length; i++) {
     return TestWriter.prototype._write.call(this, chunk, encoding, cb);
   };
 
-  const encodings =
-    [ 'hex',
-      'utf8',
-      'utf-8',
-      'ascii',
-      'latin1',
-      'binary',
-      'base64',
-      'ucs2',
-      'ucs-2',
-      'utf16le',
-      'utf-16le',
-      undefined ];
+  const encodings = [
+    'hex',
+    'utf8',
+    'utf-8',
+    'ascii',
+    'latin1',
+    'binary',
+    'base64',
+    'ucs2',
+    'ucs-2',
+    'utf16le',
+    'utf-16le',
+    undefined
+  ];
 
   tw.on('finish', function() {
     // got the expected chunks
@@ -194,28 +203,38 @@ for (let i = 0; i < chunks.length; i++) {
 
 {
   // Verify write callbacks
-  const callbacks = chunks.map(function(chunk, i) {
-    return [i, function() {
-      callbacks._called[i] = chunk;
-    }];
-  }).reduce(function(set, x) {
-    set[`callback-${x[0]}`] = x[1];
-    return set;
-  }, {});
+  const callbacks = chunks
+    .map(function(chunk, i) {
+      return [
+        i,
+        function() {
+          callbacks._called[i] = chunk;
+        }
+      ];
+    })
+    .reduce(function(set, x) {
+      set[`callback-${x[0]}`] = x[1];
+      return set;
+    }, {});
   callbacks._called = [];
 
   const tw = new TestWriter({
     highWaterMark: 100
   });
 
-  tw.on('finish', common.mustCall(function() {
-    process.nextTick(common.mustCall(function() {
-      // got chunks in the right order
-      assert.deepStrictEqual(tw.buffer, chunks);
-      // called all callbacks
-      assert.deepStrictEqual(callbacks._called, chunks);
-    }));
-  }));
+  tw.on(
+    'finish',
+    common.mustCall(function() {
+      process.nextTick(
+        common.mustCall(function() {
+          // got chunks in the right order
+          assert.deepStrictEqual(tw.buffer, chunks);
+          // called all callbacks
+          assert.deepStrictEqual(callbacks._called, chunks);
+        })
+      );
+    })
+  );
 
   chunks.forEach(function(chunk, i) {
     tw.write(chunk, callbacks[`callback-${i}`]);
@@ -255,9 +274,11 @@ for (let i = 0; i < chunks.length; i++) {
   tw.write(Buffer.from('hello world'), function() {
     writeCalledback = true;
   });
-  tw.end(common.mustCall(function() {
-    assert.strictEqual(writeCalledback, true);
-  }));
+  tw.end(
+    common.mustCall(function() {
+      assert.strictEqual(writeCalledback, true);
+    })
+  );
 }
 
 {
@@ -309,9 +330,11 @@ for (let i = 0; i < chunks.length; i++) {
   });
   w.end('this is the end');
   w.end('and so is this');
-  process.nextTick(common.mustCall(function() {
-    assert.strictEqual(gotError, true);
-  }));
+  process.nextTick(
+    common.mustCall(function() {
+      assert.strictEqual(gotError, true);
+    })
+  );
 }
 
 {
@@ -327,9 +350,12 @@ for (let i = 0; i < chunks.length; i++) {
       cb();
     }, 1);
   };
-  w.on('finish', common.mustCall(function() {
-    assert.strictEqual(wrote, true);
-  }));
+  w.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(wrote, true);
+    })
+  );
   w.write(Buffer.alloc(0));
   w.end();
 }
@@ -344,9 +370,12 @@ for (let i = 0; i < chunks.length; i++) {
       cb();
     }, 10);
   };
-  w.on('finish', common.mustCall(function() {
-    assert.strictEqual(writeCb, true);
-  }));
+  w.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(writeCb, true);
+    })
+  );
   w.write(Buffer.alloc(0));
   w.end();
 }
@@ -358,9 +387,12 @@ for (let i = 0; i < chunks.length; i++) {
   w._write = function(chunk, e, cb) {
     cb();
   };
-  w.on('finish', common.mustCall(function() {
-    assert.strictEqual(writeCb, true);
-  }));
+  w.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(writeCb, true);
+    })
+  );
   w.write(Buffer.alloc(0), function() {
     writeCb = true;
   });
@@ -393,9 +425,12 @@ for (let i = 0; i < chunks.length; i++) {
   w._write = function(chunk, e, cb) {
     process.nextTick(cb);
   };
-  w.on('finish', common.mustCall(function() {
-    assert.strictEqual(shutdown, true);
-  }));
+  w.on(
+    'finish',
+    common.mustCall(function() {
+      assert.strictEqual(shutdown, true);
+    })
+  );
   w.write(Buffer.allocUnsafe(1));
   w.end(Buffer.allocUnsafe(0));
 }

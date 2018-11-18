@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -39,10 +38,12 @@ const messageUtf8 = 'x√ab c';
 // The same string above represented with ASCII
 const messageAscii = 'xb\b\u001aab c';
 
-const server = tls.Server(options, common.mustCall(function(socket) {
-  socket.end(messageUtf8);
-}));
-
+const server = tls.Server(
+  options,
+  common.mustCall(function(socket) {
+    socket.end(messageUtf8);
+  })
+);
 
 server.listen(0, function() {
   const client = tls.connect({
@@ -58,7 +59,6 @@ server.listen(0, function() {
     assert.ok(typeof d === 'string');
     buffer += d;
   });
-
 
   client.on('close', function() {
     // readyState is deprecated but we want to make

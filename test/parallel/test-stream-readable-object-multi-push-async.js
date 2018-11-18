@@ -47,14 +47,17 @@ const BATCH = 10;
   readable.on('readable', () => {
     let data;
     console.log('readable emitted');
-    while (data = readable.read()) {
+    while ((data = readable.read())) {
       console.log(data);
     }
   });
 
-  readable.on('end', common.mustCall(() => {
-    assert.strictEqual(i, (Math.floor(MAX / BATCH) + 1) * BATCH);
-  }));
+  readable.on(
+    'end',
+    common.mustCall(() => {
+      assert.strictEqual(i, (Math.floor(MAX / BATCH) + 1) * BATCH);
+    })
+  );
 }
 
 {
@@ -98,9 +101,12 @@ const BATCH = 10;
     console.log('data emitted', data);
   });
 
-  readable.on('end', common.mustCall(() => {
-    assert.strictEqual(i, (Math.floor(MAX / BATCH) + 1) * BATCH);
-  }));
+  readable.on(
+    'end',
+    common.mustCall(() => {
+      assert.strictEqual(i, (Math.floor(MAX / BATCH) + 1) * BATCH);
+    })
+  );
 }
 
 {
@@ -139,9 +145,12 @@ const BATCH = 10;
     console.log('data emitted', data);
   });
 
-  readable.on('end', common.mustCall(() => {
-    assert.strictEqual(i, (Math.floor(MAX / BATCH) + 1) * BATCH);
-  }));
+  readable.on(
+    'end',
+    common.mustCall(() => {
+      assert.strictEqual(i, (Math.floor(MAX / BATCH) + 1) * BATCH);
+    })
+  );
 }
 
 {
@@ -159,9 +168,12 @@ const BATCH = 10;
     nextTickPassed = true;
   });
 
-  readable.on('end', common.mustCall(() => {
-    assert.strictEqual(nextTickPassed, true);
-  }));
+  readable.on(
+    'end',
+    common.mustCall(() => {
+      assert.strictEqual(nextTickPassed, true);
+    })
+  );
 }
 
 {

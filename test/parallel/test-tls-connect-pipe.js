@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tls = require('tls');
 const fixtures = require('../common/fixtures');
@@ -36,12 +35,22 @@ const options = {
 const tmpdir = require('../common/tmpdir');
 tmpdir.refresh();
 
-const server = tls.Server(options, common.mustCall(function(socket) {
-  server.close();
-}));
-server.listen(common.PIPE, common.mustCall(function() {
-  const options = { rejectUnauthorized: false };
-  const client = tls.connect(common.PIPE, options, common.mustCall(function() {
-    client.end();
-  }));
-}));
+const server = tls.Server(
+  options,
+  common.mustCall(function(socket) {
+    server.close();
+  })
+);
+server.listen(
+  common.PIPE,
+  common.mustCall(function() {
+    const options = { rejectUnauthorized: false };
+    const client = tls.connect(
+      common.PIPE,
+      options,
+      common.mustCall(function() {
+        client.end();
+      })
+    );
+  })
+);

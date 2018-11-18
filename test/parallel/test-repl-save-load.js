@@ -36,11 +36,7 @@ const works = [['inner.one'], 'inner.o'];
 const putIn = new ArrayStream();
 const testMe = repl.start('', putIn);
 
-
-const testFile = [
-  'var top = function() {',
-  'var inner = {one:1};'
-];
+const testFile = ['var top = function() {', 'var inner = {one:1};'];
 const saveFileName = join(tmpdir.path, 'test.save.js');
 
 // input some data
@@ -50,16 +46,14 @@ putIn.run(testFile);
 putIn.run([`.save ${saveFileName}`]);
 
 // the file should have what I wrote
-assert.strictEqual(fs.readFileSync(saveFileName, 'utf8'),
-                   `${testFile.join('\n')}\n`);
+assert.strictEqual(
+  fs.readFileSync(saveFileName, 'utf8'),
+  `${testFile.join('\n')}\n`
+);
 
 {
   // save .editor mode code
-  const cmds = [
-    'function testSave() {',
-    'return "saved";',
-    '}'
-  ];
+  const cmds = ['function testSave() {', 'return "saved";', '}'];
   const putIn = new ArrayStream();
   const replServer = repl.start('', putIn);
 
@@ -69,8 +63,10 @@ assert.strictEqual(fs.readFileSync(saveFileName, 'utf8'),
 
   putIn.run([`.save ${saveFileName}`]);
   replServer.close();
-  assert.strictEqual(fs.readFileSync(saveFileName, 'utf8'),
-                     `${cmds.join('\n')}\n`);
+  assert.strictEqual(
+    fs.readFileSync(saveFileName, 'utf8'),
+    `${cmds.join('\n')}\n`
+  );
 }
 
 // make sure that the REPL data is "correct"

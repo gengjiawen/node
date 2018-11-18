@@ -23,8 +23,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -76,11 +75,14 @@ a.listen(0, function() {
     ssl.on('data', function(data) {
       buf += data;
     });
-    ssl.on('end', common.mustCall(function() {
-      assert.strictEqual(buf, body);
-      ssl.end();
-      a.close();
-      b.close();
-    }));
+    ssl.on(
+      'end',
+      common.mustCall(function() {
+        assert.strictEqual(buf, body);
+        ssl.end();
+        a.close();
+        b.close();
+      })
+    );
   });
 });

@@ -1,16 +1,42 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const http2 = require('http2');
 
-const check = Buffer.from([0x00, 0x01, 0x00, 0x00, 0x10, 0x00,
-                           0x00, 0x05, 0x00, 0x00, 0x40, 0x00,
-                           0x00, 0x04, 0x00, 0x00, 0xff, 0xff,
-                           0x00, 0x06, 0x00, 0x00, 0xff, 0xff,
-                           0x00, 0x02, 0x00, 0x00, 0x00, 0x01]);
+const check = Buffer.from([
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x10,
+  0x00,
+  0x00,
+  0x05,
+  0x00,
+  0x00,
+  0x40,
+  0x00,
+  0x00,
+  0x04,
+  0x00,
+  0x00,
+  0xff,
+  0xff,
+  0x00,
+  0x06,
+  0x00,
+  0x00,
+  0xff,
+  0xff,
+  0x00,
+  0x02,
+  0x00,
+  0x00,
+  0x00,
+  0x01
+]);
 const val = http2.getPackedSettings(http2.getDefaultSettings());
 assert.deepStrictEqual(val, check);
 
@@ -45,33 +71,70 @@ http2.getPackedSettings({ enablePush: false });
   ['maxHeaderListSize', -1],
   ['maxHeaderListSize', 2 ** 32]
 ].forEach((i) => {
-  common.expectsError(() => {
-    http2.getPackedSettings({ [i[0]]: i[1] });
-  }, {
-    code: 'ERR_HTTP2_INVALID_SETTING_VALUE',
-    type: RangeError,
-    message: `Invalid value for setting "${i[0]}": ${i[1]}`
-  });
+  common.expectsError(
+    () => {
+      http2.getPackedSettings({ [i[0]]: i[1] });
+    },
+    {
+      code: 'ERR_HTTP2_INVALID_SETTING_VALUE',
+      type: RangeError,
+      message: `Invalid value for setting "${i[0]}": ${i[1]}`
+    }
+  );
 });
 
-[
-  1, null, '', Infinity, new Date(), {}, NaN, [false]
-].forEach((i) => {
-  common.expectsError(() => {
-    http2.getPackedSettings({ enablePush: i });
-  }, {
-    code: 'ERR_HTTP2_INVALID_SETTING_VALUE',
-    type: TypeError,
-    message: `Invalid value for setting "enablePush": ${i}`
-  });
+[1, null, '', Infinity, new Date(), {}, NaN, [false]].forEach((i) => {
+  common.expectsError(
+    () => {
+      http2.getPackedSettings({ enablePush: i });
+    },
+    {
+      code: 'ERR_HTTP2_INVALID_SETTING_VALUE',
+      type: TypeError,
+      message: `Invalid value for setting "enablePush": ${i}`
+    }
+  );
 });
 
 {
   const check = Buffer.from([
-    0x00, 0x01, 0x00, 0x00, 0x00, 0x64, 0x00, 0x03, 0x00, 0x00,
-    0x00, 0xc8, 0x00, 0x05, 0x00, 0x00, 0x4e, 0x20, 0x00, 0x04,
-    0x00, 0x00, 0x00, 0x64, 0x00, 0x06, 0x00, 0x00, 0x00, 0x64,
-    0x00, 0x02, 0x00, 0x00, 0x00, 0x01]);
+    0x00,
+    0x01,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x03,
+    0x00,
+    0x00,
+    0x00,
+    0xc8,
+    0x00,
+    0x05,
+    0x00,
+    0x00,
+    0x4e,
+    0x20,
+    0x00,
+    0x04,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x06,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x02,
+    0x00,
+    0x00,
+    0x00,
+    0x01
+  ]);
 
   const packed = http2.getPackedSettings({
     headerTableSize: 100,
@@ -94,30 +157,69 @@ http2.getPackedSettings({ enablePush: false });
 
 {
   const packed = Buffer.from([
-    0x00, 0x01, 0x00, 0x00, 0x00, 0x64, 0x00, 0x03, 0x00, 0x00,
-    0x00, 0xc8, 0x00, 0x05, 0x00, 0x00, 0x4e, 0x20, 0x00, 0x04,
-    0x00, 0x00, 0x00, 0x64, 0x00, 0x06, 0x00, 0x00, 0x00, 0x64,
-    0x00, 0x02, 0x00, 0x00, 0x00, 0x01]);
+    0x00,
+    0x01,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x03,
+    0x00,
+    0x00,
+    0x00,
+    0xc8,
+    0x00,
+    0x05,
+    0x00,
+    0x00,
+    0x4e,
+    0x20,
+    0x00,
+    0x04,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x06,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x02,
+    0x00,
+    0x00,
+    0x00,
+    0x01
+  ]);
 
   [1, true, '', [], {}, NaN].forEach((input) => {
-    common.expectsError(() => {
-      http2.getUnpackedSettings(input);
-    }, {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError,
-      message:
-        'The "buf" argument must be one of type Buffer, TypedArray, or ' +
-        `DataView. Received type ${typeof input}`
-    });
+    common.expectsError(
+      () => {
+        http2.getUnpackedSettings(input);
+      },
+      {
+        code: 'ERR_INVALID_ARG_TYPE',
+        type: TypeError,
+        message:
+          'The "buf" argument must be one of type Buffer, TypedArray, or ' +
+          `DataView. Received type ${typeof input}`
+      }
+    );
   });
 
-  common.expectsError(() => {
-    http2.getUnpackedSettings(packed.slice(5));
-  }, {
-    code: 'ERR_HTTP2_INVALID_PACKED_SETTINGS_LENGTH',
-    type: RangeError,
-    message: 'Packed settings length must be a multiple of six'
-  });
+  common.expectsError(
+    () => {
+      http2.getUnpackedSettings(packed.slice(5));
+    },
+    {
+      code: 'ERR_HTTP2_INVALID_PACKED_SETTINGS_LENGTH',
+      type: RangeError,
+      message: 'Packed settings length must be a multiple of six'
+    }
+  );
 
   const settings = http2.getUnpackedSettings(packed);
 
@@ -131,15 +233,13 @@ http2.getPackedSettings({ enablePush: false });
 }
 
 {
-  const packed = Buffer.from([
-    0x00, 0x02, 0x00, 0x00, 0x00, 0x00]);
+  const packed = Buffer.from([0x00, 0x02, 0x00, 0x00, 0x00, 0x00]);
 
   const settings = http2.getUnpackedSettings(packed, { validate: true });
   assert.strictEqual(settings.enablePush, false);
 }
 {
-  const packed = Buffer.from([
-    0x00, 0x02, 0x00, 0x00, 0x00, 0x64]);
+  const packed = Buffer.from([0x00, 0x02, 0x00, 0x00, 0x00, 0x64]);
 
   const settings = http2.getUnpackedSettings(packed, { validate: true });
   assert.strictEqual(settings.enablePush, true);
@@ -148,10 +248,43 @@ http2.getPackedSettings({ enablePush: false });
 // Verify that passing {validate: true} does not throw.
 {
   const packed = Buffer.from([
-    0x00, 0x01, 0x00, 0x00, 0x00, 0x64, 0x00, 0x03, 0x00, 0x00,
-    0x00, 0xc8, 0x00, 0x05, 0x00, 0x00, 0x4e, 0x20, 0x00, 0x04,
-    0x00, 0x00, 0x00, 0x64, 0x00, 0x06, 0x00, 0x00, 0x00, 0x64,
-    0x00, 0x02, 0x00, 0x00, 0x00, 0x01]);
+    0x00,
+    0x01,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x03,
+    0x00,
+    0x00,
+    0x00,
+    0xc8,
+    0x00,
+    0x05,
+    0x00,
+    0x00,
+    0x4e,
+    0x20,
+    0x00,
+    0x04,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x06,
+    0x00,
+    0x00,
+    0x00,
+    0x64,
+    0x00,
+    0x02,
+    0x00,
+    0x00,
+    0x00,
+    0x01
+  ]);
 
   http2.getUnpackedSettings(packed, { validate: true });
 }
@@ -160,24 +293,30 @@ http2.getPackedSettings({ enablePush: false });
 {
   const packed = Buffer.from([0x00, 0x05, 0x01, 0x00, 0x00, 0x00]);
 
-  common.expectsError(() => {
-    http2.getUnpackedSettings(packed, { validate: true });
-  }, {
-    code: 'ERR_HTTP2_INVALID_SETTING_VALUE',
-    type: RangeError,
-    message: 'Invalid value for setting "maxFrameSize": 16777216'
-  });
+  common.expectsError(
+    () => {
+      http2.getUnpackedSettings(packed, { validate: true });
+    },
+    {
+      code: 'ERR_HTTP2_INVALID_SETTING_VALUE',
+      type: RangeError,
+      message: 'Invalid value for setting "maxFrameSize": 16777216'
+    }
+  );
 }
 
 // Check for maxConcurrentStreams failing the max number.
 {
-  const packed = Buffer.from([0x00, 0x03, 0xFF, 0xFF, 0xFF, 0xFF]);
+  const packed = Buffer.from([0x00, 0x03, 0xff, 0xff, 0xff, 0xff]);
 
-  common.expectsError(() => {
-    http2.getUnpackedSettings(packed, { validate: true });
-  }, {
-    code: 'ERR_HTTP2_INVALID_SETTING_VALUE',
-    type: RangeError,
-    message: 'Invalid value for setting "maxConcurrentStreams": 4294967295'
-  });
+  common.expectsError(
+    () => {
+      http2.getUnpackedSettings(packed, { validate: true });
+    },
+    {
+      code: 'ERR_HTTP2_INVALID_SETTING_VALUE',
+      type: RangeError,
+      message: 'Invalid value for setting "maxConcurrentStreams": 4294967295'
+    }
+  );
 }

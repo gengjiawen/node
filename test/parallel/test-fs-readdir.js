@@ -21,10 +21,13 @@ files.forEach(function(currentFile) {
 assert.deepStrictEqual(files, fs.readdirSync(readdirDir).sort());
 
 // Check the readdir async version
-fs.readdir(readdirDir, common.mustCall(function(err, f) {
-  assert.ifError(err);
-  assert.deepStrictEqual(files, f.sort());
-}));
+fs.readdir(
+  readdirDir,
+  common.mustCall(function(err, f) {
+    assert.ifError(err);
+    assert.deepStrictEqual(files, f.sort());
+  })
+);
 
 // readdir() on file should throw ENOTDIR
 // https://github.com/joyent/node/issues/1869
@@ -32,23 +35,20 @@ assert.throws(function() {
   fs.readdirSync(__filename);
 }, /Error: ENOTDIR: not a directory/);
 
-fs.readdir(__filename, common.mustCall(function(e) {
-  assert.strictEqual(e.code, 'ENOTDIR');
-}));
+fs.readdir(
+  __filename,
+  common.mustCall(function(e) {
+    assert.strictEqual(e.code, 'ENOTDIR');
+  })
+);
 
 [false, 1, [], {}, null, undefined].forEach((i) => {
-  common.expectsError(
-    () => fs.readdir(i, common.mustNotCall()),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
-  common.expectsError(
-    () => fs.readdirSync(i),
-    {
-      code: 'ERR_INVALID_ARG_TYPE',
-      type: TypeError
-    }
-  );
+  common.expectsError(() => fs.readdir(i, common.mustNotCall()), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
+  common.expectsError(() => fs.readdirSync(i), {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  });
 });

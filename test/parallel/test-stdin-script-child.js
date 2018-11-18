@@ -19,13 +19,21 @@ for (const args of [[], ['-']]) {
 
   child.stderr.setEncoding('utf8');
   child.stderr.on('data', function(c) {
-    console.error(`> ${c.trim().split('\n').join('\n> ')}`);
+    console.error(
+      `> ${c
+        .trim()
+        .split('\n')
+        .join('\n> ')}`
+    );
   });
 
-  child.on('close', common.mustCall(function(c) {
-    assert.strictEqual(c, 0);
-    assert.strictEqual(found, wanted);
-  }));
+  child.on(
+    'close',
+    common.mustCall(function(c) {
+      assert.strictEqual(c, 0);
+      assert.strictEqual(found, wanted);
+    })
+  );
 
   setTimeout(function() {
     child.stdin.end('console.log(process.pid)');

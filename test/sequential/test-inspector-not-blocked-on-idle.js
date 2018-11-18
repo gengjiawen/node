@@ -11,8 +11,8 @@ async function runTests() {
   await new Promise((resolve) => setTimeout(() => resolve(), 1000));
   const session = await node.connectInspectorSession();
   await session.send([
-    { 'method': 'Debugger.enable' },
-    { 'method': 'Debugger.pause' }
+    { method: 'Debugger.enable' },
+    { method: 'Debugger.pause' }
   ]);
   session.disconnect();
   node.kill();

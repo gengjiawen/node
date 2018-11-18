@@ -27,12 +27,12 @@ server.listen(options, function() {
   options.port = this.address().port;
   const conn = net.connect(options);
   conn.setEncoding('utf8');
-  conn.on('data', (data) => answer += data);
+  conn.on('data', (data) => (answer += data));
   conn.write('require("baz")\nrequire("./baz")\n.exit\n');
 });
 
 process.on('exit', function() {
   assert.strictEqual(/Cannot find module/.test(answer), false);
   assert.strictEqual(/Error/.test(answer), false);
-  assert.strictEqual(answer, '\'eye catcher\'\n\'perhaps I work\'\n');
+  assert.strictEqual(answer, "'eye catcher'\n'perhaps I work'\n");
 });

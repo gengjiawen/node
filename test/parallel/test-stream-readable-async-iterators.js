@@ -7,11 +7,13 @@ const assert = require('assert');
 async function tests() {
   {
     const AsyncIteratorPrototype = Object.getPrototypeOf(
-      Object.getPrototypeOf(async function* () {}).prototype);
+      Object.getPrototypeOf(async function*() {}).prototype
+    );
     const rs = new Readable({});
     assert.strictEqual(
       Object.getPrototypeOf(Object.getPrototypeOf(rs[Symbol.asyncIterator]())),
-      AsyncIteratorPrototype);
+      AsyncIteratorPrototype
+    );
   }
 
   await (async function() {
@@ -41,10 +43,16 @@ async function tests() {
     for (let i = 0; i < max; i++) {
       values.push(iter.next());
     }
-    Promise.all(values).then(common.mustCall((values) => {
-      values.forEach(common.mustCall(
-        (item, i) => assert.strictEqual(item.value, 'hello-' + i), 5));
-    }));
+    Promise.all(values).then(
+      common.mustCall((values) => {
+        values.forEach(
+          common.mustCall(
+            (item, i) => assert.strictEqual(item.value, 'hello-' + i),
+            5
+          )
+        );
+      })
+    );
 
     readable.push('hello-0');
     readable.push('hello-1');
@@ -77,8 +85,12 @@ async function tests() {
 
     let k = 0;
     const results1 = await Promise.all(values);
-    results1.forEach(common.mustCall(
-      (item) => assert.strictEqual(item.value, 'hello-' + k++), 3));
+    results1.forEach(
+      common.mustCall(
+        (item) => assert.strictEqual(item.value, 'hello-' + k++),
+        3
+      )
+    );
 
     values = [];
     for (let i = 0; i < 2; i++) {
@@ -90,8 +102,12 @@ async function tests() {
     readable.push(null);
 
     const results2 = await Promise.all(values);
-    results2.forEach(common.mustCall(
-      (item) => assert.strictEqual(item.value, 'hello-' + k++), 2));
+    results2.forEach(
+      common.mustCall(
+        (item) => assert.strictEqual(item.value, 'hello-' + k++),
+        2
+      )
+    );
 
     const last = await iter.next();
     assert.strictEqual(last.done, true);
@@ -123,13 +139,19 @@ async function tests() {
 
     const resolved = await Promise.all(values);
 
-    resolved.forEach(common.mustCall(
-      (item, i) => assert.strictEqual(item.value, 'hello-' + i), max));
+    resolved.forEach(
+      common.mustCall(
+        (item, i) => assert.strictEqual(item.value, 'hello-' + i),
+        max
+      )
+    );
 
     errors.forEach((promise) => {
-      promise.catch(common.mustCall((err) => {
-        assert.strictEqual(err.message, 'kaboom');
-      }));
+      promise.catch(
+        common.mustCall((err) => {
+          assert.strictEqual(err.message, 'kaboom');
+        })
+      );
     });
 
     readable.destroy(new Error('kaboom'));
@@ -182,7 +204,8 @@ async function tests() {
     let err;
     try {
       // eslint-disable-next-line no-unused-vars
-      for await (const k of readable) {}
+      for await (const k of readable) {
+      }
     } catch (e) {
       err = e;
     }
@@ -349,9 +372,13 @@ async function tests() {
 
     const passthrough = new PassThrough();
     const err = new Error('kaboom');
-    pipeline(readable, passthrough, common.mustCall((e) => {
-      assert.strictEqual(e, err);
-    }));
+    pipeline(
+      readable,
+      passthrough,
+      common.mustCall((e) => {
+        assert.strictEqual(e, err);
+      })
+    );
     readable.destroy(err);
     try {
       await readable[Symbol.asyncIterator]().next();

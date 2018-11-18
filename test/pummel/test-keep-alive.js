@@ -23,8 +23,7 @@
 
 // This test requires the program 'wrk'
 const common = require('../common');
-if (common.isWindows)
-  common.skip('no `wrk` on windows');
+if (common.isWindows) common.skip('no `wrk` on windows');
 
 const assert = require('assert');
 const spawn = require('child_process').spawn;
@@ -44,12 +43,14 @@ const server = http.createServer(function(req, res) {
 let keepAliveReqSec = 0;
 let normalReqSec = 0;
 
-
 function runAb(opts, callback) {
   const args = [
-    '-c', opts.concurrent || 100,
-    '-t', opts.threads || 2,
-    '-d', opts.duration || '10s',
+    '-c',
+    opts.concurrent || 100,
+    '-t',
+    opts.threads || 2,
+    '-d',
+    opts.duration || '10s'
   ];
 
   if (!opts.keepalive) {
@@ -57,8 +58,9 @@ function runAb(opts, callback) {
     args.push('Connection: close');
   }
 
-  args.push(url.format({ hostname: '127.0.0.1',
-                         port: common.PORT, protocol: 'http' }));
+  args.push(
+    url.format({ hostname: '127.0.0.1', port: common.PORT, protocol: 'http' })
+  );
 
   const child = spawn('wrk', args);
   child.stderr.pipe(process.stderr);
@@ -118,6 +120,6 @@ process.on('exit', function() {
     normalReqSec < keepAliveReqSec,
     true,
     'normalReqSec should be less than keepAliveReqSec, ' +
-    `but ${normalReqSec} is greater than ${keepAliveReqSec}`
+      `but ${normalReqSec} is greater than ${keepAliveReqSec}`
   );
 });

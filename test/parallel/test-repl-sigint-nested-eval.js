@@ -11,7 +11,7 @@ const assert = require('assert');
 const spawn = require('child_process').spawn;
 
 process.env.REPL_TEST_PPID = process.pid;
-const child = spawn(process.execPath, [ '-i' ], {
+const child = spawn(process.execPath, ['-i'], {
   stdio: [null, null, 2]
 });
 
@@ -21,19 +21,30 @@ child.stdout.on('data', function(c) {
   stdout += c;
 });
 
-child.stdout.once('data', common.mustCall(() => {
-  process.on('SIGUSR2', common.mustCall(() => {
-    process.kill(child.pid, 'SIGINT');
-    child.stdout.once('data', common.mustCall(() => {
-      // Make sure REPL still works.
-      child.stdin.end('"foobar"\n');
-    }));
-  }));
+child.stdout.once(
+  'data',
+  common.mustCall(() => {
+    process.on(
+      'SIGUSR2',
+      common.mustCall(() => {
+        process.kill(child.pid, 'SIGINT');
+        child.stdout.once(
+          'data',
+          common.mustCall(() => {
+            // Make sure REPL still works.
+            child.stdin.end('"foobar"\n');
+          })
+        );
+      })
+    );
 
-  child.stdin.write('process.kill(+process.env.REPL_TEST_PPID, "SIGUSR2");' +
-                    'vm.runInThisContext("while(true){}", ' +
-                    '{ breakOnSigint: true });\n');
-}));
+    child.stdin.write(
+      'process.kill(+process.env.REPL_TEST_PPID, "SIGUSR2");' +
+        'vm.runInThisContext("while(true){}", ' +
+        '{ breakOnSigint: true });\n'
+    );
+  })
+);
 
 child.on('close', function(code) {
   const expected = 'Script execution was interrupted by `SIGINT`';

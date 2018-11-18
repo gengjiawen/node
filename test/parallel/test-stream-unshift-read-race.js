@@ -68,15 +68,17 @@ r._read = function(n) {
 };
 
 function pushError() {
-  common.expectsError(function() {
-    r.push(Buffer.allocUnsafe(1));
-  }, {
-    code: 'ERR_STREAM_PUSH_AFTER_EOF',
-    type: Error,
-    message: 'stream.push() after EOF'
-  });
+  common.expectsError(
+    function() {
+      r.push(Buffer.allocUnsafe(1));
+    },
+    {
+      code: 'ERR_STREAM_PUSH_AFTER_EOF',
+      type: Error,
+      message: 'stream.push() after EOF'
+    }
+  );
 }
-
 
 const w = stream.Writable();
 const written = [];
@@ -85,48 +87,64 @@ w._write = function(chunk, encoding, cb) {
   cb();
 };
 
-r.on('end', common.mustCall(function() {
-  common.expectsError(function() {
-    r.unshift(Buffer.allocUnsafe(1));
-  }, {
-    code: 'ERR_STREAM_UNSHIFT_AFTER_END_EVENT',
-    type: Error,
-    message: 'stream.unshift() after end event'
-  });
-  w.end();
-}));
+r.on(
+  'end',
+  common.mustCall(function() {
+    common.expectsError(
+      function() {
+        r.unshift(Buffer.allocUnsafe(1));
+      },
+      {
+        code: 'ERR_STREAM_UNSHIFT_AFTER_END_EVENT',
+        type: Error,
+        message: 'stream.unshift() after end event'
+      }
+    );
+    w.end();
+  })
+);
 
 r.on('readable', function() {
   let chunk;
   while (null !== (chunk = r.read(10))) {
     w.write(chunk);
-    if (chunk.length > 4)
-      r.unshift(Buffer.from('1234'));
+    if (chunk.length > 4) r.unshift(Buffer.from('1234'));
   }
 });
 
-w.on('finish', common.mustCall(function() {
-  // each chunk should start with 1234, and then be asfdasdfasdf...
-  // The first got pulled out before the first unshift('1234'), so it's
-  // lacking that piece.
-  assert.strictEqual(written[0], 'asdfasdfas');
-  let asdf = 'd';
-  console.error(`0: ${written[0]}`);
-  for (let i = 1; i < written.length; i++) {
-    console.error(`${i.toString(32)}: ${written[i]}`);
-    assert.strictEqual(written[i].slice(0, 4), '1234');
-    for (let j = 4; j < written[i].length; j++) {
-      const c = written[i].charAt(j);
-      assert.strictEqual(c, asdf);
-      switch (asdf) {
-        case 'a': asdf = 's'; break;
-        case 's': asdf = 'd'; break;
-        case 'd': asdf = 'f'; break;
-        case 'f': asdf = 'a'; break;
+w.on(
+  'finish',
+  common.mustCall(function() {
+    // each chunk should start with 1234, and then be asfdasdfasdf...
+    // The first got pulled out before the first unshift('1234'), so it's
+    // lacking that piece.
+    assert.strictEqual(written[0], 'asdfasdfas');
+    let asdf = 'd';
+    console.error(`0: ${written[0]}`);
+    for (let i = 1; i < written.length; i++) {
+      console.error(`${i.toString(32)}: ${written[i]}`);
+      assert.strictEqual(written[i].slice(0, 4), '1234');
+      for (let j = 4; j < written[i].length; j++) {
+        const c = written[i].charAt(j);
+        assert.strictEqual(c, asdf);
+        switch (asdf) {
+          case 'a':
+            asdf = 's';
+            break;
+          case 's':
+            asdf = 'd';
+            break;
+          case 'd':
+            asdf = 'f';
+            break;
+          case 'f':
+            asdf = 'a';
+            break;
+        }
       }
     }
-  }
-}));
+  })
+);
 
 process.on('exit', function() {
   assert.strictEqual(written.length, 18);

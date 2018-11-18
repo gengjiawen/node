@@ -45,7 +45,9 @@ const server = net.createServer(function(c) {
 
   if (sockets.length === 2) {
     assert.strictEqual(server.close(), server);
-    sockets.forEach(function(c) { c.destroy(); });
+    sockets.forEach(function(c) {
+      c.destroy();
+    });
   }
 });
 
@@ -53,7 +55,10 @@ server.on('close', function() {
   events.push('server');
 });
 
-assert.strictEqual(server, server.listen(0, function() {
-  net.createConnection(this.address().port);
-  net.createConnection(this.address().port);
-}));
+assert.strictEqual(
+  server,
+  server.listen(0, function() {
+    net.createConnection(this.address().port);
+    net.createConnection(this.address().port);
+  })
+);

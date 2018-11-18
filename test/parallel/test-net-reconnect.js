@@ -74,10 +74,9 @@ server.listen(0, function() {
   client.on('close', function(had_error) {
     console.log('CLIENT disconnect');
     assert.strictEqual(had_error, false);
-    if (disconnect_count++ < N)
-      client.connect(server.address().port); // reconnect
-    else
-      server.close();
+    if (disconnect_count++ < N) client.connect(server.address().port);
+    // reconnect
+    else server.close();
   });
 });
 

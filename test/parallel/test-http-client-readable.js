@@ -32,8 +32,7 @@ class FakeAgent extends http.Agent {
     let once = false;
 
     s._read = function() {
-      if (once)
-        return this.push(null);
+      if (once) return this.push(null);
       once = true;
 
       this.push('HTTP/1.1 200 Ok\r\nTransfer-Encoding: chunked\r\n\r\n');
@@ -57,15 +56,21 @@ class FakeAgent extends http.Agent {
 
 let received = '';
 
-const req = http.request({
-  agent: new FakeAgent()
-}, common.mustCall(function requestCallback(res) {
-  res.on('data', function dataCallback(chunk) {
-    received += chunk;
-  });
+const req = http.request(
+  {
+    agent: new FakeAgent()
+  },
+  common.mustCall(function requestCallback(res) {
+    res.on('data', function dataCallback(chunk) {
+      received += chunk;
+    });
 
-  res.on('end', common.mustCall(function endCallback() {
-    assert.strictEqual(received, 'hello world');
-  }));
-}));
+    res.on(
+      'end',
+      common.mustCall(function endCallback() {
+        assert.strictEqual(received, 'hello world');
+      })
+    );
+  })
+);
 req.end();

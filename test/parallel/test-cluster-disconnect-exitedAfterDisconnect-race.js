@@ -19,10 +19,15 @@ let eventFired = false;
 
 cluster.worker.disconnect();
 
-process.nextTick(common.mustCall(() => {
-  assert.ok(!eventFired, 'disconnect event should wait for ack');
-}));
+process.nextTick(
+  common.mustCall(() => {
+    assert.ok(!eventFired, 'disconnect event should wait for ack');
+  })
+);
 
-cluster.worker.on('disconnect', common.mustCall(() => {
-  eventFired = true;
-}));
+cluster.worker.on(
+  'disconnect',
+  common.mustCall(() => {
+    eventFired = true;
+  })
+);

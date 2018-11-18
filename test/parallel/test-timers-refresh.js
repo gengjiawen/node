@@ -16,16 +16,22 @@ const { setUnrefTimeout } = require('internal/timers');
 // unref()'d timer
 {
   let called = false;
-  const timer = setTimeout(common.mustCall(() => {
-    called = true;
-  }), 1);
+  const timer = setTimeout(
+    common.mustCall(() => {
+      called = true;
+    }),
+    1
+  );
   timer.unref();
 
   // This relies on implicit timers handle sorting withing libuv.
 
-  setTimeout(common.mustCall(() => {
-    strictEqual(called, false, 'unref()\'d timer returned before check');
-  }), 1);
+  setTimeout(
+    common.mustCall(() => {
+      strictEqual(called, false, "unref()'d timer returned before check");
+    }),
+    1
+  );
 
   strictEqual(timer.refresh(), timer);
 }
@@ -33,13 +39,19 @@ const { setUnrefTimeout } = require('internal/timers');
 // unref pooled timer
 {
   let called = false;
-  const timer = setUnrefTimeout(common.mustCall(() => {
-    called = true;
-  }), 1);
+  const timer = setUnrefTimeout(
+    common.mustCall(() => {
+      called = true;
+    }),
+    1
+  );
 
-  setUnrefTimeout(common.mustCall(() => {
-    strictEqual(called, false, 'unref pooled timer returned before check');
-  }), 1);
+  setUnrefTimeout(
+    common.mustCall(() => {
+      strictEqual(called, false, 'unref pooled timer returned before check');
+    }),
+    1
+  );
 
   strictEqual(timer.refresh(), timer);
 }
@@ -47,13 +59,19 @@ const { setUnrefTimeout } = require('internal/timers');
 // regular timer
 {
   let called = false;
-  const timer = setTimeout(common.mustCall(() => {
-    called = true;
-  }), 1);
+  const timer = setTimeout(
+    common.mustCall(() => {
+      called = true;
+    }),
+    1
+  );
 
-  setTimeout(common.mustCall(() => {
-    strictEqual(called, false, 'pooled timer returned before check');
-  }), 1);
+  setTimeout(
+    common.mustCall(() => {
+      strictEqual(called, false, 'pooled timer returned before check');
+    }),
+    1
+  );
 
   strictEqual(timer.refresh(), timer);
 }
@@ -61,16 +79,22 @@ const { setUnrefTimeout } = require('internal/timers');
 // interval
 {
   let called = 0;
-  const timer = setInterval(common.mustCall(() => {
-    called += 1;
-    if (called === 2) {
-      clearInterval(timer);
-    }
-  }, 2), 1);
+  const timer = setInterval(
+    common.mustCall(() => {
+      called += 1;
+      if (called === 2) {
+        clearInterval(timer);
+      }
+    }, 2),
+    1
+  );
 
-  setTimeout(common.mustCall(() => {
-    strictEqual(called, 0, 'pooled timer returned before check');
-  }), 1);
+  setTimeout(
+    common.mustCall(() => {
+      strictEqual(called, 0, 'pooled timer returned before check');
+    }),
+    1
+  );
 
   strictEqual(timer.refresh(), timer);
 }

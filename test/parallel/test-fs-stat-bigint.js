@@ -27,33 +27,19 @@ function verifyStats(bigintStats, numStats) {
       assert(
         Math.abs(time - time2) < 2,
         `difference of ${key}.getTime() should < 2.\n` +
-        `Number version ${time}, BigInt version ${time2}n`);
+          `Number version ${time}, BigInt version ${time2}n`
+      );
     } else if (key === 'mode') {
       assert.strictEqual(bigintStats[key], BigInt(val));
-      assert.strictEqual(
-        bigintStats.isBlockDevice(),
-        numStats.isBlockDevice()
-      );
+      assert.strictEqual(bigintStats.isBlockDevice(), numStats.isBlockDevice());
       assert.strictEqual(
         bigintStats.isCharacterDevice(),
         numStats.isCharacterDevice()
       );
-      assert.strictEqual(
-        bigintStats.isDirectory(),
-        numStats.isDirectory()
-      );
-      assert.strictEqual(
-        bigintStats.isFIFO(),
-        numStats.isFIFO()
-      );
-      assert.strictEqual(
-        bigintStats.isFile(),
-        numStats.isFile()
-      );
-      assert.strictEqual(
-        bigintStats.isSocket(),
-        numStats.isSocket()
-      );
+      assert.strictEqual(bigintStats.isDirectory(), numStats.isDirectory());
+      assert.strictEqual(bigintStats.isFIFO(), numStats.isFIFO());
+      assert.strictEqual(bigintStats.isFile(), numStats.isFile());
+      assert.strictEqual(bigintStats.isSocket(), numStats.isSocket());
       assert.strictEqual(
         bigintStats.isSymbolicLink(),
         numStats.isSymbolicLink()
@@ -67,7 +53,8 @@ function verifyStats(bigintStats, numStats) {
       assert(
         Math.abs(Number(bigintStats[key]) - val) < 1,
         `${key} is not a safe integer, difference should < 1.\n` +
-        `Number version ${val}, BigInt version ${bigintStats[key]}n`);
+          `Number version ${val}, BigInt version ${bigintStats[key]}n`
+      );
     }
   }
 }

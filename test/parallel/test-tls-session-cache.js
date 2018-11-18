@@ -21,16 +21,13 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const fixtures = require('../common/fixtures');
 const assert = require('assert');
 const tls = require('tls');
 const { spawn } = require('child_process');
 
-if (!common.opensslCli)
-  common.skip('node compiled without OpenSSL CLI.');
-
+if (!common.opensslCli) common.skip('node compiled without OpenSSL CLI.');
 
 doTest({ tickets: false }, function() {
   doTest({ tickets: true }, function() {
@@ -49,7 +46,7 @@ function doTest(testOptions, callback) {
     ca: [cert],
     requestCert: true,
     rejectUnauthorized: false,
-    secureProtocol: 'TLS_method',
+    secureProtocol: 'TLS_method'
   };
   let requestCount = 0;
   let resumeCount = 0;
@@ -61,8 +58,7 @@ function doTest(testOptions, callback) {
       // We're ok with getting ECONNRESET in this test, but it's
       // timing-dependent, and thus unreliable. Any other errors
       // are just failures, though.
-      if (er.code !== 'ECONNRESET')
-        throw er;
+      if (er.code !== 'ECONNRESET') throw er;
     });
     ++requestCount;
     cleartext.end();
@@ -99,16 +95,20 @@ function doTest(testOptions, callback) {
     const args = [
       's_client',
       '-tls1',
-      '-connect', `localhost:${this.address().port}`,
-      '-servername', 'ohgod',
-      '-key', fixtures.path('agent.key'),
-      '-cert', fixtures.path('agent.crt'),
+      '-connect',
+      `localhost:${this.address().port}`,
+      '-servername',
+      'ohgod',
+      '-key',
+      fixtures.path('agent.key'),
+      '-cert',
+      fixtures.path('agent.crt'),
       '-reconnect'
     ].concat(testOptions.tickets ? [] : '-no_ticket');
 
     function spawnClient() {
       const client = spawn(common.opensslCli, args, {
-        stdio: [ 0, 1, 'pipe' ]
+        stdio: [0, 1, 'pipe']
       });
       let err = '';
       client.stderr.setEncoding('utf8');
@@ -116,22 +116,27 @@ function doTest(testOptions, callback) {
         err += chunk;
       });
 
-      client.on('exit', common.mustCall(function(code, signal) {
-        if (code !== 0) {
-          // If SmartOS and connection refused, then retry. See
-          // https://github.com/nodejs/node/issues/2663.
-          if (common.isSunOS && err.includes('Connection refused')) {
-            requestCount = 0;
-            spawnClient();
-            return;
+      client.on(
+        'exit',
+        common.mustCall(function(code, signal) {
+          if (code !== 0) {
+            // If SmartOS and connection refused, then retry. See
+            // https://github.com/nodejs/node/issues/2663.
+            if (common.isSunOS && err.includes('Connection refused')) {
+              requestCount = 0;
+              spawnClient();
+              return;
+            }
+            assert.fail(`code: ${code}, signal: ${signal}, output: ${err}`);
           }
-          assert.fail(`code: ${code}, signal: ${signal}, output: ${err}`);
-        }
-        assert.strictEqual(code, 0);
-        server.close(common.mustCall(function() {
-          setImmediate(callback);
-        }));
-      }));
+          assert.strictEqual(code, 0);
+          server.close(
+            common.mustCall(function() {
+              setImmediate(callback);
+            })
+          );
+        })
+      );
     }
 
     spawnClient();

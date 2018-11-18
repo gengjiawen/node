@@ -12,26 +12,35 @@ const expected = '/café🐶';
 
 assert.strictEqual(expected, '/caf\u{e9}\u{1f436}');
 
-const server = http.createServer(common.mustCall(function(req, res) {
-  assert.strictEqual(req.url, expected);
-  req.on('data', common.mustCall(function() {
-  })).on('end', common.mustCall(function() {
-    server.close();
-    res.writeHead(200);
-    res.end('hello world\n');
-  }));
-
-}));
+const server = http.createServer(
+  common.mustCall(function(req, res) {
+    assert.strictEqual(req.url, expected);
+    req.on('data', common.mustCall(function() {})).on(
+      'end',
+      common.mustCall(function() {
+        server.close();
+        res.writeHead(200);
+        res.end('hello world\n');
+      })
+    );
+  })
+);
 
 server.listen(0, function() {
-  http.request({
-    port: this.address().port,
-    path: expected,
-    method: 'GET'
-  }, common.mustCall(function(res) {
-    res.resume();
-  })).on('error', function(e) {
-    console.log(e.message);
-    process.exit(1);
-  }).end();
+  http
+    .request(
+      {
+        port: this.address().port,
+        path: expected,
+        method: 'GET'
+      },
+      common.mustCall(function(res) {
+        res.resume();
+      })
+    )
+    .on('error', function(e) {
+      console.log(e.message);
+      process.exit(1);
+    })
+    .end();
 });

@@ -67,9 +67,13 @@ s.on('fd', function(fd) {
   processData(s);
 });
 s.on('data', function(data) {
-  data.toString('utf8').trim().split('\n').forEach(function(d) {
-    receivedData.unshift(JSON.parse(d));
-  });
+  data
+    .toString('utf8')
+    .trim()
+    .split('\n')
+    .forEach(function(d) {
+      receivedData.unshift(JSON.parse(d));
+    });
   processData(s);
 });
 s.connect(process.argv[2]);

@@ -27,7 +27,6 @@ const msg = 'test';
 let stopped = true;
 let server1Sock;
 
-
 const server1ConnHandler = (socket) => {
   socket.on('data', function(data) {
     if (stopped) {

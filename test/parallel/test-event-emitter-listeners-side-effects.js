@@ -27,7 +27,7 @@ const assert = require('assert');
 const EventEmitter = require('events').EventEmitter;
 
 const e = new EventEmitter();
-let fl;  // foo listeners
+let fl; // foo listeners
 
 fl = e.listeners('foo');
 assert(Array.isArray(fl));

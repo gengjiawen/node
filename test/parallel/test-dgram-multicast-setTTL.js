@@ -26,23 +26,30 @@ const dgram = require('dgram');
 const socket = dgram.createSocket('udp4');
 
 socket.bind(0);
-socket.on('listening', common.mustCall(() => {
-  const result = socket.setMulticastTTL(16);
-  assert.strictEqual(result, 16);
+socket.on(
+  'listening',
+  common.mustCall(() => {
+    const result = socket.setMulticastTTL(16);
+    assert.strictEqual(result, 16);
 
-  // Try to set an invalid TTL (valid ttl is > 0 and < 256)
-  assert.throws(() => {
-    socket.setMulticastTTL(1000);
-  }, /^Error: setMulticastTTL EINVAL$/);
+    // Try to set an invalid TTL (valid ttl is > 0 and < 256)
+    assert.throws(() => {
+      socket.setMulticastTTL(1000);
+    }, /^Error: setMulticastTTL EINVAL$/);
 
-  common.expectsError(() => {
-    socket.setMulticastTTL('foo');
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError,
-    message: 'The "ttl" argument must be of type number. Received type string'
-  });
+    common.expectsError(
+      () => {
+        socket.setMulticastTTL('foo');
+      },
+      {
+        code: 'ERR_INVALID_ARG_TYPE',
+        type: TypeError,
+        message:
+          'The "ttl" argument must be of type number. Received type string'
+      }
+    );
 
-  // Close the socket
-  socket.close();
-}));
+    // Close the socket
+    socket.close();
+  })
+);

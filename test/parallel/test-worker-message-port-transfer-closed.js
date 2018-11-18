@@ -15,21 +15,26 @@ port1.onmessage = common.mustNotCall();
 port2.onmessage = common.mustNotCall();
 
 function testSingle(closedPort, potentiallyOpenPort) {
-  assert.throws(common.mustCall(() => {
-    potentiallyOpenPort.postMessage(null, [arrayBuf, closedPort]);
-  }), common.mustCall((err) => {
-    assert.strictEqual(err.name, 'DataCloneError');
-    assert.strictEqual(err.message,
-                       'MessagePort in transfer list is already detached');
-    assert.strictEqual(err.code, 25);
-    assert.ok(err instanceof Error);
+  assert.throws(
+    common.mustCall(() => {
+      potentiallyOpenPort.postMessage(null, [arrayBuf, closedPort]);
+    }),
+    common.mustCall((err) => {
+      assert.strictEqual(err.name, 'DataCloneError');
+      assert.strictEqual(
+        err.message,
+        'MessagePort in transfer list is already detached'
+      );
+      assert.strictEqual(err.code, 25);
+      assert.ok(err instanceof Error);
 
-    const DOMException = err.constructor;
-    assert.ok(err instanceof DOMException);
-    assert.strictEqual(DOMException.name, 'DOMException');
+      const DOMException = err.constructor;
+      assert.ok(err instanceof DOMException);
+      assert.strictEqual(DOMException.name, 'DOMException');
 
-    return true;
-  }));
+      return true;
+    })
+  );
 
   // arrayBuf must not be transferred, even though it is present earlier in the
   // transfer list than the closedPort.

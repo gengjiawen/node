@@ -17,19 +17,30 @@ process.on('warning', function(warning) {
 const d = domain.create();
 
 // When domain is disabled, no warning will be emitted
-makeCallback({ domain: d }, common.mustCall(function() {
-  assert.strictEqual(latestWarning, null);
+makeCallback(
+  { domain: d },
+  common.mustCall(function() {
+    assert.strictEqual(latestWarning, null);
 
-  d.run(common.mustCall(function() {
-    // No warning will be emitted when no domain property is applied
-    makeCallback({}, common.mustCall(function() {
-      assert.strictEqual(latestWarning, null);
+    d.run(
+      common.mustCall(function() {
+        // No warning will be emitted when no domain property is applied
+        makeCallback(
+          {},
+          common.mustCall(function() {
+            assert.strictEqual(latestWarning, null);
 
-      // Warning is emitted when domain property is used and domain is enabled
-      makeCallback({ domain: d }, common.mustCall(function() {
-        assert.strictEqual(latestWarning.name, 'DeprecationWarning');
-        assert.strictEqual(latestWarning.code, 'DEP0097');
-      }));
-    }));
-  }));
-}));
+            // Warning is emitted when domain property is used and domain is enabled
+            makeCallback(
+              { domain: d },
+              common.mustCall(function() {
+                assert.strictEqual(latestWarning.name, 'DeprecationWarning');
+                assert.strictEqual(latestWarning.code, 'DEP0097');
+              })
+            );
+          })
+        );
+      })
+    );
+  })
+);

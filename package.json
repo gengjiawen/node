@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "format": "prettier --write \"{src,test}/**/*.{js,ts}\"",
+    "format:check": "prettier --list-different \"{src,test}/**/*.{js,ts}\""
+  },
+  "dependencies": {
+    "prettier": "^1.15.2"
+  }
+}

@@ -13,12 +13,12 @@ const keys = [
   'total_heap_size',
   'total_heap_size_executable',
   'total_physical_size',
-  'used_heap_size'];
+  'used_heap_size'
+];
 assert.deepStrictEqual(Object.keys(s).sort(), keys);
 keys.forEach(function(key) {
   assert.strictEqual(typeof s[key], 'number');
 });
-
 
 const expectedHeapSpaces = [
   'new_space',

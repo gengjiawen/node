@@ -10,9 +10,12 @@ const URL = require('url').URL;
 const { test, assert_equals } = require('../common/wpt').harness;
 
 const request = {
-  response: require(
-    fixtures.path('wpt', 'url', 'resources', 'urltestdata.json')
-  )
+  response: require(fixtures.path(
+    'wpt',
+    'url',
+    'resources',
+    'urltestdata.json'
+  ))
 };
 
 /* The following tests are copied from WPT. Modifications to them should be
@@ -29,26 +32,30 @@ function runURLOriginTests() {
   //   request.send()
   //   request.responseType = "json"
   //   request.onload = setup.step_func(function() {
-         runURLTests(request.response)
+  runURLTests(request.response);
   //     setup.done()
   //   })
   // })
 }
 
 function bURL(url, base) {
-  return new URL(url, base || "about:blank")
+  return new URL(url, base || 'about:blank');
 }
 
 function runURLTests(urltests) {
-  for(var i = 0, l = urltests.length; i < l; i++) {
-    var expected = urltests[i]
-    if (typeof expected === "string" || !("origin" in expected)) continue
+  for (var i = 0, l = urltests.length; i < l; i++) {
+    var expected = urltests[i];
+    if (typeof expected === 'string' || !('origin' in expected)) continue;
     test(function() {
-      var url = bURL(expected.input, expected.base)
-      assert_equals(url.origin, expected.origin, "origin")
-    }, "Origin parsing: <" + expected.input + "> against <" + expected.base + ">")
+      var url = bURL(expected.input, expected.base);
+      assert_equals(url.origin, expected.origin, 'origin');
+    }, 'Origin parsing: <' +
+      expected.input +
+      '> against <' +
+      expected.base +
+      '>');
   }
 }
 
-runURLOriginTests()
+runURLOriginTests();
 /* eslint-enable */

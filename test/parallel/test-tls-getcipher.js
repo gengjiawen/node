@@ -22,8 +22,7 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -41,17 +40,24 @@ const options = {
 
 const server = tls.createServer(options, common.mustCall());
 
-server.listen(0, '127.0.0.1', common.mustCall(function() {
-  const client = tls.connect({
-    host: '127.0.0.1',
-    port: this.address().port,
-    ciphers: cipher_list.join(':'),
-    rejectUnauthorized: false
-  }, common.mustCall(function() {
-    const cipher = client.getCipher();
-    assert.strictEqual(cipher.name, cipher_list[0]);
-    assert(cipher_version_pattern.test(cipher.version));
-    client.end();
-    server.close();
-  }));
-}));
+server.listen(
+  0,
+  '127.0.0.1',
+  common.mustCall(function() {
+    const client = tls.connect(
+      {
+        host: '127.0.0.1',
+        port: this.address().port,
+        ciphers: cipher_list.join(':'),
+        rejectUnauthorized: false
+      },
+      common.mustCall(function() {
+        const cipher = client.getCipher();
+        assert.strictEqual(cipher.name, cipher_list[0]);
+        assert(cipher_version_pattern.test(cipher.version));
+        client.end();
+        server.close();
+      })
+    );
+  })
+);

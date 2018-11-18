@@ -13,6 +13,9 @@ const proc = spawn(process.execPath, [__filename, 'child'], {
   stdio: ['inherit', 'ipc', 'inherit']
 });
 
-proc.on('exit', common.mustCall(function(code) {
-  assert.strictEqual(code, 0);
-}));
+proc.on(
+  'exit',
+  common.mustCall(function(code) {
+    assert.strictEqual(code, 0);
+  })
+);

@@ -53,7 +53,6 @@ process.on('exit', function() {
   console.log('ok');
 });
 
-
 function MyEE2() {
   EventEmitter.call(this);
 }

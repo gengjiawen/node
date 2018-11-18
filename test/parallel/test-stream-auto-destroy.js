@@ -18,13 +18,19 @@ const assert = require('assert');
 
   r.resume();
 
-  r.on('end', common.mustCall(() => {
-    ended = true;
-  }));
+  r.on(
+    'end',
+    common.mustCall(() => {
+      ended = true;
+    })
+  );
 
-  r.on('close', common.mustCall(() => {
-    assert(ended);
-  }));
+  r.on(
+    'close',
+    common.mustCall(() => {
+      assert(ended);
+    })
+  );
 }
 
 {
@@ -42,13 +48,19 @@ const assert = require('assert');
   w.write('world');
   w.end();
 
-  w.on('finish', common.mustCall(() => {
-    finished = true;
-  }));
+  w.on(
+    'finish',
+    common.mustCall(() => {
+      finished = true;
+    })
+  );
 
-  w.on('close', common.mustCall(() => {
-    assert(finished);
-  }));
+  w.on(
+    'close',
+    common.mustCall(() => {
+      assert(finished);
+    })
+  );
 }
 
 {
@@ -69,18 +81,27 @@ const assert = require('assert');
 
   t.resume();
 
-  t.on('end', common.mustCall(() => {
-    ended = true;
-  }));
+  t.on(
+    'end',
+    common.mustCall(() => {
+      ended = true;
+    })
+  );
 
-  t.on('finish', common.mustCall(() => {
-    finished = true;
-  }));
+  t.on(
+    'finish',
+    common.mustCall(() => {
+      finished = true;
+    })
+  );
 
-  t.on('close', common.mustCall(() => {
-    assert(ended);
-    assert(finished);
-  }));
+  t.on(
+    'close',
+    common.mustCall(() => {
+      assert(ended);
+      assert(finished);
+    })
+  );
 }
 
 {

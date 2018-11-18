@@ -33,7 +33,6 @@ let listenCount = 0;
 let gotThanks = false;
 let tcpLengthSeen = 0;
 
-
 /*
  * 5MB of random buffer.
  */
@@ -42,52 +41,60 @@ for (let i = 0; i < buffer.length; i++) {
   buffer[i] = parseInt(Math.random() * 10000) % 256;
 }
 
+const web = http.Server(
+  common.mustCall((req, res) => {
+    web.close();
 
-const web = http.Server(common.mustCall((req, res) => {
-  web.close();
+    const socket = net.Stream();
+    socket.connect(tcpPort);
 
-  const socket = net.Stream();
-  socket.connect(tcpPort);
+    socket.on('connect', common.mustCall());
 
-  socket.on('connect', common.mustCall());
+    req.pipe(socket);
 
-  req.pipe(socket);
+    req.on(
+      'end',
+      common.mustCall(() => {
+        res.writeHead(200);
+        res.write('thanks');
+        res.end();
+      })
+    );
 
-  req.on('end', common.mustCall(() => {
-    res.writeHead(200);
-    res.write('thanks');
-    res.end();
-  }));
-
-  req.connection.on('error', (e) => {
-    assert.ifError(e);
-  });
-}));
+    req.connection.on('error', (e) => {
+      assert.ifError(e);
+    });
+  })
+);
 
 web.listen(webPort, startClient);
 
+const tcp = net.Server(
+  common.mustCall((s) => {
+    tcp.close();
 
-const tcp = net.Server(common.mustCall((s) => {
-  tcp.close();
+    let i = 0;
 
-  let i = 0;
+    s.on('data', (d) => {
+      tcpLengthSeen += d.length;
+      for (let j = 0; j < d.length; j++) {
+        assert.strictEqual(d[j], buffer[i]);
+        i++;
+      }
+    });
 
-  s.on('data', (d) => {
-    tcpLengthSeen += d.length;
-    for (let j = 0; j < d.length; j++) {
-      assert.strictEqual(d[j], buffer[i]);
-      i++;
-    }
-  });
+    s.on(
+      'end',
+      common.mustCall(() => {
+        s.end();
+      })
+    );
 
-  s.on('end', common.mustCall(() => {
-    s.end();
-  }));
-
-  s.on('error', (e) => {
-    assert.ifError(e);
-  });
-}));
+    s.on('error', (e) => {
+      assert.ifError(e);
+    });
+  })
+);
 
 tcp.listen(tcpPort, startClient);
 
@@ -95,18 +102,24 @@ function startClient() {
   listenCount++;
   if (listenCount < 2) return;
 
-  const req = http.request({
-    port: common.PORT,
-    method: 'GET',
-    path: '/',
-    headers: { 'content-length': buffer.length }
-  }, common.mustCall((res) => {
-    res.setEncoding('utf8');
-    res.on('data', common.mustCall((string) => {
-      assert.strictEqual(string, 'thanks');
-      gotThanks = true;
-    }));
-  }));
+  const req = http.request(
+    {
+      port: common.PORT,
+      method: 'GET',
+      path: '/',
+      headers: { 'content-length': buffer.length }
+    },
+    common.mustCall((res) => {
+      res.setEncoding('utf8');
+      res.on(
+        'data',
+        common.mustCall((string) => {
+          assert.strictEqual(string, 'thanks');
+          gotThanks = true;
+        })
+      );
+    })
+  );
   req.write(buffer);
   req.end();
 }

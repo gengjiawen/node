@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 const makeDuplexPair = require('../common/duplexpair');
@@ -17,7 +16,7 @@ const { clientSide, serverSide } = makeDuplexPair();
 const clientTLS = connect({
   socket: clientSide,
   ca,
-  host: 'agent1'  // Hostname from certificate
+  host: 'agent1' // Hostname from certificate
 });
 const serverTLS = new TLSSocket(serverSide, {
   isServer: true,
@@ -29,10 +28,16 @@ const serverTLS = new TLSSocket(serverSide, {
 assert.strictEqual(clientTLS.connecting, false);
 assert.strictEqual(serverTLS.connecting, false);
 
-clientTLS.on('secureConnect', common.mustCall(() => {
-  clientTLS.write('foobar', common.mustCall(() => {
-    assert.strictEqual(serverTLS.read().toString(), 'foobar');
-    assert.strictEqual(clientTLS._handle.writeQueueSize, 0);
-  }));
-  assert.ok(clientTLS._handle.writeQueueSize > 0);
-}));
+clientTLS.on(
+  'secureConnect',
+  common.mustCall(() => {
+    clientTLS.write(
+      'foobar',
+      common.mustCall(() => {
+        assert.strictEqual(serverTLS.read().toString(), 'foobar');
+        assert.strictEqual(clientTLS._handle.writeQueueSize, 0);
+      })
+    );
+    assert.ok(clientTLS._handle.writeQueueSize > 0);
+  })
+);

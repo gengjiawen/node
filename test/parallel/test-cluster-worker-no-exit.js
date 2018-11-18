@@ -41,28 +41,30 @@ let server;
 // 4 destroy connection
 // 5 confirm it does exit
 if (cluster.isMaster) {
-  server = net.createServer(function(conn) {
-    server.close();
-    worker.disconnect();
-    worker.once('disconnect', function() {
-      setTimeout(function() {
-        conn.destroy();
-        destroyed = true;
-      }, 1000);
-    }).once('exit', function() {
-      // worker should not exit while it has a connection
-      assert(destroyed, 'worker exited before connection destroyed');
-      success = true;
-    });
+  server = net
+    .createServer(function(conn) {
+      server.close();
+      worker.disconnect();
+      worker
+        .once('disconnect', function() {
+          setTimeout(function() {
+            conn.destroy();
+            destroyed = true;
+          }, 1000);
+        })
+        .once('exit', function() {
+          // worker should not exit while it has a connection
+          assert(destroyed, 'worker exited before connection destroyed');
+          success = true;
+        });
+    })
+    .listen(0, function() {
+      const port = this.address().port;
 
-  }).listen(0, function() {
-    const port = this.address().port;
-
-    worker = cluster.fork()
-      .on('online', function() {
+      worker = cluster.fork().on('online', function() {
         this.send({ port });
       });
-  });
+    });
   process.on('exit', function() {
     assert(success);
   });

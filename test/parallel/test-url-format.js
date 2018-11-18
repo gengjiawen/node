@@ -190,7 +190,7 @@ const formatTests = {
     hostname: 'ex.com',
     hash: '#frag',
     search: '?abc=the#1?&foo=bar',
-    pathname: '/foo?100%m#r',
+    pathname: '/foo?100%m#r'
   },
 
   // `?` and `#` in search only
@@ -200,7 +200,7 @@ const formatTests = {
     hostname: 'ex.com',
     hash: '#frag',
     search: '?abc=the#1?&foo=bar',
-    pathname: '/fooA100%mBr',
+    pathname: '/fooA100%mBr'
   },
 
   // multiple `#` in search
@@ -260,9 +260,16 @@ for (const u in formatTests) {
   delete formatTests[u].href;
   const actual = url.format(u);
   const actualObj = url.format(formatTests[u]);
-  assert.strictEqual(actual, expect,
-                     `wonky format(${u}) == ${expect}\nactual:${actual}`);
-  assert.strictEqual(actualObj, expect,
-                     `wonky format(${JSON.stringify(formatTests[u])}) == ${
-                       expect}\nactual: ${actualObj}`);
+  assert.strictEqual(
+    actual,
+    expect,
+    `wonky format(${u}) == ${expect}\nactual:${actual}`
+  );
+  assert.strictEqual(
+    actualObj,
+    expect,
+    `wonky format(${JSON.stringify(
+      formatTests[u]
+    )}) == ${expect}\nactual: ${actualObj}`
+  );
 }

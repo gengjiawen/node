@@ -32,5 +32,5 @@ s.on('close', () => {
 });
 
 process.on('exit', () => {
-  assert.deepStrictEqual(events, [ 'end', 'close' ]);
+  assert.deepStrictEqual(events, ['end', 'close']);
 });

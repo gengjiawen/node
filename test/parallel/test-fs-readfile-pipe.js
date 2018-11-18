@@ -52,10 +52,12 @@ exec(cmd, function(err, stdout, stderr) {
   assert.strictEqual(
     stdout,
     dataExpected,
-    `expected to read: '${dataExpected}' but got: '${stdout}'`);
+    `expected to read: '${dataExpected}' but got: '${stdout}'`
+  );
   assert.strictEqual(
     stderr,
     '',
-    `expected not to read anything from stderr but got: '${stderr}'`);
+    `expected not to read anything from stderr but got: '${stderr}'`
+  );
   console.log('ok');
 });

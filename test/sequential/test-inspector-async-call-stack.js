@@ -36,19 +36,22 @@ session.post('Debugger.enable', () => {
     verifyAsyncHookDisabled('invalid message should not enable async hooks');
 
     session.post(setDepth, { maxDepth: 'five' }, () => {
-      verifyAsyncHookDisabled('invalid maxDepth (string) should not enable ' +
-                              'async hooks');
+      verifyAsyncHookDisabled(
+        'invalid maxDepth (string) should not enable ' + 'async hooks'
+      );
 
       session.post(setDepth, { maxDepth: NaN }, () => {
-        verifyAsyncHookDisabled('invalid maxDepth (NaN) should not enable ' +
-                                'async hooks');
+        verifyAsyncHookDisabled(
+          'invalid maxDepth (NaN) should not enable ' + 'async hooks'
+        );
 
         session.post(setDepth, { maxDepth: 10 }, () => {
           verifyAsyncHookEnabled('valid message should enable async hooks');
 
           session.post(setDepth, { maxDepth: 0 }, () => {
-            verifyAsyncHookDisabled('Setting maxDepth to 0 should disable ' +
-                                    'async hooks');
+            verifyAsyncHookDisabled(
+              'Setting maxDepth to 0 should disable ' + 'async hooks'
+            );
 
             runTestSet2(session);
           });
@@ -72,8 +75,9 @@ function runTestSet2(session) {
           verifyAsyncHookEnabled('valid message should enable async hooks');
 
           session.disconnect();
-          verifyAsyncHookDisabled('Disconnecting session should disable ' +
-                                  'async hooks');
+          verifyAsyncHookDisabled(
+            'Disconnecting session should disable ' + 'async hooks'
+          );
         });
       });
     });

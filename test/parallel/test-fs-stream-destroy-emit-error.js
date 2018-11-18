@@ -14,7 +14,10 @@ function test(stream) {
   stream.on('open', function() {
     stream.destroy(err);
   });
-  stream.on('error', common.mustCall(function(err_) {
-    assert.strictEqual(err_, err);
-  }));
+  stream.on(
+    'error',
+    common.mustCall(function(err_) {
+      assert.strictEqual(err_, err);
+    })
+  );
 }

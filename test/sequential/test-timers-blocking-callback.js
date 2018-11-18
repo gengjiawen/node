@@ -61,8 +61,7 @@ function blockingCallback(retry, callback) {
       }
       assert.fail(`timeout delayed by more than 100% (${latestDelay}ms)`);
     }
-    if (callback)
-      return callback();
+    if (callback) return callback();
   } else {
     // block by busy-looping to trigger the issue
     common.busyLoop(TIMEOUT);
@@ -87,22 +86,15 @@ function testAddingTimerToNonEmptyTimersList() {
   // of them.
   let retryOK = true;
   const retry = () => {
-    if (retryOK)
-      testAddingTimerToNonEmptyTimersList();
+    if (retryOK) testAddingTimerToNonEmptyTimersList();
     retryOK = false;
   };
 
   initTest();
   // Call setTimeout twice with the same timeout to make
   // sure the timers list is not empty when blockingCallback is called.
-  setTimeout(
-    blockingCallback.bind(null, retry),
-    TIMEOUT
-  );
-  setTimeout(
-    blockingCallback.bind(null, retry),
-    TIMEOUT
-  );
+  setTimeout(blockingCallback.bind(null, retry), TIMEOUT);
+  setTimeout(blockingCallback.bind(null, retry), TIMEOUT);
 }
 
 // Run the test for the empty timers list case, and then for the non-empty

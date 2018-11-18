@@ -8,15 +8,21 @@ if (common.isWindows)
 if (!common.isMainThread)
   common.skip('No signal handling available in Workers');
 
-process.once('SIGINT', common.mustCall((signal) => {
-  assert.strictEqual(signal, 'SIGINT');
-}));
+process.once(
+  'SIGINT',
+  common.mustCall((signal) => {
+    assert.strictEqual(signal, 'SIGINT');
+  })
+);
 
 process.kill(process.pid, 'SIGINT');
 
-process.once('SIGTERM', common.mustCall((signal) => {
-  assert.strictEqual(signal, 'SIGTERM');
-}));
+process.once(
+  'SIGTERM',
+  common.mustCall((signal) => {
+    assert.strictEqual(signal, 'SIGTERM');
+  })
+);
 
 process.kill(process.pid, 'SIGTERM');
 

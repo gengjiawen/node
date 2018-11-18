@@ -22,11 +22,9 @@
 'use strict';
 const common = require('../common');
 
-if (!common.opensslCli)
-  common.skip('node compiled without OpenSSL CLI.');
+if (!common.opensslCli) common.skip('node compiled without OpenSSL CLI.');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const exec = require('child_process').exec;
@@ -46,13 +44,17 @@ process.on('exit', function() {
   assert.ok(response.includes(reply));
 });
 
-const server = tls.createServer(options, common.mustCall(function(conn) {
-  conn.end(reply);
-}));
+const server = tls.createServer(
+  options,
+  common.mustCall(function(conn) {
+    conn.end(reply);
+  })
+);
 
 server.listen(0, '127.0.0.1', function() {
   const cmd = `"${common.opensslCli}" s_client -cipher ${
-    options.ciphers} -connect 127.0.0.1:${this.address().port}`;
+    options.ciphers
+  } -connect 127.0.0.1:${this.address().port}`;
 
   exec(cmd, function(err, stdout, stderr) {
     assert.ifError(err);

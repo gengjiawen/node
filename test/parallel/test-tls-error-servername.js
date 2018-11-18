@@ -5,8 +5,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const { connect, TLSSocket } = require('tls');
 const makeDuplexPair = require('../common/duplexpair');
@@ -19,17 +18,21 @@ const ca = fixtures.readKey('ca1-cert.pem');
 const client = connect({
   socket: clientSide,
   ca,
-  host: 'agent1'  // Hostname from certificate
+  host: 'agent1' // Hostname from certificate
 });
 
 [undefined, null, 1, true, {}].forEach((value) => {
-  common.expectsError(() => {
-    client.setServername(value);
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    message: 'The "name" argument must be of type string. ' +
-             `Received type ${typeof value}`
-  });
+  common.expectsError(
+    () => {
+      client.setServername(value);
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      message:
+        'The "name" argument must be of type string. ' +
+        `Received type ${typeof value}`
+    }
+  );
 });
 
 const server = new TLSSocket(serverSide, {
@@ -39,9 +42,12 @@ const server = new TLSSocket(serverSide, {
   ca
 });
 
-common.expectsError(() => {
-  server.setServername('localhost');
-}, {
-  code: 'ERR_TLS_SNI_FROM_SERVER',
-  message: 'Cannot issue SNI from a TLS server-side socket'
-});
+common.expectsError(
+  () => {
+    server.setServername('localhost');
+  },
+  {
+    code: 'ERR_TLS_SNI_FROM_SERVER',
+    message: 'Cannot issue SNI from a TLS server-side socket'
+  }
+);

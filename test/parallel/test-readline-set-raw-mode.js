@@ -54,7 +54,6 @@ assert(rawModeCalled);
 assert(resumeCalled);
 assert(!pauseCalled);
 
-
 // pause() should call *not* call setRawMode()
 rawModeCalled = false;
 resumeCalled = false;
@@ -64,7 +63,6 @@ assert(!rawModeCalled);
 assert(!resumeCalled);
 assert(pauseCalled);
 
-
 // resume() should *not* call setRawMode()
 rawModeCalled = false;
 resumeCalled = false;
@@ -73,7 +71,6 @@ rli.resume();
 assert(!rawModeCalled);
 assert(resumeCalled);
 assert(!pauseCalled);
-
 
 // close() should call setRawMode(false)
 expectedRawMode = false;

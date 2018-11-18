@@ -25,9 +25,12 @@ const assert = require('assert');
 const errorMsg = 'BAM!';
 
 // the first timer throws...
-setTimeout(common.mustCall(function() {
-  throw new Error(errorMsg);
-}), 1);
+setTimeout(
+  common.mustCall(function() {
+    throw new Error(errorMsg);
+  }),
+  1
+);
 
 // ...but the second one should still run
 setTimeout(common.mustCall(), 1);

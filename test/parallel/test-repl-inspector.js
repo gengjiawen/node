@@ -19,9 +19,12 @@ const testMe = repl.start('', putIn);
 
 putIn.run(['const myVariable = 42']);
 
-testMe.complete('myVar', common.mustCall((error, data) => {
-  assert.deepStrictEqual(data, [['myVariable'], 'myVar']);
-}));
+testMe.complete(
+  'myVar',
+  common.mustCall((error, data) => {
+    assert.deepStrictEqual(data, [['myVariable'], 'myVar']);
+  })
+);
 
 putIn.run([
   'const inspector = require("inspector")',
@@ -31,5 +34,8 @@ putIn.run([
   'session.disconnect()'
 ]);
 
-assert(output.includes(
-  "null { result: { type: 'number', value: 2, description: '2' } }"));
+assert(
+  output.includes(
+    "null { result: { type: 'number', value: 2, description: '2' } }"
+  )
+);

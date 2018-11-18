@@ -14,8 +14,10 @@ class TestTLSSocket extends net.Socket {
     this.handshake_list = [];
     // AES128-GCM-SHA256
     this.ciphers = Buffer.from('000002009c0', 'hex');
-    this.pre_master_secret =
-      Buffer.concat([this.version, crypto.randomBytes(46)]);
+    this.pre_master_secret = Buffer.concat([
+      this.version,
+      crypto.randomBytes(46)
+    ]);
     this.master_secret = null;
     this.write_seq = 0;
     this.client_random = crypto.randomBytes(32);
@@ -25,16 +27,20 @@ class TestTLSSocket extends net.Socket {
     });
 
     this.on('server_random', (server_random) => {
-      this.master_secret = PRF12('sha256', this.pre_master_secret,
-                                 'master secret',
-                                 Buffer.concat([this.client_random,
-                                                server_random]),
-                                 48);
-      const key_block = PRF12('sha256', this.master_secret,
-                              'key expansion',
-                              Buffer.concat([server_random,
-                                             this.client_random]),
-                              40);
+      this.master_secret = PRF12(
+        'sha256',
+        this.pre_master_secret,
+        'master secret',
+        Buffer.concat([this.client_random, server_random]),
+        48
+      );
+      const key_block = PRF12(
+        'sha256',
+        this.master_secret,
+        'key expansion',
+        Buffer.concat([server_random, this.client_random]),
+        40
+      );
       this.client_writeKey = key_block.slice(0, 16);
       this.client_writeIV = key_block.slice(32, 36);
     });
@@ -42,22 +48,33 @@ class TestTLSSocket extends net.Socket {
 
   createClientHello() {
     const compressions = Buffer.from('0100', 'hex'); // null
-    const msg = addHandshakeHeader(0x01, Buffer.concat([
-      this.version, this.client_random, this.ciphers, compressions
-    ]));
+    const msg = addHandshakeHeader(
+      0x01,
+      Buffer.concat([
+        this.version,
+        this.client_random,
+        this.ciphers,
+        compressions
+      ])
+    );
     this.emit('handshake', msg);
     return addRecordHeader(0x16, msg);
   }
 
   createClientKeyExchange() {
-    const encrypted_pre_master_secret = crypto.publicEncrypt({
-      key: this.server_cert,
-      padding: crypto.constants.RSA_PKCS1_PADDING
-    }, this.pre_master_secret);
+    const encrypted_pre_master_secret = crypto.publicEncrypt(
+      {
+        key: this.server_cert,
+        padding: crypto.constants.RSA_PKCS1_PADDING
+      },
+      this.pre_master_secret
+    );
     const length = Buffer.alloc(2);
     length.writeUIntBE(encrypted_pre_master_secret.length, 0, 2);
-    const msg = addHandshakeHeader(0x10, Buffer.concat([
-      length, encrypted_pre_master_secret]));
+    const msg = addHandshakeHeader(
+      0x10,
+      Buffer.concat([length, encrypted_pre_master_secret])
+    );
     this.emit('handshake', msg);
     return addRecordHeader(0x16, msg);
   }
@@ -66,8 +83,13 @@ class TestTLSSocket extends net.Socket {
     const shasum = crypto.createHash('sha256');
     shasum.update(Buffer.concat(this.handshake_list));
     const message_hash = shasum.digest();
-    const r = PRF12('sha256', this.master_secret,
-                    'client finished', message_hash, 12);
+    const r = PRF12(
+      'sha256',
+      this.master_secret,
+      'client finished',
+      message_hash,
+      12
+    );
     const msg = addHandshakeHeader(0x14, r);
     this.emit('handshake', msg);
     return addRecordHeader(0x16, msg);

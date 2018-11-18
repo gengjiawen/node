@@ -1,8 +1,7 @@
 // Flags: --expose-internals
 'use strict';
 const common = require('../common');
-if (common.isWindows)
-  common.skip('Does not support binding fd on Windows');
+if (common.isWindows) common.skip('Does not support binding fd on Windows');
 
 const dgram = require('dgram');
 const assert = require('assert');
@@ -15,22 +14,27 @@ const TYPE = 'udp4';
 {
   const socket = dgram.createSocket(TYPE);
 
-  socket.bind(common.mustCall(() => {
-    const anotherSocket = dgram.createSocket(TYPE);
-    const { handle } = socket[kStateSymbol];
+  socket.bind(
+    common.mustCall(() => {
+      const anotherSocket = dgram.createSocket(TYPE);
+      const { handle } = socket[kStateSymbol];
 
-    common.expectsError(() => {
-      anotherSocket.bind({
-        fd: handle.fd,
-      });
-    }, {
-      code: 'EEXIST',
-      type: Error,
-      message: /^open EEXIST$/
-    });
+      common.expectsError(
+        () => {
+          anotherSocket.bind({
+            fd: handle.fd
+          });
+        },
+        {
+          code: 'EEXIST',
+          type: Error,
+          message: /^open EEXIST$/
+        }
+      );
 
-    socket.close();
-  }));
+      socket.close();
+    })
+  );
 }
 
 // Throw when the type of fd is not "UDP".
@@ -42,15 +46,18 @@ const TYPE = 'udp4';
   assert.notStrictEqual(fd, -1);
 
   const socket = new dgram.createSocket(TYPE);
-  common.expectsError(() => {
-    socket.bind({
-      fd,
-    });
-  }, {
-    code: 'ERR_INVALID_FD_TYPE',
-    type: TypeError,
-    message: /^Unsupported fd type: TCP$/
-  });
+  common.expectsError(
+    () => {
+      socket.bind({
+        fd
+      });
+    },
+    {
+      code: 'ERR_INVALID_FD_TYPE',
+      type: TypeError,
+      message: /^Unsupported fd type: TCP$/
+    }
+  );
 
   handle.close();
 }

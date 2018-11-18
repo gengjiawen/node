@@ -33,17 +33,20 @@ const N = 20;
 let closes = 0;
 const waits = [];
 
-const server = net.createServer(common.mustCall(function(connection) {
-  connection.write('hello');
-  waits.push(function() { connection.end(); });
-}, N / 2));
+const server = net.createServer(
+  common.mustCall(function(connection) {
+    connection.write('hello');
+    waits.push(function() {
+      connection.end();
+    });
+  }, N / 2)
+);
 
 server.listen(0, function() {
   makeConnection(0);
 });
 
 server.maxConnections = N / 2;
-
 
 function makeConnection(index) {
   const c = net.createConnection(server.address().port);
@@ -68,23 +71,31 @@ function makeConnection(index) {
       if (closes === N / 2) {
         let cb;
         console.error('calling wait callback.');
-        while (cb = waits.shift()) {
+        while ((cb = waits.shift())) {
           cb();
         }
         server.close();
       }
 
       if (index < server.maxConnections) {
-        assert.strictEqual(gotData, true,
-                           `${index} didn't get data, but should have`);
+        assert.strictEqual(
+          gotData,
+          true,
+          `${index} didn't get data, but should have`
+        );
       } else {
-        assert.strictEqual(gotData, false,
-                           `${index} got data, but shouldn't have`);
+        assert.strictEqual(
+          gotData,
+          false,
+          `${index} got data, but shouldn't have`
+        );
       }
     });
   });
 
-  c.on('end', function() { c.end(); });
+  c.on('end', function() {
+    c.end();
+  });
 
   c.on('data', function(b) {
     gotData = true;
@@ -94,13 +105,12 @@ function makeConnection(index) {
   c.on('error', function(e) {
     // Retry if SmartOS and ECONNREFUSED. See
     // https://github.com/nodejs/node/issues/2663.
-    if (common.isSunOS && (e.code === 'ECONNREFUSED')) {
+    if (common.isSunOS && e.code === 'ECONNREFUSED') {
       c.connect(server.address().port);
     }
     console.error(`error ${index}: ${e}`);
   });
 }
-
 
 process.on('exit', function() {
   assert.strictEqual(closes, N);

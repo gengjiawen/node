@@ -41,9 +41,12 @@ const common = require('../common');
 const TIMEOUT_DELAY = 1.1;
 let N = 50;
 
-const interval = setInterval(common.mustCall(() => {
-  if (--N === 0) {
-    clearInterval(interval);
-    process.exit(0);
-  }
-}, N), TIMEOUT_DELAY);
+const interval = setInterval(
+  common.mustCall(() => {
+    if (--N === 0) {
+      clearInterval(interval);
+      process.exit(0);
+    }
+  }, N),
+  TIMEOUT_DELAY
+);

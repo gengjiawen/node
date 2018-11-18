@@ -10,8 +10,7 @@ const os = require('os');
 
 const ip = pickIPv4Address();
 
-if (!ip)
-  common.skip('No IP address found');
+if (!ip) common.skip('No IP address found');
 
 function checkIpAddress(ip, response) {
   const res = response[0];
@@ -25,8 +24,7 @@ function checkIpAddress(ip, response) {
 
 function pickIPv4Address() {
   for (const i of [].concat(...Object.values(os.networkInterfaces()))) {
-    if (i.family === 'IPv4' && i.address !== '127.0.0.1')
-      return i.address;
+    if (i.family === 'IPv4' && i.address !== '127.0.0.1') return i.address;
   }
 }
 

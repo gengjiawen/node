@@ -22,53 +22,57 @@
 'use strict';
 const common = require('../common');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
 
 const fixtures = require('../common/fixtures');
 
-const options = { key: fixtures.readSync('test_key.pem'),
-                  cert: fixtures.readSync('test_cert.pem'),
-                  ca: [ fixtures.readSync('test_ca.pem') ] };
+const options = {
+  key: fixtures.readSync('test_key.pem'),
+  cert: fixtures.readSync('test_cert.pem'),
+  ca: [fixtures.readSync('test_ca.pem')]
+};
 
-const writes = [
-  'some server data',
-  'and a separate packet',
-  'and one more',
-];
+const writes = ['some server data', 'and a separate packet', 'and one more'];
 let receivedWrites = 0;
 
-const server = tls.createServer(options, function(c) {
-  c.resume();
-  writes.forEach(function(str) {
-    c.write(str);
-  });
-}).listen(0, common.mustCall(function() {
-  const connectOpts = { rejectUnauthorized: false };
-  const c = tls.connect(this.address().port, connectOpts, function() {
-    c.write('some client data');
-    c.on('readable', function() {
-      let data = c.read();
-      if (data === null)
-        return;
-
-      data = data.toString();
-      while (data.length !== 0) {
-        assert(data.startsWith(writes[receivedWrites]));
-        data = data.slice(writes[receivedWrites].length);
-
-        if (++receivedWrites === writes.length) {
-          c.end();
-          server.close();
-        }
-      }
+const server = tls
+  .createServer(options, function(c) {
+    c.resume();
+    writes.forEach(function(str) {
+      c.write(str);
     });
-  });
-}));
+  })
+  .listen(
+    0,
+    common.mustCall(function() {
+      const connectOpts = { rejectUnauthorized: false };
+      const c = tls.connect(
+        this.address().port,
+        connectOpts,
+        function() {
+          c.write('some client data');
+          c.on('readable', function() {
+            let data = c.read();
+            if (data === null) return;
 
+            data = data.toString();
+            while (data.length !== 0) {
+              assert(data.startsWith(writes[receivedWrites]));
+              data = data.slice(writes[receivedWrites].length);
+
+              if (++receivedWrites === writes.length) {
+                c.end();
+                server.close();
+              }
+            }
+          });
+        }
+      );
+    })
+  );
 
 process.on('exit', function() {
   assert.strictEqual(receivedWrites, writes.length);

@@ -51,6 +51,9 @@ assert.throws(() => n.send(), {
 
 n.send({ hello: 'world' });
 
-n.on('exit', common.mustCall((c) => {
-  assert.strictEqual(c, 0);
-}));
+n.on(
+  'exit',
+  common.mustCall((c) => {
+    assert.strictEqual(c, 0);
+  })
+);

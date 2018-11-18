@@ -25,22 +25,20 @@ class FakeInput extends EventEmitter {
   rli.close();
 }
 
-[
-  null,
-  {},
-  NaN,
-  '50'
-].forEach((invalidInput) => {
-  common.expectsError(() => {
-    const fi = new FakeInput();
-    const rli = new readline.Interface({
-      input: fi,
-      output: fi,
-      escapeCodeTimeout: invalidInput
-    });
-    rli.close();
-  }, {
-    type: TypeError,
-    code: 'ERR_INVALID_OPT_VALUE'
-  });
+[null, {}, NaN, '50'].forEach((invalidInput) => {
+  common.expectsError(
+    () => {
+      const fi = new FakeInput();
+      const rli = new readline.Interface({
+        input: fi,
+        output: fi,
+        escapeCodeTimeout: invalidInput
+      });
+      rli.close();
+    },
+    {
+      type: TypeError,
+      code: 'ERR_INVALID_OPT_VALUE'
+    }
+  );
 });

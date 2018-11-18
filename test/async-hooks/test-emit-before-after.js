@@ -20,21 +20,26 @@ switch (process.argv[2]) {
 }
 assert.ok(!process.argv[2]);
 
-
 const c1 = spawnSync(process.execPath, [
-  '--expose-internals', __filename, 'test_invalid_async_id'
+  '--expose-internals',
+  __filename,
+  'test_invalid_async_id'
 ]);
 assert.strictEqual(
   c1.stderr.toString().split(/[\r\n]+/g)[0],
-  'RangeError [ERR_INVALID_ASYNC_ID]: Invalid asyncId value: -2');
+  'RangeError [ERR_INVALID_ASYNC_ID]: Invalid asyncId value: -2'
+);
 assert.strictEqual(c1.status, 1);
 
 const c2 = spawnSync(process.execPath, [
-  '--expose-internals', __filename, 'test_invalid_trigger_id'
+  '--expose-internals',
+  __filename,
+  'test_invalid_trigger_id'
 ]);
 assert.strictEqual(
   c2.stderr.toString().split(/[\r\n]+/g)[0],
-  'RangeError [ERR_INVALID_ASYNC_ID]: Invalid triggerAsyncId value: -2');
+  'RangeError [ERR_INVALID_ASYNC_ID]: Invalid triggerAsyncId value: -2'
+);
 assert.strictEqual(c2.status, 1);
 
 const expectedId = async_hooks.newAsyncId();

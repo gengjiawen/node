@@ -33,7 +33,6 @@ const B = { name: 'B' };
 const C = { name: 'C' };
 const D = { name: 'D' };
 
-
 L.init(list);
 L.init(A);
 L.init(B);
@@ -83,9 +82,7 @@ L.remove(D);
 // list
 assert.strictEqual(L.peek(list), null);
 
-
 assert.ok(L.isEmpty(list));
-
 
 L.append(list, D);
 // list -> D

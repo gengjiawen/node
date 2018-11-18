@@ -38,39 +38,52 @@ class MyWritable extends stream.Writable {
 }
 
 (function defaultCondingIsUtf8() {
-  const m = new MyWritable(function(isBuffer, type, enc) {
-    assert.strictEqual(enc, 'utf8');
-  }, { decodeStrings: false });
+  const m = new MyWritable(
+    function(isBuffer, type, enc) {
+      assert.strictEqual(enc, 'utf8');
+    },
+    { decodeStrings: false }
+  );
   m.write('foo');
   m.end();
-}());
+})();
 
 (function changeDefaultEncodingToAscii() {
-  const m = new MyWritable(function(isBuffer, type, enc) {
-    assert.strictEqual(enc, 'ascii');
-  }, { decodeStrings: false });
+  const m = new MyWritable(
+    function(isBuffer, type, enc) {
+      assert.strictEqual(enc, 'ascii');
+    },
+    { decodeStrings: false }
+  );
   m.setDefaultEncoding('ascii');
   m.write('bar');
   m.end();
-}());
+})();
 
-common.expectsError(function changeDefaultEncodingToInvalidValue() {
-  const m = new MyWritable(function(isBuffer, type, enc) {
-  }, { decodeStrings: false });
-  m.setDefaultEncoding({});
-  m.write('bar');
-  m.end();
-}, {
-  type: TypeError,
-  code: 'ERR_UNKNOWN_ENCODING',
-  message: 'Unknown encoding: [object Object]'
-});
+common.expectsError(
+  function changeDefaultEncodingToInvalidValue() {
+    const m = new MyWritable(function(isBuffer, type, enc) {}, {
+      decodeStrings: false
+    });
+    m.setDefaultEncoding({});
+    m.write('bar');
+    m.end();
+  },
+  {
+    type: TypeError,
+    code: 'ERR_UNKNOWN_ENCODING',
+    message: 'Unknown encoding: [object Object]'
+  }
+);
 
 (function checkVairableCaseEncoding() {
-  const m = new MyWritable(function(isBuffer, type, enc) {
-    assert.strictEqual(enc, 'ascii');
-  }, { decodeStrings: false });
+  const m = new MyWritable(
+    function(isBuffer, type, enc) {
+      assert.strictEqual(enc, 'ascii');
+    },
+    { decodeStrings: false }
+  );
   m.setDefaultEncoding('AsCii');
   m.write('bar');
   m.end();
-}());
+})();

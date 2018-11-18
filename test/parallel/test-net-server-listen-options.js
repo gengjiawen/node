@@ -3,17 +3,27 @@ const common = require('../common');
 const assert = require('assert');
 const net = require('net');
 
-function close() { this.close(); }
+function close() {
+  this.close();
+}
 
 {
   // Test listen()
-  net.createServer().listen().on('listening', common.mustCall(close));
+  net
+    .createServer()
+    .listen()
+    .on('listening', common.mustCall(close));
   // Test listen(cb)
   net.createServer().listen(common.mustCall(close));
   // Test listen(port)
-  net.createServer().listen(0).on('listening', common.mustCall(close));
+  net
+    .createServer()
+    .listen(0)
+    .on('listening', common.mustCall(close));
   // Test listen({port})
-  net.createServer().listen({ port: 0 })
+  net
+    .createServer()
+    .listen({ port: 0 })
     .on('listening', common.mustCall(close));
 }
 
@@ -47,8 +57,9 @@ const listenOnPort = [
   }
   // In listen(options, cb), port takes precedence over path
   assert.throws(() => {
-    net.createServer().listen({ port: -1, path: common.PIPE },
-                              common.mustNotCall());
+    net
+      .createServer()
+      .listen({ port: -1, path: common.PIPE }, common.mustNotCall());
   }, assertPort());
 }
 
@@ -58,21 +69,21 @@ const listenOnPort = [
       net.createServer().listen(options, common.mustNotCall());
     };
 
-    if (typeof options === 'object' &&
-      !(('port' in options) || ('path' in options))) {
-      common.expectsError(fn,
-                          {
-                            code: 'ERR_INVALID_ARG_VALUE',
-                            type: TypeError,
-                            message: /^The argument 'options' must have the property "port" or "path"\. Received .+$/,
-                          });
+    if (
+      typeof options === 'object' &&
+      !('port' in options || 'path' in options)
+    ) {
+      common.expectsError(fn, {
+        code: 'ERR_INVALID_ARG_VALUE',
+        type: TypeError,
+        message: /^The argument 'options' must have the property "port" or "path"\. Received .+$/
+      });
     } else {
-      common.expectsError(fn,
-                          {
-                            code: 'ERR_INVALID_OPT_VALUE',
-                            type: TypeError,
-                            message: /^The value "{.*}" is invalid for option "options"(?:\. .+)?$/,
-                          });
+      common.expectsError(fn, {
+        code: 'ERR_INVALID_OPT_VALUE',
+        type: TypeError,
+        message: /^The value "{.*}" is invalid for option "options"(?:\. .+)?$/
+      });
     }
   }
 

@@ -5,7 +5,7 @@
 const common = require('../common');
 
 const http = require('http');
-const modules = { 'http': http };
+const modules = { http: http };
 
 if (common.hasCrypto) {
   const https = require('https');
@@ -18,7 +18,9 @@ function test(host) {
       const doNotCall = common.mustNotCall(
         `${module}.${fn} should not connect to ${host}`
       );
-      const throws = () => { modules[module][fn](host, doNotCall); };
+      const throws = () => {
+        modules[module][fn](host, doNotCall);
+      };
       common.expectsError(throws, {
         type: TypeError,
         code: 'ERR_INVALID_URL'

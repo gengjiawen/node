@@ -31,20 +31,23 @@ if (process.argv[2] !== 'child') {
   const worker = fork(__filename, ['child']);
   let called = false;
 
-  worker.once('message', common.mustCall(function(msg, handle) {
-    assert.strictEqual(msg, 'handle');
-    assert.ok(handle);
-    worker.send('got');
+  worker.once(
+    'message',
+    common.mustCall(function(msg, handle) {
+      assert.strictEqual(msg, 'handle');
+      assert.ok(handle);
+      worker.send('got');
 
-    handle.on('data', function(data) {
-      called = true;
-      assert.strictEqual(data.toString(), 'hello');
-    });
+      handle.on('data', function(data) {
+        called = true;
+        assert.strictEqual(data.toString(), 'hello');
+      });
 
-    handle.on('end', function() {
-      worker.kill();
-    });
-  }));
+      handle.on('end', function() {
+        worker.kill();
+      });
+    })
+  );
 
   process.once('exit', function() {
     assert.ok(called);
@@ -55,20 +58,26 @@ if (process.argv[2] !== 'child') {
   let socket;
   let cbcalls = 0;
   function socketConnected() {
-    if (++cbcalls === 2)
-      process.send('handle', socket);
+    if (++cbcalls === 2) process.send('handle', socket);
   }
 
   const server = net.createServer(function(c) {
-    process.once('message', common.mustCall(function(msg) {
-      assert.strictEqual(msg, 'got');
-      c.end('hello');
-    }));
+    process.once(
+      'message',
+      common.mustCall(function(msg) {
+        assert.strictEqual(msg, 'got');
+        c.end('hello');
+      })
+    );
     socketConnected();
   });
 
   server.listen(0, function() {
-    socket = net.connect(server.address().port, '127.0.0.1', socketConnected);
+    socket = net.connect(
+      server.address().port,
+      '127.0.0.1',
+      socketConnected
+    );
   });
 
   process.on('disconnect', function() {

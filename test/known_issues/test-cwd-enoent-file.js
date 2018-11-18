@@ -22,8 +22,10 @@ if (process.argv[2] === 'child') {
   const dir = fs.mkdtempSync(`${tmpdir.path}/`);
   process.chdir(dir);
   fs.rmdirSync(dir);
-  assert.throws(process.cwd,
-                /^Error: ENOENT: no such file or directory, uv_cwd$/);
+  assert.throws(
+    process.cwd,
+    /^Error: ENOENT: no such file or directory, uv_cwd$/
+  );
 
   const r = cp.spawnSync(process.execPath, [__filename, 'child']);
 

@@ -35,20 +35,28 @@ if (common.isWindows || !common.isMainThread) {
   return;
 }
 
-assert.throws(() => {
-  process.setuid({});
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  message: 'The "id" argument must be one of type ' +
-    'number or string. Received type object'
-});
+assert.throws(
+  () => {
+    process.setuid({});
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    message:
+      'The "id" argument must be one of type ' +
+      'number or string. Received type object'
+  }
+);
 
-assert.throws(() => {
-  process.setuid('fhqwhgadshgnsdhjsdbkhsdabkfabkveyb');
-}, {
-  code: 'ERR_UNKNOWN_CREDENTIAL',
-  message: 'User identifier does not exist: fhqwhgadshgnsdhjsdbkhsdabkfabkveyb'
-});
+assert.throws(
+  () => {
+    process.setuid('fhqwhgadshgnsdhjsdbkhsdabkfabkveyb');
+  },
+  {
+    code: 'ERR_UNKNOWN_CREDENTIAL',
+    message:
+      'User identifier does not exist: fhqwhgadshgnsdhjsdbkhsdabkfabkveyb'
+  }
+);
 
 // If we're not running as super user...
 if (process.getuid() !== 0) {
@@ -56,15 +64,13 @@ if (process.getuid() !== 0) {
   process.getgid();
   process.getuid();
 
-  assert.throws(
-    () => { process.setgid('nobody'); },
-    /(?:EPERM, .+|Group identifier does not exist: nobody)$/
-  );
+  assert.throws(() => {
+    process.setgid('nobody');
+  }, /(?:EPERM, .+|Group identifier does not exist: nobody)$/);
 
-  assert.throws(
-    () => { process.setuid('nobody'); },
-    /(?:EPERM, .+|User identifier does not exist: nobody)$/
-  );
+  assert.throws(() => {
+    process.setuid('nobody');
+  }, /(?:EPERM, .+|User identifier does not exist: nobody)$/);
   return;
 }
 

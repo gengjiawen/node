@@ -5,19 +5,25 @@ const assert = require('assert');
 const cp = require('child_process');
 
 function fail(proc, args) {
-  common.expectsError(() => {
-    proc.send.apply(proc, args);
-  }, { code: 'ERR_INVALID_ARG_TYPE', type: TypeError });
+  common.expectsError(
+    () => {
+      proc.send.apply(proc, args);
+    },
+    { code: 'ERR_INVALID_ARG_TYPE', type: TypeError }
+  );
 }
 
 let target = process;
 
 if (process.argv[2] !== 'child') {
   target = cp.fork(__filename, ['child']);
-  target.on('exit', common.mustCall((code, signal) => {
-    assert.strictEqual(code, 0);
-    assert.strictEqual(signal, null);
-  }));
+  target.on(
+    'exit',
+    common.mustCall((code, signal) => {
+      assert.strictEqual(code, 0);
+      assert.strictEqual(signal, null);
+    })
+  );
 }
 
 fail(target, ['msg', null, null]);

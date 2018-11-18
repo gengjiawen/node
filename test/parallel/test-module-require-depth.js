@@ -3,9 +3,7 @@
 require('../common');
 const fixtures = require('../common/fixtures');
 const assert = require('assert');
-const {
-  requireDepth
-} = require('internal/modules/cjs/helpers');
+const { requireDepth } = require('internal/modules/cjs/helpers');
 
 // Module one loads two too so the expected depth for two is, well, two.
 assert.strictEqual(requireDepth, 0);

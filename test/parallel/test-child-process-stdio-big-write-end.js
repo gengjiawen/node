@@ -43,10 +43,13 @@ function parent() {
   child.stdout.on('data', function(c) {
     n += c;
   });
-  child.stdout.on('end', common.mustCall(function() {
-    assert.strictEqual(+n, sent);
-    console.log('ok');
-  }));
+  child.stdout.on(
+    'end',
+    common.mustCall(function() {
+      assert.strictEqual(+n, sent);
+      console.log('ok');
+    })
+  );
 
   // Write until the buffer fills up.
   let buf;

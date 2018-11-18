@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const fixtures = require('../common/fixtures');
 const https = require('https');
@@ -28,25 +27,30 @@ server._sharedCreds.context.onticketkeycallback = function(name, iv, enc) {
     newIV = crypto.randomBytes(16);
   } else {
     // Renew
-    return [ 2, hmac, aes ];
+    return [2, hmac, aes];
   }
 
-  return [ 1, hmac, aes, newName, newIV ];
+  return [1, hmac, aes, newName, newIV];
 };
 
 server.listen(0, function() {
   const addr = this.address();
 
   function doReq(callback) {
-    https.request({
-      method: 'GET',
-      port: addr.port,
-      servername: 'agent1',
-      ca: options.ca
-    }, function(res) {
-      res.resume();
-      res.once('end', callback);
-    }).end();
+    https
+      .request(
+        {
+          method: 'GET',
+          port: addr.port,
+          servername: 'agent1',
+          ca: options.ca
+        },
+        function(res) {
+          res.resume();
+          res.once('end', callback);
+        }
+      )
+      .end();
   }
 
   doReq(function() {

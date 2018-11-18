@@ -24,24 +24,30 @@ const net = require('net');
 
   function createSocket() {
     let streamWrap;
-    const socket = new net.connect({
-      port,
-    }, () => {
-      socket.on('error', common.mustNotCall());
-      socket.on('end', common.mustCall());
-      socket.on('close', common.mustCall());
+    const socket = new net.connect(
+      {
+        port
+      },
+      () => {
+        socket.on('error', common.mustNotCall());
+        socket.on('end', common.mustCall());
+        socket.on('close', common.mustCall());
 
-      streamWrap.on('error', common.mustNotCall());
-      // The "end" events will be emitted which is as same as
-      // the same situation for an instance of `net.Socket` without
-      // `StreamWrap`.
-      streamWrap.on('end', common.mustCall());
-      // Destroying a socket in the server side should emit EOF and cause
-      // the corresponding client-side socket closed.
-      streamWrap.on('close', common.mustCall(() => {
-        server.close();
-      }));
-    });
+        streamWrap.on('error', common.mustNotCall());
+        // The "end" events will be emitted which is as same as
+        // the same situation for an instance of `net.Socket` without
+        // `StreamWrap`.
+        streamWrap.on('end', common.mustCall());
+        // Destroying a socket in the server side should emit EOF and cause
+        // the corresponding client-side socket closed.
+        streamWrap.on(
+          'close',
+          common.mustCall(() => {
+            server.close();
+          })
+        );
+      }
+    );
     streamWrap = new StreamWrap(socket);
   }
 }
@@ -52,9 +58,12 @@ const net = require('net');
   const server = net.createServer((socket) => {
     socket.on('error', common.mustNotCall());
     socket.on('end', common.mustCall());
-    socket.on('close', common.mustCall(() => {
-      server.close();
-    }));
+    socket.on(
+      'close',
+      common.mustCall(() => {
+        server.close();
+      })
+    );
     // Do not `socket.end()` and directly `socket.destroy()`.
   });
 
@@ -65,20 +74,23 @@ const net = require('net');
 
   function createSocket() {
     let streamWrap;
-    const socket = new net.connect({
-      port,
-    }, () => {
-      socket.on('error', common.mustNotCall());
-      socket.on('end', common.mustNotCall());
-      socket.on('close', common.mustCall());
+    const socket = new net.connect(
+      {
+        port
+      },
+      () => {
+        socket.on('error', common.mustNotCall());
+        socket.on('end', common.mustNotCall());
+        socket.on('close', common.mustCall());
 
-      streamWrap.on('error', common.mustNotCall());
-      streamWrap.on('end', common.mustNotCall());
-      // Destroying a socket in the server side should emit EOF and cause
-      // the corresponding client-side socket closed.
-      streamWrap.on('close', common.mustCall());
-      streamWrap.destroy();
-    });
+        streamWrap.on('error', common.mustNotCall());
+        streamWrap.on('end', common.mustNotCall());
+        // Destroying a socket in the server side should emit EOF and cause
+        // the corresponding client-side socket closed.
+        streamWrap.on('close', common.mustCall());
+        streamWrap.destroy();
+      }
+    );
     streamWrap = new StreamWrap(socket);
   }
 }
@@ -89,9 +101,12 @@ const net = require('net');
   const server = net.createServer((socket) => {
     socket.on('error', common.mustNotCall());
     socket.on('end', common.mustCall());
-    socket.on('close', common.mustCall(() => {
-      server.close();
-    }));
+    socket.on(
+      'close',
+      common.mustCall(() => {
+        server.close();
+      })
+    );
   });
 
   server.listen(() => {
@@ -101,18 +116,21 @@ const net = require('net');
 
   function createSocket() {
     let streamWrap;
-    const socket = new net.connect({
-      port,
-    }, () => {
-      socket.on('error', common.mustNotCall());
-      socket.on('end', common.mustNotCall());
-      socket.on('close', common.mustCall());
+    const socket = new net.connect(
+      {
+        port
+      },
+      () => {
+        socket.on('error', common.mustNotCall());
+        socket.on('end', common.mustNotCall());
+        socket.on('close', common.mustCall());
 
-      streamWrap.on('error', common.mustNotCall());
-      streamWrap.on('end', common.mustNotCall());
-      streamWrap.on('close', common.mustCall());
-      socket.destroy();
-    });
+        streamWrap.on('error', common.mustNotCall());
+        streamWrap.on('end', common.mustNotCall());
+        streamWrap.on('close', common.mustCall());
+        socket.destroy();
+      }
+    );
     streamWrap = new StreamWrap(socket);
   }
 }

@@ -27,14 +27,11 @@ const execFile = require('child_process').execFile;
 const depmod = fixtures.path('deprecated.js');
 const node = process.execPath;
 
-const depUserlandFunction =
-  fixtures.path('deprecated-userland-function.js');
+const depUserlandFunction = fixtures.path('deprecated-userland-function.js');
 
-const depUserlandClass =
-  fixtures.path('deprecated-userland-class.js');
+const depUserlandClass = fixtures.path('deprecated-userland-class.js');
 
-const depUserlandSubClass =
-  fixtures.path('deprecated-userland-subclass.js');
+const depUserlandSubClass = fixtures.path('deprecated-userland-subclass.js');
 
 const normal = [depmod];
 const noDep = ['--no-deprecation', depmod];

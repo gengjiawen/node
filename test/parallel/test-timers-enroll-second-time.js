@@ -6,7 +6,7 @@ const assert = require('assert');
 const timers = require('timers');
 
 const enrollObj = {
-  _onTimeout: common.mustCall(),
+  _onTimeout: common.mustCall()
 };
 
 timers.enroll(enrollObj, 1);

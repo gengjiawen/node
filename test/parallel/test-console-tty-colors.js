@@ -6,20 +6,17 @@ const { Writable } = require('stream');
 const { Console } = require('console');
 
 function check(isTTY, colorMode, expectedColorMode) {
-  const items = [
-    1,
-    { a: 2 },
-    [ 'foo' ],
-    { '\\a': '\\bar' }
-  ];
+  const items = [1, { a: 2 }, ['foo'], { '\\a': '\\bar' }];
 
   let i = 0;
   const stream = new Writable({
     write: common.mustCall((chunk, enc, cb) => {
-      assert.strictEqual(chunk.trim(),
-                         util.inspect(items[i++], {
-                           colors: expectedColorMode
-                         }));
+      assert.strictEqual(
+        chunk.trim(),
+        util.inspect(items[i++], {
+          colors: expectedColorMode
+        })
+      );
       cb();
     }, items.length),
     decodeStrings: false

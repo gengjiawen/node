@@ -41,7 +41,6 @@ const s = http.createServer(function(req, res) {
 
 s.listen(0, nextTest);
 
-
 function nextTest() {
   test = tests.shift();
 
@@ -50,8 +49,7 @@ function nextTest() {
     console.log(`client: statusCode: ${response.statusCode}`);
     assert.strictEqual(response.statusCode, test);
     response.on('end', function() {
-      if (countdown.dec())
-        nextTest();
+      if (countdown.dec()) nextTest();
     });
     response.resume();
   });

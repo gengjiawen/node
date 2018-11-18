@@ -7,55 +7,57 @@ const failures = [];
 const backslashRE = /\\/g;
 
 const joinTests = [
-  [ [path.posix.join, path.win32.join],
+  [
+    [path.posix.join, path.win32.join],
     // arguments                     result
-    [[['.', 'x/b', '..', '/b/c.js'], 'x/b/c.js'],
-     [[], '.'],
-     [['/.', 'x/b', '..', '/b/c.js'], '/x/b/c.js'],
-     [['/foo', '../../../bar'], '/bar'],
-     [['foo', '../../../bar'], '../../bar'],
-     [['foo/', '../../../bar'], '../../bar'],
-     [['foo/x', '../../../bar'], '../bar'],
-     [['foo/x', './bar'], 'foo/x/bar'],
-     [['foo/x/', './bar'], 'foo/x/bar'],
-     [['foo/x/', '.', 'bar'], 'foo/x/bar'],
-     [['./'], './'],
-     [['.', './'], './'],
-     [['.', '.', '.'], '.'],
-     [['.', './', '.'], '.'],
-     [['.', '/./', '.'], '.'],
-     [['.', '/////./', '.'], '.'],
-     [['.'], '.'],
-     [['', '.'], '.'],
-     [['', 'foo'], 'foo'],
-     [['foo', '/bar'], 'foo/bar'],
-     [['', '/foo'], '/foo'],
-     [['', '', '/foo'], '/foo'],
-     [['', '', 'foo'], 'foo'],
-     [['foo', ''], 'foo'],
-     [['foo/', ''], 'foo/'],
-     [['foo', '', '/bar'], 'foo/bar'],
-     [['./', '..', '/foo'], '../foo'],
-     [['./', '..', '..', '/foo'], '../../foo'],
-     [['.', '..', '..', '/foo'], '../../foo'],
-     [['', '..', '..', '/foo'], '../../foo'],
-     [['/'], '/'],
-     [['/', '.'], '/'],
-     [['/', '..'], '/'],
-     [['/', '..', '..'], '/'],
-     [[''], '.'],
-     [['', ''], '.'],
-     [[' /foo'], ' /foo'],
-     [[' ', 'foo'], ' /foo'],
-     [[' ', '.'], ' '],
-     [[' ', '/'], ' /'],
-     [[' ', ''], ' '],
-     [['/', 'foo'], '/foo'],
-     [['/', '/foo'], '/foo'],
-     [['/', '//foo'], '/foo'],
-     [['/', '', '/foo'], '/foo'],
-     [['', '/', 'foo'], '/foo'],
-     [['', '/', '/foo'], '/foo']
+    [
+      [['.', 'x/b', '..', '/b/c.js'], 'x/b/c.js'],
+      [[], '.'],
+      [['/.', 'x/b', '..', '/b/c.js'], '/x/b/c.js'],
+      [['/foo', '../../../bar'], '/bar'],
+      [['foo', '../../../bar'], '../../bar'],
+      [['foo/', '../../../bar'], '../../bar'],
+      [['foo/x', '../../../bar'], '../bar'],
+      [['foo/x', './bar'], 'foo/x/bar'],
+      [['foo/x/', './bar'], 'foo/x/bar'],
+      [['foo/x/', '.', 'bar'], 'foo/x/bar'],
+      [['./'], './'],
+      [['.', './'], './'],
+      [['.', '.', '.'], '.'],
+      [['.', './', '.'], '.'],
+      [['.', '/./', '.'], '.'],
+      [['.', '/////./', '.'], '.'],
+      [['.'], '.'],
+      [['', '.'], '.'],
+      [['', 'foo'], 'foo'],
+      [['foo', '/bar'], 'foo/bar'],
+      [['', '/foo'], '/foo'],
+      [['', '', '/foo'], '/foo'],
+      [['', '', 'foo'], 'foo'],
+      [['foo', ''], 'foo'],
+      [['foo/', ''], 'foo/'],
+      [['foo', '', '/bar'], 'foo/bar'],
+      [['./', '..', '/foo'], '../foo'],
+      [['./', '..', '..', '/foo'], '../../foo'],
+      [['.', '..', '..', '/foo'], '../../foo'],
+      [['', '..', '..', '/foo'], '../../foo'],
+      [['/'], '/'],
+      [['/', '.'], '/'],
+      [['/', '..'], '/'],
+      [['/', '..', '..'], '/'],
+      [[''], '.'],
+      [['', ''], '.'],
+      [[' /foo'], ' /foo'],
+      [[' ', 'foo'], ' /foo'],
+      [[' ', '.'], ' '],
+      [[' ', '/'], ' /'],
+      [[' ', ''], ' '],
+      [['/', 'foo'], '/foo'],
+      [['/', '/foo'], '/foo'],
+      [['/', '//foo'], '/foo'],
+      [['/', '', '/foo'], '/foo'],
+      [['', '/', 'foo'], '/foo'],
+      [['', '/', '/foo'], '/foo']
     ]
   ]
 ];
@@ -63,59 +65,57 @@ const joinTests = [
 // Windows-specific join tests
 joinTests.push([
   path.win32.join,
-  joinTests[0][1].slice(0).concat(
-    [// arguments                     result
-      // UNC path expected
-      [['//foo/bar'], '\\\\foo\\bar\\'],
-      [['\\/foo/bar'], '\\\\foo\\bar\\'],
-      [['\\\\foo/bar'], '\\\\foo\\bar\\'],
-      // UNC path expected - server and share separate
-      [['//foo', 'bar'], '\\\\foo\\bar\\'],
-      [['//foo/', 'bar'], '\\\\foo\\bar\\'],
-      [['//foo', '/bar'], '\\\\foo\\bar\\'],
-      // UNC path expected - questionable
-      [['//foo', '', 'bar'], '\\\\foo\\bar\\'],
-      [['//foo/', '', 'bar'], '\\\\foo\\bar\\'],
-      [['//foo/', '', '/bar'], '\\\\foo\\bar\\'],
-      // UNC path expected - even more questionable
-      [['', '//foo', 'bar'], '\\\\foo\\bar\\'],
-      [['', '//foo/', 'bar'], '\\\\foo\\bar\\'],
-      [['', '//foo/', '/bar'], '\\\\foo\\bar\\'],
-      // No UNC path expected (no double slash in first component)
-      [['\\', 'foo/bar'], '\\foo\\bar'],
-      [['\\', '/foo/bar'], '\\foo\\bar'],
-      [['', '/', '/foo/bar'], '\\foo\\bar'],
-      // No UNC path expected (no non-slashes in first component -
-      // questionable)
-      [['//', 'foo/bar'], '\\foo\\bar'],
-      [['//', '/foo/bar'], '\\foo\\bar'],
-      [['\\\\', '/', '/foo/bar'], '\\foo\\bar'],
-      [['//'], '/'],
-      // No UNC path expected (share name missing - questionable).
-      [['//foo'], '\\foo'],
-      [['//foo/'], '\\foo\\'],
-      [['//foo', '/'], '\\foo\\'],
-      [['//foo', '', '/'], '\\foo\\'],
-      // No UNC path expected (too many leading slashes - questionable)
-      [['///foo/bar'], '\\foo\\bar'],
-      [['////foo', 'bar'], '\\foo\\bar'],
-      [['\\\\\\/foo/bar'], '\\foo\\bar'],
-      // Drive-relative vs drive-absolute paths. This merely describes the
-      // status quo, rather than being obviously right
-      [['c:'], 'c:.'],
-      [['c:.'], 'c:.'],
-      [['c:', ''], 'c:.'],
-      [['', 'c:'], 'c:.'],
-      [['c:.', '/'], 'c:.\\'],
-      [['c:.', 'file'], 'c:file'],
-      [['c:', '/'], 'c:\\'],
-      [['c:', 'file'], 'c:\\file']
-    ]
-  )
+  joinTests[0][1].slice(0).concat([
+    // arguments                     result
+    // UNC path expected
+    [['//foo/bar'], '\\\\foo\\bar\\'],
+    [['\\/foo/bar'], '\\\\foo\\bar\\'],
+    [['\\\\foo/bar'], '\\\\foo\\bar\\'],
+    // UNC path expected - server and share separate
+    [['//foo', 'bar'], '\\\\foo\\bar\\'],
+    [['//foo/', 'bar'], '\\\\foo\\bar\\'],
+    [['//foo', '/bar'], '\\\\foo\\bar\\'],
+    // UNC path expected - questionable
+    [['//foo', '', 'bar'], '\\\\foo\\bar\\'],
+    [['//foo/', '', 'bar'], '\\\\foo\\bar\\'],
+    [['//foo/', '', '/bar'], '\\\\foo\\bar\\'],
+    // UNC path expected - even more questionable
+    [['', '//foo', 'bar'], '\\\\foo\\bar\\'],
+    [['', '//foo/', 'bar'], '\\\\foo\\bar\\'],
+    [['', '//foo/', '/bar'], '\\\\foo\\bar\\'],
+    // No UNC path expected (no double slash in first component)
+    [['\\', 'foo/bar'], '\\foo\\bar'],
+    [['\\', '/foo/bar'], '\\foo\\bar'],
+    [['', '/', '/foo/bar'], '\\foo\\bar'],
+    // No UNC path expected (no non-slashes in first component -
+    // questionable)
+    [['//', 'foo/bar'], '\\foo\\bar'],
+    [['//', '/foo/bar'], '\\foo\\bar'],
+    [['\\\\', '/', '/foo/bar'], '\\foo\\bar'],
+    [['//'], '/'],
+    // No UNC path expected (share name missing - questionable).
+    [['//foo'], '\\foo'],
+    [['//foo/'], '\\foo\\'],
+    [['//foo', '/'], '\\foo\\'],
+    [['//foo', '', '/'], '\\foo\\'],
+    // No UNC path expected (too many leading slashes - questionable)
+    [['///foo/bar'], '\\foo\\bar'],
+    [['////foo', 'bar'], '\\foo\\bar'],
+    [['\\\\\\/foo/bar'], '\\foo\\bar'],
+    // Drive-relative vs drive-absolute paths. This merely describes the
+    // status quo, rather than being obviously right
+    [['c:'], 'c:.'],
+    [['c:.'], 'c:.'],
+    [['c:', ''], 'c:.'],
+    [['', 'c:'], 'c:.'],
+    [['c:.', '/'], 'c:.\\'],
+    [['c:.', 'file'], 'c:file'],
+    [['c:', '/'], 'c:\\'],
+    [['c:', 'file'], 'c:\\file']
+  ])
 ]);
 joinTests.forEach((test) => {
-  if (!Array.isArray(test[0]))
-    test[0] = [test[0]];
+  if (!Array.isArray(test[0])) test[0] = [test[0]];
   test[0].forEach((join) => {
     test[1].forEach((test) => {
       const actual = join.apply(null, test[0]);
@@ -131,9 +131,11 @@ joinTests.forEach((test) => {
       } else {
         os = 'posix';
       }
-      const message =
-        `path.${os}.join(${test[0].map(JSON.stringify).join(',')})\n  expect=${
-          JSON.stringify(expected)}\n  actual=${JSON.stringify(actual)}`;
+      const message = `path.${os}.join(${test[0]
+        .map(JSON.stringify)
+        .join(',')})\n  expect=${JSON.stringify(
+        expected
+      )}\n  actual=${JSON.stringify(actual)}`;
       if (actual !== expected && actualAlt !== expected)
         failures.push(`\n${message}`);
     });

@@ -27,21 +27,38 @@ const url = require('url');
 const URL = url.URL;
 const testPath = '/foo?bar';
 
-const server = http.createServer(common.mustCall((req, res) => {
-  assert.strictEqual(req.method, 'GET');
-  assert.strictEqual(req.url, testPath);
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  res.write('hello\n');
-  res.end();
-}, 3));
+const server = http.createServer(
+  common.mustCall((req, res) => {
+    assert.strictEqual(req.method, 'GET');
+    assert.strictEqual(req.url, testPath);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.write('hello\n');
+    res.end();
+  }, 3)
+);
 
-server.listen(0, common.localhostIPv4, common.mustCall(() => {
-  const u = `http://${common.localhostIPv4}:${server.address().port}${testPath}`;
-  http.get(u, common.mustCall(() => {
-    http.get(url.parse(u), common.mustCall(() => {
-      http.get(new URL(u), common.mustCall(() => {
-        server.close();
-      }));
-    }));
-  }));
-}));
+server.listen(
+  0,
+  common.localhostIPv4,
+  common.mustCall(() => {
+    const u = `http://${common.localhostIPv4}:${
+      server.address().port
+    }${testPath}`;
+    http.get(
+      u,
+      common.mustCall(() => {
+        http.get(
+          url.parse(u),
+          common.mustCall(() => {
+            http.get(
+              new URL(u),
+              common.mustCall(() => {
+                server.close();
+              })
+            );
+          })
+        );
+      })
+    );
+  })
+);

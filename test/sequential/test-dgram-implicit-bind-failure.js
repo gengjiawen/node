@@ -8,7 +8,9 @@ const { kStateSymbol } = require('internal/dgram');
 
 // Monkey patch dns.lookup() so that it always fails.
 dns.lookup = function(address, family, callback) {
-  process.nextTick(() => { callback(new Error('fake DNS')); });
+  process.nextTick(() => {
+    callback(new Error('fake DNS'));
+  });
 };
 
 const socket = dgram.createSocket('udp4');

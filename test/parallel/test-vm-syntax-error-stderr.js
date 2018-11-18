@@ -16,10 +16,15 @@ p.stdout.on('data', common.mustNotCall());
 
 let output = '';
 
-p.stderr.on('data', (data) => output += data);
+p.stderr.on('data', (data) => (output += data));
 
-p.stderr.on('end', common.mustCall(() => {
-  assert(/BEGIN CERT/.test(output));
-  assert(/^\s+\^/m.test(output));
-  assert(/Invalid left-hand side expression in prefix operation/.test(output));
-}));
+p.stderr.on(
+  'end',
+  common.mustCall(() => {
+    assert(/BEGIN CERT/.test(output));
+    assert(/^\s+\^/m.test(output));
+    assert(
+      /Invalid left-hand side expression in prefix operation/.test(output)
+    );
+  })
+);

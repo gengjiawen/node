@@ -11,39 +11,40 @@ const ruleTester = new RuleTester({
   env: { node: true }
 });
 
-const message = "Use const { Buffer } = require('buffer'); " +
-                'at the beginning of this file';
+const message =
+  "Use const { Buffer } = require('buffer'); " +
+  'at the beginning of this file';
 
-const useStrict = '\'use strict\';\n\n';
-const bufferModule = 'const { Buffer } = require(\'buffer\');\n';
+const useStrict = "'use strict';\n\n";
+const bufferModule = "const { Buffer } = require('buffer');\n";
 const mockComment = '// Some Comment\n//\n// Another Comment\n\n';
 const useBuffer = 'Buffer;';
 ruleTester.run('require-globals', rule, {
   valid: [
     'foo',
     'const Buffer = require("Buffer"); Buffer;',
-    'const { Buffer } = require(\'buffer\'); Buffer;',
+    "const { Buffer } = require('buffer'); Buffer;"
   ],
   invalid: [
     {
       code: useBuffer,
       errors: [{ message }],
-      output: bufferModule + useBuffer,
+      output: bufferModule + useBuffer
     },
     {
       code: useStrict + useBuffer,
       errors: [{ message }],
-      output: useStrict + bufferModule + useBuffer,
+      output: useStrict + bufferModule + useBuffer
     },
     {
       code: mockComment + useBuffer,
       errors: [{ message }],
-      output: mockComment + bufferModule + useBuffer,
+      output: mockComment + bufferModule + useBuffer
     },
     {
       code: mockComment + useStrict + useBuffer,
       errors: [{ message }],
-      output: mockComment + useStrict + bufferModule + useBuffer,
-    },
+      output: mockComment + useStrict + bufferModule + useBuffer
+    }
   ]
 });

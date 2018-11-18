@@ -7,7 +7,7 @@ const stdoutWrite = process.stdout.write;
 
 let buf = '';
 
-process.stdout.write = (string) => buf = string;
+process.stdout.write = (string) => (buf = string);
 
 console.count();
 assert.strictEqual(buf, 'default: 1\n');
@@ -57,9 +57,5 @@ process.stdout.write = stdoutWrite;
 // Symbol labels do not work. Only check that the `Error` is a `TypeError`. Do
 // not check the message because it is different depending on the JavaScript
 // engine.
-assert.throws(
-  () => console.count(Symbol('test')),
-  TypeError);
-assert.throws(
-  () => console.countReset(Symbol('test')),
-  TypeError);
+assert.throws(() => console.count(Symbol('test')), TypeError);
+assert.throws(() => console.countReset(Symbol('test')), TypeError);

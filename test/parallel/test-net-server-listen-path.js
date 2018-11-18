@@ -24,7 +24,8 @@ function randomPipePath() {
 // Test listen(path)
 {
   const handlePath = randomPipePath();
-  net.createServer()
+  net
+    .createServer()
     .listen(handlePath)
     .on('listening', closeServer());
 }
@@ -32,7 +33,8 @@ function randomPipePath() {
 // Test listen({path})
 {
   const handlePath = randomPipePath();
-  net.createServer()
+  net
+    .createServer()
     .listen({ path: handlePath })
     .on('listening', closeServer());
 }
@@ -40,34 +42,34 @@ function randomPipePath() {
 // Test listen(path, cb)
 {
   const handlePath = randomPipePath();
-  net.createServer()
-    .listen(handlePath, closeServer());
+  net.createServer().listen(handlePath, closeServer());
 }
 
 // Test listen(path, cb)
 {
   const handlePath = randomPipePath();
-  net.createServer()
-    .listen({ path: handlePath }, closeServer());
+  net.createServer().listen({ path: handlePath }, closeServer());
 }
 
 // Test pipe chmod
 {
   const handlePath = randomPipePath();
 
-  const srv = net.createServer()
-    .listen({
+  const srv = net.createServer().listen(
+    {
       path: handlePath,
       readableAll: true,
       writableAll: true
-    }, common.mustCall(() => {
+    },
+    common.mustCall(() => {
       if (process.platform !== 'win32') {
         const mode = fs.statSync(handlePath).mode;
         assert.notStrictEqual(mode & fs.constants.S_IROTH, 0);
         assert.notStrictEqual(mode & fs.constants.S_IWOTH, 0);
       }
       srv.close();
-    }));
+    })
+  );
 }
 
 // Test should emit "error" events when listening fails.
@@ -76,16 +78,21 @@ function randomPipePath() {
   const srv1 = net.createServer().listen({ path: handlePath }, () => {
     // As the handlePath is in use, binding to the same address again should
     // make the server emit an 'EADDRINUSE' error.
-    const srv2 = net.createServer()
-      .listen({
+    const srv2 = net.createServer().listen(
+      {
         path: handlePath,
-        writableAll: true,
-      }, common.mustNotCall());
+        writableAll: true
+      },
+      common.mustNotCall()
+    );
 
-    srv2.on('error', common.mustCall((err) => {
-      srv1.close();
-      assert.strictEqual(err.code, 'EADDRINUSE');
-      assert(/^listen EADDRINUSE: address already in use/.test(err.message));
-    }));
+    srv2.on(
+      'error',
+      common.mustCall((err) => {
+        srv1.close();
+        assert.strictEqual(err.code, 'EADDRINUSE');
+        assert(/^listen EADDRINUSE: address already in use/.test(err.message));
+      })
+    );
   });
 }

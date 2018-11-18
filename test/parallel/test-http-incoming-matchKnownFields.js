@@ -8,8 +8,7 @@ function checkDest(field, result, value) {
 
   const incomingMessage = new IncomingMessage(field);
   // dest is changed by IncomingMessage._addHeaderLine
-  if (value)
-    incomingMessage._addHeaderLine(field, 'test', dest);
+  if (value) incomingMessage._addHeaderLine(field, 'test', dest);
   incomingMessage._addHeaderLine(field, value, dest);
   assert.deepStrictEqual(dest, result);
 }

@@ -41,14 +41,20 @@ function test1(stream) {
 
 function test2(stream) {
   stream.destroy();
-  stream.on('open', common.mustCall(function(fd) {
-    stream.destroy();
-  }));
+  stream.on(
+    'open',
+    common.mustCall(function(fd) {
+      stream.destroy();
+    })
+  );
 }
 
 function test3(stream) {
-  stream.on('open', common.mustCall(function(fd) {
-    stream.destroy();
-    stream.destroy();
-  }));
+  stream.on(
+    'open',
+    common.mustCall(function(fd) {
+      stream.destroy();
+      stream.destroy();
+    })
+  );
 }

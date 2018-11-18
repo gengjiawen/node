@@ -8,19 +8,28 @@ const assert = require('assert');
 // should respond with a 400 Client Error when a double
 // Content-Length header is received.
 const server = http.createServer(common.mustNotCall());
-server.on('clientError', common.mustCall((err, socket) => {
-  assert(/^Parse Error/.test(err.message));
-  assert.strictEqual(err.code, 'HPE_UNEXPECTED_CONTENT_LENGTH');
-  socket.destroy();
-}));
+server.on(
+  'clientError',
+  common.mustCall((err, socket) => {
+    assert(/^Parse Error/.test(err.message));
+    assert.strictEqual(err.code, 'HPE_UNEXPECTED_CONTENT_LENGTH');
+    socket.destroy();
+  })
+);
 
 server.listen(0, () => {
-  const req = http.get({
-    port: server.address().port,
-    // Send two content-length header values.
-    headers: { 'Content-Length': [1, 2] }
-  }, common.mustNotCall('an error should have occurred'));
-  req.on('error', common.mustCall(() => {
-    server.close();
-  }));
+  const req = http.get(
+    {
+      port: server.address().port,
+      // Send two content-length header values.
+      headers: { 'Content-Length': [1, 2] }
+    },
+    common.mustNotCall('an error should have occurred')
+  );
+  req.on(
+    'error',
+    common.mustCall(() => {
+      server.close();
+    })
+  );
 });

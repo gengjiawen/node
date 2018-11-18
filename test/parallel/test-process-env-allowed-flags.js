@@ -15,12 +15,12 @@ require('../common');
     '-r',
     'r',
     '--stack-trace-limit=100',
-    '--stack-trace-limit=-=xX_nodejs_Xx=-',
-  ].concat(process.config.variables.v8_enable_inspector ? [
-    '--inspect-brk',
-    'inspect-brk',
-    '--inspect_brk',
-  ] : []);
+    '--stack-trace-limit=-=xX_nodejs_Xx=-'
+  ].concat(
+    process.config.variables.v8_enable_inspector
+      ? ['--inspect-brk', 'inspect-brk', '--inspect_brk']
+      : []
+  );
 
   const badFlags = [
     'INSPECT-BRK',
@@ -51,15 +51,19 @@ require('../common');
 // assert all "canonical" flags begin with dash(es)
 {
   process.allowedNodeEnvironmentFlags.forEach((flag) => {
-    assert(/^--?[a-z0-9._-]+$/.test(flag),
-           `Unexpected format for flag ${flag}`);
+    assert(
+      /^--?[a-z0-9._-]+$/.test(flag),
+      `Unexpected format for flag ${flag}`
+    );
   });
 }
 
 // assert immutability of process.allowedNodeEnvironmentFlags
 {
-  assert.strictEqual(Object.isFrozen(process.allowedNodeEnvironmentFlags),
-                     true);
+  assert.strictEqual(
+    Object.isFrozen(process.allowedNodeEnvironmentFlags),
+    true
+  );
 
   process.allowedNodeEnvironmentFlags.add('foo');
   assert.strictEqual(process.allowedNodeEnvironmentFlags.has('foo'), false);

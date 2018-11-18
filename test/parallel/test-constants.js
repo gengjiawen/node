@@ -14,12 +14,14 @@ assert.ok(binding.crypto);
 
 ['os', 'fs', 'crypto'].forEach((l) => {
   Object.keys(binding[l]).forEach((k) => {
-    if (typeof binding[l][k] === 'object') { // errno and signals
+    if (typeof binding[l][k] === 'object') {
+      // errno and signals
       Object.keys(binding[l][k]).forEach((j) => {
         assert.strictEqual(binding[l][k][j], constants[j]);
       });
     }
-    if (l !== 'os') { // top level os constant isn't currently copied
+    if (l !== 'os') {
+      // top level os constant isn't currently copied
       assert.strictEqual(binding[l][k], constants[k]);
     }
   });

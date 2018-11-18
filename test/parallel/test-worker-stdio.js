@@ -33,11 +33,17 @@ if (isMainThread) {
   source.pipe(original);
   w.stdout.pipe(passed);
 
-  passed.on('finish', common.mustCall(() => {
-    assert.strictEqual(original.buffer.compare(passed.buffer), 0,
-                       `Original: ${util.inspect(original.buffer)}, ` +
-                       `Actual: ${util.inspect(passed.buffer)}`);
-  }));
+  passed.on(
+    'finish',
+    common.mustCall(() => {
+      assert.strictEqual(
+        original.buffer.compare(passed.buffer),
+        0,
+        `Original: ${util.inspect(original.buffer)}, ` +
+          `Actual: ${util.inspect(passed.buffer)}`
+      );
+    })
+  );
 } else {
   process.stdin.pipe(process.stdout);
 }

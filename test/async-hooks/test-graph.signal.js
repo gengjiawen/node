@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (common.isWindows)
-  common.skip('no signals on Windows');
+if (common.isWindows) common.skip('no signals on Windows');
 if (!common.isMainThread)
   common.skip('No signal handling available in Workers');
 
@@ -42,21 +41,20 @@ process.on('exit', onexit);
 
 function onexit() {
   hooks.disable();
-  verifyGraph(
-    hooks,
-    [ { type: 'SIGNALWRAP', id: 'signal:1', triggerAsyncId: null },
-      { type: 'PROCESSWRAP', id: 'process:1', triggerAsyncId: null },
-      { type: 'PIPEWRAP', id: 'pipe:1', triggerAsyncId: null },
-      { type: 'PIPEWRAP', id: 'pipe:2', triggerAsyncId: null },
-      { type: 'PIPEWRAP', id: 'pipe:3', triggerAsyncId: null },
-      { type: 'PROCESSWRAP', id: 'process:2', triggerAsyncId: 'signal:1' },
-      { type: 'PIPEWRAP', id: 'pipe:4', triggerAsyncId: 'signal:1' },
-      { type: 'PIPEWRAP', id: 'pipe:5', triggerAsyncId: 'signal:1' },
-      { type: 'PIPEWRAP', id: 'pipe:6', triggerAsyncId: 'signal:1' },
-      { type: 'SIGNALWRAP', id: 'signal:2', triggerAsyncId: 'signal:1' },
-      { type: 'PROCESSWRAP', id: 'process:3', triggerAsyncId: 'signal:1' },
-      { type: 'PIPEWRAP', id: 'pipe:7', triggerAsyncId: 'signal:1' },
-      { type: 'PIPEWRAP', id: 'pipe:8', triggerAsyncId: 'signal:1' },
-      { type: 'PIPEWRAP', id: 'pipe:9', triggerAsyncId: 'signal:1' } ]
-  );
+  verifyGraph(hooks, [
+    { type: 'SIGNALWRAP', id: 'signal:1', triggerAsyncId: null },
+    { type: 'PROCESSWRAP', id: 'process:1', triggerAsyncId: null },
+    { type: 'PIPEWRAP', id: 'pipe:1', triggerAsyncId: null },
+    { type: 'PIPEWRAP', id: 'pipe:2', triggerAsyncId: null },
+    { type: 'PIPEWRAP', id: 'pipe:3', triggerAsyncId: null },
+    { type: 'PROCESSWRAP', id: 'process:2', triggerAsyncId: 'signal:1' },
+    { type: 'PIPEWRAP', id: 'pipe:4', triggerAsyncId: 'signal:1' },
+    { type: 'PIPEWRAP', id: 'pipe:5', triggerAsyncId: 'signal:1' },
+    { type: 'PIPEWRAP', id: 'pipe:6', triggerAsyncId: 'signal:1' },
+    { type: 'SIGNALWRAP', id: 'signal:2', triggerAsyncId: 'signal:1' },
+    { type: 'PROCESSWRAP', id: 'process:3', triggerAsyncId: 'signal:1' },
+    { type: 'PIPEWRAP', id: 'pipe:7', triggerAsyncId: 'signal:1' },
+    { type: 'PIPEWRAP', id: 'pipe:8', triggerAsyncId: 'signal:1' },
+    { type: 'PIPEWRAP', id: 'pipe:9', triggerAsyncId: 'signal:1' }
+  ]);
 }

@@ -6,8 +6,7 @@
 // on smaller / IoT platforms in case this poses problems for these targets.
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const h2 = require('http2');
 
@@ -41,48 +40,64 @@ function run(buffers, initialWindowSize) {
     });
     server.listen(0);
 
-    server.on('listening', common.mustCall(function() {
-      const port = this.address().port;
+    server.on(
+      'listening',
+      common.mustCall(function() {
+        const port = this.address().port;
 
-      const client =
-        h2.connect({
-          authority: 'localhost',
-          protocol: 'http:',
-          port
-        }, {
-          settings: {
-            initialWindowSize
-          }
-        }).on('connect', common.mustCall(() => {
-          const req = client.request({
-            ':method': 'GET',
-            ':path': '/'
-          });
-          const responses = [];
-          req.on('data', (data) => {
-            responses.push(data);
-          });
-          req.on('end', common.mustCall(() => {
-            const actualBuffer = Buffer.concat(responses);
-            assert.strictEqual(Buffer.compare(actualBuffer, expectedBuffer), 0);
-            // shut down
-            client.close();
-            server.close(() => {
-              resolve();
-            });
-          }));
-          req.end();
-        }));
-    }));
+        const client = h2
+          .connect(
+            {
+              authority: 'localhost',
+              protocol: 'http:',
+              port
+            },
+            {
+              settings: {
+                initialWindowSize
+              }
+            }
+          )
+          .on(
+            'connect',
+            common.mustCall(() => {
+              const req = client.request({
+                ':method': 'GET',
+                ':path': '/'
+              });
+              const responses = [];
+              req.on('data', (data) => {
+                responses.push(data);
+              });
+              req.on(
+                'end',
+                common.mustCall(() => {
+                  const actualBuffer = Buffer.concat(responses);
+                  assert.strictEqual(
+                    Buffer.compare(actualBuffer, expectedBuffer),
+                    0
+                  );
+                  // shut down
+                  client.close();
+                  server.close(() => {
+                    resolve();
+                  });
+                })
+              );
+              req.end();
+            })
+          );
+      })
+    );
   });
 }
 
 const bufferValueRange = [0, 1, 2, 3];
 const buffersList = [
   bufferValueRange.map((a) => Buffer.alloc(1 << 4, a)),
-  bufferValueRange.map((a) => Buffer.alloc((1 << 8) - 1, a)),
-// Specifying too large of a value causes timeouts on some platforms
-//  bufferValueRange.map((a) => Buffer.alloc(1 << 17, a))
+  bufferValueRange.map((a) => Buffer.alloc((1 << 8) - 1, a))
+  // Specifying too large of a value causes timeouts on some platforms
+  //  bufferValueRange.map((a) => Buffer.alloc(1 << 17, a))
 ];
 const initialWindowSizeList = [
   1 << 4,

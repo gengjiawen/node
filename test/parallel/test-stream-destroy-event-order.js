@@ -11,14 +11,20 @@ const rs = new Readable({
 let closed = false;
 let errored = false;
 
-rs.on('close', common.mustCall(() => {
-  closed = true;
-  assert(errored);
-}));
+rs.on(
+  'close',
+  common.mustCall(() => {
+    closed = true;
+    assert(errored);
+  })
+);
 
-rs.on('error', common.mustCall((err) => {
-  errored = true;
-  assert(!closed);
-}));
+rs.on(
+  'error',
+  common.mustCall((err) => {
+    errored = true;
+    assert(!closed);
+  })
+);
 
 rs.destroy(new Error('kaboom'));

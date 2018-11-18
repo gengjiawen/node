@@ -33,7 +33,6 @@ const assert = require('assert');
   assert.strictEqual(require(relativePath), fakeModule);
 }
 
-
 {
   const relativePath = 'fs';
   const fakeModule = {};

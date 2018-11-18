@@ -31,15 +31,23 @@ const spawn = require('child_process').spawn;
 let grep, sed, echo;
 
 if (common.isWindows) {
-  grep = spawn('grep', ['--binary', 'o']),
-  sed = spawn('sed', ['--binary', 's/o/O/']),
-  echo = spawn('cmd.exe',
-               ['/c', 'echo', 'hello&&', 'echo',
-                'node&&', 'echo', 'and&&', 'echo', 'world']);
+  (grep = spawn('grep', ['--binary', 'o'])),
+    (sed = spawn('sed', ['--binary', 's/o/O/'])),
+    (echo = spawn('cmd.exe', [
+      '/c',
+      'echo',
+      'hello&&',
+      'echo',
+      'node&&',
+      'echo',
+      'and&&',
+      'echo',
+      'world'
+    ]));
 } else {
-  grep = spawn('grep', ['o']),
-  sed = spawn('sed', ['s/o/O/']),
-  echo = spawn('echo', ['hello\nnode\nand\nworld\n']);
+  (grep = spawn('grep', ['o'])),
+    (sed = spawn('sed', ['s/o/O/'])),
+    (echo = spawn('echo', ['hello\nnode\nand\nworld\n']));
 }
 
 /*
@@ -51,7 +59,6 @@ if (common.isWindows) {
  * This test checks child processes exit, meaning they don't hang like
  * explained above.
  */
-
 
 // pipe echo | grep
 echo.stdout.on('data', function(data) {
@@ -82,7 +89,6 @@ sed.on('exit', function() {
   console.error('sed exit');
 });
 
-
 // pipe grep | sed
 grep.stdout.on('data', function(data) {
   console.error(`grep stdout ${data.length}`);
@@ -100,7 +106,6 @@ grep.stdout.on('end', function(code) {
   console.error('grep stdout end');
   sed.stdin.end();
 });
-
 
 let result = '';
 

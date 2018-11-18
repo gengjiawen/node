@@ -21,11 +21,9 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
-if (!common.opensslCli)
-  common.skip('node compiled without OpenSSL CLI.');
+if (!common.opensslCli) common.skip('node compiled without OpenSSL CLI.');
 
 const assert = require('assert');
 const spawn = require('child_process').spawn;
@@ -66,7 +64,7 @@ function test(next) {
   });
 
   server.listen(common.PORT, function() {
-    const args = (`s_client -connect 127.0.0.1:${common.PORT}`).split(' ');
+    const args = `s_client -connect 127.0.0.1:${common.PORT}`.split(' ');
     const child = spawn(common.opensslCli, args);
 
     child.stdout.resume();
@@ -78,9 +76,9 @@ function test(next) {
 
     child.stderr.on('data', function(data) {
       if (seenError) return;
-      handshakes += ((String(data)).match(/verify return:1/g) || []).length;
+      handshakes += (String(data).match(/verify return:1/g) || []).length;
       if (handshakes === 2) spam();
-      renegs += ((String(data)).match(/RENEGOTIATING/g) || []).length;
+      renegs += (String(data).match(/RENEGOTIATING/g) || []).length;
     });
 
     child.on('exit', function() {

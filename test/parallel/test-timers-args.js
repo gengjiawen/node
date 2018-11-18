@@ -3,7 +3,12 @@ require('../common');
 const assert = require('assert');
 
 function range(n) {
-  return 'x'.repeat(n + 1).split('').map(function(_, i) { return i; });
+  return 'x'
+    .repeat(n + 1)
+    .split('')
+    .map(function(_, i) {
+      return i;
+    });
 }
 
 function timeout(nargs) {

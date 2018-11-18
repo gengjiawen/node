@@ -48,8 +48,7 @@ process.on('warning', (warning) => {
   const expected = expectedWarnings.get(warning.message);
   assert.strictEqual(warning.code, expected.code);
   expected.count = expected.count - 1;
-  if (expected.count === 0)
-    expectedWarnings.delete(warning.message);
+  if (expected.count === 0) expectedWarnings.delete(warning.message);
 });
 
 process.on('exit', () => {

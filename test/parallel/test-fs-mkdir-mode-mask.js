@@ -23,8 +23,9 @@ tmpdir.refresh();
 
 function test(mode, asString) {
   const suffix = asString ? 'str' : 'num';
-  const input = asString ?
-    (mode | maskToIgnore).toString(8) : (mode | maskToIgnore);
+  const input = asString
+    ? (mode | maskToIgnore).toString(8)
+    : mode | maskToIgnore;
 
   {
     const dir = path.join(tmpdir.path, `mkdirSync-${suffix}`);
@@ -34,10 +35,14 @@ function test(mode, asString) {
 
   {
     const dir = path.join(tmpdir.path, `mkdir-${suffix}`);
-    fs.mkdir(dir, input, common.mustCall((err) => {
-      assert.ifError(err);
-      assert.strictEqual(fs.statSync(dir).mode & 0o777, mode);
-    }));
+    fs.mkdir(
+      dir,
+      input,
+      common.mustCall((err) => {
+        assert.ifError(err);
+        assert.strictEqual(fs.statSync(dir).mode & 0o777, mode);
+      })
+    );
   }
 }
 

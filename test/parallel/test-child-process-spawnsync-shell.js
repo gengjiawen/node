@@ -13,15 +13,16 @@ assert.notStrictEqual(doesNotExist.file, 'does-not-exist');
 assert.strictEqual(doesNotExist.error, undefined);
 assert.strictEqual(doesNotExist.signal, null);
 
-if (common.isWindows)
-  assert.strictEqual(doesNotExist.status, 1);    // Exit code of cmd.exe
-else
-  assert.strictEqual(doesNotExist.status, 127);  // Exit code of /bin/sh
+if (common.isWindows) assert.strictEqual(doesNotExist.status, 1);
+// Exit code of cmd.exe
+else assert.strictEqual(doesNotExist.status, 127); // Exit code of /bin/sh
 
 // Verify that passing arguments works
 internalCp.spawnSync = common.mustCall(function(opts) {
-  assert.strictEqual(opts.args[opts.args.length - 1].replace(/"/g, ''),
-                     'echo foo');
+  assert.strictEqual(
+    opts.args[opts.args.length - 1].replace(/"/g, ''),
+    'echo foo'
+  );
   return oldSpawnSync(opts);
 });
 const echo = cp.spawnSync('echo', ['foo'], { shell: true });
@@ -62,14 +63,19 @@ assert.strictEqual(env.stdout.toString().trim(), 'buzz');
     const windowsVerbatim = isCmd ? true : undefined;
     internalCp.spawnSync = common.mustCall(function(opts) {
       assert.strictEqual(opts.file, shellOutput);
-      assert.deepStrictEqual(opts.args,
-                             [shellOutput, ...shellFlags, outputCmd]);
+      assert.deepStrictEqual(opts.args, [
+        shellOutput,
+        ...shellFlags,
+        outputCmd
+      ]);
       assert.strictEqual(opts.options.shell, shell);
       assert.strictEqual(opts.options.file, opts.file);
       assert.deepStrictEqual(opts.options.args, opts.args);
       assert.strictEqual(opts.options.windowsHide, undefined);
-      assert.strictEqual(opts.options.windowsVerbatimArguments,
-                         windowsVerbatim);
+      assert.strictEqual(
+        opts.options.windowsVerbatimArguments,
+        windowsVerbatim
+      );
     });
     cp.spawnSync(cmd, { shell });
     internalCp.spawnSync = oldSpawnSync;
@@ -99,6 +105,5 @@ assert.strictEqual(env.stdout.toString().trim(), 'buzz');
   platform = originalPlatform;
 
   // Restore the original comspec environment variable if necessary.
-  if (originalComspec)
-    process.env.comspec = originalComspec;
+  if (originalComspec) process.env.comspec = originalComspec;
 }

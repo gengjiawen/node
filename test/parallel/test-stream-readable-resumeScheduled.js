@@ -18,9 +18,11 @@ const { Readable, Writable } = require('stream');
   r.pipe(w);
   assert.strictEqual(r._readableState.resumeScheduled, true);
 
-  process.nextTick(common.mustCall(() => {
-    assert.strictEqual(r._readableState.resumeScheduled, false);
-  }));
+  process.nextTick(
+    common.mustCall(() => {
+      assert.strictEqual(r._readableState.resumeScheduled, false);
+    })
+  );
 }
 
 {
@@ -33,14 +35,19 @@ const { Readable, Writable } = require('stream');
   r.push(Buffer.from([1, 2, 3]));
 
   // adding 'data' listener should change the state value
-  r.on('data', common.mustCall(() => {
-    assert.strictEqual(r._readableState.resumeScheduled, false);
-  }));
+  r.on(
+    'data',
+    common.mustCall(() => {
+      assert.strictEqual(r._readableState.resumeScheduled, false);
+    })
+  );
   assert.strictEqual(r._readableState.resumeScheduled, true);
 
-  process.nextTick(common.mustCall(() => {
-    assert.strictEqual(r._readableState.resumeScheduled, false);
-  }));
+  process.nextTick(
+    common.mustCall(() => {
+      assert.strictEqual(r._readableState.resumeScheduled, false);
+    })
+  );
 }
 
 {
@@ -54,12 +61,17 @@ const { Readable, Writable } = require('stream');
   r.resume();
   assert.strictEqual(r._readableState.resumeScheduled, true);
 
-  r.on('resume', common.mustCall(() => {
-    // The state value should be `false` again
-    assert.strictEqual(r._readableState.resumeScheduled, false);
-  }));
+  r.on(
+    'resume',
+    common.mustCall(() => {
+      // The state value should be `false` again
+      assert.strictEqual(r._readableState.resumeScheduled, false);
+    })
+  );
 
-  process.nextTick(common.mustCall(() => {
-    assert.strictEqual(r._readableState.resumeScheduled, false);
-  }));
+  process.nextTick(
+    common.mustCall(() => {
+      assert.strictEqual(r._readableState.resumeScheduled, false);
+    })
+  );
 }

@@ -22,11 +22,9 @@
 'use strict';
 const common = require('../common');
 
-if (!common.opensslCli)
-  common.skip('node compiled without OpenSSL CLI.');
+if (!common.opensslCli) common.skip('node compiled without OpenSSL CLI.');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tmpdir = require('../common/tmpdir');
 
@@ -70,16 +68,19 @@ function doTest() {
     const tmpPath = join(tmpdir.path, ticketFileName);
     fs.writeFileSync(tmpPath, fixtures.readSync(ticketFileName));
     return tmpPath;
-  }());
+  })();
 
   // Expects a callback -- cb(connectionType : enum ['New'|'Reused'])
 
   function Client(cb) {
     const flags = [
       's_client',
-      '-connect', `localhost:${common.PORT}`,
-      '-sess_in', sessionFileName,
-      '-sess_out', sessionFileName
+      '-connect',
+      `localhost:${common.PORT}`,
+      '-sess_in',
+      sessionFileName,
+      '-sess_out',
+      sessionFileName
     ];
     const client = spawn(common.opensslCli, flags, {
       stdio: ['ignore', 'pipe', 'ignore']
@@ -108,8 +109,7 @@ function doTest() {
 
   const server = tls.createServer(options, function(cleartext) {
     cleartext.on('error', function(er) {
-      if (er.code !== 'ECONNRESET')
-        throw er;
+      if (er.code !== 'ECONNRESET') throw er;
     });
     cleartext.end();
   });

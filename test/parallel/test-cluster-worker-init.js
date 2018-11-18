@@ -32,11 +32,14 @@ const msg = 'foo';
 if (cluster.isMaster) {
   const worker = cluster.fork();
 
-  worker.on('message', common.mustCall((message) => {
-    assert.strictEqual(message, true);
-    const w = worker.disconnect();
-    assert.strictEqual(worker, w);
-  }));
+  worker.on(
+    'message',
+    common.mustCall((message) => {
+      assert.strictEqual(message, true);
+      const w = worker.disconnect();
+      assert.strictEqual(worker, w);
+    })
+  );
 
   worker.on('online', () => {
     worker.send(msg);

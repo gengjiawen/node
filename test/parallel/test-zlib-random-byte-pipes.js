@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -79,7 +78,10 @@ class RandomReadStream extends Stream {
     this._processing = true;
 
     if (!this._remaining) {
-      this._hash = this._hasher.digest('hex').toLowerCase().trim();
+      this._hash = this._hasher
+        .digest('hex')
+        .toLowerCase()
+        .trim();
       this._processing = false;
 
       this.emit('end');
@@ -91,7 +93,7 @@ class RandomReadStream extends Stream {
     let block = this._opt.block;
     const jitter = this._opt.jitter;
     if (jitter) {
-      block += Math.ceil(Math.random() * jitter - (jitter / 2));
+      block += Math.ceil(Math.random() * jitter - jitter / 2);
     }
     block = Math.min(block, this._remaining);
     const buf = Buffer.allocUnsafe(block);
@@ -135,20 +137,28 @@ class HashStream extends Stream {
     if (c) {
       this.write(c);
     }
-    this._hash = this._hasher.digest('hex').toLowerCase().trim();
+    this._hash = this._hasher
+      .digest('hex')
+      .toLowerCase()
+      .trim();
     this.emit('data', this._hash);
     this.emit('end');
   }
 }
-
 
 const inp = new RandomReadStream({ total: 1024, block: 256, jitter: 16 });
 const out = new HashStream();
 const gzip = zlib.createGzip();
 const gunz = zlib.createGunzip();
 
-inp.pipe(gzip).pipe(gunz).pipe(out);
+inp
+  .pipe(gzip)
+  .pipe(gunz)
+  .pipe(out);
 
-out.on('data', common.mustCall((c) => {
-  assert.strictEqual(c, inp._hash, `Hash '${c}' equals '${inp._hash}'.`);
-}));
+out.on(
+  'data',
+  common.mustCall((c) => {
+    assert.strictEqual(c, inp._hash, `Hash '${c}' equals '${inp._hash}'.`);
+  })
+);

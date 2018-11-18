@@ -40,11 +40,7 @@ cluster.on('setup', () => {
   configs.push(cheapClone(cluster.settings));
 });
 
-const execs = [
-  'node-next',
-  'node-next-2',
-  'node-next-3',
-];
+const execs = ['node-next', 'node-next-2', 'node-next-3'];
 
 process.on('exit', () => {
   // Tests that "setup" is emitted for every call to setupMaster

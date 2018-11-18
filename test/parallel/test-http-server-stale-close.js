@@ -25,12 +25,15 @@ const http = require('http');
 const fork = require('child_process').fork;
 
 if (process.env.NODE_TEST_FORK_PORT) {
-  const req = http.request({
-    headers: { 'Content-Length': '42' },
-    method: 'POST',
-    host: '127.0.0.1',
-    port: +process.env.NODE_TEST_FORK_PORT,
-  }, process.exit);
+  const req = http.request(
+    {
+      headers: { 'Content-Length': '42' },
+      method: 'POST',
+      host: '127.0.0.1',
+      port: +process.env.NODE_TEST_FORK_PORT
+    },
+    process.exit
+  );
   req.write('BAM');
   req.end();
 } else {

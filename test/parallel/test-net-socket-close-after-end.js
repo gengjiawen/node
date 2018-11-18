@@ -24,8 +24,10 @@ server.on('connection', (socket) => {
   socket.end('foo');
 });
 
-server.listen(common.mustCall(() => {
-  const socket = net.createConnection(server.address().port, () => {
-    socket.end('foo');
-  });
-}));
+server.listen(
+  common.mustCall(() => {
+    const socket = net.createConnection(server.address().port, () => {
+      socket.end('foo');
+    });
+  })
+);

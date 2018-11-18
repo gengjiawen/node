@@ -26,5 +26,6 @@ const { OutgoingMessage } = require('http');
     Object.entries({
       host: ['host', 'risingstack.com'],
       origin: ['Origin', 'localhost']
-    }));
+    })
+  );
 }

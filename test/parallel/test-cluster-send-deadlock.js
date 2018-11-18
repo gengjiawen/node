@@ -47,24 +47,29 @@ if (cluster.isMaster) {
   process.on('message', function(msg, handle) {
     if (msg.message && msg.message === 'listen') {
       assert(msg.port);
-      const client1 = net.connect({
-        host: 'localhost',
-        port: msg.port
-      }, function() {
-        const client2 = net.connect({
+      const client1 = net.connect(
+        {
           host: 'localhost',
           port: msg.port
-        }, function() {
-          client1.on('close', onclose);
-          client2.on('close', onclose);
-          client1.end();
-          client2.end();
-        });
-      });
+        },
+        function() {
+          const client2 = net.connect(
+            {
+              host: 'localhost',
+              port: msg.port
+            },
+            function() {
+              client1.on('close', onclose);
+              client2.on('close', onclose);
+              client1.end();
+              client2.end();
+            }
+          );
+        }
+      );
       let waiting = 2;
       function onclose() {
-        if (--waiting === 0)
-          cluster.worker.disconnect();
+        if (--waiting === 0) cluster.worker.disconnect();
       }
     } else {
       process.send('reply', handle);

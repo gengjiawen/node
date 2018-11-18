@@ -41,13 +41,15 @@ function parent() {
   const { spawn } = require('child_process');
   const node = process.execPath;
   const f = __filename;
-  const option = { stdio: [ 0, 1, 'ignore' ] };
+  const option = { stdio: [0, 1, 'ignore'] };
 
   const test = (arg, name = 'child', exit) => {
     spawn(node, [f, arg], option).on('exit', (code) => {
       assert.strictEqual(
-        code, exit,
-        `wrong exit for ${arg}-${name}\nexpected:${exit} but got:${code}`);
+        code,
+        exit,
+        `wrong exit for ${arg}-${name}\nexpected:${exit} but got:${code}`
+      );
       console.log(`ok - ${arg} exited with ${exit}`);
     });
   };

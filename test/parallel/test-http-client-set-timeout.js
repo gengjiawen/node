@@ -13,7 +13,7 @@ const options = {
   port: undefined,
   host: '127.0.0.1',
   path: '/',
-  timeout: HTTP_CLIENT_TIMEOUT,
+  timeout: HTTP_CLIENT_TIMEOUT
 };
 
 const server = http.createServer(() => {
@@ -34,9 +34,12 @@ function doRequest() {
   req.on('close', common.mustCall(() => server.close()));
 
   let timeout_events = 0;
-  req.on('timeout', common.mustCall(() => {
-    timeout_events += 1;
-  }));
+  req.on(
+    'timeout',
+    common.mustCall(() => {
+      timeout_events += 1;
+    })
+  );
   req.end();
 
   setTimeout(function() {

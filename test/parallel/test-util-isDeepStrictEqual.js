@@ -58,20 +58,20 @@ class MyRegExp extends RegExp {
 {
   // For these cases, deepStrictEqual should throw.
   const similar = new Set([
-    { 0: '1' },  // Object
-    { 0: 1 },  // Object
-    new String('1'),  // Object
-    ['1'],  // Array
-    [1],  // Array
+    { 0: '1' }, // Object
+    { 0: 1 }, // Object
+    new String('1'), // Object
+    ['1'], // Array
+    [1], // Array
     new MyDate('2016'), // Date with this[0] = '1'
-    new MyRegExp('test'),  // RegExp with this[0] = '1'
+    new MyRegExp('test'), // RegExp with this[0] = '1'
     new Int8Array([1]), // Int8Array
     new Uint8Array([1]), // Uint8Array
     new Int16Array([1]), // Int16Array
     new Uint16Array([1]), // Uint16Array
     new Int32Array([1]), // Int32Array
     new Uint32Array([1]), // Uint32Array
-    Buffer.from([1]), // Buffer
+    Buffer.from([1]) // Buffer
   ]);
 
   for (const a of similar) {
@@ -104,10 +104,10 @@ utilIsDeepStrict(new Set(['1', '2', '3']), new Set(['1', '2', '3']));
 utilIsDeepStrict(new Set([[1, 2], [3, 4]]), new Set([[3, 4], [1, 2]]));
 
 {
-  const a = [ 1, 2 ];
-  const b = [ 3, 4 ];
-  const c = [ 1, 2 ];
-  const d = [ 3, 4 ];
+  const a = [1, 2];
+  const b = [3, 4];
+  const c = [1, 2];
+  const d = [3, 4];
 
   utilIsDeepStrict(
     { a: a, b: b, s: new Set([a, b]) },
@@ -118,10 +118,7 @@ utilIsDeepStrict(new Set([[1, 2], [3, 4]]), new Set([[3, 4], [1, 2]]));
 utilIsDeepStrict(new Map([[1, 1], [2, 2]]), new Map([[1, 1], [2, 2]]));
 utilIsDeepStrict(new Map([[1, 1], [2, 2]]), new Map([[2, 2], [1, 1]]));
 notUtilIsDeepStrict(new Map([[1, 1], [2, 2]]), new Map([[1, 2], [2, 1]]));
-notUtilIsDeepStrict(
-  new Map([[[1], 1], [{}, 2]]),
-  new Map([[[1], 2], [{}, 1]])
-);
+notUtilIsDeepStrict(new Map([[[1], 1], [{}, 2]]), new Map([[[1], 2], [{}, 1]]));
 
 notUtilIsDeepStrict(new Set([1]), [1]);
 notUtilIsDeepStrict(new Set(), []);
@@ -166,20 +163,14 @@ utilIsDeepStrict(
   new Map([[1, 'a'], [{}, 'a']]),
   new Map([[1, 'a'], [{}, 'a']])
 );
-utilIsDeepStrict(
-  new Set([1, 'a', [{}, 'a']]),
-  new Set([1, 'a', [{}, 'a']])
-);
+utilIsDeepStrict(new Set([1, 'a', [{}, 'a']]), new Set([1, 'a', [{}, 'a']]));
 
 // This is an awful case, where a map contains multiple equivalent keys:
 notUtilIsDeepStrict(
   new Map([[1, 'a'], ['1', 'b']]),
   new Map([['1', 'a'], [true, 'b']])
 );
-notUtilIsDeepStrict(
-  new Set(['a']),
-  new Set(['b'])
-);
+notUtilIsDeepStrict(new Set(['a']), new Set(['b']));
 utilIsDeepStrict(
   new Map([[{}, 'a'], [{}, 'b']]),
   new Map([[{}, 'b'], [{}, 'a']])
@@ -194,60 +185,27 @@ notUtilIsDeepStrict(
 );
 
 // Similar object keys
-notUtilIsDeepStrict(
-  new Set([{}, {}]),
-  new Set([{}, 1])
-);
-notUtilIsDeepStrict(
-  new Set([[{}, 1], [{}, 1]]),
-  new Set([[{}, 1], [1, 1]])
-);
-notUtilIsDeepStrict(
-  new Map([[{}, 1], [{}, 1]]),
-  new Map([[{}, 1], [1, 1]])
-);
-notUtilIsDeepStrict(
-  new Map([[{}, 1], [true, 1]]),
-  new Map([[{}, 1], [1, 1]])
-);
+notUtilIsDeepStrict(new Set([{}, {}]), new Set([{}, 1]));
+notUtilIsDeepStrict(new Set([[{}, 1], [{}, 1]]), new Set([[{}, 1], [1, 1]]));
+notUtilIsDeepStrict(new Map([[{}, 1], [{}, 1]]), new Map([[{}, 1], [1, 1]]));
+notUtilIsDeepStrict(new Map([[{}, 1], [true, 1]]), new Map([[{}, 1], [1, 1]]));
 
 // Similar primitive key / values
-notUtilIsDeepStrict(
-  new Set([1, true, false]),
-  new Set(['1', 0, '0'])
-);
+notUtilIsDeepStrict(new Set([1, true, false]), new Set(['1', 0, '0']));
 notUtilIsDeepStrict(
   new Map([[1, 5], [true, 5], [false, 5]]),
   new Map([['1', 5], [0, 5], ['0', 5]])
 );
 
 // undefined value in Map
-utilIsDeepStrict(
-  new Map([[1, undefined]]),
-  new Map([[1, undefined]])
-);
-notUtilIsDeepStrict(
-  new Map([[1, null]]),
-  new Map([['1', undefined]])
-);
-notUtilIsDeepStrict(
-  new Map([[1, undefined]]),
-  new Map([[2, undefined]])
-);
+utilIsDeepStrict(new Map([[1, undefined]]), new Map([[1, undefined]]));
+notUtilIsDeepStrict(new Map([[1, null]]), new Map([['1', undefined]]));
+notUtilIsDeepStrict(new Map([[1, undefined]]), new Map([[2, undefined]]));
 
 // null as key
-utilIsDeepStrict(
-  new Map([[null, 3]]),
-  new Map([[null, 3]])
-);
-notUtilIsDeepStrict(
-  new Map([[null, undefined]]),
-  new Map([[undefined, null]])
-);
-notUtilIsDeepStrict(
-  new Set([null]),
-  new Set([undefined])
-);
+utilIsDeepStrict(new Map([[null, 3]]), new Map([[null, 3]]));
+notUtilIsDeepStrict(new Map([[null, undefined]]), new Map([[undefined, null]]));
+notUtilIsDeepStrict(new Set([null]), new Set([undefined]));
 
 // GH-6416. Make sure circular refs don't throw.
 {
@@ -290,14 +248,18 @@ notUtilIsDeepStrict(
 
 // GH-7178. Ensure reflexivity of deepEqual with `arguments` objects.
 {
-  const args = (function() { return arguments; })();
+  const args = (function() {
+    return arguments;
+  })();
   notUtilIsDeepStrict([], args);
 }
 
 // More checking that arguments objects are handled correctly
 {
   // eslint-disable-next-line func-style
-  const returnArguments = function() { return arguments; };
+  const returnArguments = function() {
+    return arguments;
+  };
 
   const someArgs = returnArguments('a');
   const sameArgs = returnArguments('a');
@@ -320,7 +282,7 @@ notUtilIsDeepStrict(
     true,
     {},
     [],
-    () => {},
+    () => {}
   ];
   utilIsDeepStrict(new Set(values), new Set(values));
   utilIsDeepStrict(new Set(values), new Set(values.reverse()));
@@ -410,7 +372,7 @@ notUtilIsDeepStrict(
 
 // Handle sparse arrays
 utilIsDeepStrict([1, , , 3], [1, , , 3]);
-notUtilIsDeepStrict([1, , , 3], [1, , , 3, , , ]);
+notUtilIsDeepStrict([1, , , 3], [1, , , 3, , ,]);
 
 // Handle different error messages
 {
@@ -426,7 +388,7 @@ notUtilIsDeepStrict([1, , , 3], [1, , , 3, , , ]);
 assert.strictEqual(util.isDeepStrictEqual(NaN, NaN), true);
 assert.strictEqual(util.isDeepStrictEqual({ a: NaN }, { a: NaN }), true);
 assert.strictEqual(
-  util.isDeepStrictEqual([ 1, 2, NaN, 4 ], [ 1, 2, NaN, 4 ]),
+  util.isDeepStrictEqual([1, 2, NaN, 4], [1, 2, NaN, 4]),
   true
 );
 
@@ -459,7 +421,7 @@ utilIsDeepStrict(-0, -0);
   const obj1 = { [symbol1]: 1 };
   const obj2 = { [symbol1]: 1 };
   const obj3 = { [Symbol()]: 1 };
-  const obj4 = { };
+  const obj4 = {};
   // Add a non enumerable symbol as well. It is going to be ignored!
   Object.defineProperty(obj2, Symbol(), { value: 1 });
   Object.defineProperty(obj4, symbol1, { value: 1 });

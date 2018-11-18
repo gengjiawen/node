@@ -1,9 +1,8 @@
-
 const spawn = require('child_process').spawn,
-    path = require('path'),
-    childPath = path.join(__dirname, 'child-process-persistent.js');
+  path = require('path'),
+  childPath = path.join(__dirname, 'child-process-persistent.js');
 
-var child = spawn(process.execPath, [ childPath ], {
+var child = spawn(process.execPath, [childPath], {
   detached: true,
   stdio: 'ignore'
 });

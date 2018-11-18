@@ -11,12 +11,13 @@ if (process.argv[2] === 'child') {
 } else {
   const NODE_EXTRA_CA_CERTS = fixtures.path('keys', 'ca1-cert.pem');
 
-  fork(
-    __filename,
-    ['child'],
-    { env: Object.assign({}, process.env, { NODE_EXTRA_CA_CERTS }) },
-  ).on('exit', common.mustCall(function(status) {
-    // client did not succeed in connecting
-    assert.strictEqual(status, 0);
-  }));
+  fork(__filename, ['child'], {
+    env: Object.assign({}, process.env, { NODE_EXTRA_CA_CERTS })
+  }).on(
+    'exit',
+    common.mustCall(function(status) {
+      // client did not succeed in connecting
+      assert.strictEqual(status, 0);
+    })
+  );
 }

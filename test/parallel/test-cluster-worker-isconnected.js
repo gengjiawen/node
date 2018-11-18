@@ -8,9 +8,12 @@ if (cluster.isMaster) {
 
   assert.strictEqual(worker.isConnected(), true);
 
-  worker.on('disconnect', common.mustCall(() => {
-    assert.strictEqual(worker.isConnected(), false);
-  }));
+  worker.on(
+    'disconnect',
+    common.mustCall(() => {
+      assert.strictEqual(worker.isConnected(), false);
+    })
+  );
 
   worker.on('message', function(msg) {
     if (msg === 'readyToDisconnect') {

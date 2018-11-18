@@ -32,8 +32,11 @@ const statwatcher1 = as[0];
 assert.strictEqual(statwatcher1.type, 'STATWATCHER');
 assert.strictEqual(typeof statwatcher1.uid, 'number');
 assert.strictEqual(statwatcher1.triggerAsyncId, 1);
-checkInvocations(statwatcher1, { init: 1 },
-                 'watcher1: when started to watch file');
+checkInvocations(
+  statwatcher1,
+  { init: 1 },
+  'watcher1: when started to watch file'
+);
 
 // install second file watcher
 const w2 = fs.watchFile(file2, { interval: 10 }, onchange);
@@ -44,42 +47,73 @@ const statwatcher2 = as[1];
 assert.strictEqual(statwatcher2.type, 'STATWATCHER');
 assert.strictEqual(typeof statwatcher2.uid, 'number');
 assert.strictEqual(statwatcher2.triggerAsyncId, 1);
-checkInvocations(statwatcher1, { init: 1 },
-                 'watcher1: when started to watch second file');
-checkInvocations(statwatcher2, { init: 1 },
-                 'watcher2: when started to watch second file');
+checkInvocations(
+  statwatcher1,
+  { init: 1 },
+  'watcher1: when started to watch second file'
+);
+checkInvocations(
+  statwatcher2,
+  { init: 1 },
+  'watcher2: when started to watch second file'
+);
 
-setTimeout(() => fs.writeFileSync(file1, 'foo++'),
-           common.platformTimeout(100));
-w1.once('change', common.mustCall(() => {
-  setImmediate(() => {
-    checkInvocations(statwatcher1, { init: 1, before: 1, after: 1 },
-                     'watcher1: when unwatched first file');
-    checkInvocations(statwatcher2, { init: 1 },
-                     'watcher2: when unwatched first file');
+setTimeout(() => fs.writeFileSync(file1, 'foo++'), common.platformTimeout(100));
+w1.once(
+  'change',
+  common.mustCall(() => {
+    setImmediate(() => {
+      checkInvocations(
+        statwatcher1,
+        { init: 1, before: 1, after: 1 },
+        'watcher1: when unwatched first file'
+      );
+      checkInvocations(
+        statwatcher2,
+        { init: 1 },
+        'watcher2: when unwatched first file'
+      );
 
-    setTimeout(() => fs.writeFileSync(file2, 'bar++'),
-               common.platformTimeout(100));
-    w2.once('change', common.mustCall(() => {
-      setImmediate(() => {
-        checkInvocations(statwatcher1, { init: 1, before: 1, after: 1 },
-                         'watcher1: when unwatched second file');
-        checkInvocations(statwatcher2, { init: 1, before: 1, after: 1 },
-                         'watcher2: when unwatched second file');
-        fs.unwatchFile(file1);
-        fs.unwatchFile(file2);
-      });
-    }));
-  });
-}));
+      setTimeout(
+        () => fs.writeFileSync(file2, 'bar++'),
+        common.platformTimeout(100)
+      );
+      w2.once(
+        'change',
+        common.mustCall(() => {
+          setImmediate(() => {
+            checkInvocations(
+              statwatcher1,
+              { init: 1, before: 1, after: 1 },
+              'watcher1: when unwatched second file'
+            );
+            checkInvocations(
+              statwatcher2,
+              { init: 1, before: 1, after: 1 },
+              'watcher2: when unwatched second file'
+            );
+            fs.unwatchFile(file1);
+            fs.unwatchFile(file2);
+          });
+        })
+      );
+    });
+  })
+);
 
 process.on('exit', onexit);
 
 function onexit() {
   hooks.disable();
   hooks.sanityCheck('STATWATCHER');
-  checkInvocations(statwatcher1, { init: 1, before: 1, after: 1 },
-                   'watcher1: when process exits');
-  checkInvocations(statwatcher2, { init: 1, before: 1, after: 1 },
-                   'watcher2: when process exits');
+  checkInvocations(
+    statwatcher1,
+    { init: 1, before: 1, after: 1 },
+    'watcher1: when process exits'
+  );
+  checkInvocations(
+    statwatcher2,
+    { init: 1, before: 1, after: 1 },
+    'watcher2: when process exits'
+  );
 }

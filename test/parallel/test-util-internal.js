@@ -14,31 +14,27 @@ const {
 } = internalBinding('util');
 
 for (const oneEnv in process.env) {
-  assert.strictEqual(
-    safeGetenv(oneEnv),
-    process.env[oneEnv]
-  );
+  assert.strictEqual(safeGetenv(oneEnv), process.env[oneEnv]);
 }
 
 assert.strictEqual(
   getHiddenValue({}, kArrowMessagePrivateSymbolIndex),
-  undefined);
+  undefined
+);
 
 const obj = {};
 assert.strictEqual(
   setHiddenValue(obj, kArrowMessagePrivateSymbolIndex, 'bar'),
-  true);
-assert.strictEqual(
-  getHiddenValue(obj, kArrowMessagePrivateSymbolIndex),
-  'bar');
+  true
+);
+assert.strictEqual(getHiddenValue(obj, kArrowMessagePrivateSymbolIndex), 'bar');
 
 let arrowMessage;
 
 try {
   require(fixtures.path('syntax', 'bad_syntax'));
 } catch (err) {
-  arrowMessage =
-      getHiddenValue(err, kArrowMessagePrivateSymbolIndex);
+  arrowMessage = getHiddenValue(err, kArrowMessagePrivateSymbolIndex);
 }
 
 assert(/bad_syntax\.js:1/.test(arrowMessage));

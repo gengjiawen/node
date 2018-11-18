@@ -8,10 +8,7 @@ const fixtures = require('../common/fixtures');
 const node = process.execPath;
 
 // test both sets of arguments that check syntax
-const syntaxArgs = [
-  ['-c'],
-  ['--check']
-];
+const syntaxArgs = [['-c'], ['--check']];
 
 // Match on the name of the `Error` but not the message as it is different
 // depending on the JavaScript engine.
@@ -33,11 +30,14 @@ const notFoundRE = /^Error: Cannot find module/m;
     const _args = args.concat(file);
 
     const cmd = [node, ..._args].join(' ');
-    exec(cmd, common.mustCall((err, stdout, stderr) => {
-      assert.ifError(err);
-      assert.strictEqual(stdout, '');
-      assert.strictEqual(stderr, '');
-    }));
+    exec(
+      cmd,
+      common.mustCall((err, stdout, stderr) => {
+        assert.ifError(err);
+        assert.strictEqual(stdout, '');
+        assert.strictEqual(stderr, '');
+      })
+    );
   });
 });
 
@@ -54,42 +54,45 @@ const notFoundRE = /^Error: Cannot find module/m;
   syntaxArgs.forEach(function(args) {
     const _args = args.concat(file);
     const cmd = [node, ..._args].join(' ');
-    exec(cmd, common.mustCall((err, stdout, stderr) => {
-      assert.strictEqual(err instanceof Error, true);
-      assert.strictEqual(err.code, 1);
+    exec(
+      cmd,
+      common.mustCall((err, stdout, stderr) => {
+        assert.strictEqual(err instanceof Error, true);
+        assert.strictEqual(err.code, 1);
 
-      // no stdout should be produced
-      assert.strictEqual(stdout, '');
+        // no stdout should be produced
+        assert.strictEqual(stdout, '');
 
-      // stderr should have a syntax error message
-      assert(syntaxErrorRE.test(stderr), `${syntaxErrorRE} === ${stderr}`);
+        // stderr should have a syntax error message
+        assert(syntaxErrorRE.test(stderr), `${syntaxErrorRE} === ${stderr}`);
 
-      // stderr should include the filename
-      assert(stderr.startsWith(file), `${stderr} starts with ${file}`);
-    }));
+        // stderr should include the filename
+        assert(stderr.startsWith(file), `${stderr} starts with ${file}`);
+      })
+    );
   });
 });
 
 // test file not found
-[
-  'syntax/file_not_found.js',
-  'syntax/file_not_found'
-].forEach(function(file) {
+['syntax/file_not_found.js', 'syntax/file_not_found'].forEach(function(file) {
   file = fixtures.path(file);
 
   // loop each possible option, `-c` or `--check`
   syntaxArgs.forEach(function(args) {
     const _args = args.concat(file);
     const cmd = [node, ..._args].join(' ');
-    exec(cmd, common.mustCall((err, stdout, stderr) => {
-      // no stdout should be produced
-      assert.strictEqual(stdout, '');
+    exec(
+      cmd,
+      common.mustCall((err, stdout, stderr) => {
+        // no stdout should be produced
+        assert.strictEqual(stdout, '');
 
-      // stderr should have a module not found error message
-      assert(notFoundRE.test(stderr), `${notFoundRE} === ${stderr}`);
+        // stderr should have a module not found error message
+        assert(notFoundRE.test(stderr), `${notFoundRE} === ${stderr}`);
 
-      assert.strictEqual(err.code, 1);
-    }));
+        assert.strictEqual(err.code, 1);
+      })
+    );
   });
 });
 
@@ -129,15 +132,18 @@ syntaxArgs.forEach(function(args) {
   ['-e', '--eval'].forEach(function(evalFlag) {
     const args = [checkFlag, evalFlag, 'foo'];
     const cmd = [node, ...args].join(' ');
-    exec(cmd, common.mustCall((err, stdout, stderr) => {
-      assert.strictEqual(err instanceof Error, true);
-      assert.strictEqual(err.code, 9);
-      assert(
-        stderr.startsWith(
-          `${node}: either --check or --eval can be used, not both`
-        )
-      );
-    }));
+    exec(
+      cmd,
+      common.mustCall((err, stdout, stderr) => {
+        assert.strictEqual(err instanceof Error, true);
+        assert.strictEqual(err.code, 9);
+        assert(
+          stderr.startsWith(
+            `${node}: either --check or --eval can be used, not both`
+          )
+        );
+      })
+    );
   });
 });
 
@@ -148,18 +154,21 @@ syntaxArgs.forEach(function(args) {
     const file = fixtures.path('syntax', 'illegal_if_not_wrapped.js');
     const args = [requireFlag, preloadFile, checkFlag, file];
     const cmd = [node, ...args].join(' ');
-    exec(cmd, common.mustCall((err, stdout, stderr) => {
-      assert.strictEqual(err instanceof Error, true);
-      assert.strictEqual(err.code, 1);
+    exec(
+      cmd,
+      common.mustCall((err, stdout, stderr) => {
+        assert.strictEqual(err instanceof Error, true);
+        assert.strictEqual(err.code, 1);
 
-      // no stdout should be produced
-      assert.strictEqual(stdout, '');
+        // no stdout should be produced
+        assert.strictEqual(stdout, '');
 
-      // stderr should have a syntax error message
-      assert(syntaxErrorRE.test(stderr), `${syntaxErrorRE} === ${stderr}`);
+        // stderr should have a syntax error message
+        assert(syntaxErrorRE.test(stderr), `${syntaxErrorRE} === ${stderr}`);
 
-      // stderr should include the filename
-      assert(stderr.startsWith(file), `${stderr} starts with ${file}`);
-    }));
+        // stderr should include the filename
+        assert(stderr.startsWith(file), `${stderr} starts with ${file}`);
+      })
+    );
   });
 });

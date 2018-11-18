@@ -41,41 +41,58 @@ function errExec(script, callback) {
 
 const syntaxErrorMessage = /\bSyntaxError\b/;
 
-
 // Simple throw error
-errExec('throws_error.js', common.mustCall(function(err, stdout, stderr) {
-  assert.ok(/blah/.test(stderr));
-}));
-
+errExec(
+  'throws_error.js',
+  common.mustCall(function(err, stdout, stderr) {
+    assert.ok(/blah/.test(stderr));
+  })
+);
 
 // Trying to JSON.parse(undefined)
-errExec('throws_error2.js', common.mustCall(function(err, stdout, stderr) {
-  assert.ok(syntaxErrorMessage.test(stderr));
-}));
-
+errExec(
+  'throws_error2.js',
+  common.mustCall(function(err, stdout, stderr) {
+    assert.ok(syntaxErrorMessage.test(stderr));
+  })
+);
 
 // Trying to JSON.parse(undefined) in nextTick
-errExec('throws_error3.js', common.mustCall(function(err, stdout, stderr) {
-  assert.ok(syntaxErrorMessage.test(stderr));
-}));
-
+errExec(
+  'throws_error3.js',
+  common.mustCall(function(err, stdout, stderr) {
+    assert.ok(syntaxErrorMessage.test(stderr));
+  })
+);
 
 // throw ILLEGAL error
-errExec('throws_error4.js', common.mustCall(function(err, stdout, stderr) {
-  assert.ok(syntaxErrorMessage.test(stderr));
-}));
+errExec(
+  'throws_error4.js',
+  common.mustCall(function(err, stdout, stderr) {
+    assert.ok(syntaxErrorMessage.test(stderr));
+  })
+);
 
 // Specific long exception line doesn't result in stack overflow
-errExec('throws_error5.js', common.mustCall(function(err, stdout, stderr) {
-  assert.ok(syntaxErrorMessage.test(stderr));
-}));
+errExec(
+  'throws_error5.js',
+  common.mustCall(function(err, stdout, stderr) {
+    assert.ok(syntaxErrorMessage.test(stderr));
+  })
+);
 
 // Long exception line with length > errorBuffer doesn't result in assertion
-errExec('throws_error6.js', common.mustCall(function(err, stdout, stderr) {
-  assert.ok(syntaxErrorMessage.test(stderr));
-}));
+errExec(
+  'throws_error6.js',
+  common.mustCall(function(err, stdout, stderr) {
+    assert.ok(syntaxErrorMessage.test(stderr));
+  })
+);
 
 // Object that throws in toString() doesn't print garbage
-errExec('throws_error7.js', common.mustCall(function(err, stdout, stderr) {
-  assert.ok(/<toString\(\) threw exception/.test(stderr));
-}));
+errExec(
+  'throws_error7.js',
+  common.mustCall(function(err, stdout, stderr) {
+    assert.ok(/<toString\(\) threw exception/.test(stderr));
+  })
+);

@@ -10,9 +10,12 @@ domain.on('error', common.mustNotCall());
 const ee = new EventEmitter();
 
 const plainObject = { justAn: 'object' };
-ee.once('error', common.mustCall((err) => {
-  assert.deepStrictEqual(err, plainObject);
-}));
+ee.once(
+  'error',
+  common.mustCall((err) => {
+    assert.deepStrictEqual(err, plainObject);
+  })
+);
 ee.emit('error', plainObject);
 
 const err = new Error('test error');

@@ -17,11 +17,15 @@ let pipe1, pipe2;
 let pipeserver;
 let pipeconnect;
 
-net.createServer(common.mustCall(function(c) {
-  c.end();
-  this.close();
-  process.nextTick(maybeOnconnect.bind(null, 'server'));
-})).listen(common.PIPE, common.mustCall(onlisten));
+net
+  .createServer(
+    common.mustCall(function(c) {
+      c.end();
+      this.close();
+      process.nextTick(maybeOnconnect.bind(null, 'server'));
+    })
+  )
+  .listen(common.PIPE, common.mustCall(onlisten));
 
 function onlisten() {
   const pipeservers = hooks.activitiesOfTypes('PIPESERVERWRAP');
@@ -29,8 +33,10 @@ function onlisten() {
   assert.strictEqual(pipeservers.length, 1);
   assert.strictEqual(pipeconnects.length, 0);
 
-  net.connect(common.PIPE,
-              common.mustCall(maybeOnconnect.bind(null, 'client')));
+  net.connect(
+    common.PIPE,
+    common.mustCall(maybeOnconnect.bind(null, 'client'))
+  );
 
   const pipes = hooks.activitiesOfTypes('PIPEWRAP');
   pipeconnects = hooks.activitiesOfTypes('PIPECONNECTWRAP');
@@ -44,7 +50,7 @@ function onlisten() {
   assert.strictEqual(pipeserver.type, 'PIPESERVERWRAP');
   assert.strictEqual(pipe1.type, 'PIPEWRAP');
   assert.strictEqual(pipeconnect.type, 'PIPECONNECTWRAP');
-  for (const a of [ pipeserver, pipe1, pipeconnect ]) {
+  for (const a of [pipeserver, pipe1, pipeconnect]) {
     assert.strictEqual(typeof a.uid, 'number');
     assert.strictEqual(typeof a.triggerAsyncId, 'number');
     checkInvocations(a, { init: 1 }, 'after net.connect');
@@ -68,11 +74,17 @@ function maybeOnconnect(source) {
   assert.strictEqual(typeof pipe2.uid, 'number');
   assert.strictEqual(typeof pipe2.triggerAsyncId, 'number');
 
-  checkInvocations(pipeserver, { init: 1, before: 1, after: 1 },
-                   'pipeserver, client connected');
+  checkInvocations(
+    pipeserver,
+    { init: 1, before: 1, after: 1 },
+    'pipeserver, client connected'
+  );
   checkInvocations(pipe1, { init: 1 }, 'pipe1, client connected');
-  checkInvocations(pipeconnect, { init: 1, before: 1 },
-                   'pipeconnect, client connected');
+  checkInvocations(
+    pipeconnect,
+    { init: 1, before: 1 },
+    'pipeconnect, client connected'
+  );
   checkInvocations(pipe2, { init: 1 }, 'pipe2, client connected');
   tick(5);
 }
@@ -85,12 +97,24 @@ function onexit() {
   hooks.sanityCheck('PIPESERVERWRAP');
   hooks.sanityCheck('PIPECONNECTWRAP');
   // TODO(thlorenz) why have some of those 'before' and 'after' called twice
-  checkInvocations(pipeserver, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'pipeserver, process exiting');
-  checkInvocations(pipe1, { init: 1, before: 2, after: 2, destroy: 1 },
-                   'pipe1, process exiting');
-  checkInvocations(pipeconnect, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'pipeconnect, process exiting');
-  checkInvocations(pipe2, { init: 1, before: 2, after: 2, destroy: 1 },
-                   'pipe2, process exiting');
+  checkInvocations(
+    pipeserver,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'pipeserver, process exiting'
+  );
+  checkInvocations(
+    pipe1,
+    { init: 1, before: 2, after: 2, destroy: 1 },
+    'pipe1, process exiting'
+  );
+  checkInvocations(
+    pipeconnect,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'pipeconnect, process exiting'
+  );
+  checkInvocations(
+    pipe2,
+    { init: 1, before: 2, after: 2, destroy: 1 },
+    'pipe2, process exiting'
+  );
 }

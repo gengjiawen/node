@@ -3,8 +3,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const url = require('url');
@@ -18,14 +17,17 @@ const cert = fixtures.readKey('agent8-cert.pem');
 const ca = fixtures.readKey('fake-startcom-root-cert.pem');
 
 function onRequest(request, response) {
-  const { socket: { alpnProtocol } } = request.httpVersion === '2.0' ?
-    request.stream.session : request;
+  const {
+    socket: { alpnProtocol }
+  } = request.httpVersion === '2.0' ? request.stream.session : request;
   response.status(200);
-  response.end(JSON.stringify({
-    alpnProtocol,
-    httpVersion: request.httpVersion,
-    userAgent: request.getUserAgent()
-  }));
+  response.end(
+    JSON.stringify({
+      alpnProtocol,
+      httpVersion: request.httpVersion,
+      userAgent: request.getUserAgent()
+    })
+  );
 }
 
 class MyIncomingMessage extends http.IncomingMessage {
@@ -45,7 +47,8 @@ class MyServerResponse extends http.ServerResponse {
   const server = http2.createSecureServer(
     {
       cert,
-      key, allowHTTP1: true,
+      key,
+      allowHTTP1: true,
       Http1IncomingMessage: MyIncomingMessage,
       Http1ServerResponse: MyServerResponse
     },
@@ -54,36 +57,44 @@ class MyServerResponse extends http.ServerResponse {
 
   server.listen(0);
 
-  server.on('listening', common.mustCall(() => {
-    const { port } = server.address();
-    const origin = `https://localhost:${port}`;
+  server.on(
+    'listening',
+    common.mustCall(() => {
+      const { port } = server.address();
+      const origin = `https://localhost:${port}`;
 
-    // HTTP/1.1 client
-    https.get(
-      Object.assign(url.parse(origin), {
-        secureContext: tls.createSecureContext({ ca }),
-        headers: { 'User-Agent': 'node-test' }
-      }),
-      common.mustCall((response) => {
-        assert.strictEqual(response.statusCode, 200);
-        assert.strictEqual(response.statusMessage, 'OK');
-        assert.strictEqual(
-          response.headers['content-type'],
-          'application/json'
-        );
+      // HTTP/1.1 client
+      https.get(
+        Object.assign(url.parse(origin), {
+          secureContext: tls.createSecureContext({ ca }),
+          headers: { 'User-Agent': 'node-test' }
+        }),
+        common.mustCall((response) => {
+          assert.strictEqual(response.statusCode, 200);
+          assert.strictEqual(response.statusMessage, 'OK');
+          assert.strictEqual(
+            response.headers['content-type'],
+            'application/json'
+          );
 
-        response.setEncoding('utf8');
-        let raw = '';
-        response.on('data', (chunk) => { raw += chunk; });
-        response.on('end', common.mustCall(() => {
-          const { alpnProtocol, httpVersion, userAgent } = JSON.parse(raw);
-          assert.strictEqual(alpnProtocol, false);
-          assert.strictEqual(httpVersion, '1.1');
-          assert.strictEqual(userAgent, 'node-test');
+          response.setEncoding('utf8');
+          let raw = '';
+          response.on('data', (chunk) => {
+            raw += chunk;
+          });
+          response.on(
+            'end',
+            common.mustCall(() => {
+              const { alpnProtocol, httpVersion, userAgent } = JSON.parse(raw);
+              assert.strictEqual(alpnProtocol, false);
+              assert.strictEqual(httpVersion, '1.1');
+              assert.strictEqual(userAgent, 'node-test');
 
-          server.close();
-        }));
-      })
-    );
-  }));
+              server.close();
+            })
+          );
+        })
+      );
+    })
+  );
 }

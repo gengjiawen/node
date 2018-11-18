@@ -5,22 +5,25 @@ const assert = require('assert');
 // Testing api calls for objects
 const test_object = require(`./build/${common.buildType}/test_object`);
 
-
 const object = {
   hello: 'world',
-  array: [
-    1, 94, 'str', 12.321, { test: 'obj in arr' }
-  ],
+  array: [1, 94, 'str', 12.321, { test: 'obj in arr' }],
   newObject: {
     test: 'obj in obj'
   }
 };
 
 assert.strictEqual(test_object.Get(object, 'hello'), 'world');
-assert.deepStrictEqual(test_object.Get(object, 'array'),
-                       [ 1, 94, 'str', 12.321, { test: 'obj in arr' } ]);
-assert.deepStrictEqual(test_object.Get(object, 'newObject'),
-                       { test: 'obj in obj' });
+assert.deepStrictEqual(test_object.Get(object, 'array'), [
+  1,
+  94,
+  'str',
+  12.321,
+  { test: 'obj in arr' }
+]);
+assert.deepStrictEqual(test_object.Get(object, 'newObject'), {
+  test: 'obj in obj'
+});
 
 assert(test_object.Has(object, 'hello'));
 assert(test_object.Has(object, 'array'));
@@ -46,8 +49,10 @@ assert.strictEqual(newObject.test_string, 'test string');
   assert.strictEqual(test_object.Get(obj, 'foo'), 42);
   assert.strictEqual(test_object.Get(obj, 'bar'), 43);
   assert.strictEqual(test_object.Get(obj, 'baz'), 45);
-  assert.strictEqual(test_object.Get(obj, 'toString'),
-                     Object.prototype.toString);
+  assert.strictEqual(
+    test_object.Get(obj, 'toString'),
+    Object.prototype.toString
+  );
 }
 
 {
@@ -96,8 +101,12 @@ assert.strictEqual(newObject.test_string, 'test string');
   assert.deepStrictEqual(test_object.Inflate(cube), { x: 12, y: 12, z: 12 });
   assert.deepStrictEqual(test_object.Inflate(cube), { x: 13, y: 13, z: 13 });
   cube.t = 13;
-  assert.deepStrictEqual(
-    test_object.Inflate(cube), { x: 14, y: 14, z: 14, t: 14 });
+  assert.deepStrictEqual(test_object.Inflate(cube), {
+    x: 14,
+    y: 14,
+    z: 14,
+    t: 14
+  });
 
   const sym1 = Symbol('1');
   const sym2 = Symbol('2');

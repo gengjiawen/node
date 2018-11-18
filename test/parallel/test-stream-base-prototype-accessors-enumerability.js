@@ -17,5 +17,7 @@ const TTY = internalBinding('tty_wrap').TTY;
   assert.strictEqual(TTY.prototype.propertyIsEnumerable('bytesRead'), false);
   assert.strictEqual(TTY.prototype.propertyIsEnumerable('fd'), false);
   assert.strictEqual(
-    TTY.prototype.propertyIsEnumerable('_externalStream'), false);
+    TTY.prototype.propertyIsEnumerable('_externalStream'),
+    false
+  );
 }

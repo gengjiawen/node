@@ -16,7 +16,7 @@ new RuleTester().run('required-modules', rule, {
     {
       code: 'foo',
       options: []
-    },
+    }
   ],
   invalid: [
     {

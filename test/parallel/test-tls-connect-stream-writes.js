@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -9,10 +8,12 @@ const stream = require('stream');
 const net = require('net');
 const fixtures = require('../common/fixtures');
 
-const options = { key: fixtures.readSync('test_key.pem'),
-                  cert: fixtures.readSync('test_cert.pem'),
-                  ca: [ fixtures.readSync('test_ca.pem') ],
-                  ciphers: 'AES256-GCM-SHA384' };
+const options = {
+  key: fixtures.readSync('test_key.pem'),
+  cert: fixtures.readSync('test_cert.pem'),
+  ca: [fixtures.readSync('test_ca.pem')],
+  ciphers: 'AES256-GCM-SHA384'
+};
 const content = 'hello world';
 const recv_bufs = [];
 let send_data = '';
@@ -26,8 +27,7 @@ server.listen(0, function() {
 
   let pending = false;
   raw.on('readable', function() {
-    if (pending)
-      p._read();
+    if (pending) p._read();
   });
 
   const p = new stream.Duplex({
@@ -46,20 +46,23 @@ server.listen(0, function() {
     }
   });
 
-  const socket = tls.connect({
-    socket: p,
-    rejectUnauthorized: false
-  }, function() {
-    for (let i = 0; i < 50; ++i) {
-      socket.write(content);
-      send_data += content;
+  const socket = tls.connect(
+    {
+      socket: p,
+      rejectUnauthorized: false
+    },
+    function() {
+      for (let i = 0; i < 50; ++i) {
+        socket.write(content);
+        send_data += content;
+      }
+      socket.end();
+      server.close();
     }
-    socket.end();
-    server.close();
-  });
+  );
 });
 
 process.on('exit', function() {
-  const recv_data = (Buffer.concat(recv_bufs)).toString();
+  const recv_data = Buffer.concat(recv_bufs).toString();
   assert.strictEqual(send_data, recv_data);
 });

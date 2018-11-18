@@ -8,6 +8,9 @@ const command = common.isWindows ? 'dir' : 'ls';
 
 exec(command).stdout.on('data', common.mustCallAtLeast());
 
-exec('fhqwhgads').stderr.on('data', common.mustCallAtLeast((data) => {
-  assert.strictEqual(typeof data, 'string');
-}));
+exec('fhqwhgads').stderr.on(
+  'data',
+  common.mustCallAtLeast((data) => {
+    assert.strictEqual(typeof data, 'string');
+  })
+);

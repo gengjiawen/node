@@ -16,8 +16,9 @@ const { kMaxLength } = require('buffer');
     {
       code: 'ERR_OUT_OF_RANGE',
       type: RangeError,
-      message: 'The value of "offset" is out of range. ' +
-               `It must be <= ${byteLength}. Received ${offset}`
+      message:
+        'The value of "offset" is out of range. ' +
+        `It must be <= ${byteLength}. Received ${offset}`
     }
   );
 }
@@ -32,8 +33,9 @@ const { kMaxLength } = require('buffer');
     {
       code: 'ERR_OUT_OF_RANGE',
       type: RangeError,
-      message: 'The value of "length" is out of range. ' +
-               `It must be <= ${kMaxLength - offset}. Received ${length}`
+      message:
+        'The value of "length" is out of range. ' +
+        `It must be <= ${kMaxLength - offset}. Received ${length}`
     }
   );
 }
@@ -48,8 +50,9 @@ const { kMaxLength } = require('buffer');
     {
       code: 'ERR_OUT_OF_RANGE',
       type: RangeError,
-      message: 'The value of "length" is out of range. ' +
-               `It must be <= ${byteLength - offset}. Received ${length}`
+      message:
+        'The value of "length" is out of range. ' +
+        `It must be <= ${byteLength - offset}. Received ${length}`
     }
   );
 }

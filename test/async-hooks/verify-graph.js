@@ -82,7 +82,7 @@ module.exports = function verifyGraph(hooks, graph) {
     errors.forEach((x) =>
       console.error(
         `'${x.id}' expected to be triggered by '${x.expectedTid}', ` +
-        `but was triggered by '${x.actualTid}' instead.`
+          `but was triggered by '${x.actualTid}' instead.`
       )
     );
   }

@@ -6,7 +6,9 @@ const OutgoingMessage = require('_http_outgoing').OutgoingMessage;
 
 const outgoingMessage = new OutgoingMessage();
 common.expectsError(
-  () => { outgoingMessage.pipe(outgoingMessage); },
+  () => {
+    outgoingMessage.pipe(outgoingMessage);
+  },
   {
     code: 'ERR_STREAM_CANNOT_PIPE',
     type: Error

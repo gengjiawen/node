@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -14,7 +13,8 @@ function loadPEM(n) {
 }
 
 const testCases = [
-  { // agent8 is signed by fake-startcom-root with notBefore of
+  {
+    // agent8 is signed by fake-startcom-root with notBefore of
     // Oct 20 23:59:59 2016 GMT. It passes StartCom/WoSign check.
     serverOpts: {
       key: loadPEM('agent8-key'),
@@ -27,7 +27,8 @@ const testCases = [
     },
     errorCode: 'CERT_REVOKED'
   },
-  { // agent9 is signed by fake-startcom-root with notBefore of
+  {
+    // agent9 is signed by fake-startcom-root with notBefore of
     // Oct 21 00:00:01 2016 GMT. It fails StartCom/WoSign check.
     serverOpts: {
       key: loadPEM('agent9-key'),
@@ -42,7 +43,6 @@ const testCases = [
   }
 ];
 
-
 function runNextTest(server, tindex) {
   server.close(function() {
     finished++;
@@ -50,32 +50,32 @@ function runNextTest(server, tindex) {
   });
 }
 
-
 function runTest(tindex) {
   const tcase = testCases[tindex];
 
   if (!tcase) return;
 
-  const server = tls.createServer(tcase.serverOpts, function(s) {
-    s.resume();
-  }).listen(0, function() {
-    tcase.clientOpts.port = this.address().port;
-    const client = tls.connect(tcase.clientOpts);
-    client.on('error', function(e) {
-      assert.strictEqual(e.code, tcase.errorCode);
-      runNextTest(server, tindex);
-    });
+  const server = tls
+    .createServer(tcase.serverOpts, function(s) {
+      s.resume();
+    })
+    .listen(0, function() {
+      tcase.clientOpts.port = this.address().port;
+      const client = tls.connect(tcase.clientOpts);
+      client.on('error', function(e) {
+        assert.strictEqual(e.code, tcase.errorCode);
+        runNextTest(server, tindex);
+      });
 
-    client.on('secureConnect', function() {
-      // agent8 can pass StartCom/WoSign check so that the secureConnect
-      // is established.
-      assert.strictEqual(tcase.errorCode, 'CERT_REVOKED');
-      client.end();
-      runNextTest(server, tindex);
+      client.on('secureConnect', function() {
+        // agent8 can pass StartCom/WoSign check so that the secureConnect
+        // is established.
+        assert.strictEqual(tcase.errorCode, 'CERT_REVOKED');
+        client.end();
+        runNextTest(server, tindex);
+      });
     });
-  });
 }
-
 
 runTest(0);
 

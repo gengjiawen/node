@@ -9,15 +9,18 @@ const assert = require('assert');
 const e = new events.EventEmitter();
 e.setMaxListeners(1);
 
-process.on('warning', common.mustCall((warning) => {
-  assert.ok(warning instanceof Error);
-  assert.strictEqual(warning.name, 'MaxListenersExceededWarning');
-  assert.strictEqual(warning.emitter, e);
-  assert.strictEqual(warning.count, 2);
-  assert.strictEqual(warning.type, 'event-type');
-  assert.ok(warning.message.includes('2 event-type listeners added.'));
-}));
+process.on(
+  'warning',
+  common.mustCall((warning) => {
+    assert.ok(warning instanceof Error);
+    assert.strictEqual(warning.name, 'MaxListenersExceededWarning');
+    assert.strictEqual(warning.emitter, e);
+    assert.strictEqual(warning.count, 2);
+    assert.strictEqual(warning.type, 'event-type');
+    assert.ok(warning.message.includes('2 event-type listeners added.'));
+  })
+);
 
 e.on('event-type', () => {});
-e.on('event-type', () => {});  // Trigger warning.
-e.on('event-type', () => {});  // Verify that warning is emitted only once.
+e.on('event-type', () => {}); // Trigger warning.
+e.on('event-type', () => {}); // Verify that warning is emitted only once.

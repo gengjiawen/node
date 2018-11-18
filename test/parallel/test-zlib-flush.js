@@ -23,8 +23,7 @@ deflater.write(chunk, function() {
     deflater.flush(function() {
       const bufs = [];
       let buf;
-      while (buf = deflater.read())
-        bufs.push(buf);
+      while ((buf = deflater.read())) bufs.push(buf);
       actualFull = Buffer.concat(bufs);
     });
   });

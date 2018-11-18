@@ -23,12 +23,10 @@ const objects = [
   circular
 ];
 
-const hostObject = new (internalBinding('js_stream').JSStream)();
+const hostObject = new (internalBinding('js_stream')).JSStream();
 
-const serializerTypeError =
-  /^TypeError: Class constructor Serializer cannot be invoked without 'new'$/;
-const deserializerTypeError =
-  /^TypeError: Class constructor Deserializer cannot be invoked without 'new'$/;
+const serializerTypeError = /^TypeError: Class constructor Serializer cannot be invoked without 'new'$/;
+const deserializerTypeError = /^TypeError: Class constructor Deserializer cannot be invoked without 'new'$/;
 
 {
   const ser = new v8.DefaultSerializer();
@@ -152,8 +150,10 @@ const deserializerTypeError =
 }
 
 {
-  assert.throws(() => v8.serialize(hostObject),
-                /^Error: Unknown host object type: \[object .*\]$/);
+  assert.throws(
+    () => v8.serialize(hostObject),
+    /^Error: Unknown host object type: \[object .*\]$/
+  );
 }
 
 {
@@ -177,8 +177,10 @@ const deserializerTypeError =
   buf.write('ff0d5c0404addeefbe', 32, 'hex');
   buf = buf.slice(32);
 
-  const expectedResult = os.endianness() === 'LE' ?
-    new Uint16Array([0xdead, 0xbeef]) : new Uint16Array([0xadde, 0xefbe]);
+  const expectedResult =
+    os.endianness() === 'LE'
+      ? new Uint16Array([0xdead, 0xbeef])
+      : new Uint16Array([0xadde, 0xefbe]);
 
   assert.deepStrictEqual(v8.deserialize(buf), expectedResult);
 }
@@ -187,7 +189,6 @@ const deserializerTypeError =
   assert.throws(v8.Serializer, serializerTypeError);
   assert.throws(v8.Deserializer, deserializerTypeError);
 }
-
 
 // `v8.deserialize()` and `new v8.Deserializer()` should support both
 // `TypedArray` and `DataView`.
@@ -219,14 +220,14 @@ const deserializerTypeError =
   serializer.writeHeader();
   assert.throws(
     () => serializer.writeRawBytes(INVALID_SOURCE),
-    /^TypeError: source must be a TypedArray or a DataView$/,
+    /^TypeError: source must be a TypedArray or a DataView$/
   );
   assert.throws(
     () => v8.deserialize(INVALID_SOURCE),
-    /^TypeError: buffer must be a TypedArray or a DataView$/,
+    /^TypeError: buffer must be a TypedArray or a DataView$/
   );
   assert.throws(
     () => new v8.Deserializer(INVALID_SOURCE),
-    /^TypeError: buffer must be a TypedArray or a DataView$/,
+    /^TypeError: buffer must be a TypedArray or a DataView$/
   );
 }

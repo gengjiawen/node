@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 const { addresses } = require('../common/internet');
-if (!common.hasIPv6)
-  common.skip('this test, no IPv6 support');
+if (!common.hasIPv6) common.skip('this test, no IPv6 support');
 
 const assert = require('assert');
 const dns = require('dns');
@@ -56,7 +55,8 @@ TEST(async function test_resolve6(done) {
       assert.ifError(err);
       validateResult(ips);
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -78,7 +78,8 @@ TEST(async function test_reverse_ipv6(done) {
       assert.ifError(err);
       validateResult(domains);
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -98,7 +99,8 @@ TEST(async function test_lookup_ipv6_explicit(done) {
       assert.ifError(err);
       validateResult({ address: ip, family });
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -125,41 +127,49 @@ TEST(async function test_lookup_ipv6_explicit_object(done) {
 
   validateResult(await dnsPromises.lookup(addresses.INET6_HOST, { family: 6 }));
 
-  const req = dns.lookup(addresses.INET6_HOST, {
-    family: 6
-  }, common.mustCall((err, ip, family) => {
-    assert.ifError(err);
-    validateResult({ address: ip, family });
-    done();
-  }));
+  const req = dns.lookup(
+    addresses.INET6_HOST,
+    {
+      family: 6
+    },
+    common.mustCall((err, ip, family) => {
+      assert.ifError(err);
+      validateResult({ address: ip, family });
+      done();
+    })
+  );
 
   checkWrap(req);
 });
 
 TEST(function test_lookup_ipv6_hint(done) {
-  const req = dns.lookup(addresses.INET6_HOST, {
-    family: 6,
-    hints: dns.V4MAPPED
-  }, common.mustCall((err, ip, family) => {
-    if (err) {
-      // FreeBSD does not support V4MAPPED
-      if (common.isFreeBSD) {
-        assert(err instanceof Error);
-        assert.strictEqual(err.code, 'EAI_BADFLAGS');
-        assert.strictEqual(err.hostname, addresses.INET_HOST);
-        assert.ok(/getaddrinfo EAI_BADFLAGS/.test(err.message));
-        done();
-        return;
+  const req = dns.lookup(
+    addresses.INET6_HOST,
+    {
+      family: 6,
+      hints: dns.V4MAPPED
+    },
+    common.mustCall((err, ip, family) => {
+      if (err) {
+        // FreeBSD does not support V4MAPPED
+        if (common.isFreeBSD) {
+          assert(err instanceof Error);
+          assert.strictEqual(err.code, 'EAI_BADFLAGS');
+          assert.strictEqual(err.hostname, addresses.INET_HOST);
+          assert.ok(/getaddrinfo EAI_BADFLAGS/.test(err.message));
+          done();
+          return;
+        }
+
+        assert.ifError(err);
       }
 
-      assert.ifError(err);
-    }
+      assert.ok(isIPv6(ip));
+      assert.strictEqual(family, 6);
 
-    assert.ok(isIPv6(ip));
-    assert.strictEqual(family, 6);
-
-    done();
-  }));
+      done();
+    })
+  );
 
   checkWrap(req);
 });
@@ -178,7 +188,8 @@ TEST(async function test_lookup_ip_ipv6(done) {
       assert.ifError(err);
       validateResult({ address: ip, family });
       done();
-    }));
+    })
+  );
 
   checkWrap(req);
 });
@@ -189,16 +200,17 @@ TEST(async function test_lookup_all_ipv6(done) {
     assert.ok(res.length > 0);
 
     res.forEach((ip) => {
-      assert.ok(isIPv6(ip.address),
-                `Invalid IPv6: ${ip.address.toString()}`);
+      assert.ok(isIPv6(ip.address), `Invalid IPv6: ${ip.address.toString()}`);
       assert.strictEqual(ip.family, 6);
     });
   }
 
-  validateResult(await dnsPromises.lookup(addresses.INET6_HOST, {
-    all: true,
-    family: 6
-  }));
+  validateResult(
+    await dnsPromises.lookup(addresses.INET6_HOST, {
+      all: true,
+      family: 6
+    })
+  );
 
   const req = dns.lookup(
     addresses.INET6_HOST,
@@ -215,7 +227,8 @@ TEST(async function test_lookup_all_ipv6(done) {
 
 TEST(function test_lookupservice_ip_ipv6(done) {
   const req = dns.lookupService(
-    '::1', 80,
+    '::1',
+    80,
     common.mustCall((err, host, service) => {
       if (err) {
         // Not skipping the test, rather checking an alternative result,

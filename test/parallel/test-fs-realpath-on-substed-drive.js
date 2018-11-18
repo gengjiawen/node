@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.isWindows)
-  common.skip('Test for Windows only');
+if (!common.isWindows) common.skip('Test for Windows only');
 
 const fixtures = require('../common/fixtures');
 
@@ -19,11 +18,9 @@ let i;
 for (i = 0; i < driveLetters.length; ++i) {
   drive = `${driveLetters[i]}:`;
   result = spawnSync('subst', [drive, fixtures.fixturesDir]);
-  if (result.status === 0)
-    break;
+  if (result.status === 0) break;
 }
-if (i === driveLetters.length)
-  common.skip('Cannot create subst drive');
+if (i === driveLetters.length) common.skip('Cannot create subst drive');
 
 // schedule cleanup (and check if all callbacks where called)
 process.on('exit', function() {
@@ -41,13 +38,20 @@ result = fs.realpathSync(filename, 'buffer');
 assert(Buffer.isBuffer(result));
 assert(result.equals(filenameBuffer));
 
-fs.realpath(filename, common.mustCall(function(err, result) {
-  assert.ifError(err);
-  assert.strictEqual(result, filename);
-}));
+fs.realpath(
+  filename,
+  common.mustCall(function(err, result) {
+    assert.ifError(err);
+    assert.strictEqual(result, filename);
+  })
+);
 
-fs.realpath(filename, 'buffer', common.mustCall(function(err, result) {
-  assert.ifError(err);
-  assert(Buffer.isBuffer(result));
-  assert(result.equals(filenameBuffer));
-}));
+fs.realpath(
+  filename,
+  'buffer',
+  common.mustCall(function(err, result) {
+    assert.ifError(err);
+    assert(Buffer.isBuffer(result));
+    assert(result.equals(filenameBuffer));
+  })
+);

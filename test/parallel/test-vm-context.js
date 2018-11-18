@@ -33,7 +33,7 @@ let result = script.runInContext(context);
 assert.strictEqual(result, 'passed');
 
 // Create a new pre-populated context
-context = vm.createContext({ 'foo': 'bar', 'thing': 'lala' });
+context = vm.createContext({ foo: 'bar', thing: 'lala' });
 assert.strictEqual(context.foo, 'bar');
 assert.strictEqual(context.thing, 'lala');
 
@@ -44,12 +44,15 @@ assert.strictEqual(context.foo, 3);
 assert.strictEqual(context.thing, 'lala');
 
 // Issue GH-227:
-common.expectsError(() => {
-  vm.runInNewContext('', null, 'some.js');
-}, {
-  code: 'ERR_INVALID_ARG_TYPE',
-  type: TypeError
-});
+common.expectsError(
+  () => {
+    vm.runInNewContext('', null, 'some.js');
+  },
+  {
+    code: 'ERR_INVALID_ARG_TYPE',
+    type: TypeError
+  }
+);
 
 // Issue GH-1140:
 // Test runInContext signature
@@ -58,8 +61,10 @@ try {
   vm.runInContext('throw new Error()', context, 'expected-filename.js');
 } catch (e) {
   gh1140Exception = e;
-  assert.ok(/expected-filename/.test(e.stack),
-            `expected appearance of filename in Error stack: ${e.stack}`);
+  assert.ok(
+    /expected-filename/.test(e.stack),
+    `expected appearance of filename in Error stack: ${e.stack}`
+  );
 }
 // This is outside of catch block to confirm catch block ran.
 assert.strictEqual(gh1140Exception.toString(), 'Error');
@@ -77,19 +82,28 @@ const contextifiedSandboxError = {
 
 [
   [undefined, nonContextualSandboxError],
-  [null, nonContextualSandboxError], [0, nonContextualSandboxError],
-  [0.0, nonContextualSandboxError], ['', nonContextualSandboxError],
-  [{}, contextifiedSandboxError], [[], contextifiedSandboxError]
+  [null, nonContextualSandboxError],
+  [0, nonContextualSandboxError],
+  [0.0, nonContextualSandboxError],
+  ['', nonContextualSandboxError],
+  [{}, contextifiedSandboxError],
+  [[], contextifiedSandboxError]
 ].forEach((e) => {
-  common.expectsError(() => { script.runInContext(e[0]); }, e[1]);
-  common.expectsError(() => { vm.runInContext('', e[0]); }, e[1]);
+  common.expectsError(() => {
+    script.runInContext(e[0]);
+  }, e[1]);
+  common.expectsError(() => {
+    vm.runInContext('', e[0]);
+  }, e[1]);
 });
 
 // Issue GH-693:
 // Test RegExp as argument to assert.throws
-script = vm.createScript('const assert = require(\'assert\'); assert.throws(' +
-                         'function() { throw "hello world"; }, /hello/);',
-                         'some.js');
+script = vm.createScript(
+  "const assert = require('assert'); assert.throws(" +
+    'function() { throw "hello world"; }, /hello/);',
+  'some.js'
+);
 script.runInNewContext({ require });
 
 // Issue GH-7529
@@ -103,17 +117,20 @@ assert.strictEqual(script.runInContext(ctx), false);
 // number.
 {
   let stack = null;
-  assert.throws(() => {
-    vm.runInContext(' throw new Error()', context, {
-      filename: 'expected-filename.js',
-      lineOffset: 32,
-      columnOffset: 123
-    });
-  }, (err) => {
-    stack = err.stack;
-    return /^ \^/m.test(stack) &&
-           /expected-filename\.js:33:131/.test(stack);
-  }, `stack not formatted as expected: ${stack}`);
+  assert.throws(
+    () => {
+      vm.runInContext(' throw new Error()', context, {
+        filename: 'expected-filename.js',
+        lineOffset: 32,
+        columnOffset: 123
+      });
+    },
+    (err) => {
+      stack = err.stack;
+      return /^ \^/m.test(stack) && /expected-filename\.js:33:131/.test(stack);
+    },
+    `stack not formatted as expected: ${stack}`
+  );
 }
 
 // https://github.com/nodejs/node/issues/6158

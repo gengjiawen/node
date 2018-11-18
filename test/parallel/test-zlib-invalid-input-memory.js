@@ -14,15 +14,18 @@ const ongc = common.mustCall();
   const input = Buffer.from('foobar');
   const strm = zlib.createInflate();
   strm.end(input);
-  strm.once('error', common.mustCall((err) => {
-    assert(err);
-    setImmediate(() => {
-      global.gc();
-      // Keep the event loop alive for seeing the async_hooks destroy hook
-      // we use for GC tracking...
-      // TODO(addaleax): This should maybe not be necessary?
-      setImmediate(() => {});
-    });
-  }));
+  strm.once(
+    'error',
+    common.mustCall((err) => {
+      assert(err);
+      setImmediate(() => {
+        global.gc();
+        // Keep the event loop alive for seeing the async_hooks destroy hook
+        // we use for GC tracking...
+        // TODO(addaleax): This should maybe not be necessary?
+        setImmediate(() => {});
+      });
+    })
+  );
   onGC(strm, { ongc });
 }

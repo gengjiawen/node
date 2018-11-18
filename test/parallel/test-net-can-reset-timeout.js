@@ -26,22 +26,27 @@ const common = require('../common');
 
 const net = require('net');
 
-const server = net.createServer(common.mustCall(function(stream) {
-  stream.setTimeout(100);
+const server = net.createServer(
+  common.mustCall(function(stream) {
+    stream.setTimeout(100);
 
-  stream.resume();
+    stream.resume();
 
-  stream.once('timeout', common.mustCall(function() {
-    console.log('timeout');
-    // try to reset the timeout.
-    stream.write('WHAT.');
-  }));
+    stream.once(
+      'timeout',
+      common.mustCall(function() {
+        console.log('timeout');
+        // try to reset the timeout.
+        stream.write('WHAT.');
+      })
+    );
 
-  stream.on('end', function() {
-    console.log('server side end');
-    stream.end();
-  });
-}));
+    stream.on('end', function() {
+      console.log('server side end');
+      stream.end();
+    });
+  })
+);
 
 server.listen(0, function() {
   const c = net.createConnection(this.address().port);

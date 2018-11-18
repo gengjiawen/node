@@ -20,11 +20,14 @@ function makeIterableFunc(array) {
     type: TypeError,
     message: 'Query pairs must be iterable'
   });
-  const tupleError = common.expectsError({
-    code: 'ERR_INVALID_TUPLE',
-    type: TypeError,
-    message: 'Each query pair must be an iterable [name, value] tuple'
-  }, 6);
+  const tupleError = common.expectsError(
+    {
+      code: 'ERR_INVALID_TUPLE',
+      type: TypeError,
+      message: 'Each query pair must be an iterable [name, value] tuple'
+    },
+    6
+  );
 
   let params;
   params = new URLSearchParams(undefined);
@@ -41,19 +44,27 @@ function makeIterableFunc(array) {
   assert.strictEqual(params.toString(), 'key=val&key2=val2');
   assert.throws(() => new URLSearchParams([[1]]), tupleError);
   assert.throws(() => new URLSearchParams([[1, 2, 3]]), tupleError);
-  assert.throws(() => new URLSearchParams({ [Symbol.iterator]: 42 }),
-                iterableError);
+  assert.throws(
+    () => new URLSearchParams({ [Symbol.iterator]: 42 }),
+    iterableError
+  );
   assert.throws(() => new URLSearchParams([{}]), tupleError);
   assert.throws(() => new URLSearchParams(['a']), tupleError);
   assert.throws(() => new URLSearchParams([null]), tupleError);
-  assert.throws(() => new URLSearchParams([{ [Symbol.iterator]: 42 }]),
-                tupleError);
+  assert.throws(
+    () => new URLSearchParams([{ [Symbol.iterator]: 42 }]),
+    tupleError
+  );
 }
 
 {
   const obj = {
-    toString() { throw new Error('toString'); },
-    valueOf() { throw new Error('valueOf'); }
+    toString() {
+      throw new Error('toString');
+    },
+    valueOf() {
+      throw new Error('valueOf');
+    }
   };
   const sym = Symbol();
   const toStringError = /^Error: toString$/;

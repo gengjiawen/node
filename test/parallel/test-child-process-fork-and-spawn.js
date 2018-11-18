@@ -30,8 +30,10 @@ switch (process.argv[2] || '') {
     fork(__filename, ['fork']).on('exit', common.mustCall(checkExit));
     break;
   case 'fork':
-    spawn(process.execPath, [__filename, 'spawn'])
-      .on('exit', common.mustCall(checkExit));
+    spawn(process.execPath, [__filename, 'spawn']).on(
+      'exit',
+      common.mustCall(checkExit)
+    );
     break;
   case 'spawn':
     break;

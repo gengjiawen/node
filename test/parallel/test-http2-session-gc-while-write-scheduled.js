@@ -2,8 +2,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const http2 = require('http2');
 const makeDuplexPair = require('../common/duplexpair');
 const tick = require('../common/tick');
@@ -13,9 +12,12 @@ const tick = require('../common/tick');
 
 {
   // This creates a session and schedules a write (for the settings frame).
-  let client = http2.connect('http://localhost:80', {
-    createConnection: common.mustCall(() => makeDuplexPair().clientSide)
-  });
+  let client = http2.connect(
+    'http://localhost:80',
+    {
+      createConnection: common.mustCall(() => makeDuplexPair().clientSide)
+    }
+  );
 
   // First, wait for any nextTicks() and their responses
   // from the `connect()` call to run.

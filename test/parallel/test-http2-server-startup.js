@@ -7,8 +7,7 @@
 const common = require('../common');
 const commonFixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const http2 = require('http2');
 const tls = require('tls');
@@ -36,34 +35,50 @@ server.on('error', common.mustNotCall());
 {
   let client;
   const server = http2.createServer();
-  server.on('timeout', common.mustCall(() => {
-    server.close();
-    if (client)
-      client.end();
-  }));
+  server.on(
+    'timeout',
+    common.mustCall(() => {
+      server.close();
+      if (client) client.end();
+    })
+  );
   server.setTimeout(common.platformTimeout(1000), common.mustCall());
-  server.listen(0, common.mustCall(() => {
-    const port = server.address().port;
-    client = net.connect(port, common.mustCall());
-  }));
+  server.listen(
+    0,
+    common.mustCall(() => {
+      const port = server.address().port;
+      client = net.connect(
+        port,
+        common.mustCall()
+      );
+    })
+  );
 }
 
 // Test the secure server socket timeout.
 {
   let client;
   const server = http2.createSecureServer(options);
-  server.on('timeout', common.mustCall(() => {
-    server.close();
-    if (client)
-      client.end();
-  }));
+  server.on(
+    'timeout',
+    common.mustCall(() => {
+      server.close();
+      if (client) client.end();
+    })
+  );
   server.setTimeout(common.platformTimeout(1000), common.mustCall());
-  server.listen(0, common.mustCall(() => {
-    const port = server.address().port;
-    client = tls.connect({
-      port: port,
-      rejectUnauthorized: false,
-      ALPNProtocols: ['h2']
-    }, common.mustCall());
-  }));
+  server.listen(
+    0,
+    common.mustCall(() => {
+      const port = server.address().port;
+      client = tls.connect(
+        {
+          port: port,
+          rejectUnauthorized: false,
+          ALPNProtocols: ['h2']
+        },
+        common.mustCall()
+      );
+    })
+  );
 }

@@ -15,11 +15,15 @@ function checkFactory(streamName) {
   const cmd = `"${process.execPath}" -e "console.log('hello world');"`;
   const options = { maxBuffer: Infinity };
 
-  cp.exec(cmd, options, common.mustCall((err, stdout, stderr) => {
-    assert.ifError(err);
-    assert.strictEqual(stdout.trim(), 'hello world');
-    assert.strictEqual(stderr, '');
-  }));
+  cp.exec(
+    cmd,
+    options,
+    common.mustCall((err, stdout, stderr) => {
+      assert.ifError(err);
+      assert.strictEqual(stdout.trim(), 'hello world');
+      assert.strictEqual(stderr, '');
+    })
+  );
 }
 
 {
@@ -48,7 +52,8 @@ const unicode = '中文测试'; // length = 4, byte length = 12
   const child = cp.exec(
     cmd,
     { encoding: null, maxBuffer: 10 },
-    checkFactory('stdout'));
+    checkFactory('stdout')
+  );
 
   child.stdout.setEncoding('utf-8');
 }
@@ -59,7 +64,8 @@ const unicode = '中文测试'; // length = 4, byte length = 12
   const child = cp.exec(
     cmd,
     { encoding: null, maxBuffer: 10 },
-    checkFactory('stderr'));
+    checkFactory('stderr')
+  );
 
   child.stderr.setEncoding('utf-8');
 }

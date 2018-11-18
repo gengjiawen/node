@@ -2,9 +2,7 @@
 
 // Credit for list: http://www.i18nguy.com/markup/idna-examples.html
 module.exports = [
-  { ascii: 'xn--mgbaal8b0b9b2b.icom.museum',
-    unicode: 'افغانستا.icom.museum'
-  },
+  { ascii: 'xn--mgbaal8b0b9b2b.icom.museum', unicode: 'افغانستا.icom.museum' },
   {
     ascii: 'xn--lgbbat1ad8j.icom.museum',
     unicode: 'الجزائر.icom.museum'
@@ -184,7 +182,7 @@ module.exports = [
   // long label
   {
     ascii: `${'a'.repeat(64)}.com`,
-    unicode: `${'a'.repeat(64)}.com`,
+    unicode: `${'a'.repeat(64)}.com`
   },
   // long URL
   {

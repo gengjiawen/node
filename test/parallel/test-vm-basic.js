@@ -33,7 +33,7 @@ const vm = require('vm');
   );
   assert.deepStrictEqual(sandbox, {
     foo: 'bar',
-    typeofProcess: 'undefined',
+    typeofProcess: 'undefined'
   });
   assert.strictEqual(result, 'function');
 }
@@ -66,9 +66,7 @@ const vm = require('vm');
 
 // vm.runInNewContext
 {
-  const result = vm.runInNewContext(
-    'vmResult = "foo"; typeof process;'
-  );
+  const result = vm.runInNewContext('vmResult = "foo"; typeof process;');
   assert.strictEqual(global.vmResult, undefined);
   assert.strictEqual(result, 'undefined');
 }
@@ -97,36 +95,48 @@ const vm = require('vm');
 
 // Invalid arguments
 [null, 'string'].forEach((input) => {
-  common.expectsError(() => {
-    vm.createContext({}, input);
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError,
-    message: 'The "options" argument must be of type Object. ' +
-             `Received type ${typeof input}`
-  });
+  common.expectsError(
+    () => {
+      vm.createContext({}, input);
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError,
+      message:
+        'The "options" argument must be of type Object. ' +
+        `Received type ${typeof input}`
+    }
+  );
 });
 
 ['name', 'origin'].forEach((propertyName) => {
-  common.expectsError(() => {
-    vm.createContext({}, { [propertyName]: null });
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError,
-    message: `The "options.${propertyName}" property must be of type string. ` +
-             'Received type object'
-  });
+  common.expectsError(
+    () => {
+      vm.createContext({}, { [propertyName]: null });
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError,
+      message:
+        `The "options.${propertyName}" property must be of type string. ` +
+        'Received type object'
+    }
+  );
 });
 
 ['contextName', 'contextOrigin'].forEach((propertyName) => {
-  common.expectsError(() => {
-    vm.runInNewContext('', {}, { [propertyName]: null });
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError,
-    message: `The "options.${propertyName}" property must be of type string. ` +
-             'Received type object'
-  });
+  common.expectsError(
+    () => {
+      vm.runInNewContext('', {}, { [propertyName]: null });
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError,
+      message:
+        `The "options.${propertyName}" property must be of type string. ` +
+        'Received type object'
+    }
+  );
 });
 
 // vm.compileFunction
@@ -137,30 +147,36 @@ const vm = require('vm');
   );
 
   assert.strictEqual(
-    vm.compileFunction(
-      'return p + q + r + s + t',
-      ['p', 'q', 'r', 's', 't']
-    )('ab', 'cd', 'ef', 'gh', 'ij'),
+    vm.compileFunction('return p + q + r + s + t', ['p', 'q', 'r', 's', 't'])(
+      'ab',
+      'cd',
+      'ef',
+      'gh',
+      'ij'
+    ),
     'abcdefghij'
   );
 
   vm.compileFunction('return'); // Should not throw on 'return'
 
-  common.expectsError(() => {
-    vm.compileFunction(
-      '});\n\n(function() {\nconsole.log(1);\n})();\n\n(function() {'
-    );
-  }, {
-    type: SyntaxError,
-    message: 'Unexpected token }'
-  });
+  common.expectsError(
+    () => {
+      vm.compileFunction(
+        '});\n\n(function() {\nconsole.log(1);\n})();\n\n(function() {'
+      );
+    },
+    {
+      type: SyntaxError,
+      message: 'Unexpected token }'
+    }
+  );
 
   // Tests for failed argument validation
   common.expectsError(() => vm.compileFunction(), {
     type: TypeError,
     code: 'ERR_INVALID_ARG_TYPE',
-    message: 'The "code" argument must be of type string. ' +
-      'Received type undefined'
+    message:
+      'The "code" argument must be of type string. ' + 'Received type undefined'
   });
 
   vm.compileFunction(''); // Should pass without params or options
@@ -168,160 +184,166 @@ const vm = require('vm');
   common.expectsError(() => vm.compileFunction('', null), {
     type: TypeError,
     code: 'ERR_INVALID_ARG_TYPE',
-    message: 'The "params" argument must be of type Array. ' +
-      'Received type object'
+    message:
+      'The "params" argument must be of type Array. ' + 'Received type object'
   });
 
   // vm.compileFunction('', undefined, null);
 
   const optionTypes = {
-    'filename': 'string',
-    'columnOffset': 'number',
-    'lineOffset': 'number',
-    'cachedData': 'Buffer, TypedArray, or DataView',
-    'produceCachedData': 'boolean',
+    filename: 'string',
+    columnOffset: 'number',
+    lineOffset: 'number',
+    cachedData: 'Buffer, TypedArray, or DataView',
+    produceCachedData: 'boolean'
   };
 
   for (const option in optionTypes) {
-    const typeErrorMessage = `The "options.${option}" property must be ` +
-       `${option === 'cachedData' ? 'one of' : 'of'} type`;
-    common.expectsError(() => {
-      vm.compileFunction('', undefined, { [option]: null });
-    }, {
-      type: TypeError,
-      code: 'ERR_INVALID_ARG_TYPE',
-      message: typeErrorMessage +
-        ` ${optionTypes[option]}. Received type object`
-    });
+    const typeErrorMessage =
+      `The "options.${option}" property must be ` +
+      `${option === 'cachedData' ? 'one of' : 'of'} type`;
+    common.expectsError(
+      () => {
+        vm.compileFunction('', undefined, { [option]: null });
+      },
+      {
+        type: TypeError,
+        code: 'ERR_INVALID_ARG_TYPE',
+        message:
+          typeErrorMessage + ` ${optionTypes[option]}. Received type object`
+      }
+    );
   }
 
   // Testing for context-based failures
-  [Boolean(), Number(), null, String(), Symbol(), {}].forEach(
-    (value) => {
-      common.expectsError(() => {
+  [Boolean(), Number(), null, String(), Symbol(), {}].forEach((value) => {
+    common.expectsError(
+      () => {
         vm.compileFunction('', undefined, { parsingContext: value });
-      }, {
+      },
+      {
         type: TypeError,
         code: 'ERR_INVALID_ARG_TYPE',
-        message: 'The "options.parsingContext" property must be of type ' +
+        message:
+          'The "options.parsingContext" property must be of type ' +
           `Context. Received type ${typeof value}`
-      });
-    }
-  );
+      }
+    );
+  });
 
   // Testing for non Array type-based failures
-  [Boolean(), Number(), null, Object(), Symbol(), {}].forEach(
-    (value) => {
-      common.expectsError(() => {
+  [Boolean(), Number(), null, Object(), Symbol(), {}].forEach((value) => {
+    common.expectsError(
+      () => {
         vm.compileFunction('', value);
-      }, {
+      },
+      {
         type: TypeError,
         code: 'ERR_INVALID_ARG_TYPE',
-        message: 'The "params" argument must be of type Array. ' +
+        message:
+          'The "params" argument must be of type Array. ' +
           `Received type ${typeof value}`
-      });
-    }
-  );
+      }
+    );
+  });
 
   assert.strictEqual(
-    vm.compileFunction(
-      'return a;',
-      undefined,
-      { contextExtensions: [{ a: 5 }] }
-    )(),
+    vm.compileFunction('return a;', undefined, {
+      contextExtensions: [{ a: 5 }]
+    })(),
     5
   );
 
-  common.expectsError(() => {
-    vm.compileFunction('', undefined, { contextExtensions: null });
-  }, {
-    type: TypeError,
-    code: 'ERR_INVALID_ARG_TYPE',
-    message: 'The "options.contextExtensions" property must be of type Array' +
-       '. Received type object'
-  });
+  common.expectsError(
+    () => {
+      vm.compileFunction('', undefined, { contextExtensions: null });
+    },
+    {
+      type: TypeError,
+      code: 'ERR_INVALID_ARG_TYPE',
+      message:
+        'The "options.contextExtensions" property must be of type Array' +
+        '. Received type object'
+    }
+  );
 
-  common.expectsError(() => {
-    vm.compileFunction('', undefined, { contextExtensions: [0] });
-  }, {
-    type: TypeError,
-    code: 'ERR_INVALID_ARG_TYPE',
-    message: 'The "options.contextExtensions[0]" property must be of type ' +
-       'object. Received type number'
-  });
+  common.expectsError(
+    () => {
+      vm.compileFunction('', undefined, { contextExtensions: [0] });
+    },
+    {
+      type: TypeError,
+      code: 'ERR_INVALID_ARG_TYPE',
+      message:
+        'The "options.contextExtensions[0]" property must be of type ' +
+        'object. Received type number'
+    }
+  );
 
   const oldLimit = Error.stackTraceLimit;
   // Setting value to run the last three tests
   Error.stackTraceLimit = 1;
 
-  common.expectsError(() => {
-    vm.compileFunction('throw new Error("Sample Error")')();
-  }, {
-    message: 'Sample Error',
-    stack: 'Error: Sample Error\n    at <anonymous>:1:7'
-  });
+  common.expectsError(
+    () => {
+      vm.compileFunction('throw new Error("Sample Error")')();
+    },
+    {
+      message: 'Sample Error',
+      stack: 'Error: Sample Error\n    at <anonymous>:1:7'
+    }
+  );
 
-  common.expectsError(() => {
-    vm.compileFunction(
-      'throw new Error("Sample Error")',
-      [],
-      { lineOffset: 3 }
-    )();
-  }, {
-    message: 'Sample Error',
-    stack: 'Error: Sample Error\n    at <anonymous>:4:7'
-  });
+  common.expectsError(
+    () => {
+      vm.compileFunction('throw new Error("Sample Error")', [], {
+        lineOffset: 3
+      })();
+    },
+    {
+      message: 'Sample Error',
+      stack: 'Error: Sample Error\n    at <anonymous>:4:7'
+    }
+  );
 
-  common.expectsError(() => {
-    vm.compileFunction(
-      'throw new Error("Sample Error")',
-      [],
-      { columnOffset: 3 }
-    )();
-  }, {
-    message: 'Sample Error',
-    stack: 'Error: Sample Error\n    at <anonymous>:1:10'
-  });
+  common.expectsError(
+    () => {
+      vm.compileFunction('throw new Error("Sample Error")', [], {
+        columnOffset: 3
+      })();
+    },
+    {
+      message: 'Sample Error',
+      stack: 'Error: Sample Error\n    at <anonymous>:1:10'
+    }
+  );
 
   assert.strictEqual(
-    vm.compileFunction(
-      'return varInContext',
-      [],
-      {
-        parsingContext: vm.createContext({ varInContext: 'abc' })
-      }
-    )(),
+    vm.compileFunction('return varInContext', [], {
+      parsingContext: vm.createContext({ varInContext: 'abc' })
+    })(),
     'abc'
   );
 
-  common.expectsError(() => {
-    vm.compileFunction(
-      'return varInContext',
-      []
-    )();
-  }, {
-    message: 'varInContext is not defined',
-    stack: 'ReferenceError: varInContext is not defined\n    at <anonymous>:1:1'
-  });
+  common.expectsError(
+    () => {
+      vm.compileFunction('return varInContext', [])();
+    },
+    {
+      message: 'varInContext is not defined',
+      stack:
+        'ReferenceError: varInContext is not defined\n    at <anonymous>:1:1'
+    }
+  );
 
   assert.notDeepStrictEqual(
-    vm.compileFunction(
-      'return global',
-      [],
-      {
-        parsingContext: vm.createContext({ global: {} })
-      }
-    )(),
+    vm.compileFunction('return global', [], {
+      parsingContext: vm.createContext({ global: {} })
+    })(),
     global
   );
 
-  assert.deepStrictEqual(
-    vm.compileFunction(
-      'return global',
-      []
-    )(),
-    global
-  );
+  assert.deepStrictEqual(vm.compileFunction('return global', [])(), global);
 
   // Resetting value
   Error.stackTraceLimit = oldLimit;

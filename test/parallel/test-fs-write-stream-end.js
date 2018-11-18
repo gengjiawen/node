@@ -39,8 +39,11 @@ tmpdir.refresh();
   const file = path.join(tmpdir.path, 'write-end-test1.txt');
   const stream = fs.createWriteStream(file);
   stream.end('a\n', 'utf8');
-  stream.on('close', common.mustCall(function() {
-    const content = fs.readFileSync(file, 'utf8');
-    assert.strictEqual(content, 'a\n');
-  }));
+  stream.on(
+    'close',
+    common.mustCall(function() {
+      const content = fs.readFileSync(file, 'utf8');
+      assert.strictEqual(content, 'a\n');
+    })
+  );
 }

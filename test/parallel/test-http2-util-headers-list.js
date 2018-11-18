@@ -5,8 +5,7 @@
 // to pass to the internal binding layer and to build a header object.
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const { mapToHeaders, toHeaderObject } = require('internal/http2/util');
 const { internalBinding } = require('internal/test/binding');
@@ -92,68 +91,137 @@ const {
 
 {
   const headers = {
-    'abc': 1,
+    abc: 1,
     ':status': 200,
     ':path': 'abc',
-    'xyz': [1, '2', { toString() { return '3'; } }, 4],
-    'foo': [],
-    'BAR': [1]
+    xyz: [
+      1,
+      '2',
+      {
+        toString() {
+          return '3';
+        }
+      },
+      4
+    ],
+    foo: [],
+    BAR: [1]
   };
 
-  assert.deepStrictEqual(
-    mapToHeaders(headers),
-    [ [ ':path', 'abc', ':status', '200', 'abc', '1', 'xyz', '1', 'xyz', '2',
-        'xyz', '3', 'xyz', '4', 'bar', '1', '' ].join('\0'), 8 ]
-  );
+  assert.deepStrictEqual(mapToHeaders(headers), [
+    [
+      ':path',
+      'abc',
+      ':status',
+      '200',
+      'abc',
+      '1',
+      'xyz',
+      '1',
+      'xyz',
+      '2',
+      'xyz',
+      '3',
+      'xyz',
+      '4',
+      'bar',
+      '1',
+      ''
+    ].join('\0'),
+    8
+  ]);
 }
 
 {
   const headers = {
-    'abc': 1,
+    abc: 1,
     ':path': 'abc',
     ':status': [200],
     ':authority': [],
-    'xyz': [1, 2, 3, 4]
+    xyz: [1, 2, 3, 4]
   };
 
-  assert.deepStrictEqual(
-    mapToHeaders(headers),
-    [ [ ':status', '200', ':path', 'abc', 'abc', '1', 'xyz', '1', 'xyz', '2',
-        'xyz', '3', 'xyz', '4', '' ].join('\0'), 7 ]
-  );
+  assert.deepStrictEqual(mapToHeaders(headers), [
+    [
+      ':status',
+      '200',
+      ':path',
+      'abc',
+      'abc',
+      '1',
+      'xyz',
+      '1',
+      'xyz',
+      '2',
+      'xyz',
+      '3',
+      'xyz',
+      '4',
+      ''
+    ].join('\0'),
+    7
+  ]);
 }
 
 {
   const headers = {
-    'abc': 1,
+    abc: 1,
     ':path': 'abc',
-    'xyz': [1, 2, 3, 4],
+    xyz: [1, 2, 3, 4],
     '': 1,
     ':status': 200,
     [Symbol('test')]: 1 // Symbol keys are ignored
   };
 
-  assert.deepStrictEqual(
-    mapToHeaders(headers),
-    [ [ ':status', '200', ':path', 'abc', 'abc', '1', 'xyz', '1', 'xyz', '2',
-        'xyz', '3', 'xyz', '4', '' ].join('\0'), 7 ]
-  );
+  assert.deepStrictEqual(mapToHeaders(headers), [
+    [
+      ':status',
+      '200',
+      ':path',
+      'abc',
+      'abc',
+      '1',
+      'xyz',
+      '1',
+      'xyz',
+      '2',
+      'xyz',
+      '3',
+      'xyz',
+      '4',
+      ''
+    ].join('\0'),
+    7
+  ]);
 }
 
 {
   // Only own properties are used
-  const base = { 'abc': 1 };
+  const base = { abc: 1 };
   const headers = Object.create(base);
   headers[':path'] = 'abc';
   headers.xyz = [1, 2, 3, 4];
   headers.foo = [];
   headers[':status'] = 200;
 
-  assert.deepStrictEqual(
-    mapToHeaders(headers),
-    [ [ ':status', '200', ':path', 'abc', 'xyz', '1', 'xyz', '2', 'xyz', '3',
-        'xyz', '4', '' ].join('\0'), 6 ]
-  );
+  assert.deepStrictEqual(mapToHeaders(headers), [
+    [
+      ':status',
+      '200',
+      ':path',
+      'abc',
+      'xyz',
+      '1',
+      'xyz',
+      '2',
+      'xyz',
+      '3',
+      'xyz',
+      '4',
+      ''
+    ].join('\0'),
+    6
+  ]);
 }
 
 {
@@ -162,17 +230,17 @@ const {
   const headers = {
     'set-cookie': ['foo=bar']
   };
-  assert.deepStrictEqual(
-    mapToHeaders(headers),
-    [ [ 'set-cookie', 'foo=bar', '' ].join('\0'), 1 ]
-  );
+  assert.deepStrictEqual(mapToHeaders(headers), [
+    ['set-cookie', 'foo=bar', ''].join('\0'),
+    1
+  ]);
 }
 
 {
   // pseudo-headers are only allowed a single value
   const headers = {
     ':status': 200,
-    ':statuS': 204,
+    ':statuS': 204
   };
 
   common.expectsError({
@@ -284,36 +352,43 @@ const {
   common.expectsError({
     code: 'ERR_HTTP2_INVALID_CONNECTION_HEADERS',
     name: 'TypeError [ERR_HTTP2_INVALID_CONNECTION_HEADERS]',
-    message: 'HTTP/1 Connection specific headers are forbidden: ' +
-             `"${name.toLowerCase()}"`
+    message:
+      'HTTP/1 Connection specific headers are forbidden: ' +
+      `"${name.toLowerCase()}"`
   })(mapToHeaders({ [name]: 'abc' }));
 });
 
 common.expectsError({
   code: 'ERR_HTTP2_INVALID_CONNECTION_HEADERS',
   name: 'TypeError [ERR_HTTP2_INVALID_CONNECTION_HEADERS]',
-  message: 'HTTP/1 Connection specific headers are forbidden: ' +
-           `"${HTTP2_HEADER_TE}"`
+  message:
+    'HTTP/1 Connection specific headers are forbidden: ' +
+    `"${HTTP2_HEADER_TE}"`
 })(mapToHeaders({ [HTTP2_HEADER_TE]: ['abc'] }));
 
 common.expectsError({
   code: 'ERR_HTTP2_INVALID_CONNECTION_HEADERS',
   name: 'TypeError [ERR_HTTP2_INVALID_CONNECTION_HEADERS]',
-  message: 'HTTP/1 Connection specific headers are forbidden: ' +
-           `"${HTTP2_HEADER_TE}"`
+  message:
+    'HTTP/1 Connection specific headers are forbidden: ' +
+    `"${HTTP2_HEADER_TE}"`
 })(mapToHeaders({ [HTTP2_HEADER_TE]: ['abc', 'trailers'] }));
 
 assert(!(mapToHeaders({ te: 'trailers' }) instanceof Error));
 assert(!(mapToHeaders({ te: ['trailers'] }) instanceof Error));
 
-
 {
   const rawHeaders = [
-    ':status', '200',
-    'cookie', 'foo',
-    'set-cookie', 'sc1',
-    'age', '10',
-    'x-multi', 'first'
+    ':status',
+    '200',
+    'cookie',
+    'foo',
+    'set-cookie',
+    'sc1',
+    'age',
+    '10',
+    'x-multi',
+    'first'
   ];
   const headers = toHeaderObject(rawHeaders);
   assert.strictEqual(headers[':status'], 200);
@@ -325,16 +400,26 @@ assert(!(mapToHeaders({ te: ['trailers'] }) instanceof Error));
 
 {
   const rawHeaders = [
-    ':status', '200',
-    ':status', '400',
-    'cookie', 'foo',
-    'cookie', 'bar',
-    'set-cookie', 'sc1',
-    'set-cookie', 'sc2',
-    'age', '10',
-    'age', '20',
-    'x-multi', 'first',
-    'x-multi', 'second'
+    ':status',
+    '200',
+    ':status',
+    '400',
+    'cookie',
+    'foo',
+    'cookie',
+    'bar',
+    'set-cookie',
+    'sc1',
+    'set-cookie',
+    'sc2',
+    'age',
+    '10',
+    'age',
+    '20',
+    'x-multi',
+    'first',
+    'x-multi',
+    'second'
   ];
   const headers = toHeaderObject(rawHeaders);
   assert.strictEqual(headers[':status'], 200);

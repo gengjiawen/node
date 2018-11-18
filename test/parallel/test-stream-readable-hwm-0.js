@@ -12,16 +12,19 @@ const { Readable } = require('stream');
 const r = new Readable({
   // must be called only once upon setting 'readable' listener
   read: common.mustCall(),
-  highWaterMark: 0,
+  highWaterMark: 0
 });
 
 let pushedNull = false;
 // this will trigger read(0) but must only be called after push(null)
 // because the we haven't pushed any data
-r.on('readable', common.mustCall(() => {
-  assert.strictEqual(r.read(), null);
-  assert.strictEqual(pushedNull, true);
-}));
+r.on(
+  'readable',
+  common.mustCall(() => {
+    assert.strictEqual(r.read(), null);
+    assert.strictEqual(pushedNull, true);
+  })
+);
 r.on('end', common.mustCall());
 process.nextTick(() => {
   assert.strictEqual(r.read(), null);

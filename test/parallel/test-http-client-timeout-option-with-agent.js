@@ -17,7 +17,7 @@ const options = {
   host: '127.0.0.1',
   path: '/',
   timeout: HTTP_CLIENT_TIMEOUT,
-  agent,
+  agent
 };
 
 const server = http.createServer(() => {
@@ -38,16 +38,19 @@ function doRequest() {
   req.on('close', common.mustCall(() => server.close()));
 
   let timeout_events = 0;
-  req.on('timeout', common.mustCall(() => {
-    timeout_events += 1;
-    const duration = Date.now() - start;
-    // The timeout event cannot be precisely timed. It will delay
-    // some number of milliseconds.
-    assert.ok(
-      duration >= HTTP_CLIENT_TIMEOUT,
-      `duration ${duration}ms less than timeout ${HTTP_CLIENT_TIMEOUT}ms`
-    );
-  }));
+  req.on(
+    'timeout',
+    common.mustCall(() => {
+      timeout_events += 1;
+      const duration = Date.now() - start;
+      // The timeout event cannot be precisely timed. It will delay
+      // some number of milliseconds.
+      assert.ok(
+        duration >= HTTP_CLIENT_TIMEOUT,
+        `duration ${duration}ms less than timeout ${HTTP_CLIENT_TIMEOUT}ms`
+      );
+    })
+  );
   req.end();
 
   setTimeout(function() {

@@ -7,8 +7,7 @@ function test() {
   const d = domain.create();
   const d2 = domain.create();
 
-  d.on('error', function errorHandler() {
-  });
+  d.on('error', function errorHandler() {});
 
   d.run(function() {
     d2.run(function() {

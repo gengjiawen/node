@@ -4,8 +4,7 @@ const { isCPPSymbolsNotMapped } = require('./util');
 const tmpdir = require('../common/tmpdir');
 tmpdir.refresh();
 
-if (!common.enoughTestCpu)
-  common.skip('test is CPU-intensive');
+if (!common.enoughTestCpu) common.skip('test is CPU-intensive');
 
 if (isCPPSymbolsNotMapped) {
   common.skip('C++ symbols are not mapped for this OS.');
@@ -14,7 +13,6 @@ if (isCPPSymbolsNotMapped) {
 // This test will produce a broken profile log.
 // ensure prof-polyfill not stuck in infinite loop
 // and success process
-
 
 const assert = require('assert');
 const cp = require('child_process');
@@ -33,28 +31,25 @@ const code = `function f() {
          };
          f();`;
 
-const proc = cp.spawn(process.execPath, [
-  '--no_logfile_per_isolate',
-  '--logfile=-',
-  '--prof',
-  '-pe', code
-], {
-  stdio: ['ignore', 'pipe', 'inherit']
-});
+const proc = cp.spawn(
+  process.execPath,
+  ['--no_logfile_per_isolate', '--logfile=-', '--prof', '-pe', code],
+  {
+    stdio: ['ignore', 'pipe', 'inherit']
+  }
+);
 
 let ticks = '';
-proc.stdout.on('data', (chunk) => ticks += chunk);
-
+proc.stdout.on('data', (chunk) => (ticks += chunk));
 
 function runPolyfill(content) {
   proc.kill();
   content += BROKEN_PART;
   fs.writeFileSync(LOG_FILE, content);
-  const child = cp.spawnSync(
-    `${process.execPath}`,
-    [
-      '--prof-process', LOG_FILE
-    ]);
+  const child = cp.spawnSync(`${process.execPath}`, [
+    '--prof-process',
+    LOG_FILE
+  ]);
   assert(WARN_REG_EXP.test(child.stderr.toString()));
   assert(WARN_DETAIL_REG_EXP.test(child.stderr.toString()));
   assert.strictEqual(child.status, 0);

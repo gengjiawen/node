@@ -2,15 +2,10 @@
 // Flags: --expose-internals
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const http2 = require('http2');
 const { internalBinding } = require('internal/test/binding');
-const {
-  constants,
-  Http2Stream,
-  nghttp2ErrorString
-} = internalBinding('http2');
+const { constants, Http2Stream, nghttp2ErrorString } = internalBinding('http2');
 const { NghttpError } = require('internal/http2/util');
 
 // tests error handling within additionalHeaders
@@ -20,9 +15,10 @@ const specificTestKeys = [];
 const specificTests = [];
 
 const genericTests = Object.getOwnPropertyNames(constants)
-  .filter((key) => (
-    key.indexOf('NGHTTP2_ERR') === 0 && specificTestKeys.indexOf(key) < 0
-  ))
+  .filter(
+    (key) =>
+      key.indexOf('NGHTTP2_ERR') === 0 && specificTestKeys.indexOf(key) < 0
+  )
   .map((key) => ({
     ngError: constants[key],
     error: {
@@ -34,7 +30,6 @@ const genericTests = Object.getOwnPropertyNames(constants)
     type: 'stream'
   }));
 
-
 const tests = specificTests.concat(genericTests);
 
 let currentError;
@@ -43,22 +38,25 @@ let currentError;
 Http2Stream.prototype.info = () => currentError.ngError;
 
 const server = http2.createServer();
-server.on('stream', common.mustCall((stream, headers) => {
-  const errorMustCall = common.expectsError(currentError.error);
-  const errorMustNotCall = common.mustNotCall(
-    `${currentError.error.code} should emit on ${currentError.type}`
-  );
+server.on(
+  'stream',
+  common.mustCall((stream, headers) => {
+    const errorMustCall = common.expectsError(currentError.error);
+    const errorMustNotCall = common.mustNotCall(
+      `${currentError.error.code} should emit on ${currentError.type}`
+    );
 
-  if (currentError.type === 'stream') {
-    stream.session.on('error', errorMustNotCall);
-    stream.on('error', errorMustCall);
-  } else {
-    stream.session.once('error', errorMustCall);
-    stream.on('error', errorMustNotCall);
-  }
+    if (currentError.type === 'stream') {
+      stream.session.on('error', errorMustNotCall);
+      stream.on('error', errorMustCall);
+    } else {
+      stream.session.once('error', errorMustCall);
+      stream.on('error', errorMustNotCall);
+    }
 
-  stream.additionalHeaders({ ':status': 100 });
-}, tests.length));
+    stream.additionalHeaders({ ':status': 100 });
+  }, tests.length)
+);
 
 server.listen(0, common.mustCall(() => runTest(tests.shift())));
 
@@ -70,19 +68,25 @@ function runTest(test) {
   req.resume();
   req.end();
 
-  req.on('error', common.expectsError({
-    code: 'ERR_HTTP2_STREAM_ERROR',
-    type: Error,
-    message: 'Stream closed with error code NGHTTP2_INTERNAL_ERROR'
-  }));
+  req.on(
+    'error',
+    common.expectsError({
+      code: 'ERR_HTTP2_STREAM_ERROR',
+      type: Error,
+      message: 'Stream closed with error code NGHTTP2_INTERNAL_ERROR'
+    })
+  );
 
-  req.on('close', common.mustCall(() => {
-    client.close();
+  req.on(
+    'close',
+    common.mustCall(() => {
+      client.close();
 
-    if (!tests.length) {
-      server.close();
-    } else {
-      runTest(tests.shift());
-    }
-  }));
+      if (!tests.length) {
+        server.close();
+      } else {
+        runTest(tests.shift());
+      }
+    })
+  );
 }

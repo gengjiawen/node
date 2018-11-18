@@ -32,11 +32,17 @@ disallow('--');
 
 function disallow(opt) {
   const env = Object.assign({}, process.env, { NODE_OPTIONS: opt });
-  exec(process.execPath, { env }, common.mustCall(function(err) {
-    const message = err.message.split(/\r?\n/)[1];
-    const expect = `${process.execPath}: ${opt} is not allowed in NODE_OPTIONS`;
+  exec(
+    process.execPath,
+    { env },
+    common.mustCall(function(err) {
+      const message = err.message.split(/\r?\n/)[1];
+      const expect = `${
+        process.execPath
+      }: ${opt} is not allowed in NODE_OPTIONS`;
 
-    assert.strictEqual(err.code, 9);
-    assert.strictEqual(message, expect);
-  }));
+      assert.strictEqual(err.code, 9);
+      assert.strictEqual(message, expect);
+    })
+  );
 }

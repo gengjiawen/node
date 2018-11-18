@@ -27,7 +27,8 @@ for (let i = 1; i <= 5; i++) {
       testStream._writableState.bufferedRequestCount,
       testStream._writableState.getBuffer().length,
       'bufferedRequestCount variable is different from the actual length of' +
-      ' the buffer');
+        ' the buffer'
+    );
   });
 }
 

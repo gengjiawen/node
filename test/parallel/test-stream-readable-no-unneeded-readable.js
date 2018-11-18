@@ -19,7 +19,7 @@ function test(r) {
         }
         // else the end event should fire
       });
-    },
+    }
   });
 
   r.once('end', function() {
@@ -55,7 +55,7 @@ function test(r) {
         // asynchronous call
         process.nextTick(() => r.push(null));
       }
-    },
+    }
   });
 
   test(r);

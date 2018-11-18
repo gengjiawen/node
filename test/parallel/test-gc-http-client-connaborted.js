@@ -19,20 +19,26 @@ function serverHandler(req, res) {
 }
 
 const server = http.createServer(serverHandler);
-server.listen(0, common.mustCall(() => {
-  for (let i = 0; i < 10; i++)
-    getall();
-}));
+server.listen(
+  0,
+  common.mustCall(() => {
+    for (let i = 0; i < 10; i++) getall();
+  })
+);
 
 function getall() {
-  if (count >= todo)
-    return;
+  if (count >= todo) return;
 
-  const req = http.get({
-    hostname: 'localhost',
-    pathname: '/',
-    port: server.address().port
-  }, cb).on('error', cb);
+  const req = http
+    .get(
+      {
+        hostname: 'localhost',
+        pathname: '/',
+        port: server.address().port
+      },
+      cb
+    )
+    .on('error', cb);
 
   count++;
   onGC(req, { ongc });

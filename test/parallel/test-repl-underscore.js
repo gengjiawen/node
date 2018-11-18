@@ -146,7 +146,7 @@ function testResetContextGlobal() {
     'Expression assignment to _ now disabled.',
     '10',
     '10',
-    '10',
+    '10'
   ]);
 
   // delete globals leaked by REPL when `useGlobal` is `true`
@@ -194,14 +194,12 @@ function testError() {
       'Error: baz',
       /setImmediate/,
       /^    at/,
-      /^    at/,
+      /^    at/
     ];
     for (const line of lines) {
       const expected = expectedLines.shift();
-      if (typeof expected === 'string')
-        assert.strictEqual(line, expected);
-      else
-        assert(expected.test(line), `${line} should match ${expected}`);
+      if (typeof expected === 'string') assert.strictEqual(line, expected);
+      else assert(expected.test(line), `${line} should match ${expected}`);
     }
     assert.strictEqual(expectedLines.length, 0);
 

@@ -61,9 +61,12 @@ const w = new TestWriter();
 w.on('results', function(res) {
   console.error(res, w.length);
   assert.strictEqual(w.length, size);
-  assert.deepStrictEqual(res.map(function(c) {
-    return c.length;
-  }), expectLengths);
+  assert.deepStrictEqual(
+    res.map(function(c) {
+      return c.length;
+    }),
+    expectLengths
+  );
   console.log('ok');
 });
 

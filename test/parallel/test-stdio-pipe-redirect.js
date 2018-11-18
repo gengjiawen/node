@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.isMainThread)
-  common.skip("Workers don't have process-like stdio");
+if (!common.isMainThread) common.skip("Workers don't have process-like stdio");
 
 // Test if Node handles redirecting one child process stdout to another
 // process stdin without crashing.
@@ -15,10 +14,10 @@ const who = process.argv.length <= 2 ? 'parent' : process.argv[2];
 switch (who) {
   case 'parent':
     const consumer = spawn(process.argv0, [process.argv[1], 'consumer'], {
-      stdio: ['pipe', 'ignore', 'inherit'],
+      stdio: ['pipe', 'ignore', 'inherit']
     });
     const producer = spawn(process.argv0, [process.argv[1], 'producer'], {
-      stdio: ['pipe', consumer.stdin, 'inherit'],
+      stdio: ['pipe', consumer.stdin, 'inherit']
     });
     process.stdin.on('data', () => {});
     producer.on('exit', process.exit);

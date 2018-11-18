@@ -25,13 +25,10 @@ const assert = require('assert');
 const cluster = require('cluster');
 
 if (cluster.isWorker) {
-
   // keep the worker alive
   const http = require('http');
   http.Server().listen(0, '127.0.0.1');
-
 } else if (process.argv[2] === 'cluster') {
-
   const worker = cluster.fork();
 
   // send PID info to testcase process
@@ -40,14 +37,15 @@ if (cluster.isWorker) {
   });
 
   // terminate the cluster process
-  worker.once('listening', common.mustCall(() => {
-    setTimeout(() => {
-      process.exit(0);
-    }, 1000);
-  }));
-
+  worker.once(
+    'listening',
+    common.mustCall(() => {
+      setTimeout(() => {
+        process.exit(0);
+      }, 1000);
+    })
+  );
 } else {
-
   // This is the testcase
   const fork = require('child_process').fork;
 
@@ -62,27 +60,34 @@ if (cluster.isWorker) {
 
   // When master is dead
   let alive = true;
-  master.on('exit', common.mustCall((code) => {
+  master.on(
+    'exit',
+    common.mustCall((code) => {
+      // make sure that the master died on purpose
+      assert.strictEqual(code, 0);
 
-    // make sure that the master died on purpose
-    assert.strictEqual(code, 0);
-
-    // check worker process status
-    const pollWorker = () => {
-      alive = common.isAlive(pid);
-      if (alive) {
-        setTimeout(pollWorker, 50);
-      }
-    };
-    // Loop indefinitely until worker exit.
-    pollWorker();
-  }));
+      // check worker process status
+      const pollWorker = () => {
+        alive = common.isAlive(pid);
+        if (alive) {
+          setTimeout(pollWorker, 50);
+        }
+      };
+      // Loop indefinitely until worker exit.
+      pollWorker();
+    })
+  );
 
   process.once('exit', () => {
-    assert.strictEqual(typeof pid, 'number',
-                       `got ${pid} instead of a worker pid`);
-    assert.strictEqual(alive, false,
-                       `worker was alive after master died (alive = ${alive})`);
+    assert.strictEqual(
+      typeof pid,
+      'number',
+      `got ${pid} instead of a worker pid`
+    );
+    assert.strictEqual(
+      alive,
+      false,
+      `worker was alive after master died (alive = ${alive})`
+    );
   });
-
 }

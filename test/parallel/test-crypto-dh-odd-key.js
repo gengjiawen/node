@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -39,5 +38,7 @@ function test() {
 if (!common.hasFipsCrypto) {
   test();
 } else {
-  assert.throws(function() { test(); }, /key size too small/);
+  assert.throws(function() {
+    test();
+  }, /key size too small/);
 }

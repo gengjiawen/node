@@ -2,9 +2,7 @@
 
 // A module may export one or more methods.
 
-function foo() {
-}
-
+function foo() {}
 
 module.exports = {
   foo

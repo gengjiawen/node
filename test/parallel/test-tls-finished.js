@@ -3,8 +3,7 @@
 const common = require('../common');
 const fixtures = require('../common/fixtures');
 
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 // This test ensures that tlsSocket.getFinished() and
 // tlsSocket.getPeerFinished() return undefined before
@@ -18,34 +17,43 @@ const tls = require('tls');
 
 const msg = {};
 const pem = (n) => fixtures.readKey(`${n}.pem`);
-const server = tls.createServer({
-  key: pem('agent1-key'),
-  cert: pem('agent1-cert')
-}, common.mustCall((alice) => {
-  msg.server = {
-    alice: alice.getFinished(),
-    bob: alice.getPeerFinished()
-  };
-  server.close();
-}));
+const server = tls.createServer(
+  {
+    key: pem('agent1-key'),
+    cert: pem('agent1-cert')
+  },
+  common.mustCall((alice) => {
+    msg.server = {
+      alice: alice.getFinished(),
+      bob: alice.getPeerFinished()
+    };
+    server.close();
+  })
+);
 
-server.listen(0, common.mustCall(() => {
-  const bob = tls.connect({
-    port: server.address().port,
-    rejectUnauthorized: false
-  }, common.mustCall(() => {
-    msg.client = {
+server.listen(
+  0,
+  common.mustCall(() => {
+    const bob = tls.connect(
+      {
+        port: server.address().port,
+        rejectUnauthorized: false
+      },
+      common.mustCall(() => {
+        msg.client = {
+          alice: bob.getPeerFinished(),
+          bob: bob.getFinished()
+        };
+        bob.end();
+      })
+    );
+
+    msg.before = {
       alice: bob.getPeerFinished(),
       bob: bob.getFinished()
     };
-    bob.end();
-  }));
-
-  msg.before = {
-    alice: bob.getPeerFinished(),
-    bob: bob.getFinished()
-  };
-}));
+  })
+);
 
 process.on('exit', () => {
   assert.strictEqual(undefined, msg.before.alice);

@@ -31,10 +31,8 @@ const tmpdir = require('../common/tmpdir');
 if (!common.isMainThread)
   common.skip('process.chdir is not available in Workers');
 
-const expectFilePath = common.isWindows ||
-                       common.isLinux ||
-                       common.isOSX ||
-                       common.isAIX;
+const expectFilePath =
+  common.isWindows || common.isLinux || common.isOSX || common.isAIX;
 
 const testDir = tmpdir.path;
 
@@ -46,14 +44,17 @@ tmpdir.refresh();
   fs.writeFileSync(filepath, 'hello');
 
   const watcher = fs.watch(filepath);
-  watcher.on('change', common.mustCall(function(event, filename) {
-    assert.strictEqual(event, 'change');
+  watcher.on(
+    'change',
+    common.mustCall(function(event, filename) {
+      assert.strictEqual(event, 'change');
 
-    if (expectFilePath) {
-      assert.strictEqual(filename, 'watch.txt');
-    }
-    watcher.close();
-  }));
+      if (expectFilePath) {
+        assert.strictEqual(filename, 'watch.txt');
+      }
+      watcher.close();
+    })
+  );
 
   setImmediate(function() {
     fs.writeFileSync(filepath, 'world');
@@ -67,15 +68,17 @@ tmpdir.refresh();
 
   fs.writeFileSync(filepathAbs, 'howdy');
 
-  const watcher =
-    fs.watch('hasOwnProperty', common.mustCall(function(event, filename) {
+  const watcher = fs.watch(
+    'hasOwnProperty',
+    common.mustCall(function(event, filename) {
       assert.strictEqual(event, 'change');
 
       if (expectFilePath) {
         assert.strictEqual(filename, 'hasOwnProperty');
       }
       watcher.close();
-    }));
+    })
+  );
 
   setImmediate(function() {
     fs.writeFileSync(filepathAbs, 'pardner');
@@ -86,8 +89,9 @@ tmpdir.refresh();
   const testsubdir = fs.mkdtempSync(testDir + path.sep);
   const filepath = path.join(testsubdir, 'newfile.txt');
 
-  const watcher =
-    fs.watch(testsubdir, common.mustCall(function(event, filename) {
+  const watcher = fs.watch(
+    testsubdir,
+    common.mustCall(function(event, filename) {
       const renameEv = common.isSunOS || common.isAIX ? 'change' : 'rename';
       assert.strictEqual(event, renameEv);
       if (expectFilePath) {
@@ -96,13 +100,13 @@ tmpdir.refresh();
         assert.strictEqual(filename, null);
       }
       watcher.close();
-    }));
+    })
+  );
 
   setImmediate(function() {
     const fd = fs.openSync(filepath, 'w');
     fs.closeSync(fd);
   });
-
 }
 
 // https://github.com/joyent/node/issues/2293 - non-persistent watcher should
@@ -115,14 +119,17 @@ tmpdir.refresh();
 // https://github.com/joyent/node/issues/6690
 {
   let oldhandle;
-  assert.throws(() => {
-    const w = fs.watch(__filename, common.mustNotCall());
-    oldhandle = w._handle;
-    w._handle = { close: w._handle.close };
-    w.close();
-  }, {
-    message: 'handle must be a FSEvent',
-    code: 'ERR_ASSERTION'
-  });
+  assert.throws(
+    () => {
+      const w = fs.watch(__filename, common.mustNotCall());
+      oldhandle = w._handle;
+      w._handle = { close: w._handle.close };
+      w.close();
+    },
+    {
+      message: 'handle must be a FSEvent',
+      code: 'ERR_ASSERTION'
+    }
+  );
   oldhandle.close(); // clean up
 }

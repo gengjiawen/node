@@ -24,8 +24,7 @@ const common = require('../common');
 
 // Check `id -G` and `process.getgroups()` return same groups.
 
-if (common.isOSX)
-  common.skip('Output of `id -G` is unreliable on Darwin.');
+if (common.isOSX) common.skip('Output of `id -G` is unreliable on Darwin.');
 
 const assert = require('assert');
 const exec = require('child_process').exec;

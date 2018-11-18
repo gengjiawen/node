@@ -43,7 +43,10 @@ if (process.argv[2] === 'fork') {
     out += chunk;
   });
 
-  child.on('exit', common.mustCall(function() {
-    assert.deepStrictEqual(JSON.parse(out), execArgv);
-  }));
+  child.on(
+    'exit',
+    common.mustCall(function() {
+      assert.deepStrictEqual(JSON.parse(out), execArgv);
+    })
+  );
 }

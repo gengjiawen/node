@@ -25,4 +25,3 @@
     require('util').print('fs loaded successfully');
   }
 })();
-

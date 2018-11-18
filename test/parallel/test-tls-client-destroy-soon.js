@@ -25,8 +25,7 @@
 // ASSERT resumption.
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -40,28 +39,39 @@ const options = {
 const big = Buffer.alloc(2 * 1024 * 1024, 'Y');
 
 // create server
-const server = tls.createServer(options, common.mustCall(function(socket) {
-  socket.end(big);
-  socket.destroySoon();
-}));
+const server = tls.createServer(
+  options,
+  common.mustCall(function(socket) {
+    socket.end(big);
+    socket.destroySoon();
+  })
+);
 
 // start listening
-server.listen(0, common.mustCall(function() {
-  const client = tls.connect({
-    port: this.address().port,
-    rejectUnauthorized: false
-  }, common.mustCall(function() {
-    let bytesRead = 0;
+server.listen(
+  0,
+  common.mustCall(function() {
+    const client = tls.connect(
+      {
+        port: this.address().port,
+        rejectUnauthorized: false
+      },
+      common.mustCall(function() {
+        let bytesRead = 0;
 
-    client.on('readable', function() {
-      const d = client.read();
-      if (d)
-        bytesRead += d.length;
-    });
+        client.on('readable', function() {
+          const d = client.read();
+          if (d) bytesRead += d.length;
+        });
 
-    client.on('end', common.mustCall(function() {
-      server.close();
-      assert.strictEqual(big.length, bytesRead);
-    }));
-  }));
-}));
+        client.on(
+          'end',
+          common.mustCall(function() {
+            server.close();
+            assert.strictEqual(big.length, bytesRead);
+          })
+        );
+      })
+    );
+  })
+);

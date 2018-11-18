@@ -34,7 +34,7 @@ async function test() {
         assert.strictEqual(specifier, 'foo');
         assert.strictEqual(wrap, s);
         return foo;
-      }),
+      })
     });
 
     const result = s.runInThisContext();
@@ -47,7 +47,7 @@ async function test() {
         assert.strictEqual(specifier, 'foo');
         assert.strictEqual(wrap, m);
         return foo;
-      }),
+      })
     });
     await m.link(common.mustNotCall());
     m.instantiate();
@@ -60,19 +60,21 @@ async function testInvalid() {
   const m = new SourceTextModule('import("foo")', {
     importModuleDynamically: common.mustCall((specifier, wrap) => {
       return 5;
-    }),
+    })
   });
   await m.link(common.mustNotCall());
   m.instantiate();
   const { result } = await m.evaluate();
-  await result.catch(common.mustCall((e) => {
-    assert.strictEqual(e.code, 'ERR_VM_MODULE_NOT_MODULE');
-  }));
+  await result.catch(
+    common.mustCall((e) => {
+      assert.strictEqual(e.code, 'ERR_VM_MODULE_NOT_MODULE');
+    })
+  );
 
   const s = new Script('import("foo")', {
     importModuleDynamically: common.mustCall((specifier, wrap) => {
       return undefined;
-    }),
+    })
   });
   let threw = false;
   try {
@@ -86,9 +88,7 @@ async function testInvalid() {
 
 async function testInvalidimportModuleDynamically() {
   assert.throws(
-    () => new Script(
-      'import("foo")',
-      { importModuleDynamically: false }),
+    () => new Script('import("foo")', { importModuleDynamically: false }),
     { code: 'ERR_INVALID_ARG_TYPE' }
   );
 }
@@ -98,4 +98,4 @@ async function testInvalidimportModuleDynamically() {
   await test();
   await testInvalid();
   await testInvalidimportModuleDynamically();
-}()).then(common.mustCall());
+})().then(common.mustCall());

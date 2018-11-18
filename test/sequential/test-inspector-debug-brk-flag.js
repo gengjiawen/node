@@ -9,18 +9,14 @@ const { NodeInstance } = require('../common/inspector-helper.js');
 
 async function testBreakpointOnStart(session) {
   const commands = [
-    { 'method': 'Runtime.enable' },
-    { 'method': 'Debugger.enable' },
-    { 'method': 'Debugger.setPauseOnExceptions',
-      'params': { 'state': 'none' } },
-    { 'method': 'Debugger.setAsyncCallStackDepth',
-      'params': { 'maxDepth': 0 } },
-    { 'method': 'Profiler.enable' },
-    { 'method': 'Profiler.setSamplingInterval',
-      'params': { 'interval': 100 } },
-    { 'method': 'Debugger.setBlackboxPatterns',
-      'params': { 'patterns': [] } },
-    { 'method': 'Runtime.runIfWaitingForDebugger' }
+    { method: 'Runtime.enable' },
+    { method: 'Debugger.enable' },
+    { method: 'Debugger.setPauseOnExceptions', params: { state: 'none' } },
+    { method: 'Debugger.setAsyncCallStackDepth', params: { maxDepth: 0 } },
+    { method: 'Profiler.enable' },
+    { method: 'Profiler.setSamplingInterval', params: { interval: 100 } },
+    { method: 'Debugger.setBlackboxPatterns', params: { patterns: [] } },
+    { method: 'Runtime.runIfWaitingForDebugger' }
   ];
 
   session.send(commands);

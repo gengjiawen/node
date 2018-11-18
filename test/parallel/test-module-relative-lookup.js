@@ -6,9 +6,9 @@ const _module = require('module'); // avoid collision with global.module
 
 // Current directory gets highest priority for local modules
 function testFirstInPath(moduleName, isLocalModule) {
-  const assertFunction = isLocalModule ?
-    assert.strictEqual :
-    assert.notStrictEqual;
+  const assertFunction = isLocalModule
+    ? assert.strictEqual
+    : assert.notStrictEqual;
 
   const lookupResults = _module._resolveLookupPaths(moduleName);
 

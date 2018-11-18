@@ -25,10 +25,8 @@ const assert = require('assert');
 
 const [, , modeArgv, sectionArgv] = process.argv;
 
-if (modeArgv === 'child')
-  child(sectionArgv);
-else
-  parent();
+if (modeArgv === 'child') child(sectionArgv);
+else parent();
 
 function parent() {
   test('foo,tud,bar', true, 'tud');
@@ -64,9 +62,11 @@ function test(environ, shouldWrite, section) {
   });
 
   if (shouldWrite) {
-    expectErr =
-      `${section.toUpperCase()} ${child.pid}: this { is: 'a' } /debugging/\n${
-        section.toUpperCase()} ${child.pid}: num=1 str=a obj={"foo":"bar"}\n`;
+    expectErr = `${section.toUpperCase()} ${
+      child.pid
+    }: this { is: 'a' } /debugging/\n${section.toUpperCase()} ${
+      child.pid
+    }: num=1 str=a obj={"foo":"bar"}\n`;
   }
 
   let err = '';
@@ -81,13 +81,15 @@ function test(environ, shouldWrite, section) {
     out += c;
   });
 
-  child.on('close', common.mustCall((c) => {
-    assert(!c);
-    assert.strictEqual(err, expectErr);
-    assert.strictEqual(out, expectOut);
-  }));
+  child.on(
+    'close',
+    common.mustCall((c) => {
+      assert(!c);
+      assert.strictEqual(err, expectErr);
+      assert.strictEqual(out, expectOut);
+    })
+  );
 }
-
 
 function child(section) {
   const util = require('util');

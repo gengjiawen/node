@@ -94,7 +94,7 @@ if (!common.isMainThread)
 
 // Include "Unknown"s because hook2 will not be able to identify
 // the type of the first Immediate  since it will miss its `init` invocation.
-const types = [ 'Immediate', 'Unknown' ];
+const types = ['Immediate', 'Unknown'];
 
 //
 // Initializing hooks
@@ -164,10 +164,16 @@ function onfirstImmediate() {
   assert.strictEqual(firstImmediate.type, 'Immediate');
   assert.strictEqual(typeof firstImmediate.uid, 'number');
   assert.strictEqual(typeof firstImmediate.triggerAsyncId, 'number');
-  checkInvocations(as1[0], { init: 1, before: 1 },
-                   'hook1[0]: on first immediate');
-  checkInvocations(as3[0], { init: 1, before: 1 },
-                   'hook3[0]: on first immediate');
+  checkInvocations(
+    as1[0],
+    { init: 1, before: 1 },
+    'hook1[0]: on first immediate'
+  );
+  checkInvocations(
+    as3[0],
+    { init: 1, before: 1 },
+    'hook3[0]: on first immediate'
+  );
 
   // Setup the second Immediate, note that now hook2 is enabled and thus
   // will capture all lifetime events of this Immediate
@@ -213,20 +219,38 @@ function onsecondImmediate() {
   assert.strictEqual(typeof secondImmediate.uid, 'number');
   assert.strictEqual(typeof secondImmediate.triggerAsyncId, 'number');
 
-  checkInvocations(hook1First, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'hook1First: on second immediate');
-  checkInvocations(hook1Second, { init: 1, before: 1 },
-                   'hook1Second: on second immediate');
+  checkInvocations(
+    hook1First,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'hook1First: on second immediate'
+  );
+  checkInvocations(
+    hook1Second,
+    { init: 1, before: 1 },
+    'hook1Second: on second immediate'
+  );
   // hook2 missed the "init" and "before" since it was enabled after they
   // occurred
-  checkInvocations(hook2First, { after: 1, destroy: 1 },
-                   'hook2First: on second immediate');
-  checkInvocations(hook2Second, { init: 1, before: 1 },
-                   'hook2Second: on second immediate');
-  checkInvocations(hook3First, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'hook3First: on second immediate');
-  checkInvocations(hook3Second, { init: 1, before: 1 },
-                   'hook3Second: on second immediate');
+  checkInvocations(
+    hook2First,
+    { after: 1, destroy: 1 },
+    'hook2First: on second immediate'
+  );
+  checkInvocations(
+    hook2Second,
+    { init: 1, before: 1 },
+    'hook2Second: on second immediate'
+  );
+  checkInvocations(
+    hook3First,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'hook3First: on second immediate'
+  );
+  checkInvocations(
+    hook3Second,
+    { init: 1, before: 1 },
+    'hook3Second: on second immediate'
+  );
   tick(1);
 }
 
@@ -247,22 +271,40 @@ function onexit() {
   hook2.sanityCheck();
   hook3.sanityCheck();
 
-  checkInvocations(hook1First, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'hook1First: when process exits');
+  checkInvocations(
+    hook1First,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'hook1First: when process exits'
+  );
   // hook1 was disabled during hook2's "before" of the second immediate
   // and thus did not see "after" and "destroy"
-  checkInvocations(hook1Second, { init: 1, before: 1 },
-                   'hook1Second: when process exits');
+  checkInvocations(
+    hook1Second,
+    { init: 1, before: 1 },
+    'hook1Second: when process exits'
+  );
   // hook2 missed the "init" and "before" since it was enabled after they
   // occurred
-  checkInvocations(hook2First, { after: 1, destroy: 1 },
-                   'hook2First: when process exits');
-  checkInvocations(hook2Second, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'hook2Second: when process exits');
-  checkInvocations(hook3First, { init: 1, before: 1, after: 1, destroy: 1 },
-                   'hook3First: when process exits');
+  checkInvocations(
+    hook2First,
+    { after: 1, destroy: 1 },
+    'hook2First: when process exits'
+  );
+  checkInvocations(
+    hook2Second,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'hook2Second: when process exits'
+  );
+  checkInvocations(
+    hook3First,
+    { init: 1, before: 1, after: 1, destroy: 1 },
+    'hook3First: when process exits'
+  );
   // we don't see a "destroy" invocation here since hook3 disabled itself
   // during its "after" invocation
-  checkInvocations(hook3Second, { init: 1, before: 1, after: 1 },
-                   'hook3Second: when process exits');
+  checkInvocations(
+    hook3Second,
+    { init: 1, before: 1, after: 1 },
+    'hook3Second: when process exits'
+  );
 }

@@ -31,8 +31,12 @@ const is = {
     assert(!Number.isNaN(value), `${key} should not be NaN`);
     assert.strictEqual(typeof value, 'number');
   },
-  string: (value) => { assert.strictEqual(typeof value, 'string'); },
-  array: (value) => { assert.ok(Array.isArray(value)); },
+  string: (value) => {
+    assert.strictEqual(typeof value, 'string');
+  },
+  array: (value) => {
+    assert.ok(Array.isArray(value));
+  },
   object: (value) => {
     assert.strictEqual(typeof value, 'object');
     assert.notStrictEqual(value, null);
@@ -40,8 +44,7 @@ const is = {
 };
 
 const flatten = (arr) =>
-  arr.reduce((acc, c) =>
-    acc.concat(Array.isArray(c) ? flatten(c) : c), []);
+  arr.reduce((acc, c) => acc.concat(Array.isArray(c) ? flatten(c) : c), []);
 
 process.env.TMPDIR = '/tmpdir';
 process.env.TMP = '/tmp';
@@ -110,8 +113,7 @@ const release = os.release();
 is.string(release);
 assert.ok(release.length > 0);
 // TODO: Check format on more than just AIX
-if (common.isAIX)
-  assert.ok(/^\d+\.\d+$/.test(release));
+if (common.isAIX) assert.ok(/^\d+\.\d+$/.test(release));
 
 const platform = os.platform();
 is.string(platform);
@@ -132,44 +134,48 @@ const interfaces = os.networkInterfaces();
 switch (platform) {
   case 'linux': {
     const filter = (e) =>
-      e.address === '127.0.0.1' &&
-      e.netmask === '255.0.0.0';
+      e.address === '127.0.0.1' && e.netmask === '255.0.0.0';
 
     const actual = interfaces.lo.filter(filter);
-    const expected = [{
-      address: '127.0.0.1',
-      netmask: '255.0.0.0',
-      family: 'IPv4',
-      mac: '00:00:00:00:00:00',
-      internal: true,
-      cidr: '127.0.0.1/8'
-    }];
+    const expected = [
+      {
+        address: '127.0.0.1',
+        netmask: '255.0.0.0',
+        family: 'IPv4',
+        mac: '00:00:00:00:00:00',
+        internal: true,
+        cidr: '127.0.0.1/8'
+      }
+    ];
     assert.deepStrictEqual(actual, expected);
     break;
   }
   case 'win32': {
-    const filter = (e) =>
-      e.address === '127.0.0.1';
+    const filter = (e) => e.address === '127.0.0.1';
 
     const actual = interfaces['Loopback Pseudo-Interface 1'].filter(filter);
-    const expected = [{
-      address: '127.0.0.1',
-      netmask: '255.0.0.0',
-      family: 'IPv4',
-      mac: '00:00:00:00:00:00',
-      internal: true,
-      cidr: '127.0.0.1/8'
-    }];
+    const expected = [
+      {
+        address: '127.0.0.1',
+        netmask: '255.0.0.0',
+        family: 'IPv4',
+        mac: '00:00:00:00:00:00',
+        internal: true,
+        cidr: '127.0.0.1/8'
+      }
+    ];
     assert.deepStrictEqual(actual, expected);
     break;
   }
 }
-const netmaskToCIDRSuffixMap = new Map(Object.entries({
-  '255.0.0.0': 8,
-  '255.255.255.0': 24,
-  'ffff:ffff:ffff:ffff::': 64,
-  'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff': 128
-}));
+const netmaskToCIDRSuffixMap = new Map(
+  Object.entries({
+    '255.0.0.0': 8,
+    '255.255.255.0': 24,
+    'ffff:ffff:ffff:ffff::': 64,
+    'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff': 128
+  })
+);
 
 flatten(Object.values(interfaces))
   .map((v) => ({ v, mask: netmaskToCIDRSuffixMap.get(v.netmask) }))

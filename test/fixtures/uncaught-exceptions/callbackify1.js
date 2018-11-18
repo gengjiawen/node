@@ -5,7 +5,7 @@
 const { callbackify } = require('util');
 
 {
-  async function fn() { }
+  async function fn() {}
 
   const cbFn = callbackify(fn);
 

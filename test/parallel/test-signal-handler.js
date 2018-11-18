@@ -32,12 +32,15 @@ console.log(`process.pid: ${process.pid}`);
 
 process.on('SIGUSR1', common.mustCall());
 
-process.on('SIGUSR1', common.mustCall(function() {
-  setTimeout(function() {
-    console.log('End.');
-    process.exit(0);
-  }, 5);
-}));
+process.on(
+  'SIGUSR1',
+  common.mustCall(function() {
+    setTimeout(function() {
+      console.log('End.');
+      process.exit(0);
+    }, 5);
+  })
+);
 
 let i = 0;
 setInterval(function() {

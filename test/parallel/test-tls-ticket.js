@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const tls = require('tls');
@@ -41,63 +40,70 @@ function createServer() {
   let counter = 0;
   let previousKey = null;
 
-  const server = tls.createServer({
-    key: fixtures.readKey('agent1-key.pem'),
-    cert: fixtures.readKey('agent1-cert.pem'),
-    ticketKeys: keys
-  }, function(c) {
-    serverLog.push(id);
-    c.end();
+  const server = tls.createServer(
+    {
+      key: fixtures.readKey('agent1-key.pem'),
+      cert: fixtures.readKey('agent1-cert.pem'),
+      ticketKeys: keys
+    },
+    function(c) {
+      serverLog.push(id);
+      c.end();
 
-    counter++;
+      counter++;
 
-    // Rotate ticket keys
-    if (counter === 1) {
-      previousKey = server.getTicketKeys();
-      server.setTicketKeys(crypto.randomBytes(48));
-    } else if (counter === 2) {
-      server.setTicketKeys(previousKey);
-    } else if (counter === 3) {
-      // Use keys from counter=2
-    } else {
-      throw new Error('UNREACHABLE');
+      // Rotate ticket keys
+      if (counter === 1) {
+        previousKey = server.getTicketKeys();
+        server.setTicketKeys(crypto.randomBytes(48));
+      } else if (counter === 2) {
+        server.setTicketKeys(previousKey);
+      } else if (counter === 3) {
+        // Use keys from counter=2
+      } else {
+        throw new Error('UNREACHABLE');
+      }
     }
-  });
+  );
 
   return server;
 }
 
-const naturalServers = [ createServer(), createServer(), createServer() ];
+const naturalServers = [createServer(), createServer(), createServer()];
 
 // 3x servers
 const servers = naturalServers.concat(naturalServers).concat(naturalServers);
 
 // Create one TCP server and balance sockets to multiple TLS server instances
-const shared = net.createServer(function(c) {
-  servers.shift().emit('connection', c);
-}).listen(0, function() {
-  start(function() {
-    shared.close();
+const shared = net
+  .createServer(function(c) {
+    servers.shift().emit('connection', c);
+  })
+  .listen(0, function() {
+    start(function() {
+      shared.close();
+    });
   });
-});
 
 function start(callback) {
   let sess = null;
   let left = servers.length;
 
   function connect() {
-    const s = tls.connect(shared.address().port, {
-      session: sess,
-      rejectUnauthorized: false
-    }, function() {
-      sess = sess || s.getSession();
-      ticketLog.push(s.getTLSTicket().toString('hex'));
-    });
+    const s = tls.connect(
+      shared.address().port,
+      {
+        session: sess,
+        rejectUnauthorized: false
+      },
+      function() {
+        sess = sess || s.getSession();
+        ticketLog.push(s.getTLSTicket().toString('hex'));
+      }
+    );
     s.on('close', function() {
-      if (--left === 0)
-        callback();
-      else
-        connect();
+      if (--left === 0) callback();
+      else connect();
     });
   }
 

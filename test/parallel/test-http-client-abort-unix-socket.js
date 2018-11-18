@@ -15,11 +15,14 @@ class Agent extends http.Agent {
 const tmpdir = require('../common/tmpdir');
 tmpdir.refresh();
 
-server.listen(common.PIPE, common.mustCall(() => {
-  const req = http.get({
-    agent: new Agent(),
-    socketPath: common.PIPE
-  });
+server.listen(
+  common.PIPE,
+  common.mustCall(() => {
+    const req = http.get({
+      agent: new Agent(),
+      socketPath: common.PIPE
+    });
 
-  req.abort();
-}));
+    req.abort();
+  })
+);

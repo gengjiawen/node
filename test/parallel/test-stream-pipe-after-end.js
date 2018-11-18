@@ -32,8 +32,7 @@ class TestReadable extends Readable {
   }
 
   _read() {
-    if (this._ended)
-      this.emit('error', new Error('_read called twice'));
+    if (this._ended) this.emit('error', new Error('_read called twice'));
     this._ended = true;
     this.push(null);
   }
@@ -59,12 +58,15 @@ const piper = new TestReadable();
 // pushes EOF null, and length=0, so this will trigger 'end'
 piper.read();
 
-setTimeout(common.mustCall(function() {
-  ender.on('end', common.mustCall());
-  const c = ender.read();
-  assert.strictEqual(c, null);
+setTimeout(
+  common.mustCall(function() {
+    ender.on('end', common.mustCall());
+    const c = ender.read();
+    assert.strictEqual(c, null);
 
-  const w = new TestWritable();
-  w.on('finish', common.mustCall());
-  piper.pipe(w);
-}), 1);
+    const w = new TestWritable();
+    w.on('finish', common.mustCall());
+    piper.pipe(w);
+  }),
+  1
+);

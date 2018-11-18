@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const tls = require('tls');
 
@@ -12,12 +11,15 @@ const tls = require('tls');
     lookup: input
   };
 
-  common.expectsError(function() {
-    tls.connect(opts);
-  }, {
-    code: 'ERR_INVALID_ARG_TYPE',
-    type: TypeError
-  });
+  common.expectsError(
+    function() {
+      tls.connect(opts);
+    },
+    {
+      code: 'ERR_INVALID_ARG_TYPE',
+      type: TypeError
+    }
+  );
 });
 
 connectDoesNotThrow(common.mustCall(() => {}));

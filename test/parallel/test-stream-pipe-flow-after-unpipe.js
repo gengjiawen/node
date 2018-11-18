@@ -20,10 +20,12 @@ const ws = new Writable({
 });
 
 let chunks = 0;
-rs.on('data', common.mustCallAtLeast(() => {
-  chunks++;
-  if (chunks >= 20)
-    rs.pause();  // Finish this test.
-}));
+rs.on(
+  'data',
+  common.mustCallAtLeast(() => {
+    chunks++;
+    if (chunks >= 20) rs.pause(); // Finish this test.
+  })
+);
 
 rs.pipe(ws);

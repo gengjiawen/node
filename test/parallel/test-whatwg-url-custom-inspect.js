@@ -12,7 +12,9 @@ const util = require('util');
 const URL = require('url').URL;
 const assert = require('assert');
 
-const url = new URL('https://username:password@host.name:8080/path/name/?que=ry#hash');
+const url = new URL(
+  'https://username:password@host.name:8080/path/name/?que=ry#hash'
+);
 
 assert.strictEqual(
   util.inspect(url),
@@ -29,7 +31,8 @@ assert.strictEqual(
   pathname: '/path/name/',
   search: '?que=ry',
   searchParams: URLSearchParams { 'que' => 'ry' },
-  hash: '#hash' }`);
+  hash: '#hash' }`
+);
 
 assert.strictEqual(
   util.inspect(url, { showHidden: true }),
@@ -59,11 +62,10 @@ assert.strictEqual(
      port: 8080,
      path: [ 'path', 'name', '', [length]: 3 ],
      query: 'que=ry',
-     fragment: 'hash' } }`);
+     fragment: 'hash' } }`
+);
 
-assert.strictEqual(
-  util.inspect({ a: url }, { depth: 0 }),
-  '{ a: [Object] }');
+assert.strictEqual(util.inspect({ a: url }, { depth: 0 }), '{ a: [Object] }');
 
 class MyURL extends URL {}
 assert(util.inspect(new MyURL(url.href)).startsWith('MyURL {'));

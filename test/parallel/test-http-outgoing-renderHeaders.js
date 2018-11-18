@@ -11,14 +11,11 @@ const OutgoingMessage = http.OutgoingMessage;
 {
   const outgoingMessage = new OutgoingMessage();
   outgoingMessage._header = {};
-  common.expectsError(
-    outgoingMessage._renderHeaders.bind(outgoingMessage),
-    {
-      code: 'ERR_HTTP_HEADERS_SENT',
-      type: Error,
-      message: 'Cannot render headers after they are sent to the client'
-    }
-  );
+  common.expectsError(outgoingMessage._renderHeaders.bind(outgoingMessage), {
+    code: 'ERR_HTTP_HEADERS_SENT',
+    type: Error,
+    message: 'Cannot render headers after they are sent to the client'
+  });
 }
 
 {
@@ -27,7 +24,6 @@ const OutgoingMessage = http.OutgoingMessage;
   const result = outgoingMessage._renderHeaders();
   assert.deepStrictEqual(result, {});
 }
-
 
 {
   const outgoingMessage = new OutgoingMessage();

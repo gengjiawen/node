@@ -9,10 +9,12 @@ const { port1, port2 } = new MessageChannel();
 
 const arrayBuf = new ArrayBuffer(10);
 
-common.expectWarning('Warning',
-                     'The target port was posted to itself, and the ' +
-                     'communication channel was lost',
-                     common.noWarnCode);
+common.expectWarning(
+  'Warning',
+  'The target port was posted to itself, and the ' +
+    'communication channel was lost',
+  common.noWarnCode
+);
 port2.onmessage = common.mustNotCall();
 port2.postMessage(null, [port1, arrayBuf]);
 
@@ -20,5 +22,7 @@ port2.postMessage(null, [port1, arrayBuf]);
 // message.
 assert.strictEqual(arrayBuf.byteLength, 0);
 
-setTimeout(common.mustNotCall('The communication channel is still open'),
-           common.platformTimeout(1000)).unref();
+setTimeout(
+  common.mustNotCall('The communication channel is still open'),
+  common.platformTimeout(1000)
+).unref();

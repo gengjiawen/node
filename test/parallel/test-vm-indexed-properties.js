@@ -9,7 +9,6 @@ const code = `Object.defineProperty(this, 99, {
       enumerable: true
  });`;
 
-
 const sandbox = {};
 const ctx = vm.createContext(sandbox);
 vm.runInContext(code, ctx);

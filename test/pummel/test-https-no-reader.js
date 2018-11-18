@@ -21,8 +21,7 @@
 
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const https = require('https');
@@ -44,19 +43,22 @@ const server = https.createServer(options, function(req, res) {
 });
 
 server.listen(common.PORT, function() {
-  const req = https.request({
-    method: 'POST',
-    port: common.PORT,
-    rejectUnauthorized: false
-  }, function(res) {
-    res.read(0);
+  const req = https.request(
+    {
+      method: 'POST',
+      port: common.PORT,
+      rejectUnauthorized: false
+    },
+    function(res) {
+      res.read(0);
 
-    setTimeout(function() {
-      // Read buffer should be somewhere near high watermark
-      // (i.e. should not leak)
-      assert(res.readableLength < 100 * 1024);
-      process.exit(0);
-    }, 2000);
-  });
+      setTimeout(function() {
+        // Read buffer should be somewhere near high watermark
+        // (i.e. should not leak)
+        assert(res.readableLength < 100 * 1024);
+        process.exit(0);
+      }, 2000);
+    }
+  );
   req.end();
 });

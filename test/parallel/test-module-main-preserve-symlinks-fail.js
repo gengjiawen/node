@@ -15,7 +15,9 @@ for (const args of flags) {
       assert(e.toString().match(/Error: Cannot find module/));
       continue;
     }
-    assert.fail('Executing node with inexistent entry point should ' +
-                `fail. Entry point: ${entryPoint}, Flags: [${args}]`);
+    assert.fail(
+      'Executing node with inexistent entry point should ' +
+        `fail. Entry point: ${entryPoint}, Flags: [${args}]`
+    );
   }
 }

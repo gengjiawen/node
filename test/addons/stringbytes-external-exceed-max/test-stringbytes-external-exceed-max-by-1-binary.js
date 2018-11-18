@@ -4,8 +4,7 @@
 const common = require('../../common');
 const { internalBinding } = require('internal/test/binding');
 const skipMessage = 'intensive toString tests due to memory confinements';
-if (!common.enoughTestMem)
-  common.skip(skipMessage);
+if (!common.enoughTestMem) common.skip(skipMessage);
 
 const binding = require(`./build/${common.buildType}/binding`);
 const assert = require('assert');
@@ -19,23 +18,25 @@ try {
   buf = Buffer.allocUnsafe(kStringMaxLength + 1);
 } catch (e) {
   // If the exception is not due to memory confinement then rethrow it.
-  if (e.message !== 'Array buffer allocation failed') throw (e);
+  if (e.message !== 'Array buffer allocation failed') throw e;
   common.skip(skipMessage);
 }
 
 // Ensure we have enough memory available for future allocations to succeed.
-if (!binding.ensureAllocation(2 * kStringMaxLength))
-  common.skip(skipMessage);
+if (!binding.ensureAllocation(2 * kStringMaxLength)) common.skip(skipMessage);
 
 const stringLengthHex = kStringMaxLength.toString(16);
-common.expectsError(function() {
-  buf.toString('latin1');
-}, {
-  message: `Cannot create a string longer than 0x${stringLengthHex} ` +
-           'characters',
-  code: 'ERR_STRING_TOO_LONG',
-  type: Error
-});
+common.expectsError(
+  function() {
+    buf.toString('latin1');
+  },
+  {
+    message:
+      `Cannot create a string longer than 0x${stringLengthHex} ` + 'characters',
+    code: 'ERR_STRING_TOO_LONG',
+    type: Error
+  }
+);
 
 // FIXME: Free the memory early to avoid OOM.
 // REF: https://github.com/nodejs/reliability/issues/12#issuecomment-412619655

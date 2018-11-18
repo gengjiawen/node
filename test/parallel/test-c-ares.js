@@ -44,23 +44,32 @@ const dnsPromises = dns.promises;
 
 // Try resolution without callback
 
-dns.lookup(null, common.mustCall((error, result, addressType) => {
-  assert.ifError(error);
-  assert.strictEqual(result, null);
-  assert.strictEqual(addressType, 4);
-}));
+dns.lookup(
+  null,
+  common.mustCall((error, result, addressType) => {
+    assert.ifError(error);
+    assert.strictEqual(result, null);
+    assert.strictEqual(addressType, 4);
+  })
+);
 
-dns.lookup('127.0.0.1', common.mustCall((error, result, addressType) => {
-  assert.ifError(error);
-  assert.strictEqual(result, '127.0.0.1');
-  assert.strictEqual(addressType, 4);
-}));
+dns.lookup(
+  '127.0.0.1',
+  common.mustCall((error, result, addressType) => {
+    assert.ifError(error);
+    assert.strictEqual(result, '127.0.0.1');
+    assert.strictEqual(addressType, 4);
+  })
+);
 
-dns.lookup('::1', common.mustCall((error, result, addressType) => {
-  assert.ifError(error);
-  assert.strictEqual(result, '::1');
-  assert.strictEqual(addressType, 6);
-}));
+dns.lookup(
+  '::1',
+  common.mustCall((error, result, addressType) => {
+    assert.ifError(error);
+    assert.strictEqual(result, '::1');
+    assert.strictEqual(addressType, 6);
+  })
+);
 
 [
   // Try calling resolve with an unsupported type.
@@ -74,10 +83,7 @@ dns.lookup('::1', common.mustCall((error, result, addressType) => {
     message: `The value "${val}" is invalid for option "rrtype"`
   };
 
-  common.expectsError(
-    () => dns.resolve('www.google.com', val),
-    err
-  );
+  common.expectsError(() => dns.resolve('www.google.com', val), err);
 
   common.expectsError(() => dnsPromises.resolve('www.google.com', val), err);
 });
@@ -86,10 +92,13 @@ dns.lookup('::1', common.mustCall((error, result, addressType) => {
 // C:\Windows\System32\drivers\etc\hosts
 // so we disable this test on Windows.
 if (!common.isWindows) {
-  dns.reverse('127.0.0.1', common.mustCall(function(error, domains) {
-    assert.ifError(error);
-    assert.ok(Array.isArray(domains));
-  }));
+  dns.reverse(
+    '127.0.0.1',
+    common.mustCall(function(error, domains) {
+      assert.ifError(error);
+      assert.ok(Array.isArray(domains));
+    })
+  );
 
   (async function() {
     assert.ok(Array.isArray(await dnsPromises.reverse('127.0.0.1')));

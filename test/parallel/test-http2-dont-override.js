@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const http2 = require('http2');
 
@@ -13,37 +12,46 @@ const server = http2.createServer(options);
 // options are defaulted but the options are not modified
 assert.deepStrictEqual(Object.keys(options), []);
 
-server.on('stream', common.mustCall((stream) => {
-  const headers = {};
-  const options = {};
-  stream.respond(headers, options);
+server.on(
+  'stream',
+  common.mustCall((stream) => {
+    const headers = {};
+    const options = {};
+    stream.respond(headers, options);
 
-  // The headers are defaulted but the original object is not modified
-  assert.deepStrictEqual(Object.keys(headers), []);
+    // The headers are defaulted but the original object is not modified
+    assert.deepStrictEqual(Object.keys(headers), []);
 
-  // Options are defaulted but the original object is not modified
-  assert.deepStrictEqual(Object.keys(options), []);
+    // Options are defaulted but the original object is not modified
+    assert.deepStrictEqual(Object.keys(options), []);
 
-  stream.end();
-}));
+    stream.end();
+  })
+);
 
-server.listen(0, common.mustCall(() => {
-  const client = http2.connect(`http://localhost:${server.address().port}`);
+server.listen(
+  0,
+  common.mustCall(() => {
+    const client = http2.connect(`http://localhost:${server.address().port}`);
 
-  const headers = {};
-  const options = {};
+    const headers = {};
+    const options = {};
 
-  const req = client.request(headers, options);
+    const req = client.request(headers, options);
 
-  // The headers are defaulted but the original object is not modified
-  assert.deepStrictEqual(Object.keys(headers), []);
+    // The headers are defaulted but the original object is not modified
+    assert.deepStrictEqual(Object.keys(headers), []);
 
-  // Options are defaulted but the original object is not modified
-  assert.deepStrictEqual(Object.keys(options), []);
+    // Options are defaulted but the original object is not modified
+    assert.deepStrictEqual(Object.keys(options), []);
 
-  req.resume();
-  req.on('end', common.mustCall(() => {
-    server.close();
-    client.close();
-  }));
-}));
+    req.resume();
+    req.on(
+      'end',
+      common.mustCall(() => {
+        server.close();
+        client.close();
+      })
+    );
+  })
+);

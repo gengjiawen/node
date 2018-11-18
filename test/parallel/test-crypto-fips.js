@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const spawnSync = require('child_process').spawnSync;
@@ -39,8 +38,12 @@ function testHelper(stream, args, expectedOutput, cmd, env) {
   });
 
   console.error(
-    `Spawned child [pid:${child.pid}] with cmd '${cmd}' expect %j with args '${
-      args}' OPENSSL_CONF=%j`, expectedOutput, env.OPENSSL_CONF);
+    `Spawned child [pid:${
+      child.pid
+    }] with cmd '${cmd}' expect %j with args '${args}' OPENSSL_CONF=%j`,
+    expectedOutput,
+    env.OPENSSL_CONF
+  );
 
   function childOk(child) {
     console.error(`Child #${++num_children_ok} [pid:${child.pid}] OK.`);
@@ -68,7 +71,8 @@ testHelper(
   [],
   FIPS_DISABLED,
   'require("crypto").getFips()',
-  Object.assign({}, process.env, { 'OPENSSL_CONF': '' }));
+  Object.assign({}, process.env, { OPENSSL_CONF: '' })
+);
 
 // --enable-fips should turn FIPS mode on
 testHelper(
@@ -76,7 +80,8 @@ testHelper(
   ['--enable-fips'],
   compiledWithFips() ? FIPS_ENABLED : OPTION_ERROR_STRING,
   'require("crypto").getFips()',
-  process.env);
+  process.env
+);
 
 // --force-fips should turn FIPS mode on
 testHelper(
@@ -84,7 +89,8 @@ testHelper(
   ['--force-fips'],
   compiledWithFips() ? FIPS_ENABLED : OPTION_ERROR_STRING,
   'require("crypto").getFips()',
-  process.env);
+  process.env
+);
 
 // If Node was configured using --shared-openssl fips support might be
 // available depending on how OpenSSL was built. If fips support is
@@ -105,7 +111,8 @@ if (!sharedOpenSSL()) {
     [`--openssl-config=${CNF_FIPS_ON}`],
     compiledWithFips() ? FIPS_ENABLED : FIPS_DISABLED,
     'require("crypto").getFips()',
-    process.env);
+    process.env
+  );
 
   // OPENSSL_CONF should be able to turn on FIPS mode
   testHelper(
@@ -113,7 +120,8 @@ if (!sharedOpenSSL()) {
     [],
     compiledWithFips() ? FIPS_ENABLED : FIPS_DISABLED,
     'require("crypto").getFips()',
-    Object.assign({}, process.env, { 'OPENSSL_CONF': CNF_FIPS_ON }));
+    Object.assign({}, process.env, { OPENSSL_CONF: CNF_FIPS_ON })
+  );
 
   // --openssl-config option should override OPENSSL_CONF
   testHelper(
@@ -121,7 +129,8 @@ if (!sharedOpenSSL()) {
     [`--openssl-config=${CNF_FIPS_ON}`],
     compiledWithFips() ? FIPS_ENABLED : FIPS_DISABLED,
     'require("crypto").getFips()',
-    Object.assign({}, process.env, { 'OPENSSL_CONF': CNF_FIPS_OFF }));
+    Object.assign({}, process.env, { OPENSSL_CONF: CNF_FIPS_OFF })
+  );
 }
 
 testHelper(
@@ -129,7 +138,8 @@ testHelper(
   [`--openssl-config=${CNF_FIPS_OFF}`],
   FIPS_DISABLED,
   'require("crypto").getFips()',
-  Object.assign({}, process.env, { 'OPENSSL_CONF': CNF_FIPS_ON }));
+  Object.assign({}, process.env, { OPENSSL_CONF: CNF_FIPS_ON })
+);
 
 // --enable-fips should take precedence over OpenSSL config file
 testHelper(
@@ -137,7 +147,8 @@ testHelper(
   ['--enable-fips', `--openssl-config=${CNF_FIPS_OFF}`],
   compiledWithFips() ? FIPS_ENABLED : OPTION_ERROR_STRING,
   'require("crypto").getFips()',
-  process.env);
+  process.env
+);
 
 // OPENSSL_CONF should _not_ make a difference to --enable-fips
 testHelper(
@@ -145,7 +156,8 @@ testHelper(
   ['--enable-fips'],
   compiledWithFips() ? FIPS_ENABLED : OPTION_ERROR_STRING,
   'require("crypto").getFips()',
-  Object.assign({}, process.env, { 'OPENSSL_CONF': CNF_FIPS_OFF }));
+  Object.assign({}, process.env, { OPENSSL_CONF: CNF_FIPS_OFF })
+);
 
 // --force-fips should take precedence over OpenSSL config file
 testHelper(
@@ -153,7 +165,8 @@ testHelper(
   ['--force-fips', `--openssl-config=${CNF_FIPS_OFF}`],
   compiledWithFips() ? FIPS_ENABLED : OPTION_ERROR_STRING,
   'require("crypto").getFips()',
-  process.env);
+  process.env
+);
 
 // Using OPENSSL_CONF should not make a difference to --force-fips
 testHelper(
@@ -161,16 +174,17 @@ testHelper(
   ['--force-fips'],
   compiledWithFips() ? FIPS_ENABLED : OPTION_ERROR_STRING,
   'require("crypto").getFips()',
-  Object.assign({}, process.env, { 'OPENSSL_CONF': CNF_FIPS_OFF }));
+  Object.assign({}, process.env, { OPENSSL_CONF: CNF_FIPS_OFF })
+);
 
 // setFipsCrypto should be able to turn FIPS mode on
 testHelper(
   compiledWithFips() ? 'stdout' : 'stderr',
   [],
   compiledWithFips() ? FIPS_ENABLED : FIPS_ERROR_STRING,
-  '(require("crypto").setFips(true),' +
-  'require("crypto").getFips())',
-  process.env);
+  '(require("crypto").setFips(true),' + 'require("crypto").getFips())',
+  process.env
+);
 
 // setFipsCrypto should be able to turn FIPS mode on and off
 testHelper(
@@ -178,36 +192,37 @@ testHelper(
   [],
   compiledWithFips() ? FIPS_DISABLED : FIPS_ERROR_STRING,
   '(require("crypto").setFips(true),' +
-  'require("crypto").setFips(false),' +
-  'require("crypto").getFips())',
-  process.env);
+    'require("crypto").setFips(false),' +
+    'require("crypto").getFips())',
+  process.env
+);
 
 // setFipsCrypto takes precedence over OpenSSL config file, FIPS on
 testHelper(
   compiledWithFips() ? 'stdout' : 'stderr',
   [`--openssl-config=${CNF_FIPS_OFF}`],
   compiledWithFips() ? FIPS_ENABLED : FIPS_ERROR_STRING,
-  '(require("crypto").setFips(true),' +
-  'require("crypto").getFips())',
-  process.env);
+  '(require("crypto").setFips(true),' + 'require("crypto").getFips())',
+  process.env
+);
 
 // setFipsCrypto takes precedence over OpenSSL config file, FIPS off
 testHelper(
   compiledWithFips() ? 'stdout' : 'stderr',
   [`--openssl-config=${CNF_FIPS_ON}`],
   compiledWithFips() ? FIPS_DISABLED : FIPS_ERROR_STRING,
-  '(require("crypto").setFips(false),' +
-  'require("crypto").getFips())',
-  process.env);
+  '(require("crypto").setFips(false),' + 'require("crypto").getFips())',
+  process.env
+);
 
 // --enable-fips does not prevent use of setFipsCrypto API
 testHelper(
   compiledWithFips() ? 'stdout' : 'stderr',
   ['--enable-fips'],
   compiledWithFips() ? FIPS_DISABLED : OPTION_ERROR_STRING,
-  '(require("crypto").setFips(false),' +
-  'require("crypto").getFips())',
-  process.env);
+  '(require("crypto").setFips(false),' + 'require("crypto").getFips())',
+  process.env
+);
 
 // --force-fips prevents use of setFipsCrypto API
 testHelper(
@@ -215,16 +230,17 @@ testHelper(
   ['--force-fips'],
   compiledWithFips() ? FIPS_ERROR_STRING2 : OPTION_ERROR_STRING,
   'require("crypto").setFips(false)',
-  process.env);
+  process.env
+);
 
 // --force-fips makes setFipsCrypto enable a no-op (FIPS stays on)
 testHelper(
   compiledWithFips() ? 'stdout' : 'stderr',
   ['--force-fips'],
   compiledWithFips() ? FIPS_ENABLED : OPTION_ERROR_STRING,
-  '(require("crypto").setFips(true),' +
-  'require("crypto").getFips())',
-  process.env);
+  '(require("crypto").setFips(true),' + 'require("crypto").getFips())',
+  process.env
+);
 
 // --force-fips and --enable-fips order does not matter
 testHelper(
@@ -232,7 +248,8 @@ testHelper(
   ['--force-fips', '--enable-fips'],
   compiledWithFips() ? FIPS_ERROR_STRING2 : OPTION_ERROR_STRING,
   'require("crypto").setFips(false)',
-  process.env);
+  process.env
+);
 
 // --enable-fips and --force-fips order does not matter
 testHelper(
@@ -240,4 +257,5 @@ testHelper(
   ['--enable-fips', '--force-fips'],
   compiledWithFips() ? FIPS_ERROR_STRING2 : OPTION_ERROR_STRING,
   'require("crypto").setFips(false)',
-  process.env);
+  process.env
+);

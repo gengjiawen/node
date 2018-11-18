@@ -10,5 +10,5 @@ const stripShebang = require('internal/modules/cjs/helpers').stripShebang;
   ['aa', 'aa'],
   ['#!', ''],
   ['#!bin/bash', ''],
-  ['#!bin/bash\naa', '\naa'],
+  ['#!bin/bash\naa', '\naa']
 ].forEach((i) => assert.strictEqual(stripShebang(i[0]), i[1]));

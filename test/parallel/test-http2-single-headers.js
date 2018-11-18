@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const http2 = require('http2');
 
 const server = http2.createServer();
@@ -23,29 +22,29 @@ const singles = [
 
 server.on('stream', common.mustNotCall());
 
-server.listen(0, common.mustCall(() => {
-  const client = http2.connect(`http://localhost:${server.address().port}`);
+server.listen(
+  0,
+  common.mustCall(() => {
+    const client = http2.connect(`http://localhost:${server.address().port}`);
 
-  singles.forEach((i) => {
-    common.expectsError(
-      () => client.request({ [i]: 'abc', [i.toUpperCase()]: 'xyz' }),
-      {
+    singles.forEach((i) => {
+      common.expectsError(
+        () => client.request({ [i]: 'abc', [i.toUpperCase()]: 'xyz' }),
+        {
+          code: 'ERR_HTTP2_HEADER_SINGLE_VALUE',
+          type: TypeError,
+          message: `Header field "${i}" must only have a single value`
+        }
+      );
+
+      common.expectsError(() => client.request({ [i]: ['abc', 'xyz'] }), {
         code: 'ERR_HTTP2_HEADER_SINGLE_VALUE',
         type: TypeError,
         message: `Header field "${i}" must only have a single value`
-      }
-    );
+      });
+    });
 
-    common.expectsError(
-      () => client.request({ [i]: ['abc', 'xyz'] }),
-      {
-        code: 'ERR_HTTP2_HEADER_SINGLE_VALUE',
-        type: TypeError,
-        message: `Header field "${i}" must only have a single value`
-      }
-    );
-  });
-
-  server.close();
-  client.close();
-}));
+    server.close();
+    client.close();
+  })
+);

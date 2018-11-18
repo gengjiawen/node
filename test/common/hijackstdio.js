@@ -5,14 +5,16 @@
 const stdWrite = {};
 function hijackStdWritable(name, listener) {
   const stream = process[name];
-  const _write = stdWrite[name] = stream.write;
+  const _write = (stdWrite[name] = stream.write);
 
   stream.writeTimes = 0;
   stream.write = function(data, callback) {
     try {
       listener(data);
     } catch (e) {
-      process.nextTick(() => { throw e; });
+      process.nextTick(() => {
+        throw e;
+      });
     }
 
     _write.call(stream, data, callback);

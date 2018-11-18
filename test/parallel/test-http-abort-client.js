@@ -30,18 +30,24 @@ const server = http.Server((req, res) => {
   res.write('Part of my res.');
 });
 
-server.listen(0, common.mustCall(() => {
-  http.get({
-    port: server.address().port,
-    headers: { connection: 'keep-alive' }
-  }, common.mustCall((res) => {
-    server.close();
-    serverRes.destroy();
+server.listen(
+  0,
+  common.mustCall(() => {
+    http.get(
+      {
+        port: server.address().port,
+        headers: { connection: 'keep-alive' }
+      },
+      common.mustCall((res) => {
+        server.close();
+        serverRes.destroy();
 
-    res.resume();
-    res.on('end', common.mustCall());
-    res.on('aborted', common.mustCall());
-    res.on('close', common.mustCall());
-    res.socket.on('close', common.mustCall());
-  }));
-}));
+        res.resume();
+        res.on('end', common.mustCall());
+        res.on('aborted', common.mustCall());
+        res.on('close', common.mustCall());
+        res.socket.on('close', common.mustCall());
+      })
+    );
+  })
+);

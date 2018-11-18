@@ -18,23 +18,25 @@ function loop() {
     const current = hrtime();
     const span = (current - start) / NS_PER_MS;
     if (span >= 100n) {
-      throw new Error(
-        `escaped timeout at ${span} milliseconds!`);
+      throw new Error(`escaped timeout at ${span} milliseconds!`);
     }
   }
 }
 
-assert.throws(() => {
-  vm.runInNewContext(
-    'queueMicrotask(loop); loop();',
-    {
-      hrtime,
-      queueMicrotask,
-      loop
-    },
-    { timeout: common.platformTimeout(5) }
-  );
-}, {
-  code: 'ERR_SCRIPT_EXECUTION_TIMEOUT',
-  message: 'Script execution timed out after 5ms'
-});
+assert.throws(
+  () => {
+    vm.runInNewContext(
+      'queueMicrotask(loop); loop();',
+      {
+        hrtime,
+        queueMicrotask,
+        loop
+      },
+      { timeout: common.platformTimeout(5) }
+    );
+  },
+  {
+    code: 'ERR_SCRIPT_EXECUTION_TIMEOUT',
+    message: 'Script execution timed out after 5ms'
+  }
+);

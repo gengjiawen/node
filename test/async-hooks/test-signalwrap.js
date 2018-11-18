@@ -1,8 +1,7 @@
 'use strict';
 const common = require('../common');
 
-if (common.isWindows)
-  common.skip('no signals in Windows');
+if (common.isWindows) common.skip('no signals in Windows');
 if (!common.isMainThread)
   common.skip('No signal handling available in Workers');
 
@@ -39,16 +38,20 @@ function onsigusr2() {
   if (count === 1) {
     // first invocation
     checkInvocations(
-      signal1, { init: 1, before: 1 },
-      ' signal1: when first SIGUSR2 handler is called for the first time');
+      signal1,
+      { init: 1, before: 1 },
+      ' signal1: when first SIGUSR2 handler is called for the first time'
+    );
 
     // trigger same signal handler again
     exec(`kill -USR2 ${process.pid}`);
   } else {
     // second invocation
     checkInvocations(
-      signal1, { init: 1, before: 2, after: 1 },
-      'signal1: when first SIGUSR2 handler is called for the second time');
+      signal1,
+      { init: 1, before: 2, after: 1 },
+      'signal1: when first SIGUSR2 handler is called for the second time'
+    );
 
     // install another signal handler
     process.removeAllListeners('SIGUSR2');
@@ -62,11 +65,15 @@ function onsigusr2() {
     assert.strictEqual(typeof signal2.triggerAsyncId, 'number');
 
     checkInvocations(
-      signal1, { init: 1, before: 2, after: 1 },
-      'signal1: when second SIGUSR2 handler is set up');
+      signal1,
+      { init: 1, before: 2, after: 1 },
+      'signal1: when second SIGUSR2 handler is set up'
+    );
     checkInvocations(
-      signal2, { init: 1 },
-      'signal2: when second SIGUSR2 handler is setup');
+      signal2,
+      { init: 1 },
+      'signal2: when second SIGUSR2 handler is setup'
+    );
 
     exec(`kill -USR2 ${process.pid}`);
   }
@@ -76,11 +83,15 @@ function onsigusr2Again() {
   clearInterval(interval);
   setImmediate(() => {
     checkInvocations(
-      signal1, { init: 1, before: 2, after: 2, destroy: 1 },
-      'signal1: when second SIGUSR2 handler is called');
+      signal1,
+      { init: 1, before: 2, after: 2, destroy: 1 },
+      'signal1: when second SIGUSR2 handler is called'
+    );
     checkInvocations(
-      signal2, { init: 1, before: 1 },
-      'signal2: when second SIGUSR2 handler is called');
+      signal2,
+      { init: 1, before: 1 },
+      'signal2: when second SIGUSR2 handler is called'
+    );
   });
 }
 
@@ -90,10 +101,14 @@ function onexit() {
   hooks.disable();
   hooks.sanityCheck('SIGNALWRAP');
   checkInvocations(
-    signal1, { init: 1, before: 2, after: 2, destroy: 1 },
-    'signal1: when second SIGUSR2 process exits');
+    signal1,
+    { init: 1, before: 2, after: 2, destroy: 1 },
+    'signal1: when second SIGUSR2 process exits'
+  );
   // second signal not destroyed yet since its event listener is still active
   checkInvocations(
-    signal2, { init: 1, before: 1, after: 1 },
-    'signal2: when second SIGUSR2 process exits');
+    signal2,
+    { init: 1, before: 1, after: 1 },
+    'signal2: when second SIGUSR2 process exits'
+  );
 }

@@ -1,7 +1,6 @@
 'use strict';
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 
 const assert = require('assert');
 const crypto = require('crypto');
@@ -42,20 +41,22 @@ const test = [
     key: '29c9eab5ed5ad44134a1437fe2e673b4d88a5b7c72e68454fea08721392b7323',
     iv: '3fd838af',
     text: '12345678123456781234567812345678123'
-  },
+  }
 ];
 
 test.forEach((data) => {
   const cipher = crypto.createCipheriv(
     data.algorithm,
     Buffer.from(data.key, 'hex'),
-    Buffer.from(data.iv, 'hex'));
+    Buffer.from(data.iv, 'hex')
+  );
   const ciphertext = cipher.update(data.text, 'utf8');
 
   const decipher = crypto.createDecipheriv(
     data.algorithm,
     Buffer.from(data.key, 'hex'),
-    Buffer.from(data.iv, 'hex'));
+    Buffer.from(data.iv, 'hex')
+  );
   const msg = decipher.update(ciphertext, 'buffer', 'utf8');
 
   assert.strictEqual(msg, data.text, `${data.algorithm} test case failed`);

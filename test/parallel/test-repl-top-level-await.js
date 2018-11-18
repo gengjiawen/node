@@ -82,56 +82,63 @@ async function ordinaryTests() {
     'function koo() { return Promise.resolve(4); }'
   ]);
   const testCases = [
-    [ 'await Promise.resolve(0)', '0' ],
-    [ '{ a: await Promise.resolve(1) }', '{ a: 1 }' ],
-    [ '_', '{ a: 1 }' ],
-    [ 'let { a, b } = await Promise.resolve({ a: 1, b: 2 }), f = 5;',
-      'undefined' ],
-    [ 'a', '1' ],
-    [ 'b', '2' ],
-    [ 'f', '5' ],
-    [ 'let c = await Promise.resolve(2)', 'undefined' ],
-    [ 'c', '2' ],
-    [ 'let d;', 'undefined' ],
-    [ 'd', 'undefined' ],
-    [ 'let [i, { abc: { k } }] = [0, { abc: { k: 1 } }];', 'undefined' ],
-    [ 'i', '0' ],
-    [ 'k', '1' ],
-    [ 'var l = await Promise.resolve(2);', 'undefined' ],
-    [ 'l', '2' ],
-    [ 'foo(await koo())', '4' ],
-    [ '_', '4' ],
-    [ 'const m = foo(await koo());', 'undefined' ],
-    [ 'm', '4' ],
-    [ 'const n = foo(await\nkoo());', 'undefined' ],
-    [ 'n', '4' ],
+    ['await Promise.resolve(0)', '0'],
+    ['{ a: await Promise.resolve(1) }', '{ a: 1 }'],
+    ['_', '{ a: 1 }'],
+    [
+      'let { a, b } = await Promise.resolve({ a: 1, b: 2 }), f = 5;',
+      'undefined'
+    ],
+    ['a', '1'],
+    ['b', '2'],
+    ['f', '5'],
+    ['let c = await Promise.resolve(2)', 'undefined'],
+    ['c', '2'],
+    ['let d;', 'undefined'],
+    ['d', 'undefined'],
+    ['let [i, { abc: { k } }] = [0, { abc: { k: 1 } }];', 'undefined'],
+    ['i', '0'],
+    ['k', '1'],
+    ['var l = await Promise.resolve(2);', 'undefined'],
+    ['l', '2'],
+    ['foo(await koo())', '4'],
+    ['_', '4'],
+    ['const m = foo(await koo());', 'undefined'],
+    ['m', '4'],
+    ['const n = foo(await\nkoo());', 'undefined'],
+    ['n', '4'],
     // eslint-disable-next-line no-template-curly-in-string
-    [ '`status: ${(await Promise.resolve({ status: 200 })).status}`',
-      "'status: 200'"],
-    [ 'for (let i = 0; i < 2; ++i) await i', 'undefined' ],
-    [ 'for (let i = 0; i < 2; ++i) { await i }', 'undefined' ],
-    [ 'await 0', '0' ],
-    [ 'await 0; function foo() {}', 'undefined' ],
-    [ 'foo', '[Function: foo]' ],
-    [ 'class Foo {}; await 1;', '1' ],
-    [ 'Foo', '[Function: Foo]' ],
-    [ 'if (await true) { function bar() {}; }', 'undefined' ],
-    [ 'bar', '[Function: bar]' ],
-    [ 'if (await true) { class Bar {}; }', 'undefined' ],
-    [ 'Bar', 'ReferenceError: Bar is not defined', { line: 0 } ],
-    [ 'await 0; function* gen(){}', 'undefined' ],
-    [ 'for (var i = 0; i < 10; ++i) { await i; }', 'undefined' ],
-    [ 'i', '10' ],
-    [ 'for (let j = 0; j < 5; ++j) { await j; }', 'undefined' ],
-    [ 'j', 'ReferenceError: j is not defined', { line: 0 } ],
-    [ 'gen', '[GeneratorFunction: gen]' ],
-    [ 'return 42; await 5;', 'SyntaxError: Illegal return statement',
-      { line: 3 } ],
-    [ 'let o = await 1, p', 'undefined' ],
-    [ 'p', 'undefined' ],
-    [ 'let q = 1, s = await 2', 'undefined' ],
-    [ 's', '2' ],
-    [ 'for await (let i of [1,2,3]) console.log(i)', 'undefined', { line: 3 } ]
+    [
+      '`status: ${(await Promise.resolve({ status: 200 })).status}`',
+      "'status: 200'"
+    ],
+    ['for (let i = 0; i < 2; ++i) await i', 'undefined'],
+    ['for (let i = 0; i < 2; ++i) { await i }', 'undefined'],
+    ['await 0', '0'],
+    ['await 0; function foo() {}', 'undefined'],
+    ['foo', '[Function: foo]'],
+    ['class Foo {}; await 1;', '1'],
+    ['Foo', '[Function: Foo]'],
+    ['if (await true) { function bar() {}; }', 'undefined'],
+    ['bar', '[Function: bar]'],
+    ['if (await true) { class Bar {}; }', 'undefined'],
+    ['Bar', 'ReferenceError: Bar is not defined', { line: 0 }],
+    ['await 0; function* gen(){}', 'undefined'],
+    ['for (var i = 0; i < 10; ++i) { await i; }', 'undefined'],
+    ['i', '10'],
+    ['for (let j = 0; j < 5; ++j) { await j; }', 'undefined'],
+    ['j', 'ReferenceError: j is not defined', { line: 0 }],
+    ['gen', '[GeneratorFunction: gen]'],
+    [
+      'return 42; await 5;',
+      'SyntaxError: Illegal return statement',
+      { line: 3 }
+    ],
+    ['let o = await 1, p', 'undefined'],
+    ['p', 'undefined'],
+    ['let q = 1, s = await 2', 'undefined'],
+    ['s', '2'],
+    ['for await (let i of [1,2,3]) console.log(i)', 'undefined', { line: 3 }]
   ];
 
   for (const [input, expected, options = {}] of testCases) {
@@ -155,15 +162,15 @@ async function ctrlCTest() {
   ]);
 
   console.log('Testing Ctrl+C');
-  assert.deepStrictEqual(await runAndWait([
-    'await timeout(100000)',
-    { ctrl: true, name: 'c' }
-  ]), [
-    'await timeout(100000)\r',
-    'Error [ERR_SCRIPT_EXECUTION_INTERRUPTED]: ' +
-      'Script execution was interrupted by `SIGINT`',
-    PROMPT
-  ]);
+  assert.deepStrictEqual(
+    await runAndWait(['await timeout(100000)', { ctrl: true, name: 'c' }]),
+    [
+      'await timeout(100000)\r',
+      'Error [ERR_SCRIPT_EXECUTION_INTERRUPTED]: ' +
+        'Script execution was interrupted by `SIGINT`',
+      PROMPT
+    ]
+  );
 }
 
 async function main() {

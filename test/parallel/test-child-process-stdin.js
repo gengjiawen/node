@@ -49,10 +49,16 @@ cat.stderr.on('data', common.mustNotCall());
 
 cat.stderr.on('end', common.mustCall());
 
-cat.on('exit', common.mustCall(function(status) {
-  assert.strictEqual(status, 0);
-}));
+cat.on(
+  'exit',
+  common.mustCall(function(status) {
+    assert.strictEqual(status, 0);
+  })
+);
 
-cat.on('close', common.mustCall(function() {
-  assert.strictEqual(response, 'hello world');
-}));
+cat.on(
+  'close',
+  common.mustCall(function() {
+    assert.strictEqual(response, 'hello world');
+  })
+);

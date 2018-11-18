@@ -28,15 +28,17 @@ const http = require('http');
 const maxSize = 1024;
 let size = 0;
 
-const server = http.createServer(common.mustCall((req, res) => {
-  server.close();
+const server = http.createServer(
+  common.mustCall((req, res) => {
+    server.close();
 
-  res.writeHead(200, { 'Content-Type': 'text/plain' });
-  for (let i = 0; i < maxSize; i++) {
-    res.write(`x${i}`);
-  }
-  res.end();
-}));
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    for (let i = 0; i < maxSize; i++) {
+      res.write(`x${i}`);
+    }
+    res.end();
+  })
+);
 
 server.listen(0, () => {
   const res = common.mustCall((res) => {

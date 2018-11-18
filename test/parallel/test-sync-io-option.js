@@ -9,7 +9,6 @@ if (process.argv[2] === 'child') {
     require('fs').readFileSync(__filename);
     process.exit();
   });
-
 } else {
   (function runTest(flags) {
     const execArgv = [flags.pop()];
@@ -20,8 +19,7 @@ if (process.argv[2] === 'child') {
     execFile(process.execPath, args, function(err, stdout, stderr) {
       assert.strictEqual(err, null);
       assert.strictEqual(stdout, '');
-      if (/WARNING[\s\S]*readFileSync/.test(stderr))
-        cntr++;
+      if (/WARNING[\s\S]*readFileSync/.test(stderr)) cntr++;
       if (args[0] === '--trace-sync-io') {
         assert.strictEqual(cntr, 1);
       } else if (args[0] === __filename) {
@@ -29,8 +27,7 @@ if (process.argv[2] === 'child') {
       } else {
         throw new Error('UNREACHABLE');
       }
-      if (flags.length > 0)
-        setImmediate(runTest, flags);
+      if (flags.length > 0) setImmediate(runTest, flags);
     });
-  }(['--trace-sync-io', '']));
+  })(['--trace-sync-io', '']);
 }

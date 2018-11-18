@@ -26,7 +26,9 @@ const assert = require('assert');
 const fs = require('fs');
 const net = require('net');
 
-net.createServer(common.mustNotCall()).listen({ fd: 2 })
+net
+  .createServer(common.mustNotCall())
+  .listen({ fd: 2 })
   .on('error', common.mustCall(onError));
 
 let invalidFd = 2;
@@ -38,7 +40,9 @@ try {
   // do nothing; we now have an invalid fd
 }
 
-net.createServer(common.mustNotCall()).listen({ fd: invalidFd })
+net
+  .createServer(common.mustNotCall())
+  .listen({ fd: invalidFd })
   .on('error', common.mustCall(onError));
 
 function onError(ex) {

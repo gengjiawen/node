@@ -78,9 +78,7 @@ if (process.argv[2] === 'child') {
       endMe.end('end');
     });
   });
-
 } else {
-
   const child1 = fork(process.argv[1], ['child', '1']);
   const child2 = fork(process.argv[1], ['child', '2']);
   const child3 = fork(process.argv[1], ['child', '3']);
@@ -92,17 +90,23 @@ if (process.argv[2] === 'child') {
   server.on('connection', function(socket) {
     switch (connected % 6) {
       case 0:
-        child1.send('end', socket); break;
+        child1.send('end', socket);
+        break;
       case 1:
-        child1.send('write', socket); break;
+        child1.send('write', socket);
+        break;
       case 2:
-        child2.send('end', socket); break;
+        child2.send('end', socket);
+        break;
       case 3:
-        child2.send('write', socket); break;
+        child2.send('write', socket);
+        break;
       case 4:
-        child3.send('end', socket); break;
+        child3.send('end', socket);
+        break;
       case 5:
-        child3.send('write', socket); break;
+        child3.send('write', socket);
+        break;
     }
     connected += 1;
 
@@ -117,10 +121,12 @@ if (process.argv[2] === 'child') {
 
   let disconnected = 0;
   server.on('listening', function() {
-
     let j = count;
     while (j--) {
-      const client = net.connect(this.address().port, '127.0.0.1');
+      const client = net.connect(
+        this.address().port,
+        '127.0.0.1'
+      );
       client.on('error', function() {
         // This can happen if we kill the subprocess too early.
         // The client should still get a close event afterwards.
@@ -135,13 +141,16 @@ if (process.argv[2] === 'child') {
   });
 
   let closeEmitted = false;
-  server.on('close', common.mustCall(function() {
-    closeEmitted = true;
+  server.on(
+    'close',
+    common.mustCall(function() {
+      closeEmitted = true;
 
-    child1.kill();
-    child2.kill();
-    child3.kill();
-  }));
+      child1.kill();
+      child2.kill();
+      child3.kill();
+    })
+  );
 
   server.listen(0, '127.0.0.1');
 

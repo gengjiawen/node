@@ -11,8 +11,7 @@ function fixturesPath(...args) {
 }
 
 function readFixtureSync(args, enc) {
-  if (Array.isArray(args))
-    return fs.readFileSync(fixturesPath(...args), enc);
+  if (Array.isArray(args)) return fs.readFileSync(fixturesPath(...args), enc);
   return fs.readFileSync(fixturesPath(args), enc);
 }
 

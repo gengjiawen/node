@@ -33,13 +33,18 @@ common.allowGlobals('bar', 'foo');
 baseFoo = 'foo'; // eslint-disable-line no-undef
 global.baseBar = 'bar';
 
-assert.strictEqual(global.baseFoo, 'foo',
-                   `x -> global.x failed: global.baseFoo = ${global.baseFoo}`);
+assert.strictEqual(
+  global.baseFoo,
+  'foo',
+  `x -> global.x failed: global.baseFoo = ${global.baseFoo}`
+);
 
-assert.strictEqual(baseBar, // eslint-disable-line no-undef
-                   'bar',
-                   // eslint-disable-next-line no-undef
-                   `global.x -> x failed: baseBar = ${baseBar}`);
+assert.strictEqual(
+  baseBar, // eslint-disable-line no-undef
+  'bar',
+  // eslint-disable-next-line no-undef
+  `global.x -> x failed: baseBar = ${baseBar}`
+);
 
 const mod = require(fixtures.path('global', 'plain'));
 const fooBar = mod.fooBar;

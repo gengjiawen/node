@@ -25,34 +25,43 @@ validateNormalizedArgs([{ port: 1234 }, assert.fail], res);
 {
   const server = net.createServer(common.mustNotCall('should not connect'));
 
-  server.listen(common.mustCall(() => {
-    const possibleErrors = ['ECONNREFUSED', 'EADDRNOTAVAIL'];
-    const port = server.address().port;
-    const socket = new net.Socket();
+  server.listen(
+    common.mustCall(() => {
+      const possibleErrors = ['ECONNREFUSED', 'EADDRNOTAVAIL'];
+      const port = server.address().port;
+      const socket = new net.Socket();
 
-    socket.on('error', common.mustCall((err) => {
-      assert(possibleErrors.includes(err.code));
-      assert(possibleErrors.includes(err.errno));
-      assert.strictEqual(err.syscall, 'connect');
-      server.close();
-    }));
+      socket.on(
+        'error',
+        common.mustCall((err) => {
+          assert(possibleErrors.includes(err.code));
+          assert(possibleErrors.includes(err.errno));
+          assert.strictEqual(err.syscall, 'connect');
+          server.close();
+        })
+      );
 
-    socket.connect([{ port }, assert.fail]);
-  }));
+      socket.connect([{ port }, assert.fail]);
+    })
+  );
 }
 
 // Connecting to the server should succeed with a normalized array.
 {
-  const server = net.createServer(common.mustCall((connection) => {
-    connection.end();
-    server.close();
-  }));
+  const server = net.createServer(
+    common.mustCall((connection) => {
+      connection.end();
+      server.close();
+    })
+  );
 
-  server.listen(common.mustCall(() => {
-    const port = server.address().port;
-    const socket = new net.Socket();
-    const args = net._normalizeArgs([{ port }, common.mustCall()]);
+  server.listen(
+    common.mustCall(() => {
+      const port = server.address().port;
+      const socket = new net.Socket();
+      const args = net._normalizeArgs([{ port }, common.mustCall()]);
 
-    socket.connect(args);
-  }));
+      socket.connect(args);
+    })
+  );
 }

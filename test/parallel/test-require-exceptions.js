@@ -44,12 +44,15 @@ assertExists('/module-require/not-found/node_modules/module1/package.json');
 assertModuleNotFound('/module-require/not-found/trailingSlash');
 
 function assertModuleNotFound(path) {
-  assert.throws(function() {
-    require(fixtures.path(path));
-  }, function(e) {
-    assert.strictEqual(e.code, 'MODULE_NOT_FOUND');
-    return true;
-  });
+  assert.throws(
+    function() {
+      require(fixtures.path(path));
+    },
+    function(e) {
+      assert.strictEqual(e.code, 'MODULE_NOT_FOUND');
+      return true;
+    }
+  );
 }
 
 function assertExists(fixture) {

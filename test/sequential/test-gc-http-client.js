@@ -19,20 +19,24 @@ let countGC = 0;
 console.log(`We should do ${todo} requests`);
 
 const server = http.createServer(serverHandler);
-server.listen(0, common.mustCall(() => {
-  for (let i = 0; i < 15; i++)
-    getall();
-}));
+server.listen(
+  0,
+  common.mustCall(() => {
+    for (let i = 0; i < 15; i++) getall();
+  })
+);
 
 function getall() {
-  if (count === todo)
-    return;
+  if (count === todo) return;
 
-  const req = http.get({
-    hostname: 'localhost',
-    pathname: '/',
-    port: server.address().port
-  }, cb);
+  const req = http.get(
+    {
+      hostname: 'localhost',
+      pathname: '/',
+      port: server.address().port
+    },
+    cb
+  );
 
   count++;
   onGC(req, { ongc });

@@ -1,8 +1,7 @@
 'use strict';
 
 const common = require('../common');
-if (!common.hasCrypto)
-  common.skip('missing crypto');
+if (!common.hasCrypto) common.skip('missing crypto');
 const assert = require('assert');
 const h2 = require('http2');
 const { PADDING_STRATEGY_CALLBACK } = h2.constants;
@@ -36,16 +35,24 @@ function onStream(stream, headers, flags) {
 
 server.listen(0);
 
-server.on('listening', common.mustCall(() => {
-  const client = h2.connect(`http://localhost:${server.address().port}`,
-                            options);
+server.on(
+  'listening',
+  common.mustCall(() => {
+    const client = h2.connect(
+      `http://localhost:${server.address().port}`,
+      options
+    );
 
-  const req = client.request({ ':path': '/' });
-  req.on('response', common.mustCall());
-  req.resume();
-  req.on('end', common.mustCall(() => {
-    server.close();
-    client.close();
-  }));
-  req.end();
-}));
+    const req = client.request({ ':path': '/' });
+    req.on('response', common.mustCall());
+    req.resume();
+    req.on(
+      'end',
+      common.mustCall(() => {
+        server.close();
+        client.close();
+      })
+    );
+    req.end();
+  })
+);

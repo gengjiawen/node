@@ -25,7 +25,6 @@ const assert = require('assert');
 
 const http = require('http');
 
-
 const serverSockets = [];
 const server = http.createServer(function(req, res) {
   if (!serverSockets.includes(req.socket)) {
@@ -70,33 +69,35 @@ server.listen(0, function() {
   // make 10 requests in parallel,
   // then 10 more when they all finish.
   function makeReqs(n, cb) {
-    for (let i = 0; i < n; i++)
-      makeReq(i, then);
+    for (let i = 0; i < n; i++) makeReq(i, then);
 
     function then(er) {
-      if (er)
-        return cb(er);
-      else if (--n === 0)
-        setTimeout(cb, 100);
+      if (er) return cb(er);
+      else if (--n === 0) setTimeout(cb, 100);
     }
   }
 
   function makeReq(i, cb) {
-    http.request({
-      port: server.address().port,
-      path: `/${i}`,
-      agent: agent
-    }, function(res) {
-      let data = '';
-      res.setEncoding('ascii');
-      res.on('data', function(c) {
-        data += c;
-      });
-      res.on('end', function() {
-        assert.strictEqual(data, `/${i}`);
-        cb();
-      });
-    }).end();
+    http
+      .request(
+        {
+          port: server.address().port,
+          path: `/${i}`,
+          agent: agent
+        },
+        function(res) {
+          let data = '';
+          res.setEncoding('ascii');
+          res.on('data', function(c) {
+            data += c;
+          });
+          res.on('end', function() {
+            assert.strictEqual(data, `/${i}`);
+            cb();
+          });
+        }
+      )
+      .end();
   }
 
   function count(sockets) {

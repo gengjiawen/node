@@ -21,7 +21,7 @@
 
 /* eslint-disable node-core/required-modules, node-core/crypto-check */
 'use strict';
-const process = global.process;  // Some tests tamper with the process global.
+const process = global.process; // Some tests tamper with the process global.
 const path = require('path');
 const fs = require('fs');
 const assert = require('assert');
@@ -29,10 +29,7 @@ const os = require('os');
 const { exec, execSync, spawnSync } = require('child_process');
 const util = require('util');
 const tmpdir = require('./tmpdir');
-const {
-  bits,
-  hasIntl
-} = process.binding('config');
+const { bits, hasIntl } = process.binding('config');
 
 const noop = () => {};
 
@@ -47,21 +44,22 @@ const isMainThread = (() => {
 
 const isWindows = process.platform === 'win32';
 const isAIX = process.platform === 'aix';
-const isLinuxPPCBE = (process.platform === 'linux') &&
-                     (process.arch === 'ppc64') &&
-                     (os.endianness() === 'BE');
+const isLinuxPPCBE =
+  process.platform === 'linux' &&
+  process.arch === 'ppc64' &&
+  os.endianness() === 'BE';
 const isSunOS = process.platform === 'sunos';
 const isFreeBSD = process.platform === 'freebsd';
 const isOpenBSD = process.platform === 'openbsd';
 const isLinux = process.platform === 'linux';
 const isOSX = process.platform === 'darwin';
 
-const isOSXMojave = isOSX && (os.release().startsWith('18'));
+const isOSXMojave = isOSX && os.release().startsWith('18');
 
 const enoughTestMem = os.totalmem() > 0x70000000; /* 1.75 Gb */
 const cpus = os.cpus();
-const enoughTestCpu = Array.isArray(cpus) &&
-                      (cpus.length > 1 || cpus[0].speed > 999);
+const enoughTestCpu =
+  Array.isArray(cpus) && (cpus.length > 1 || cpus[0].speed > 999);
 
 const rootDir = isWindows ? 'c:\\' : '/';
 
@@ -79,8 +77,7 @@ if (process.env.NODE_TEST_WITH_ASYNC_HOOKS) {
 
   process.on('exit', () => {
     // iterate through handles to make sure nothing crashes
-    for (const k in initHandles)
-      util.inspect(initHandles[k]);
+    for (const k in initHandles) util.inspect(initHandles[k]);
   });
 
   const _queueDestroyAsyncId = async_wrap.queueDestroyAsyncId;
@@ -94,46 +91,50 @@ if (process.env.NODE_TEST_WITH_ASYNC_HOOKS) {
     _queueDestroyAsyncId(id);
   };
 
-  require('async_hooks').createHook({
-    init(id, ty, tr, r) {
-      if (initHandles[id]) {
-        process._rawDebug(
-          `Is same resource: ${r === initHandles[id].resource}`);
-        process._rawDebug(`Previous stack:\n${initHandles[id].stack}\n`);
-        throw new Error(`init called twice for same id (${id})`);
+  require('async_hooks')
+    .createHook({
+      init(id, ty, tr, r) {
+        if (initHandles[id]) {
+          process._rawDebug(
+            `Is same resource: ${r === initHandles[id].resource}`
+          );
+          process._rawDebug(`Previous stack:\n${initHandles[id].stack}\n`);
+          throw new Error(`init called twice for same id (${id})`);
+        }
+        initHandles[id] = { resource: r, stack: new Error().stack.substr(6) };
+      },
+      before() {},
+      after() {},
+      destroy(id) {
+        if (destroydIdsList[id] !== undefined) {
+          process._rawDebug(destroydIdsList[id]);
+          process._rawDebug();
+          throw new Error(`destroy called for same id (${id})`);
+        }
+        destroydIdsList[id] = new Error().stack;
       }
-      initHandles[id] = { resource: r, stack: new Error().stack.substr(6) };
-    },
-    before() { },
-    after() { },
-    destroy(id) {
-      if (destroydIdsList[id] !== undefined) {
-        process._rawDebug(destroydIdsList[id]);
-        process._rawDebug();
-        throw new Error(`destroy called for same id (${id})`);
-      }
-      destroydIdsList[id] = new Error().stack;
-    },
-  }).enable();
+    })
+    .enable();
 }
 
 let opensslCli = null;
 let inFreeBSDJail = null;
 let localhostIPv4 = null;
 
-const localIPv6Hosts =
-  isLinux ? [
-    // Debian/Ubuntu
-    'ip6-localhost',
-    'ip6-loopback',
+const localIPv6Hosts = isLinux
+  ? [
+      // Debian/Ubuntu
+      'ip6-localhost',
+      'ip6-loopback',
 
-    // SUSE
-    'ipv6-localhost',
-    'ipv6-loopback',
+      // SUSE
+      'ipv6-localhost',
+      'ipv6-loopback',
 
-    // Typically universal
-    'localhost',
-  ] : [ 'localhost' ];
+      // Typically universal
+      'localhost'
+    ]
+  : ['localhost'];
 
 const PIPE = (() => {
   const localRelative = path.relative(process.cwd(), `${tmpdir.path}/`);
@@ -146,8 +147,9 @@ const hasIPv6 = (() => {
   const iFaces = os.networkInterfaces();
   const re = isWindows ? /Loopback Pseudo-Interface/ : /lo/;
   return Object.keys(iFaces).some((name) => {
-    return re.test(name) &&
-           iFaces[name].some(({ family }) => family === 'IPv6');
+    return (
+      re.test(name) && iFaces[name].some(({ family }) => family === 'IPv6')
+    );
   });
 })();
 
@@ -167,9 +169,10 @@ function childShouldThrowAndAbort() {
   testCmd += `"${process.argv[1]}" child`;
   const child = exec(testCmd);
   child.on('exit', function onExit(exitCode, signal) {
-    const errMsg = 'Test should have aborted ' +
-                   `but instead exited with exit code ${exitCode}` +
-                   ` and signal ${signal}`;
+    const errMsg =
+      'Test should have aborted ' +
+      `but instead exited with exit code ${exitCode}` +
+      ` and signal ${signal}`;
     assert(nodeProcessAborted(exitCode, signal), errMsg);
   });
 }
@@ -180,38 +183,30 @@ function createZeroFilledFile(filename) {
   fs.closeSync(fd);
 }
 
-
-const pwdCommand = isWindows ?
-  ['cmd.exe', ['/d', '/c', 'cd']] :
-  ['pwd', []];
-
+const pwdCommand = isWindows ? ['cmd.exe', ['/d', '/c', 'cd']] : ['pwd', []];
 
 function platformTimeout(ms) {
   // ESLint will not support 'bigint' in valid-typeof until it reaches stage 4.
   // See https://github.com/eslint/eslint/pull/9636.
   // eslint-disable-next-line valid-typeof
-  const multipliers = typeof ms === 'bigint' ?
-    { two: 2n, four: 4n, seven: 7n } : { two: 2, four: 4, seven: 7 };
+  const multipliers =
+    typeof ms === 'bigint'
+      ? { two: 2n, four: 4n, seven: 7n }
+      : { two: 2, four: 4, seven: 7 };
 
-  if (process.features.debug)
-    ms = multipliers.two * ms;
+  if (process.features.debug) ms = multipliers.two * ms;
 
-  if (global.__coverage__)
-    ms = multipliers.four * ms;
+  if (global.__coverage__) ms = multipliers.four * ms;
 
-  if (isAIX)
-    return multipliers.two * ms; // default localhost speed is slower on AIX
+  if (isAIX) return multipliers.two * ms; // default localhost speed is slower on AIX
 
-  if (process.arch !== 'arm')
-    return ms;
+  if (process.arch !== 'arm') return ms;
 
   const armv = process.config.variables.arm_version;
 
-  if (armv === '6')
-    return multipliers.seven * ms;  // ARMv6
+  if (armv === '6') return multipliers.seven * ms; // ARMv6
 
-  if (armv === '7')
-    return multipliers.two * ms;  // ARMv7
+  if (armv === '7') return multipliers.two * ms; // ARMv7
 
   return ms; // ARMv8+
 }
@@ -298,11 +293,18 @@ function runCallChecks(exitCode) {
   });
 
   failed.forEach(function(context) {
-    console.log('Mismatched %s function calls. Expected %s, actual %d.',
-                context.name,
-                context.messageSegment,
-                context.actual);
-    console.log(context.stack.split('\n').slice(2).join('\n'));
+    console.log(
+      'Mismatched %s function calls. Expected %s, actual %d.',
+      context.name,
+      context.messageSegment,
+      context.actual
+    );
+    console.log(
+      context.stack
+        .split('\n')
+        .slice(2)
+        .join('\n')
+    );
   });
 
   if (failed.length) process.exit(1);
@@ -332,7 +334,7 @@ function _mustCallInner(fn, criteria = 1, field) {
   const context = {
     [field]: criteria,
     actual: 0,
-    stack: (new Error()).stack,
+    stack: new Error().stack,
     name: fn.name || '<anonymous>'
   };
 
@@ -357,9 +359,11 @@ function hasMultiLocalhost() {
 }
 
 function skipIfEslintMissing() {
-  if (!fs.existsSync(
-    path.join(__dirname, '..', '..', 'tools', 'node_modules', 'eslint')
-  )) {
+  if (
+    !fs.existsSync(
+      path.join(__dirname, '..', '..', 'tools', 'node_modules', 'eslint')
+    )
+  ) {
     skip('missing ESLint');
   }
 }
@@ -372,8 +376,11 @@ function canCreateSymLink() {
     // whoami.exe needs to be the one from System32
     // If unix tools are in the path, they can shadow the one we want,
     // so use the full path while executing whoami
-    const whoamiPath = path.join(process.env.SystemRoot,
-                                 'System32', 'whoami.exe');
+    const whoamiPath = path.join(
+      process.env.SystemRoot,
+      'System32',
+      'whoami.exe'
+    );
 
     try {
       const output = execSync(`${whoamiPath} /priv`, { timout: 1000 });
@@ -402,7 +409,8 @@ function mustNotCall(msg) {
   const callSite = getCallSite(mustNotCall);
   return function mustNotCall() {
     assert.fail(
-      `${msg || 'function should not have been called'} at ${callSite}`);
+      `${msg || 'function should not have been called'} at ${callSite}`
+    );
   };
 }
 
@@ -435,8 +443,7 @@ function nodeProcessAborted(exitCode, signal) {
   // which corresponds to exit code 3221225477 (0xC0000005)
   // (ii) Otherwise, _exit(134) which is called in place of abort() due to
   // raising SIGABRT exiting with ambiguous exit code '3' by default
-  if (isWindows)
-    expectedExitCodes = [0xC0000005, 134];
+  if (isWindows) expectedExitCodes = [0xc0000005, 134];
 
   // When using --abort-on-uncaught-exception, V8 will use
   // base::OS::Abort to terminate the process.
@@ -471,8 +478,10 @@ function _expectWarning(name, expected) {
   const map = new Map(expected);
   return mustCall((warning) => {
     assert.strictEqual(warning.name, name);
-    assert.ok(map.has(warning.message),
-              `unexpected error message: "${warning.message}"`);
+    assert.ok(
+      map.has(warning.message),
+      `unexpected error message: "${warning.message}"`
+    );
     const code = map.get(warning.message);
     assert.strictEqual(warning.code, code);
     // Remove a warning message after it is seen so that we guarantee that we
@@ -493,10 +502,12 @@ function expectWarningByMap(warningMap) {
   Object.keys(warningMap).forEach((name) => {
     let expected = warningMap[name];
     if (!Array.isArray(expected)) {
-      throw new Error('warningMap entries must be arrays consisting of two ' +
-      'entries: [message, warningCode]');
+      throw new Error(
+        'warningMap entries must be arrays consisting of two ' +
+          'entries: [message, warningCode]'
+      );
     }
-    if (!(Array.isArray(expected[0]))) {
+    if (!Array.isArray(expected[0])) {
       if (expected.length === 0) {
         return;
       }
@@ -521,8 +532,7 @@ function expectWarning(nameOrMap, expected, code) {
 class Comparison {
   constructor(obj, keys) {
     for (const key of keys) {
-      if (key in obj)
-        this[key] = obj[key];
+      if (key in obj) this[key] = obj[key];
     }
   }
 }
@@ -556,16 +566,19 @@ function expectsError(fn, settings, exact) {
         constructor = Object.getPrototypeOf(error.constructor);
       }
       // Add the `type` to the error to properly compare and visualize it.
-      if (!('type' in error))
-        error.type = constructor;
+      if (!('type' in error)) error.type = constructor;
     }
 
-    if ('message' in settings &&
-        typeof settings.message === 'object' &&
-        settings.message.test(error.message)) {
+    if (
+      'message' in settings &&
+      typeof settings.message === 'object' &&
+      settings.message.test(error.message)
+    ) {
       // Make a copy so we are able to modify the settings.
       innerSettings = Object.create(
-        settings, Object.getOwnPropertyDescriptors(settings));
+        settings,
+        Object.getOwnPropertyDescriptors(settings)
+      );
       // Visualize the message as identical in case of other errors.
       innerSettings.message = error.message;
     }
@@ -595,7 +608,6 @@ function expectsError(fn, settings, exact) {
           message: err.message
         });
       }
-
     }
     return true;
   }
@@ -656,7 +668,9 @@ function getBufferSources(buf) {
 }
 
 // Crash the process on unhandled rejections.
-const crashOnUnhandledRejection = (err) => { throw err; };
+const crashOnUnhandledRejection = (err) => {
+  throw err;
+};
 process.on('unhandledRejection', crashOnUnhandledRejection);
 function disableCrashOnUnhandledRejection() {
   process.removeListener('unhandledRejection', crashOnUnhandledRejection);
@@ -741,7 +755,9 @@ module.exports = {
   skipIfInspectorDisabled,
   skipIfWorker,
 
-  get localhostIPv6() { return '::1'; },
+  get localhostIPv6() {
+    return '::1';
+  },
 
   get hasFipsCrypto() {
     return hasCrypto && require('crypto').fips;
@@ -750,8 +766,10 @@ module.exports = {
   get inFreeBSDJail() {
     if (inFreeBSDJail !== null) return inFreeBSDJail;
 
-    if (exports.isFreeBSD &&
-        execSync('sysctl -n security.jail.jailed').toString() === '1\n') {
+    if (
+      exports.isFreeBSD &&
+      execSync('sysctl -n security.jail.jailed').toString() === '1\n'
+    ) {
       inFreeBSDJail = true;
     } else {
       inFreeBSDJail = false;
@@ -769,9 +787,11 @@ module.exports = {
       if (process.env.LOCALHOST) {
         localhostIPv4 = process.env.LOCALHOST;
       } else {
-        console.error('Looks like we\'re in a FreeBSD Jail. ' +
-                      'Please provide your default interface address ' +
-                      'as LOCALHOST or expect some tests to fail.');
+        console.error(
+          "Looks like we're in a FreeBSD Jail. " +
+            'Please provide your default interface address ' +
+            'as LOCALHOST or expect some tests to fail.'
+        );
       }
     }
 
@@ -808,5 +828,4 @@ module.exports = {
     }
     return +process.env.NODE_COMMON_PORT || 12346;
   }
-
 };

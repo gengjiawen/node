@@ -8,11 +8,13 @@ const net = require('net');
 let serverClosed = false;
 
 if (cluster.isWorker) {
-  const server = net.createServer(function(socket) {
-    // Wait for any data, then close connection
-    socket.write('.');
-    socket.on('data', () => {});
-  }).listen(0, common.localhostIPv4);
+  const server = net
+    .createServer(function(socket) {
+      // Wait for any data, then close connection
+      socket.write('.');
+      socket.on('data', () => {});
+    })
+    .listen(0, common.localhostIPv4);
 
   server.once('close', function() {
     serverClosed = true;

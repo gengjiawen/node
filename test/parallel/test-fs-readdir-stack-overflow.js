@@ -9,10 +9,7 @@ function recurse() {
   recurse();
 }
 
-common.expectsError(
-  () => recurse(),
-  {
-    type: RangeError,
-    message: 'Maximum call stack size exceeded'
-  }
-);
+common.expectsError(() => recurse(), {
+  type: RangeError,
+  message: 'Maximum call stack size exceeded'
+});

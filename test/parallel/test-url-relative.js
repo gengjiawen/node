@@ -31,27 +31,37 @@ const relativeTests = [
   ['foo/bar', '../../../baz', '../../baz'],
   ['foo/bar/', '../../../baz', '../baz'],
   ['http://example.com/b//c//d;p?q#blarg', 'https:#hash2', 'https:///#hash2'],
-  ['http://example.com/b//c//d;p?q#blarg',
-   'https:/p/a/t/h?s#hash2',
-   'https://p/a/t/h?s#hash2'],
-  ['http://example.com/b//c//d;p?q#blarg',
-   'https://u:p@h.com/p/a/t/h?s#hash2',
-   'https://u:p@h.com/p/a/t/h?s#hash2'],
-  ['http://example.com/b//c//d;p?q#blarg',
-   'https:/a/b/c/d',
-   'https://a/b/c/d'],
-  ['http://example.com/b//c//d;p?q#blarg',
-   'http:#hash2',
-   'http://example.com/b//c//d;p?q#hash2'],
-  ['http://example.com/b//c//d;p?q#blarg',
-   'http:/p/a/t/h?s#hash2',
-   'http://example.com/p/a/t/h?s#hash2'],
-  ['http://example.com/b//c//d;p?q#blarg',
-   'http://u:p@h.com/p/a/t/h?s#hash2',
-   'http://u:p@h.com/p/a/t/h?s#hash2'],
-  ['http://example.com/b//c//d;p?q#blarg',
-   'http:/a/b/c/d',
-   'http://example.com/a/b/c/d'],
+  [
+    'http://example.com/b//c//d;p?q#blarg',
+    'https:/p/a/t/h?s#hash2',
+    'https://p/a/t/h?s#hash2'
+  ],
+  [
+    'http://example.com/b//c//d;p?q#blarg',
+    'https://u:p@h.com/p/a/t/h?s#hash2',
+    'https://u:p@h.com/p/a/t/h?s#hash2'
+  ],
+  ['http://example.com/b//c//d;p?q#blarg', 'https:/a/b/c/d', 'https://a/b/c/d'],
+  [
+    'http://example.com/b//c//d;p?q#blarg',
+    'http:#hash2',
+    'http://example.com/b//c//d;p?q#hash2'
+  ],
+  [
+    'http://example.com/b//c//d;p?q#blarg',
+    'http:/p/a/t/h?s#hash2',
+    'http://example.com/p/a/t/h?s#hash2'
+  ],
+  [
+    'http://example.com/b//c//d;p?q#blarg',
+    'http://u:p@h.com/p/a/t/h?s#hash2',
+    'http://u:p@h.com/p/a/t/h?s#hash2'
+  ],
+  [
+    'http://example.com/b//c//d;p?q#blarg',
+    'http:/a/b/c/d',
+    'http://example.com/a/b/c/d'
+  ],
   ['/foo/bar/baz', '/../etc/passwd', '/etc/passwd'],
   ['http://localhost', 'file:///Users/foo', 'file:///Users/foo'],
   ['http://localhost', 'file://foo/Users', 'file://foo/Users']
@@ -59,9 +69,12 @@ const relativeTests = [
 relativeTests.forEach(function(relativeTest) {
   const a = url.resolve(relativeTest[0], relativeTest[1]);
   const e = relativeTest[2];
-  assert.strictEqual(a, e,
-                     `resolve(${relativeTest[0]}, ${relativeTest[1]})` +
-                     ` == ${e}\n  actual=${a}`);
+  assert.strictEqual(
+    a,
+    e,
+    `resolve(${relativeTest[0]}, ${relativeTest[1]})` +
+      ` == ${e}\n  actual=${a}`
+  );
 });
 
 //
@@ -200,8 +213,8 @@ const relativeTests2 = [
   ['g', bases[3], 'fred:///s//a/b/g'],
   ['./g', bases[3], 'fred:///s//a/b/g'],
   ['g/', bases[3], 'fred:///s//a/b/g/'],
-  ['/g', bases[3], 'fred:///g'],  // may change to fred:///s//a/g
-  ['//g', bases[3], 'fred://g'],   // may change to fred:///s//g
+  ['/g', bases[3], 'fred:///g'], // may change to fred:///s//a/g
+  ['//g', bases[3], 'fred://g'], // may change to fred:///s//g
   ['//g/x', bases[3], 'fred://g/x'], // may change to fred:///s//g/x
   ['///g', bases[3], 'fred:///g'],
   ['./', bases[3], 'fred:///s//a/b/'],
@@ -220,8 +233,8 @@ const relativeTests2 = [
   ['g', bases[4], 'http:///s//a/b/g'],
   ['./g', bases[4], 'http:///s//a/b/g'],
   ['g/', bases[4], 'http:///s//a/b/g/'],
-  ['/g', bases[4], 'http:///g'],  // may change to http:///s//a/g
-  ['//g', bases[4], 'http://g/'],   // may change to http:///s//g
+  ['/g', bases[4], 'http:///g'], // may change to http:///s//a/g
+  ['//g', bases[4], 'http://g/'], // may change to http:///s//g
   ['//g/x', bases[4], 'http://g/x'], // may change to http:///s//g/x
   ['///g', bases[4], 'http:///g'],
   ['./', bases[4], 'http:///s//a/b/'],
@@ -247,9 +260,11 @@ const relativeTests2 = [
   ['', 'http://ex/x/y/', 'http://ex/x/y/'],
   ['', 'http://ex/x/y/pdq', 'http://ex/x/y/pdq'],
   ['z/', 'http://ex/x/y/', 'http://ex/x/y/z/'],
-  ['#Animal',
-   'file:/swap/test/animal.rdf',
-   'file:/swap/test/animal.rdf#Animal'],
+  [
+    '#Animal',
+    'file:/swap/test/animal.rdf',
+    'file:/swap/test/animal.rdf#Animal'
+  ],
   ['../abc', 'file:/e/x/y/z', 'file:/e/x/abc'],
   ['/example/x/abc', 'file:/example2/x/y/z', 'file:/example/x/abc'],
   ['../r', 'file:/ex/x/y/z', 'file:/ex/x/r'],
@@ -263,17 +278,20 @@ const relativeTests2 = [
   ['', 'file:/ex/x/y/', 'file:/ex/x/y/'],
   ['', 'file:/ex/x/y/pdq', 'file:/ex/x/y/pdq'],
   ['z/', 'file:/ex/x/y/', 'file:/ex/x/y/z/'],
-  ['file://meetings.example.com/cal#m1',
-   'file:/devel/WWW/2000/10/swap/test/reluri-1.n3',
-   'file://meetings.example.com/cal#m1'],
-  ['file://meetings.example.com/cal#m1',
-   'file:/home/connolly/w3ccvs/WWW/2000/10/swap/test/reluri-1.n3',
-   'file://meetings.example.com/cal#m1'],
+  [
+    'file://meetings.example.com/cal#m1',
+    'file:/devel/WWW/2000/10/swap/test/reluri-1.n3',
+    'file://meetings.example.com/cal#m1'
+  ],
+  [
+    'file://meetings.example.com/cal#m1',
+    'file:/home/connolly/w3ccvs/WWW/2000/10/swap/test/reluri-1.n3',
+    'file://meetings.example.com/cal#m1'
+  ],
   ['./#blort', 'file:/some/dir/foo', 'file:/some/dir/#blort'],
   ['./#', 'file:/some/dir/foo', 'file:/some/dir/#'],
   // Ryan Lee
   ['./', 'http://example/x/abc.efg', 'http://example/x/'],
-
 
   // Graham Klyne's tests
   // http://www.ninebynine.org/Software/HaskellUtils/Network/UriTest.xls
@@ -284,12 +302,16 @@ const relativeTests2 = [
   ['./p=q:r', 'http://ex/x/y', 'http://ex/x/p=q:r'],
   ['?pp/rr', 'http://ex/x/y?pp/qq', 'http://ex/x/y?pp/rr'],
   ['y/z', 'http://ex/x/y?pp/qq', 'http://ex/x/y/z'],
-  ['local/qual@domain.org#frag',
-   'mailto:local',
-   'mailto:local/qual@domain.org#frag'],
-  ['more/qual2@domain2.org#frag',
-   'mailto:local/qual1@domain1.org',
-   'mailto:local/more/qual2@domain2.org#frag'],
+  [
+    'local/qual@domain.org#frag',
+    'mailto:local',
+    'mailto:local/qual@domain.org#frag'
+  ],
+  [
+    'more/qual2@domain2.org#frag',
+    'mailto:local/qual1@domain1.org',
+    'mailto:local/more/qual2@domain2.org#frag'
+  ],
   ['y?q', 'http://ex/x/y?q', 'http://ex/x/y?q'],
   ['/x/y?q', 'http://ex?p', 'http://ex/x/y?q'],
   ['c/d', 'foo:a/b', 'foo:a/c/d'],
@@ -317,12 +339,16 @@ const relativeTests2 = [
 
   // 70-77
   ['local2@domain2', 'mailto:local1@domain1?query1', 'mailto:local2@domain2'],
-  ['local2@domain2?query2',
-   'mailto:local1@domain1',
-   'mailto:local2@domain2?query2'],
-  ['local2@domain2?query2',
-   'mailto:local1@domain1?query1',
-   'mailto:local2@domain2?query2'],
+  [
+    'local2@domain2?query2',
+    'mailto:local1@domain1',
+    'mailto:local2@domain2?query2'
+  ],
+  [
+    'local2@domain2?query2',
+    'mailto:local1@domain1?query1',
+    'mailto:local2@domain2?query2'
+  ],
   ['?query2', 'mailto:local@domain?query1', 'mailto:local@domain?query2'],
   ['local@domain?query2', 'mailto:?query1', 'mailto:local@domain?query2'],
   ['?query2', 'mailto:local@domain?query1', 'mailto:local@domain?query2'],
@@ -337,40 +363,58 @@ const relativeTests2 = [
   ['http:this', 'http:base', 'http:this'],
   ['.//g', 'f:/a', 'f://g'],
   ['b/c//d/e', 'f://example.org/base/a', 'f://example.org/base/b/c//d/e'],
-  ['m2@example.ord/c2@example.org',
-   'mid:m@example.ord/c@example.org',
-   'mid:m@example.ord/m2@example.ord/c2@example.org'],
-  ['mini1.xml',
-   'file:///C:/DEV/Haskell/lib/HXmlToolbox-3.01/examples/',
-   'file:///C:/DEV/Haskell/lib/HXmlToolbox-3.01/examples/mini1.xml'],
+  [
+    'm2@example.ord/c2@example.org',
+    'mid:m@example.ord/c@example.org',
+    'mid:m@example.ord/m2@example.ord/c2@example.org'
+  ],
+  [
+    'mini1.xml',
+    'file:///C:/DEV/Haskell/lib/HXmlToolbox-3.01/examples/',
+    'file:///C:/DEV/Haskell/lib/HXmlToolbox-3.01/examples/mini1.xml'
+  ],
   ['../b/c', 'foo:a/y/z', 'foo:a/b/c'],
 
   // changeing auth
-  ['http://diff:auth@www.example.com',
-   'http://asdf:qwer@www.example.com',
-   'http://diff:auth@www.example.com/'],
+  [
+    'http://diff:auth@www.example.com',
+    'http://asdf:qwer@www.example.com',
+    'http://diff:auth@www.example.com/'
+  ],
 
   // changing port
-  ['https://example.com:81/',
-   'https://example.com:82/',
-   'https://example.com:81/'],
+  [
+    'https://example.com:81/',
+    'https://example.com:82/',
+    'https://example.com:81/'
+  ],
 
   // https://github.com/nodejs/node/issues/1435
-  ['https://another.host.com/',
-   'https://user:password@example.org/',
-   'https://another.host.com/'],
-  ['//another.host.com/',
-   'https://user:password@example.org/',
-   'https://another.host.com/'],
-  ['http://another.host.com/',
-   'https://user:password@example.org/',
-   'http://another.host.com/'],
-  ['mailto:another.host.com',
-   'mailto:user@example.org',
-   'mailto:another.host.com'],
-  ['https://example.com/foo',
-   'https://user:password@example.com',
-   'https://user:password@example.com/foo'],
+  [
+    'https://another.host.com/',
+    'https://user:password@example.org/',
+    'https://another.host.com/'
+  ],
+  [
+    '//another.host.com/',
+    'https://user:password@example.org/',
+    'https://another.host.com/'
+  ],
+  [
+    'http://another.host.com/',
+    'https://user:password@example.org/',
+    'http://another.host.com/'
+  ],
+  [
+    'mailto:another.host.com',
+    'mailto:user@example.org',
+    'mailto:another.host.com'
+  ],
+  [
+    'https://example.com/foo',
+    'https://user:password@example.com',
+    'https://user:password@example.com/foo'
+  ],
 
   // No path at all
   ['#hash1', '#hash2', '#hash1']
@@ -378,9 +422,12 @@ const relativeTests2 = [
 relativeTests2.forEach(function(relativeTest) {
   const a = url.resolve(relativeTest[1], relativeTest[0]);
   const e = url.format(relativeTest[2]);
-  assert.strictEqual(a, e,
-                     `resolve(${relativeTest[0]}, ${relativeTest[1]})` +
-                     ` == ${e}\n  actual=${a}`);
+  assert.strictEqual(
+    a,
+    e,
+    `resolve(${relativeTest[0]}, ${relativeTest[1]})` +
+      ` == ${e}\n  actual=${a}`
+  );
 });
 
 // If format and parse are inverse operations then
@@ -391,15 +438,16 @@ relativeTests.forEach(function(relativeTest) {
   let actual = url.resolveObject(url.parse(relativeTest[0]), relativeTest[1]);
   let expected = url.parse(relativeTest[2]);
 
-
   assert.deepStrictEqual(actual, expected);
 
   expected = relativeTest[2];
   actual = url.format(actual);
 
-  assert.strictEqual(actual, expected,
-                     `format(${actual}) == ${expected}\n` +
-                     `actual: ${actual}`);
+  assert.strictEqual(
+    actual,
+    expected,
+    `format(${actual}) == ${expected}\n` + `actual: ${actual}`
+  );
 });
 
 // format: [to, from, result]
@@ -411,9 +459,11 @@ relativeTests.forEach(function(relativeTest) {
 // it is unclear to me how to keep this information from being lost
 // it may be that a pathname of ////g should collapse to /g but this seems
 // to be a lot of work for an edge case.  Right now I remove the test
-if (relativeTests2[181][0] === './/g' &&
-    relativeTests2[181][1] === 'f:/a' &&
-    relativeTests2[181][2] === 'f://g') {
+if (
+  relativeTests2[181][0] === './/g' &&
+  relativeTests2[181][1] === 'f:/a' &&
+  relativeTests2[181][2] === 'f://g'
+) {
   relativeTests2.splice(181, 1);
 }
 relativeTests2.forEach(function(relativeTest) {
@@ -429,7 +479,9 @@ relativeTests2.forEach(function(relativeTest) {
   expected = url.format(relativeTest[2]);
   actual = url.format(actual);
 
-  assert.strictEqual(actual, expected,
-                     `format(${relativeTest[1]}) == ${expected}\n` +
-                     `actual: ${actual}`);
+  assert.strictEqual(
+    actual,
+    expected,
+    `format(${relativeTest[1]}) == ${expected}\n` + `actual: ${actual}`
+  );
 });

@@ -4,7 +4,7 @@
 require('../common');
 const assert = require('assert');
 const vm = require('vm');
-const ctx = vm.createContext({ open() { } });
+const ctx = vm.createContext({ open() {} });
 const window = vm.runInContext('this', ctx);
 const other = 123;
 

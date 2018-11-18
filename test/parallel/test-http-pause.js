@@ -48,25 +48,28 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(0, function() {
-  const req = http.request({
-    port: this.address().port,
-    path: '/',
-    method: 'POST'
-  }, (res) => {
-    console.error('pause client response');
-    res.pause();
-    setTimeout(() => {
-      console.error('resume client response');
-      res.resume();
-      res.on('data', (chunk) => {
-        resultClient += chunk;
-      });
-      res.on('end', () => {
-        console.error(resultClient);
-        server.close();
-      });
-    }, 100);
-  });
+  const req = http.request(
+    {
+      port: this.address().port,
+      path: '/',
+      method: 'POST'
+    },
+    (res) => {
+      console.error('pause client response');
+      res.pause();
+      setTimeout(() => {
+        console.error('resume client response');
+        res.resume();
+        res.on('data', (chunk) => {
+          resultClient += chunk;
+        });
+        res.on('end', () => {
+          console.error(resultClient);
+          server.close();
+        });
+      }, 100);
+    }
+  );
   req.end(expectedServer);
 });
 

@@ -49,7 +49,7 @@ function exitWithOneOnUncaught() {
 cases.push({
   func: exitWithOneOnUncaught,
   result: 1,
-  error: /^Error: ok$/,
+  error: /^Error: ok$/
 });
 
 function changeCodeInsideExit() {
@@ -95,7 +95,7 @@ function changeCodeInExitWithUncaught() {
 cases.push({
   func: changeCodeInExitWithUncaught,
   result: 98,
-  error: /^Error: ok$/,
+  error: /^Error: ok$/
 });
 
 function exitWithZeroInExitWithUncaught() {
@@ -109,5 +109,5 @@ function exitWithZeroInExitWithUncaught() {
 cases.push({
   func: exitWithZeroInExitWithUncaught,
   result: 0,
-  error: /^Error: ok$/,
+  error: /^Error: ok$/
 });
