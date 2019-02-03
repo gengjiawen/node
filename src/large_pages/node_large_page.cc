@@ -96,10 +96,6 @@ static struct text_region FindNodeTextRegion() {
   nregion.found_text_region = false;
 
   ifs.open("/proc/self/maps");
-  if (!ifs) {
-    fprintf(stderr, "Could not open /proc/self/maps\n");
-    return nregion;
-  }
 
   std::string exename;
   {
@@ -145,11 +141,6 @@ static bool IsTransparentHugePagesEnabled() {
   std::ifstream ifs;
 
   ifs.open("/sys/kernel/mm/transparent_hugepage/enabled");
-  if (!ifs) {
-    fprintf(stderr, "Could not open file: " \
-                    "/sys/kernel/mm/transparent_hugepage/enabled\n");
-    return false;
-  }
 
   std::string always, madvise, never;
   if (ifs.is_open()) {
