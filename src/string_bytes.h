@@ -26,8 +26,8 @@
 
 // Decodes a v8::Local<v8::String> or Buffer to a raw char*
 
-#include "v8.h"
 #include "env.h"
+#include "v8.h"
 
 namespace node {
 
@@ -63,8 +63,7 @@ class StringBytes {
   // Does the string match the encoding? Quick but non-exhaustive.
   // Example: a HEX string must have a length that's a multiple of two.
   // FIXME(bnoordhuis) IsMaybeValidString()? Naming things is hard...
-  static bool IsValidString(v8::Local<v8::String> string,
-                            enum encoding enc);
+  static bool IsValidString(v8::Local<v8::String> string, enum encoding enc);
 
   // Fast, but can be 2 bytes oversized for Base64, and
   // as much as triple UTF-8 strings <= 65536 chars in length

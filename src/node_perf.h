@@ -3,13 +3,13 @@
 
 #if defined(NODE_WANT_INTERNALS) && NODE_WANT_INTERNALS
 
+#include "base_object-inl.h"
+#include "env.h"
 #include "node.h"
 #include "node_perf_common.h"
-#include "env.h"
-#include "base_object-inl.h"
 
-#include "v8.h"
 #include "uv.h"
+#include "v8.h"
 
 #include <string>
 
@@ -29,8 +29,10 @@ double GetCurrentTimeInMicroseconds();
 static inline const char* GetPerformanceMilestoneName(
     enum PerformanceMilestone milestone) {
   switch (milestone) {
-#define V(name, label) case NODE_PERFORMANCE_MILESTONE_##name: return label;
-  NODE_PERFORMANCE_MILESTONES(V)
+#define V(name, label)                                                         \
+  case NODE_PERFORMANCE_MILESTONE_##name:                                      \
+    return label;
+    NODE_PERFORMANCE_MILESTONES(V)
 #undef V
     default:
       UNREACHABLE();
@@ -39,7 +41,7 @@ static inline const char* GetPerformanceMilestoneName(
 }
 
 static inline PerformanceMilestone ToPerformanceMilestoneEnum(const char* str) {
-#define V(name, label)                                                        \
+#define V(name, label)                                                         \
   if (strcmp(str, label) == 0) return NODE_PERFORMANCE_MILESTONE_##name;
   NODE_PERFORMANCE_MILESTONES(V)
 #undef V
@@ -48,7 +50,7 @@ static inline PerformanceMilestone ToPerformanceMilestoneEnum(const char* str) {
 
 static inline PerformanceEntryType ToPerformanceEntryTypeEnum(
     const char* type) {
-#define V(name, label)                                                        \
+#define V(name, label)                                                         \
   if (strcmp(type, label) == 0) return NODE_PERFORMANCE_ENTRY_TYPE_##name;
   NODE_PERFORMANCE_ENTRY_TYPES(V)
 #undef V
@@ -67,13 +69,14 @@ class PerformanceEntry {
                    const char* name,
                    const char* type,
                    uint64_t startTime,
-                   uint64_t endTime) : env_(env),
-                                       name_(name),
-                                       type_(type),
-                                       startTime_(startTime),
-                                       endTime_(endTime) { }
+                   uint64_t endTime)
+      : env_(env),
+        name_(name),
+        type_(type),
+        startTime_(startTime),
+        endTime_(endTime) {}
 
-  virtual ~PerformanceEntry() { }
+  virtual ~PerformanceEntry() {}
 
   virtual v8::MaybeLocal<Object> ToObject() const;
 
@@ -115,9 +118,9 @@ class GCPerformanceEntry : public PerformanceEntry {
   GCPerformanceEntry(Environment* env,
                      PerformanceGCKind gckind,
                      uint64_t startTime,
-                     uint64_t endTime) :
-                         PerformanceEntry(env, "gc", "gc", startTime, endTime),
-                         gckind_(gckind) { }
+                     uint64_t endTime)
+      : PerformanceEntry(env, "gc", "gc", startTime, endTime),
+        gckind_(gckind) {}
 
   PerformanceGCKind gckind() const { return gckind_; }
 

@@ -1,19 +1,18 @@
 #include "worker_agent.h"
 
 #include "main_thread_interface.h"
-#include "worker_inspector.h"
 #include "util-inl.h"
+#include "worker_inspector.h"
 
 namespace node {
 namespace inspector {
 namespace protocol {
 
-class NodeWorkers
-    : public std::enable_shared_from_this<NodeWorkers> {
+class NodeWorkers : public std::enable_shared_from_this<NodeWorkers> {
  public:
   explicit NodeWorkers(std::weak_ptr<NodeWorker::Frontend> frontend,
-                      std::shared_ptr<MainThreadHandle> thread)
-                      : frontend_(frontend), thread_(thread) {}
+                       std::shared_ptr<MainThreadHandle> thread)
+      : frontend_(frontend), thread_(thread) {}
   void WorkerCreated(const std::string& title,
                      const std::string& url,
                      bool waiting,
@@ -33,7 +32,7 @@ namespace {
 class AgentWorkerInspectorDelegate : public WorkerDelegate {
  public:
   explicit AgentWorkerInspectorDelegate(std::shared_ptr<NodeWorkers> workers)
-                                        : workers_(workers) {}
+      : workers_(workers) {}
 
   void WorkerCreated(const std::string& title,
                      const std::string& url,
@@ -50,11 +49,9 @@ class ParentInspectorSessionDelegate : public InspectorSessionDelegate {
  public:
   ParentInspectorSessionDelegate(const std::string& id,
                                  std::shared_ptr<NodeWorkers> workers)
-                                 : id_(id), workers_(workers) {}
+      : id_(id), workers_(workers) {}
 
-  ~ParentInspectorSessionDelegate() override {
-    workers_->Detached(id_);
-  }
+  ~ParentInspectorSessionDelegate() override { workers_->Detached(id_); }
 
   void SendMessageToFrontend(const v8_inspector::StringView& msg) override {
     std::string message = protocol::StringUtil::StringViewToUtf8(msg);
@@ -73,21 +70,20 @@ std::unique_ptr<NodeWorker::WorkerInfo> WorkerInfo(const std::string& id,
       .setWorkerId(id)
       .setTitle(title)
       .setUrl(url)
-      .setType("worker").build();
+      .setType("worker")
+      .build();
 }
 }  // namespace
 
 WorkerAgent::WorkerAgent(std::weak_ptr<WorkerManager> manager)
-                         : manager_(manager) {}
-
+    : manager_(manager) {}
 
 void WorkerAgent::Wire(UberDispatcher* dispatcher) {
   frontend_.reset(new NodeWorker::Frontend(dispatcher->channel()));
   NodeWorker::Dispatcher::wire(dispatcher, this);
   auto manager = manager_.lock();
   CHECK_NOT_NULL(manager);
-  workers_ =
-      std::make_shared<NodeWorkers>(frontend_, manager->MainThread());
+  workers_ = std::make_shared<NodeWorkers>(frontend_, manager->MainThread());
 }
 
 DispatchResponse WorkerAgent::sendMessageToWorker(const String& message,
@@ -103,7 +99,7 @@ DispatchResponse WorkerAgent::enable(bool waitForDebuggerOnStart) {
   }
   if (!event_handle_) {
     std::unique_ptr<AgentWorkerInspectorDelegate> delegate(
-            new AgentWorkerInspectorDelegate(workers_));
+        new AgentWorkerInspectorDelegate(workers_));
     event_handle_ = manager->SetAutoAttach(std::move(delegate));
   }
   event_handle_->SetWaitOnStart(waitForDebuggerOnStart);
@@ -120,11 +116,10 @@ void NodeWorkers::WorkerCreated(const std::string& title,
                                 bool waiting,
                                 std::shared_ptr<MainThreadHandle> target) {
   auto frontend = frontend_.lock();
-  if (!frontend)
-    return;
+  if (!frontend) return;
   std::string id = std::to_string(++next_target_id_);
-  auto delegate = thread_->MakeDelegateThreadSafe(
-      std::unique_ptr<InspectorSessionDelegate>(
+  auto delegate =
+      thread_->MakeDelegateThreadSafe(std::unique_ptr<InspectorSessionDelegate>(
           new ParentInspectorSessionDelegate(id, shared_from_this())));
   sessions_[id] = target->Connect(std::move(delegate), true);
   frontend->attachedToWorker(id, WorkerInfo(id, title, url), waiting);
@@ -132,8 +127,7 @@ void NodeWorkers::WorkerCreated(const std::string& title,
 
 void NodeWorkers::Send(const std::string& id, const std::string& message) {
   auto frontend = frontend_.lock();
-  if (frontend)
-    frontend->receivedMessageFromWorker(id, message);
+  if (frontend) frontend->receivedMessageFromWorker(id, message);
 }
 
 void NodeWorkers::Receive(const std::string& id, const std::string& message) {
@@ -143,8 +137,7 @@ void NodeWorkers::Receive(const std::string& id, const std::string& message) {
 }
 
 void NodeWorkers::Detached(const std::string& id) {
-  if (sessions_.erase(id) == 0)
-    return;
+  if (sessions_.erase(id) == 0) return;
   auto frontend = frontend_.lock();
   if (frontend) {
     frontend->detachedFromWorker(id);

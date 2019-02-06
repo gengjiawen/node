@@ -2,10 +2,10 @@
 #define SRC_TRACING_AGENT_H_
 
 #include "libplatform/v8-tracing.h"
+#include "node_mutex.h"
+#include "util.h"
 #include "uv.h"
 #include "v8.h"
-#include "util.h"
-#include "node_mutex.h"
 
 #include <list>
 #include <set>
@@ -32,9 +32,7 @@ class TracingController : public v8::platform::tracing::TracingController {
  public:
   TracingController() : v8::platform::tracing::TracingController() {}
 
-  int64_t CurrentTimestampMicroseconds() override {
-    return uv_hrtime() / 1000;
-  }
+  int64_t CurrentTimestampMicroseconds() override { return uv_hrtime() / 1000; }
   void AddMetadataEvent(
       const unsigned char* category_group_enabled,
       const char* name,
@@ -149,8 +147,7 @@ class Agent {
 };
 
 void AgentWriterHandle::reset() {
-  if (agent_ != nullptr)
-    agent_->Disconnect(id_);
+  if (agent_ != nullptr) agent_->Disconnect(id_);
   agent_ = nullptr;
 }
 

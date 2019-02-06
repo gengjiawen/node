@@ -29,14 +29,12 @@ namespace node {
 
 Watchdog::Watchdog(v8::Isolate* isolate, uint64_t ms, bool* timed_out)
     : isolate_(isolate), timed_out_(timed_out) {
-
   int rc;
   loop_ = new uv_loop_t;
   CHECK(loop_);
   rc = uv_loop_init(loop_);
   if (rc != 0) {
-    FatalError("node::Watchdog::Watchdog()",
-               "Failed to initialize uv loop.");
+    FatalError("node::Watchdog::Watchdog()", "Failed to initialize uv loop.");
   }
 
   rc = uv_async_init(loop_, &async_, &Watchdog::Async);
@@ -52,7 +50,6 @@ Watchdog::Watchdog(v8::Isolate* isolate, uint64_t ms, bool* timed_out)
   CHECK_EQ(0, rc);
 }
 
-
 Watchdog::~Watchdog() {
   uv_async_send(&async_);
   uv_thread_join(&thread_);
@@ -67,7 +64,6 @@ Watchdog::~Watchdog() {
   loop_ = nullptr;
 }
 
-
 void Watchdog::Run(void* arg) {
   Watchdog* wd = static_cast<Watchdog*>(arg);
 
@@ -80,12 +76,10 @@ void Watchdog::Run(void* arg) {
   uv_close(reinterpret_cast<uv_handle_t*>(&wd->timer_), nullptr);
 }
 
-
 void Watchdog::Async(uv_async_t* async) {
   Watchdog* w = ContainerOf(&Watchdog::async_, async);
   uv_stop(w->loop_);
 }
-
 
 void Watchdog::Timer(uv_timer_t* timer) {
   Watchdog* w = ContainerOf(&Watchdog::timer_, timer);
@@ -94,9 +88,7 @@ void Watchdog::Timer(uv_timer_t* timer) {
   uv_stop(w->loop_);
 }
 
-
-SigintWatchdog::SigintWatchdog(
-  v8::Isolate* isolate, bool* received_signal)
+SigintWatchdog::SigintWatchdog(v8::Isolate* isolate, bool* received_signal)
     : isolate_(isolate), received_signal_(received_signal) {
   // Register this watchdog with the global SIGINT/Ctrl+C listener.
   SigintWatchdogHelper::GetInstance()->Register(this);
@@ -104,12 +96,10 @@ SigintWatchdog::SigintWatchdog(
   SigintWatchdogHelper::GetInstance()->Start();
 }
 
-
 SigintWatchdog::~SigintWatchdog() {
   SigintWatchdogHelper::GetInstance()->Unregister(this);
   SigintWatchdogHelper::GetInstance()->Stop();
 }
-
 
 void SigintWatchdog::HandleSigint() {
   *received_signal_ = true;
@@ -128,7 +118,6 @@ void* SigintWatchdogHelper::RunSigintWatchdog(void* arg) {
 
   return nullptr;
 }
-
 
 void SigintWatchdogHelper::HandleSignal(int signum) {
   uv_sem_post(&instance.sem_);
@@ -151,7 +140,6 @@ BOOL WINAPI SigintWatchdogHelper::WinCtrlCHandlerRoutine(DWORD dwCtrlType) {
 }
 #endif
 
-
 bool SigintWatchdogHelper::InformWatchdogsAboutSignal() {
   Mutex::ScopedLock list_lock(instance.list_mutex_);
 
@@ -166,12 +154,10 @@ bool SigintWatchdogHelper::InformWatchdogsAboutSignal() {
     instance.has_pending_signal_ = true;
   }
 
-  for (auto it : instance.watchdogs_)
-    it->HandleSigint();
+  for (auto it : instance.watchdogs_) it->HandleSigint();
 
   return is_stopping;
 }
-
 
 int SigintWatchdogHelper::Start() {
   Mutex::ScopedLock lock(mutex_);
@@ -208,7 +194,6 @@ int SigintWatchdogHelper::Start() {
 
   return 0;
 }
-
 
 bool SigintWatchdogHelper::Stop() {
   bool had_pending_signal;
@@ -256,20 +241,17 @@ bool SigintWatchdogHelper::Stop() {
   return had_pending_signal;
 }
 
-
 bool SigintWatchdogHelper::HasPendingSignal() {
   Mutex::ScopedLock lock(list_mutex_);
 
   return has_pending_signal_;
 }
 
-
 void SigintWatchdogHelper::Register(SigintWatchdog* wd) {
   Mutex::ScopedLock lock(list_mutex_);
 
   watchdogs_.push_back(wd);
 }
-
 
 void SigintWatchdogHelper::Unregister(SigintWatchdog* wd) {
   Mutex::ScopedLock lock(list_mutex_);
@@ -280,10 +262,8 @@ void SigintWatchdogHelper::Unregister(SigintWatchdog* wd) {
   watchdogs_.erase(it);
 }
 
-
 SigintWatchdogHelper::SigintWatchdogHelper()
-    : start_stop_count_(0),
-      has_pending_signal_(false) {
+    : start_stop_count_(0), has_pending_signal_(false) {
 #ifdef __POSIX__
   has_running_thread_ = false;
   stopping_ = false;
@@ -292,7 +272,6 @@ SigintWatchdogHelper::SigintWatchdogHelper()
   watchdog_disabled_ = false;
 #endif
 }
-
 
 SigintWatchdogHelper::~SigintWatchdogHelper() {
   start_stop_count_ = 0;

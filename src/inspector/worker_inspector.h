@@ -28,7 +28,7 @@ class WorkerManagerEventHandle {
  public:
   explicit WorkerManagerEventHandle(std::shared_ptr<WorkerManager> manager,
                                     int id)
-                                    : manager_(manager), id_(id) {}
+      : manager_(manager), id_(id) {}
   void SetWaitOnStart(bool wait_on_start);
   ~WorkerManagerEventHandle();
 
@@ -41,9 +41,7 @@ struct WorkerInfo {
   WorkerInfo(const std::string& target_title,
              const std::string& target_url,
              std::shared_ptr<MainThreadHandle> worker_thread)
-             : title(target_title),
-               url(target_url),
-               worker_thread(worker_thread) {}
+      : title(target_title), url(target_url), worker_thread(worker_thread) {}
   std::string title;
   std::string url;
   std::shared_ptr<MainThreadHandle> worker_thread;
@@ -51,15 +49,14 @@ struct WorkerInfo {
 
 class ParentInspectorHandle {
  public:
-  ParentInspectorHandle(int id, const std::string& url,
+  ParentInspectorHandle(int id,
+                        const std::string& url,
                         std::shared_ptr<MainThreadHandle> parent_thread,
                         bool wait_for_connect);
   ~ParentInspectorHandle();
   void WorkerStarted(std::shared_ptr<MainThreadHandle> worker_thread,
                      bool waiting);
-  bool WaitForConnect() {
-    return wait_;
-  }
+  bool WaitForConnect() { return wait_; }
 
  private:
   int id_;
@@ -71,7 +68,7 @@ class ParentInspectorHandle {
 class WorkerManager : public std::enable_shared_from_this<WorkerManager> {
  public:
   explicit WorkerManager(std::shared_ptr<MainThreadHandle> thread)
-                         : thread_(thread) {}
+      : thread_(thread) {}
 
   std::unique_ptr<ParentInspectorHandle> NewParentHandle(
       int thread_id, const std::string& url);
@@ -81,9 +78,7 @@ class WorkerManager : public std::enable_shared_from_this<WorkerManager> {
       std::unique_ptr<WorkerDelegate> attach_delegate);
   void SetWaitOnStartForDelegate(int id, bool wait);
   void RemoveAttachDelegate(int id);
-  std::shared_ptr<MainThreadHandle> MainThread() {
-    return thread_;
-  }
+  std::shared_ptr<MainThreadHandle> MainThread() { return thread_; }
 
  private:
   std::shared_ptr<MainThreadHandle> thread_;

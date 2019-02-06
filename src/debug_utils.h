@@ -23,20 +23,16 @@
 namespace node {
 
 template <typename... Args>
-inline void FORCE_INLINE Debug(Environment* env,
-                               DebugCategory cat,
-                               const char* format,
-                               Args&&... args) {
-  if (!UNLIKELY(env->debug_enabled(cat)))
-    return;
+inline void FORCE_INLINE
+Debug(Environment* env, DebugCategory cat, const char* format, Args&&... args) {
+  if (!UNLIKELY(env->debug_enabled(cat))) return;
   fprintf(stderr, format, std::forward<Args>(args)...);
 }
 
 inline void FORCE_INLINE Debug(Environment* env,
                                DebugCategory cat,
                                const char* message) {
-  if (!UNLIKELY(env->debug_enabled(cat)))
-    return;
+  if (!UNLIKELY(env->debug_enabled(cat))) return;
   fprintf(stderr, "%s", message);
 }
 
@@ -70,10 +66,8 @@ inline void FORCE_INLINE Debug(AsyncWrap* async_wrap,
                                const char* format,
                                Args&&... args) {
   DCHECK_NOT_NULL(async_wrap);
-  DebugCategory cat =
-      static_cast<DebugCategory>(async_wrap->provider_type());
-  if (!UNLIKELY(async_wrap->env()->debug_enabled(cat)))
-    return;
+  DebugCategory cat = static_cast<DebugCategory>(async_wrap->provider_type());
+  if (!UNLIKELY(async_wrap->env()->debug_enabled(cat))) return;
   UnconditionalAsyncWrapDebug(async_wrap, format, std::forward<Args>(args)...);
 }
 
@@ -108,10 +102,10 @@ class NativeSymbolDebuggingContext {
 
   NativeSymbolDebuggingContext(const NativeSymbolDebuggingContext&) = delete;
   NativeSymbolDebuggingContext(NativeSymbolDebuggingContext&&) = delete;
-  NativeSymbolDebuggingContext operator=(NativeSymbolDebuggingContext&)
-    = delete;
-  NativeSymbolDebuggingContext operator=(NativeSymbolDebuggingContext&&)
-    = delete;
+  NativeSymbolDebuggingContext operator=(NativeSymbolDebuggingContext&) =
+      delete;
+  NativeSymbolDebuggingContext operator=(NativeSymbolDebuggingContext&&) =
+      delete;
   static std::vector<std::string> GetLoadedLibraries();
 };
 

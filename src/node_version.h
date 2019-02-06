@@ -41,35 +41,34 @@
 #endif
 
 #ifndef NODE_TAG
-# if NODE_VERSION_IS_RELEASE
-#  define NODE_TAG ""
-# else
-#  define NODE_TAG "-pre"
-# endif
+#if NODE_VERSION_IS_RELEASE
+#define NODE_TAG ""
+#else
+#define NODE_TAG "-pre"
+#endif
 #else
 // NODE_TAG is passed without quotes when rc.exe is run from msbuild
-# define NODE_EXE_VERSION NODE_STRINGIFY(NODE_MAJOR_VERSION) "." \
-                          NODE_STRINGIFY(NODE_MINOR_VERSION) "." \
-                          NODE_STRINGIFY(NODE_PATCH_VERSION)     \
-                          NODE_STRINGIFY(NODE_TAG)
+#define NODE_EXE_VERSION                                                       \
+  NODE_STRINGIFY(NODE_MAJOR_VERSION)                                           \
+  "." NODE_STRINGIFY(NODE_MINOR_VERSION) "." NODE_STRINGIFY(                   \
+      NODE_PATCH_VERSION) NODE_STRINGIFY(NODE_TAG)
 #endif
 
-# define NODE_VERSION_STRING  NODE_STRINGIFY(NODE_MAJOR_VERSION) "." \
-                              NODE_STRINGIFY(NODE_MINOR_VERSION) "." \
-                              NODE_STRINGIFY(NODE_PATCH_VERSION)     \
-                              NODE_TAG
+#define NODE_VERSION_STRING                                                    \
+  NODE_STRINGIFY(NODE_MAJOR_VERSION)                                           \
+  "." NODE_STRINGIFY(NODE_MINOR_VERSION) "." NODE_STRINGIFY(                   \
+      NODE_PATCH_VERSION) NODE_TAG
 #ifndef NODE_EXE_VERSION
-# define NODE_EXE_VERSION NODE_VERSION_STRING
+#define NODE_EXE_VERSION NODE_VERSION_STRING
 #endif
 
 #define NODE_VERSION "v" NODE_VERSION_STRING
 
-
-#define NODE_VERSION_AT_LEAST(major, minor, patch) \
-  (( (major) < NODE_MAJOR_VERSION) \
-  || ((major) == NODE_MAJOR_VERSION && (minor) < NODE_MINOR_VERSION) \
-  || ((major) == NODE_MAJOR_VERSION && \
-      (minor) == NODE_MINOR_VERSION && (patch) <= NODE_PATCH_VERSION))
+#define NODE_VERSION_AT_LEAST(major, minor, patch)                             \
+  (((major) < NODE_MAJOR_VERSION) ||                                           \
+   ((major) == NODE_MAJOR_VERSION && (minor) < NODE_MINOR_VERSION) ||          \
+   ((major) == NODE_MAJOR_VERSION && (minor) == NODE_MINOR_VERSION &&          \
+    (patch) <= NODE_PATCH_VERSION))
 
 /**
  * Node.js will refuse to load modules that weren't compiled against its own
@@ -118,6 +117,6 @@
 #define NODE_MODULE_VERSION 68
 
 // the NAPI_VERSION provided by this version of the runtime
-#define NAPI_VERSION  4
+#define NAPI_VERSION 4
 
 #endif  // SRC_NODE_VERSION_H_

@@ -50,7 +50,6 @@ class InspectorSocket {
   DISALLOW_COPY_AND_ASSIGN(InspectorSocket);
 };
 
-
 }  // namespace inspector
 }  // namespace node
 

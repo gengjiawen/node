@@ -73,16 +73,14 @@ v8::Local<v8::Object> AddressToJS(
 template <typename T, int (*F)(const typename T::HandleType*, sockaddr*, int*)>
 void GetSockOrPeerName(const v8::FunctionCallbackInfo<v8::Value>& args) {
   T* wrap;
-  ASSIGN_OR_RETURN_UNWRAP(&wrap,
-                          args.Holder(),
-                          args.GetReturnValue().Set(UV_EBADF));
+  ASSIGN_OR_RETURN_UNWRAP(
+      &wrap, args.Holder(), args.GetReturnValue().Set(UV_EBADF));
   CHECK(args[0]->IsObject());
   sockaddr_storage storage;
   int addrlen = sizeof(storage);
   sockaddr* const addr = reinterpret_cast<sockaddr*>(&storage);
   const int err = F(&wrap->handle_, addr, &addrlen);
-  if (err == 0)
-    AddressToJS(wrap->env(), addr, args[0].As<v8::Object>());
+  if (err == 0) AddressToJS(wrap->env(), addr, args[0].As<v8::Object>());
   args.GetReturnValue().Set(err);
 }
 
@@ -106,8 +104,9 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   inline uint32_t* zero_fill_field() { return &zero_fill_field_; }
 
   virtual void* Allocate(size_t size);  // Defined in src/node.cc
-  virtual void* AllocateUninitialized(size_t size)
-    { return node::UncheckedMalloc(size); }
+  virtual void* AllocateUninitialized(size_t size) {
+    return node::UncheckedMalloc(size);
+  }
   virtual void Free(void* data, size_t) { free(data); }
 
  private:
@@ -128,17 +127,15 @@ v8::MaybeLocal<v8::Object> New(Environment* env,
 // Mixing operator new and free() is undefined behavior so don't do that.
 v8::MaybeLocal<v8::Object> New(Environment* env, char* data, size_t length);
 
-inline
-v8::MaybeLocal<v8::Uint8Array> New(Environment* env,
-                                   v8::Local<v8::ArrayBuffer> ab,
-                                   size_t byte_offset,
-                                   size_t length) {
+inline v8::MaybeLocal<v8::Uint8Array> New(Environment* env,
+                                          v8::Local<v8::ArrayBuffer> ab,
+                                          size_t byte_offset,
+                                          size_t length) {
   v8::Local<v8::Uint8Array> ui = v8::Uint8Array::New(ab, byte_offset, length);
   CHECK(!env->buffer_prototype_object().IsEmpty());
   v8::Maybe<bool> mb =
       ui->SetPrototype(env->context(), env->buffer_prototype_object());
-  if (mb.IsNothing())
-    return v8::MaybeLocal<v8::Uint8Array>();
+  if (mb.IsNothing()) return v8::MaybeLocal<v8::Uint8Array>();
   return ui;
 }
 
@@ -162,11 +159,9 @@ static v8::MaybeLocal<v8::Object> New(Environment* env,
   else if (!buf->IsInvalidated())
     ret = Copy(env, src, len_in_bytes);
 
-  if (ret.IsEmpty())
-    return ret;
+  if (ret.IsEmpty()) return ret;
 
-  if (buf->IsAllocated())
-    buf->Release();
+  if (buf->IsAllocated()) buf->Release();
 
   return ret;
 }
@@ -246,13 +241,11 @@ int ThreadPoolWork::CancelWork() {
 }
 
 #define TRACING_CATEGORY_NODE "node"
-#define TRACING_CATEGORY_NODE1(one)                                           \
-    TRACING_CATEGORY_NODE ","                                                 \
-    TRACING_CATEGORY_NODE "." #one
-#define TRACING_CATEGORY_NODE2(one, two)                                      \
-    TRACING_CATEGORY_NODE ","                                                 \
-    TRACING_CATEGORY_NODE "." #one ","                                        \
-    TRACING_CATEGORY_NODE "." #one "." #two
+#define TRACING_CATEGORY_NODE1(one)                                            \
+  TRACING_CATEGORY_NODE "," TRACING_CATEGORY_NODE "." #one
+#define TRACING_CATEGORY_NODE2(one, two)                                       \
+  TRACING_CATEGORY_NODE "," TRACING_CATEGORY_NODE "." #one                     \
+                        "," TRACING_CATEGORY_NODE "." #one "." #two
 
 // Functions defined in node.cc that are exposed via the bootstrapper object
 

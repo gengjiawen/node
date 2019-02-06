@@ -258,16 +258,14 @@ static void GetGroups(const FunctionCallbackInfo<Value>& args) {
   std::vector<gid_t> groups(ngroups);
 
   ngroups = getgroups(ngroups, groups.data());
-  if (ngroups == -1)
-    return env->ThrowErrnoException(errno, "getgroups");
+  if (ngroups == -1) return env->ThrowErrnoException(errno, "getgroups");
 
   groups.resize(ngroups);
   gid_t egid = getegid();
   if (std::find(groups.begin(), groups.end(), egid) == groups.end())
     groups.push_back(egid);
   MaybeLocal<Value> array = ToV8Value(env->context(), groups);
-  if (!array.IsEmpty())
-    args.GetReturnValue().Set(array.ToLocalChecked());
+  if (!array.IsEmpty()) args.GetReturnValue().Set(array.ToLocalChecked());
 }
 
 static void SetGroups(const FunctionCallbackInfo<Value>& args) {

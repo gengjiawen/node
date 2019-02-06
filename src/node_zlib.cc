@@ -28,8 +28,8 @@
 
 #include "v8.h"
 
-#include "brotli/encode.h"
 #include "brotli/decode.h"
+#include "brotli/encode.h"
 #include "zlib.h"
 
 #include <errno.h>
@@ -71,19 +71,20 @@ namespace {
 #define Z_MAX_LEVEL 9
 #define Z_DEFAULT_LEVEL Z_DEFAULT_COMPRESSION
 
-#define ZLIB_ERROR_CODES(V)      \
-  V(Z_OK)                        \
-  V(Z_STREAM_END)                \
-  V(Z_NEED_DICT)                 \
-  V(Z_ERRNO)                     \
-  V(Z_STREAM_ERROR)              \
-  V(Z_DATA_ERROR)                \
-  V(Z_MEM_ERROR)                 \
-  V(Z_BUF_ERROR)                 \
-  V(Z_VERSION_ERROR)             \
+#define ZLIB_ERROR_CODES(V)                                                    \
+  V(Z_OK)                                                                      \
+  V(Z_STREAM_END)                                                              \
+  V(Z_NEED_DICT)                                                               \
+  V(Z_ERRNO)                                                                   \
+  V(Z_STREAM_ERROR)                                                            \
+  V(Z_DATA_ERROR)                                                              \
+  V(Z_MEM_ERROR)                                                               \
+  V(Z_BUF_ERROR)                                                               \
+  V(Z_VERSION_ERROR)
 
 inline const char* ZlibStrerror(int err) {
-#define V(code) if (err == code) return #code;
+#define V(code)                                                                \
+  if (err == code) return #code;
   ZLIB_ERROR_CODES(V)
 #undef V
   return "Z_UNKNOWN_ERROR";
@@ -107,7 +108,7 @@ enum node_zlib_mode {
 
 struct CompressionError {
   CompressionError(const char* message, const char* code, int err)
-    : message(message), code(code), err(err) {}
+      : message(message), code(code), err(err) {}
   CompressionError() = default;
 
   const char* message = nullptr;
@@ -132,7 +133,10 @@ class ZlibContext : public MemoryRetainer {
   CompressionError ResetStream();
 
   // Zlib-specific:
-  CompressionError Init(int level, int window_bits, int mem_level, int strategy,
+  CompressionError Init(int level,
+                        int window_bits,
+                        int mem_level,
+                        int strategy,
                         std::vector<unsigned char>&& dictionary);
   void SetAllocationFunctions(alloc_func alloc, free_func free, void* opaque);
   CompressionError SetParams(int level, int strategy);
@@ -265,13 +269,11 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
     ctx_.Close();
   }
 
-
   static void Close(const FunctionCallbackInfo<Value>& args) {
     CompressionStream* ctx;
     ASSIGN_OR_RETURN_UNWRAP(&ctx, args.Holder());
     ctx->Close();
   }
-
 
   // write(flush, in, in_off, in_len, out, out_off, out_len)
   template <bool async>
@@ -287,11 +289,8 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
     CHECK_EQ(false, args[0]->IsUndefined() && "must provide flush value");
     if (!args[0]->Uint32Value(context).To(&flush)) return;
 
-    if (flush != Z_NO_FLUSH &&
-        flush != Z_PARTIAL_FLUSH &&
-        flush != Z_SYNC_FLUSH &&
-        flush != Z_FULL_FLUSH &&
-        flush != Z_FINISH &&
+    if (flush != Z_NO_FLUSH && flush != Z_PARTIAL_FLUSH &&
+        flush != Z_SYNC_FLUSH && flush != Z_FULL_FLUSH && flush != Z_FINISH &&
         flush != Z_BLOCK) {
       CHECK(0 && "Invalid flush value");
     }
@@ -325,9 +324,8 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
   }
 
   template <bool async>
-  void Write(uint32_t flush,
-             char* in, uint32_t in_len,
-             char* out, uint32_t out_len) {
+  void Write(
+      uint32_t flush, char* in, uint32_t in_len, char* out, uint32_t out_len) {
     AllocScope alloc_scope(this);
 
     CHECK(init_done_ && "write before init");
@@ -365,10 +363,7 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
   // This function may be called multiple times on the uv_work pool
   // for a single write() call, until all of the input bytes have
   // been consumed.
-  void DoThreadPoolWork() override {
-    ctx_.DoThreadPoolWork();
-  }
-
+  void DoThreadPoolWork() override { ctx_.DoThreadPoolWork(); }
 
   bool CheckError() {
     const CompressionError err = ctx_.GetErrorInfo();
@@ -376,7 +371,6 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
     EmitError(err);
     return false;
   }
-
 
   // v8 land!
   void AfterThreadPoolWork(int status) override {
@@ -395,18 +389,16 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
     HandleScope handle_scope(env()->isolate());
     Context::Scope context_scope(env()->context());
 
-    if (!CheckError())
-      return;
+    if (!CheckError()) return;
 
     UpdateWriteResult();
 
     // call the write() cb
-    Local<Function> cb = PersistentToLocal::Default(env()->isolate(),
-                                                    write_js_callback_);
+    Local<Function> cb =
+        PersistentToLocal::Default(env()->isolate(), write_js_callback_);
     MakeCallback(cb, 0, nullptr);
 
-    if (pending_close_)
-      Close();
+    if (pending_close_) Close();
   }
 
   // TODO(addaleax): Switch to modern error system (node_errors.h).
@@ -415,27 +407,23 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
     CHECK_EQ(env()->context(), env()->isolate()->GetCurrentContext());
 
     HandleScope scope(env()->isolate());
-    Local<Value> args[3] = {
-      OneByteString(env()->isolate(), err.message),
-      Integer::New(env()->isolate(), err.err),
-      OneByteString(env()->isolate(), err.code)
-    };
+    Local<Value> args[3] = {OneByteString(env()->isolate(), err.message),
+                            Integer::New(env()->isolate(), err.err),
+                            OneByteString(env()->isolate(), err.code)};
     MakeCallback(env()->onerror_string(), arraysize(args), args);
 
     // no hope of rescue.
     write_in_progress_ = false;
-    if (pending_close_)
-      Close();
+    if (pending_close_) Close();
   }
 
-  static void Reset(const FunctionCallbackInfo<Value> &args) {
+  static void Reset(const FunctionCallbackInfo<Value>& args) {
     CompressionStream* wrap;
     ASSIGN_OR_RETURN_UNWRAP(&wrap, args.Holder());
 
     AllocScope alloc_scope(wrap);
     const CompressionError err = wrap->context()->ResetStream();
-    if (err.IsError())
-      wrap->EmitError(err);
+    if (err.IsError()) wrap->EmitError(err);
   }
 
   void MemoryInfo(MemoryTracker* tracker) const override {
@@ -460,9 +448,8 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
   // to V8; rather, we first store it as "unreported" memory in a separate
   // field and later report it back from the main thread.
   static void* AllocForZlib(void* data, uInt items, uInt size) {
-    size_t real_size =
-        MultiplyWithOverflowCheck(static_cast<size_t>(items),
-                                  static_cast<size_t>(size));
+    size_t real_size = MultiplyWithOverflowCheck(static_cast<size_t>(items),
+                                                 static_cast<size_t>(size));
     return AllocForBrotli(data, real_size);
   }
 
@@ -472,8 +459,7 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
     char* memory = UncheckedMalloc(size);
     if (UNLIKELY(memory == nullptr)) return nullptr;
     *reinterpret_cast<size_t*>(memory) = size;
-    ctx->unreported_allocations_.fetch_add(size,
-                                           std::memory_order_relaxed);
+    ctx->unreported_allocations_.fetch_add(size, std::memory_order_relaxed);
     return memory + sizeof(size_t);
   }
 
@@ -534,7 +520,7 @@ class CompressionStream : public AsyncWrap, public ThreadPoolWork {
 class ZlibStream : public CompressionStream<ZlibContext> {
  public:
   ZlibStream(Environment* env, Local<Object> wrap, node_zlib_mode mode)
-    : CompressionStream(env, wrap) {
+      : CompressionStream(env, wrap) {
     context()->SetMode(mode);
   }
 
@@ -552,15 +538,15 @@ class ZlibStream : public CompressionStream<ZlibContext> {
     // Refs: https://github.com/nodejs/node/issues/14161
     if (args.Length() == 5) {
       fprintf(stderr,
-          "WARNING: You are likely using a version of node-tar or npm that "
-          "is incompatible with this version of Node.js.\nPlease use "
-          "either the version of npm that is bundled with Node.js, or "
-          "a version of npm (> 5.5.1 or < 5.4.0) or node-tar (> 4.0.1) "
-          "that is compatible with Node.js 9 and above.\n");
+              "WARNING: You are likely using a version of node-tar or npm that "
+              "is incompatible with this version of Node.js.\nPlease use "
+              "either the version of npm that is bundled with Node.js, or "
+              "a version of npm (> 5.5.1 or < 5.4.0) or node-tar (> 4.0.1) "
+              "that is compatible with Node.js 9 and above.\n");
     }
-    CHECK(args.Length() == 7 &&
-      "init(windowBits, level, memLevel, strategy, writeResult, writeCallback,"
-      " dictionary)");
+    CHECK(args.Length() == 7 && "init(windowBits, level, memLevel, strategy, "
+                                "writeResult, writeCallback,"
+                                " dictionary)");
 
     ZlibStream* wrap;
     ASSIGN_OR_RETURN_UNWRAP(&wrap, args.Holder());
@@ -594,9 +580,8 @@ class ZlibStream : public CompressionStream<ZlibContext> {
     if (Buffer::HasInstance(args[6])) {
       unsigned char* data =
           reinterpret_cast<unsigned char*>(Buffer::Data(args[6]));
-      dictionary = std::vector<unsigned char>(
-          data,
-          data + Buffer::Length(args[6]));
+      dictionary =
+          std::vector<unsigned char>(data, data + Buffer::Length(args[6]));
     }
 
     wrap->InitStream(write_result, write_js_callback);
@@ -604,11 +589,9 @@ class ZlibStream : public CompressionStream<ZlibContext> {
     AllocScope alloc_scope(wrap);
     wrap->context()->SetAllocationFunctions(
         AllocForZlib, FreeForZlib, static_cast<CompressionStream*>(wrap));
-    const CompressionError err =
-        wrap->context()->Init(level, window_bits, mem_level, strategy,
-                              std::move(dictionary));
-    if (err.IsError())
-      wrap->EmitError(err);
+    const CompressionError err = wrap->context()->Init(
+        level, window_bits, mem_level, strategy, std::move(dictionary));
+    if (err.IsError()) wrap->EmitError(err);
 
     return args.GetReturnValue().Set(!err.IsError());
   }
@@ -625,8 +608,7 @@ class ZlibStream : public CompressionStream<ZlibContext> {
 
     AllocScope alloc_scope(wrap);
     const CompressionError err = wrap->context()->SetParams(level, strategy);
-    if (err.IsError())
-      wrap->EmitError(err);
+    if (err.IsError()) wrap->EmitError(err);
   }
 
   SET_MEMORY_INFO_NAME(ZlibStream)
@@ -639,7 +621,7 @@ class BrotliCompressionStream : public CompressionStream<CompressionContext> {
   BrotliCompressionStream(Environment* env,
                           Local<Object> wrap,
                           node_zlib_mode mode)
-    : CompressionStream<CompressionContext>(env, wrap) {
+      : CompressionStream<CompressionContext>(env, wrap) {
     context()->SetMode(mode);
   }
 
@@ -669,11 +651,10 @@ class BrotliCompressionStream : public CompressionStream<CompressionContext> {
     wrap->InitStream(write_result, write_js_callback);
 
     AllocScope alloc_scope(wrap);
-    CompressionError err =
-        wrap->context()->Init(
-          CompressionStream<CompressionContext>::AllocForBrotli,
-          CompressionStream<CompressionContext>::FreeForZlib,
-          static_cast<CompressionStream<CompressionContext>*>(wrap));
+    CompressionError err = wrap->context()->Init(
+        CompressionStream<CompressionContext>::AllocForBrotli,
+        CompressionStream<CompressionContext>::FreeForZlib,
+        static_cast<CompressionStream<CompressionContext>*>(wrap));
     if (err.IsError()) {
       wrap->EmitError(err);
       args.GetReturnValue().Set(false);
@@ -685,8 +666,7 @@ class BrotliCompressionStream : public CompressionStream<CompressionContext> {
     size_t len = args[0].As<Uint32Array>()->Length();
 
     for (int i = 0; static_cast<size_t>(i) < len; i++) {
-      if (data[i] == static_cast<uint32_t>(-1))
-        continue;
+      if (data[i] == static_cast<uint32_t>(-1)) continue;
       err = wrap->context()->SetParams(i, data[i]);
       if (err.IsError()) {
         wrap->EmitError(err);
@@ -728,7 +708,6 @@ void ZlibContext::Close() {
 
   dictionary_.clear();
 }
-
 
 void ZlibContext::DoThreadPoolWork() {
   const Bytef* next_expected_header_byte = nullptr;
@@ -794,13 +773,10 @@ void ZlibContext::DoThreadPoolWork() {
 
       // If data was encoded with dictionary (INFLATERAW will have it set in
       // SetDictionary, don't repeat that here)
-      if (mode_ != INFLATERAW &&
-          err_ == Z_NEED_DICT &&
-          !dictionary_.empty()) {
+      if (mode_ != INFLATERAW && err_ == Z_NEED_DICT && !dictionary_.empty()) {
         // Load it
-        err_ = inflateSetDictionary(&strm_,
-                                    dictionary_.data(),
-                                    dictionary_.size());
+        err_ = inflateSetDictionary(
+            &strm_, dictionary_.data(), dictionary_.size());
         if (err_ == Z_OK) {
           // And try to decode again
           err_ = inflate(&strm_, flush_);
@@ -812,9 +788,7 @@ void ZlibContext::DoThreadPoolWork() {
         }
       }
 
-      while (strm_.avail_in > 0 &&
-             mode_ == GUNZIP &&
-             err_ == Z_STREAM_END &&
+      while (strm_.avail_in > 0 && mode_ == GUNZIP && err_ == Z_STREAM_END &&
              strm_.next_in[0] != 0x00) {
         // Bytes remain in input buffer. Perhaps this is another compressed
         // member in the same archive, or just trailing garbage.
@@ -830,20 +804,19 @@ void ZlibContext::DoThreadPoolWork() {
   }
 }
 
-
-void ZlibContext::SetBuffers(char* in, uint32_t in_len,
-                             char* out, uint32_t out_len) {
+void ZlibContext::SetBuffers(char* in,
+                             uint32_t in_len,
+                             char* out,
+                             uint32_t out_len) {
   strm_.avail_in = in_len;
   strm_.next_in = reinterpret_cast<Bytef*>(in);
   strm_.avail_out = out_len;
   strm_.next_out = reinterpret_cast<Bytef*>(out);
 }
 
-
 void ZlibContext::SetFlush(int flush) {
   flush_ = flush;
 }
-
 
 void ZlibContext::GetAfterWriteOffsets(uint32_t* avail_in,
                                        uint32_t* avail_out) const {
@@ -851,39 +824,35 @@ void ZlibContext::GetAfterWriteOffsets(uint32_t* avail_in,
   *avail_out = strm_.avail_out;
 }
 
-
 CompressionError ZlibContext::ErrorForMessage(const char* message) const {
-  if (strm_.msg != nullptr)
-    message = strm_.msg;
+  if (strm_.msg != nullptr) message = strm_.msg;
 
-  return CompressionError { message, ZlibStrerror(err_), err_ };
+  return CompressionError{message, ZlibStrerror(err_), err_};
 }
-
 
 CompressionError ZlibContext::GetErrorInfo() const {
   // Acceptable error states depend on the type of zlib stream.
   switch (err_) {
-  case Z_OK:
-  case Z_BUF_ERROR:
-    if (strm_.avail_out != 0 && flush_ == Z_FINISH) {
-      return ErrorForMessage("unexpected end of file");
-    }
-  case Z_STREAM_END:
-    // normal statuses, not fatal
-    break;
-  case Z_NEED_DICT:
-    if (dictionary_.empty())
-      return ErrorForMessage("Missing dictionary");
-    else
-      return ErrorForMessage("Bad dictionary");
-  default:
-    // something else.
-    return ErrorForMessage("Zlib error");
+    case Z_OK:
+    case Z_BUF_ERROR:
+      if (strm_.avail_out != 0 && flush_ == Z_FINISH) {
+        return ErrorForMessage("unexpected end of file");
+      }
+    case Z_STREAM_END:
+      // normal statuses, not fatal
+      break;
+    case Z_NEED_DICT:
+      if (dictionary_.empty())
+        return ErrorForMessage("Missing dictionary");
+      else
+        return ErrorForMessage("Bad dictionary");
+    default:
+      // something else.
+      return ErrorForMessage("Zlib error");
   }
 
-  return CompressionError {};
+  return CompressionError{};
 }
-
 
 CompressionError ZlibContext::ResetStream() {
   err_ = Z_OK;
@@ -903,12 +872,10 @@ CompressionError ZlibContext::ResetStream() {
       break;
   }
 
-  if (err_ != Z_OK)
-    return ErrorForMessage("Failed to reset stream");
+  if (err_ != Z_OK) return ErrorForMessage("Failed to reset stream");
 
   return SetDictionary();
 }
-
 
 void ZlibContext::SetAllocationFunctions(alloc_func alloc,
                                          free_func free,
@@ -918,21 +885,20 @@ void ZlibContext::SetAllocationFunctions(alloc_func alloc,
   strm_.opaque = opaque;
 }
 
-
-CompressionError ZlibContext::Init(
-    int level, int window_bits, int mem_level, int strategy,
-    std::vector<unsigned char>&& dictionary) {
+CompressionError ZlibContext::Init(int level,
+                                   int window_bits,
+                                   int mem_level,
+                                   int strategy,
+                                   std::vector<unsigned char>&& dictionary) {
   if (!((window_bits == 0) &&
-        (mode_ == INFLATE ||
-         mode_ == GUNZIP ||
-         mode_ == UNZIP))) {
+        (mode_ == INFLATE || mode_ == GUNZIP || mode_ == UNZIP))) {
     CHECK(
         (window_bits >= Z_MIN_WINDOWBITS && window_bits <= Z_MAX_WINDOWBITS) &&
         "invalid windowBits");
   }
 
   CHECK((level >= Z_MIN_LEVEL && level <= Z_MAX_LEVEL) &&
-    "invalid compression level");
+        "invalid compression level");
 
   CHECK((mem_level >= Z_MIN_MEMLEVEL && mem_level <= Z_MAX_MEMLEVEL) &&
         "invalid memlevel");
@@ -967,12 +933,8 @@ CompressionError ZlibContext::Init(
     case DEFLATE:
     case GZIP:
     case DEFLATERAW:
-      err_ = deflateInit2(&strm_,
-                          level_,
-                          Z_DEFLATED,
-                          window_bits_,
-                          mem_level_,
-                          strategy_);
+      err_ = deflateInit2(
+          &strm_, level_, Z_DEFLATED, window_bits_, mem_level_, strategy_);
       break;
     case INFLATE:
     case GUNZIP:
@@ -995,26 +957,22 @@ CompressionError ZlibContext::Init(
   return SetDictionary();
 }
 
-
 CompressionError ZlibContext::SetDictionary() {
-  if (dictionary_.empty())
-    return CompressionError {};
+  if (dictionary_.empty()) return CompressionError{};
 
   err_ = Z_OK;
 
   switch (mode_) {
     case DEFLATE:
     case DEFLATERAW:
-      err_ = deflateSetDictionary(&strm_,
-                                  dictionary_.data(),
-                                  dictionary_.size());
+      err_ =
+          deflateSetDictionary(&strm_, dictionary_.data(), dictionary_.size());
       break;
     case INFLATERAW:
       // The other inflate cases will have the dictionary set when inflate()
       // returns Z_NEED_DICT in Process()
-      err_ = inflateSetDictionary(&strm_,
-                                  dictionary_.data(),
-                                  dictionary_.size());
+      err_ =
+          inflateSetDictionary(&strm_, dictionary_.data(), dictionary_.size());
       break;
     default:
       break;
@@ -1024,9 +982,8 @@ CompressionError ZlibContext::SetDictionary() {
     return ErrorForMessage("Failed to set dictionary");
   }
 
-  return CompressionError {};
+  return CompressionError{};
 }
-
 
 CompressionError ZlibContext::SetParams(int level, int strategy) {
   err_ = Z_OK;
@@ -1044,30 +1001,28 @@ CompressionError ZlibContext::SetParams(int level, int strategy) {
     return ErrorForMessage("Failed to set parameters");
   }
 
-  return CompressionError {};
+  return CompressionError{};
 }
 
-
-void BrotliContext::SetBuffers(char* in, uint32_t in_len,
-                               char* out, uint32_t out_len) {
+void BrotliContext::SetBuffers(char* in,
+                               uint32_t in_len,
+                               char* out,
+                               uint32_t out_len) {
   next_in_ = reinterpret_cast<uint8_t*>(in);
   next_out_ = reinterpret_cast<uint8_t*>(out);
   avail_in_ = in_len;
   avail_out_ = out_len;
 }
 
-
 void BrotliContext::SetFlush(int flush) {
   flush_ = static_cast<BrotliEncoderOperation>(flush);
 }
-
 
 void BrotliContext::GetAfterWriteOffsets(uint32_t* avail_in,
                                          uint32_t* avail_out) const {
   *avail_in = avail_in_;
   *avail_out = avail_out_;
 }
-
 
 void BrotliEncoderContext::DoThreadPoolWork() {
   CHECK_EQ(mode_, BROTLI_ENCODE);
@@ -1082,7 +1037,6 @@ void BrotliEncoderContext::DoThreadPoolWork() {
                                              nullptr);
   next_in_ += next_in - next_in_;
 }
-
 
 void BrotliEncoderContext::Close() {
   state_.reset();
@@ -1101,7 +1055,7 @@ CompressionError BrotliEncoderContext::Init(brotli_alloc_func alloc,
                             "ERR_ZLIB_INITIALIZATION_FAILED",
                             -1);
   } else {
-    return CompressionError {};
+    return CompressionError{};
   }
 }
 
@@ -1110,27 +1064,23 @@ CompressionError BrotliEncoderContext::ResetStream() {
 }
 
 CompressionError BrotliEncoderContext::SetParams(int key, uint32_t value) {
-  if (!BrotliEncoderSetParameter(state_.get(),
-                                 static_cast<BrotliEncoderParameter>(key),
-                                 value)) {
-    return CompressionError("Setting parameter failed",
-                            "ERR_BROTLI_PARAM_SET_FAILED",
-                            -1);
+  if (!BrotliEncoderSetParameter(
+          state_.get(), static_cast<BrotliEncoderParameter>(key), value)) {
+    return CompressionError(
+        "Setting parameter failed", "ERR_BROTLI_PARAM_SET_FAILED", -1);
   } else {
-    return CompressionError {};
+    return CompressionError{};
   }
 }
 
 CompressionError BrotliEncoderContext::GetErrorInfo() const {
   if (!last_result_) {
-    return CompressionError("Compression failed",
-                            "ERR_BROTLI_COMPRESSION_FAILED",
-                            -1);
+    return CompressionError(
+        "Compression failed", "ERR_BROTLI_COMPRESSION_FAILED", -1);
   } else {
-    return CompressionError {};
+    return CompressionError{};
   }
 }
-
 
 void BrotliDecoderContext::Close() {
   state_.reset();
@@ -1141,12 +1091,8 @@ void BrotliDecoderContext::DoThreadPoolWork() {
   CHECK_EQ(mode_, BROTLI_DECODE);
   CHECK(state_);
   const uint8_t* next_in = next_in_;
-  last_result_ = BrotliDecoderDecompressStream(state_.get(),
-                                               &avail_in_,
-                                               &next_in,
-                                               &avail_out_,
-                                               &next_out_,
-                                               nullptr);
+  last_result_ = BrotliDecoderDecompressStream(
+      state_.get(), &avail_in_, &next_in, &avail_out_, &next_out_, nullptr);
   next_in_ += next_in - next_in_;
   if (last_result_ == BROTLI_DECODER_RESULT_ERROR) {
     error_ = BrotliDecoderGetErrorCode(state_.get());
@@ -1166,7 +1112,7 @@ CompressionError BrotliDecoderContext::Init(brotli_alloc_func alloc,
                             "ERR_ZLIB_INITIALIZATION_FAILED",
                             -1);
   } else {
-    return CompressionError {};
+    return CompressionError{};
   }
 }
 
@@ -1175,14 +1121,12 @@ CompressionError BrotliDecoderContext::ResetStream() {
 }
 
 CompressionError BrotliDecoderContext::SetParams(int key, uint32_t value) {
-  if (!BrotliDecoderSetParameter(state_.get(),
-                                 static_cast<BrotliDecoderParameter>(key),
-                                 value)) {
-    return CompressionError("Setting parameter failed",
-                            "ERR_BROTLI_PARAM_SET_FAILED",
-                            -1);
+  if (!BrotliDecoderSetParameter(
+          state_.get(), static_cast<BrotliDecoderParameter>(key), value)) {
+    return CompressionError(
+        "Setting parameter failed", "ERR_BROTLI_PARAM_SET_FAILED", -1);
   } else {
-    return CompressionError {};
+    return CompressionError{};
   }
 }
 
@@ -1194,14 +1138,12 @@ CompressionError BrotliDecoderContext::GetErrorInfo() const {
   } else if (flush_ == BROTLI_OPERATION_FINISH &&
              last_result_ == BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT) {
     // Match zlib's behaviour, as brotli doesn't have its own code for this.
-    return CompressionError("unexpected end of file",
-                            "Z_BUF_ERROR",
-                            Z_BUF_ERROR);
+    return CompressionError(
+        "unexpected end of file", "Z_BUF_ERROR", Z_BUF_ERROR);
   } else {
-    return CompressionError {};
+    return CompressionError{};
   }
 }
-
 
 template <typename Stream>
 struct MakeClass {
@@ -1221,9 +1163,11 @@ struct MakeClass {
 
     Local<String> zlibString = OneByteString(env->isolate(), name);
     z->SetClassName(zlibString);
-    target->Set(env->context(),
-                zlibString,
-                z->GetFunction(env->context()).ToLocalChecked()).FromJust();
+    target
+        ->Set(env->context(),
+              zlibString,
+              z->GetFunction(env->context()).ToLocalChecked())
+        .FromJust();
   }
 };
 
@@ -1237,9 +1181,11 @@ void Initialize(Local<Object> target,
   MakeClass<BrotliEncoderStream>::Make(env, target, "BrotliEncoder");
   MakeClass<BrotliDecoderStream>::Make(env, target, "BrotliDecoder");
 
-  target->Set(env->context(),
-              FIXED_ONE_BYTE_STRING(env->isolate(), "ZLIB_VERSION"),
-              FIXED_ONE_BYTE_STRING(env->isolate(), ZLIB_VERSION)).FromJust();
+  target
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(env->isolate(), "ZLIB_VERSION"),
+            FIXED_ONE_BYTE_STRING(env->isolate(), ZLIB_VERSION))
+      .FromJust();
 }
 
 }  // anonymous namespace
@@ -1329,7 +1275,7 @@ void DefineZlibConstants(Local<Object> target) {
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT);
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT);
   NODE_DEFINE_CONSTANT(target,
-      BROTLI_DECODER_PARAM_DISABLE_RING_BUFFER_REALLOCATION);
+                       BROTLI_DECODER_PARAM_DISABLE_RING_BUFFER_REALLOCATION);
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_PARAM_LARGE_WINDOW);
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_NO_ERROR);
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_SUCCESS);
@@ -1338,9 +1284,9 @@ void DefineZlibConstants(Local<Object> target) {
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_NIBBLE);
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_ERROR_FORMAT_RESERVED);
   NODE_DEFINE_CONSTANT(target,
-      BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_META_NIBBLE);
+                       BROTLI_DECODER_ERROR_FORMAT_EXUBERANT_META_NIBBLE);
   NODE_DEFINE_CONSTANT(target,
-      BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_ALPHABET);
+                       BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_ALPHABET);
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_ERROR_FORMAT_SIMPLE_HUFFMAN_SAME);
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_ERROR_FORMAT_CL_SPACE);
   NODE_DEFINE_CONSTANT(target, BROTLI_DECODER_ERROR_FORMAT_HUFFMAN_SPACE);

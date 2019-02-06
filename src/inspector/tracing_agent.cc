@@ -95,8 +95,7 @@ class InspectorTraceWriter : public node::tracing::AsyncTraceWriter {
   }
 
   void Flush(bool) override {
-    if (!json_writer_)
-      return;
+    if (!json_writer_) return;
     json_writer_.reset();
     std::ostringstream result(
         "{\"method\":\"NodeTracing.dataCollected\",\"params\":",

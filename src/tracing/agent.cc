@@ -1,19 +1,20 @@
 #include "tracing/agent.h"
 
 #include <string>
-#include "trace_event.h"
-#include "tracing/node_trace_buffer.h"
 #include "debug_utils.h"
 #include "env-inl.h"
+#include "trace_event.h"
+#include "tracing/node_trace_buffer.h"
 
 namespace node {
 namespace tracing {
 
 class Agent::ScopedSuspendTracing {
  public:
-  ScopedSuspendTracing(TracingController* controller, Agent* agent,
+  ScopedSuspendTracing(TracingController* controller,
+                       Agent* agent,
                        bool do_suspend = true)
-    : controller_(controller), agent_(do_suspend ? agent : nullptr) {
+      : controller_(controller), agent_(do_suspend ? agent : nullptr) {
     if (do_suspend) {
       CHECK(agent_->started_);
       controller->StopTracing();
@@ -45,9 +46,9 @@ std::set<std::string> flatten(
 
 }  // namespace
 
+using std::string;
 using v8::platform::tracing::TraceConfig;
 using v8::platform::tracing::TraceWriter;
-using std::string;
 
 Agent::Agent() : tracing_controller_(new TracingController()) {
   tracing_controller_->Initialize(nullptr);
@@ -56,9 +57,11 @@ Agent::Agent() : tracing_controller_(new TracingController()) {
   CHECK_EQ(uv_async_init(&tracing_loop_,
                          &initialize_writer_async_,
                          [](uv_async_t* async) {
-    Agent* agent = ContainerOf(&Agent::initialize_writer_async_, async);
-    agent->InitializeWritersOnThread();
-  }), 0);
+                           Agent* agent = ContainerOf(
+                               &Agent::initialize_writer_async_, async);
+                           agent->InitializeWritersOnThread();
+                         }),
+           0);
   uv_unref(reinterpret_cast<uv_handle_t*>(&initialize_writer_async_));
 }
 
@@ -84,27 +87,28 @@ Agent::~Agent() {
 }
 
 void Agent::Start() {
-  if (started_)
-    return;
+  if (started_) return;
 
-  NodeTraceBuffer* trace_buffer_ = new NodeTraceBuffer(
-      NodeTraceBuffer::kBufferChunks, this, &tracing_loop_);
+  NodeTraceBuffer* trace_buffer_ =
+      new NodeTraceBuffer(NodeTraceBuffer::kBufferChunks, this, &tracing_loop_);
   tracing_controller_->Initialize(trace_buffer_);
 
   // This thread should be created *after* async handles are created
   // (within NodeTraceWriter and NodeTraceBuffer constructors).
   // Otherwise the thread could shut down prematurely.
-  CHECK_EQ(0, uv_thread_create(&thread_, [](void* arg) {
-    Agent* agent = static_cast<Agent*>(arg);
-    uv_run(&agent->tracing_loop_, UV_RUN_DEFAULT);
-  }, this));
+  CHECK_EQ(0,
+           uv_thread_create(&thread_,
+                            [](void* arg) {
+                              Agent* agent = static_cast<Agent*>(arg);
+                              uv_run(&agent->tracing_loop_, UV_RUN_DEFAULT);
+                            },
+                            this));
   started_ = true;
 }
 
-AgentWriterHandle Agent::AddClient(
-    const std::set<std::string>& categories,
-    std::unique_ptr<AsyncTraceWriter> writer,
-    enum UseDefaultCategoryMode mode) {
+AgentWriterHandle Agent::AddClient(const std::set<std::string>& categories,
+                                   std::unique_ptr<AsyncTraceWriter> writer,
+                                   enum UseDefaultCategoryMode mode) {
   Start();
 
   const std::set<std::string>* use_categories = &categories;
@@ -121,7 +125,7 @@ AgentWriterHandle Agent::AddClient(
   int id = next_writer_id_++;
   AsyncTraceWriter* raw = writer.get();
   writers_[id] = std::move(writer);
-  categories_[id] = { use_categories->begin(), use_categories->end() };
+  categories_[id] = {use_categories->begin(), use_categories->end()};
 
   {
     Mutex::ScopedLock lock(initialize_writer_mutex_);
@@ -139,8 +143,7 @@ AgentWriterHandle Agent::DefaultHandle() {
 }
 
 void Agent::StopTracing() {
-  if (!started_)
-    return;
+  if (!started_) return;
   // Perform final Flush on TraceBuffer. We don't want the tracing controller
   // to flush the buffer again on destruction of the V8::Platform.
   tracing_controller_->StopTracing();
@@ -163,28 +166,25 @@ void Agent::Disconnect(int client) {
 }
 
 void Agent::Enable(int id, const std::set<std::string>& categories) {
-  if (categories.empty())
-    return;
+  if (categories.empty()) return;
 
-  ScopedSuspendTracing suspend(tracing_controller_.get(), this,
-                               id != kDefaultHandleId);
+  ScopedSuspendTracing suspend(
+      tracing_controller_.get(), this, id != kDefaultHandleId);
   categories_[id].insert(categories.begin(), categories.end());
 }
 
 void Agent::Disable(int id, const std::set<std::string>& categories) {
-  ScopedSuspendTracing suspend(tracing_controller_.get(), this,
-                               id != kDefaultHandleId);
+  ScopedSuspendTracing suspend(
+      tracing_controller_.get(), this, id != kDefaultHandleId);
   std::multiset<std::string>& writer_categories = categories_[id];
   for (const std::string& category : categories) {
     auto it = writer_categories.find(category);
-    if (it != writer_categories.end())
-      writer_categories.erase(it);
+    if (it != writer_categories.end()) writer_categories.erase(it);
   }
 }
 
 TraceConfig* Agent::CreateTraceConfig() const {
-  if (categories_.empty())
-    return nullptr;
+  if (categories_.empty()) return nullptr;
   TraceConfig* trace_config = new TraceConfig();
   for (const auto& category : flatten(categories_)) {
     trace_config->AddIncludedCategory(category.c_str());
@@ -195,8 +195,7 @@ TraceConfig* Agent::CreateTraceConfig() const {
 std::string Agent::GetEnabledCategories() const {
   std::string categories;
   for (const std::string& category : flatten(categories_)) {
-    if (!categories.empty())
-      categories += ',';
+    if (!categories.empty()) categories += ',';
     categories += category;
   }
   return categories;
@@ -215,12 +214,10 @@ void Agent::AddMetadataEvent(std::unique_ptr<TraceObject> event) {
 void Agent::Flush(bool blocking) {
   {
     Mutex::ScopedLock lock(metadata_events_mutex_);
-    for (const auto& event : metadata_events_)
-      AppendTraceEvent(event.get());
+    for (const auto& event : metadata_events_) AppendTraceEvent(event.get());
   }
 
-  for (const auto& id_writer : writers_)
-    id_writer.second->Flush(blocking);
+  for (const auto& id_writer : writers_) id_writer.second->Flush(blocking);
 }
 
 void TracingController::AddMetadataEvent(
@@ -233,15 +230,20 @@ void TracingController::AddMetadataEvent(
     std::unique_ptr<v8::ConvertableToTraceFormat>* convertable_values,
     unsigned int flags) {
   std::unique_ptr<TraceObject> trace_event(new TraceObject);
-  trace_event->Initialize(
-      TRACE_EVENT_PHASE_METADATA, category_group_enabled, name,
-      node::tracing::kGlobalScope,  // scope
-      node::tracing::kNoId,         // id
-      node::tracing::kNoId,         // bind_id
-      num_args, arg_names, arg_types, arg_values, convertable_values,
-      TRACE_EVENT_FLAG_NONE,
-      CurrentTimestampMicroseconds(),
-      CurrentCpuTimestampMicroseconds());
+  trace_event->Initialize(TRACE_EVENT_PHASE_METADATA,
+                          category_group_enabled,
+                          name,
+                          node::tracing::kGlobalScope,  // scope
+                          node::tracing::kNoId,         // id
+                          node::tracing::kNoId,         // bind_id
+                          num_args,
+                          arg_names,
+                          arg_types,
+                          arg_values,
+                          convertable_values,
+                          TRACE_EVENT_FLAG_NONE,
+                          CurrentTimestampMicroseconds(),
+                          CurrentCpuTimestampMicroseconds());
   node::tracing::TraceEventHelper::GetAgent()->AddMetadataEvent(
       std::move(trace_event));
 }

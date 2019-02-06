@@ -25,17 +25,14 @@
 #if defined(NODE_WANT_INTERNALS) && NODE_WANT_INTERNALS
 
 #include "async_wrap.h"
-#include "env.h"
 #include "connection_wrap.h"
+#include "env.h"
 
 namespace node {
 
 class TCPWrap : public ConnectionWrap<TCPWrap, uv_tcp_t> {
  public:
-  enum SocketType {
-    SOCKET,
-    SERVER
-  };
+  enum SocketType { SOCKET, SERVER };
 
   static v8::MaybeLocal<v8::Object> Instantiate(Environment* env,
                                                 AsyncWrap* parent,
@@ -65,7 +62,8 @@ class TCPWrap : public ConnectionWrap<TCPWrap, uv_tcp_t> {
             int (*F)(const typename T::HandleType*, sockaddr*, int*)>
   friend void GetSockOrPeerName(const v8::FunctionCallbackInfo<v8::Value>&);
 
-  TCPWrap(Environment* env, v8::Local<v8::Object> object,
+  TCPWrap(Environment* env,
+          v8::Local<v8::Object> object,
           ProviderType provider);
 
   static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
@@ -77,7 +75,8 @@ class TCPWrap : public ConnectionWrap<TCPWrap, uv_tcp_t> {
   static void Connect(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Connect6(const v8::FunctionCallbackInfo<v8::Value>& args);
   template <typename T>
-  static void Connect(const v8::FunctionCallbackInfo<v8::Value>& args,
+  static void Connect(
+      const v8::FunctionCallbackInfo<v8::Value>& args,
       std::function<int(const char* ip_address, T* addr)> uv_ip_addr);
   static void Open(const v8::FunctionCallbackInfo<v8::Value>& args);
   template <typename T>
@@ -91,7 +90,6 @@ class TCPWrap : public ConnectionWrap<TCPWrap, uv_tcp_t> {
       const v8::FunctionCallbackInfo<v8::Value>& args);
 #endif
 };
-
 
 }  // namespace node
 

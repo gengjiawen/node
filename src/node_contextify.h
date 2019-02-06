@@ -30,12 +30,9 @@ class ContextifyContext {
   static void Init(Environment* env, v8::Local<v8::Object> target);
 
   static ContextifyContext* ContextFromContextifiedSandbox(
-      Environment* env,
-      const v8::Local<v8::Object>& sandbox);
+      Environment* env, const v8::Local<v8::Object>& sandbox);
 
-  inline Environment* env() const {
-    return env_;
-  }
+  inline Environment* env() const { return env_; }
 
   inline v8::Local<v8::Context> context() const {
     return PersistentToLocal::Default(env()->isolate(), context_);
@@ -50,17 +47,14 @@ class ContextifyContext {
         context()->GetEmbedderData(ContextEmbedderIndex::kSandboxObject));
   }
 
-
   template <typename T>
   static ContextifyContext* Get(const v8::PropertyCallbackInfo<T>& args);
 
  private:
   static void MakeContext(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void IsContext(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void CompileFunction(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void WeakCallback(
-      const v8::WeakCallbackInfo<ContextifyContext>& data);
+  static void CompileFunction(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void WeakCallback(const v8::WeakCallbackInfo<ContextifyContext>& data);
   static void PropertyGetterCallback(
       v8::Local<v8::Name> property,
       const v8::PropertyCallbackInfo<v8::Value>& args);
@@ -81,22 +75,19 @@ class ContextifyContext {
   static void PropertyEnumeratorCallback(
       const v8::PropertyCallbackInfo<v8::Array>& args);
   static void IndexedPropertyGetterCallback(
-      uint32_t index,
-      const v8::PropertyCallbackInfo<v8::Value>& args);
+      uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& args);
   static void IndexedPropertySetterCallback(
       uint32_t index,
       v8::Local<v8::Value> value,
       const v8::PropertyCallbackInfo<v8::Value>& args);
   static void IndexedPropertyDescriptorCallback(
-      uint32_t index,
-      const v8::PropertyCallbackInfo<v8::Value>& args);
+      uint32_t index, const v8::PropertyCallbackInfo<v8::Value>& args);
   static void IndexedPropertyDefinerCallback(
       uint32_t index,
       const v8::PropertyDescriptor& desc,
       const v8::PropertyCallbackInfo<v8::Value>& args);
   static void IndexedPropertyDeleterCallback(
-      uint32_t index,
-      const v8::PropertyCallbackInfo<v8::Boolean>& args);
+      uint32_t index, const v8::PropertyCallbackInfo<v8::Boolean>& args);
   Environment* const env_;
   Persistent<v8::Context> context_;
 };
@@ -113,8 +104,7 @@ class ContextifyScript : public BaseObject {
   static void Init(Environment* env, v8::Local<v8::Object> target);
   static void New(const v8::FunctionCallbackInfo<v8::Value>& args);
   static bool InstanceOf(Environment* env, const v8::Local<v8::Value>& args);
-  static void CreateCachedData(
-      const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void CreateCachedData(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void RunInThisContext(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void RunInContext(const v8::FunctionCallbackInfo<v8::Value>& args);
   static bool EvalMachine(Environment* env,

@@ -3,12 +3,12 @@
 
 #if defined(NODE_WANT_INTERNALS) && NODE_WANT_INTERNALS
 
-#include <unordered_map>
+#include <uv.h>
+#include <limits>
 #include <queue>
 #include <stack>
 #include <string>
-#include <limits>
-#include <uv.h>
+#include <unordered_map>
 #include "aliased_buffer.h"
 #include "v8-profiler.h"
 
@@ -200,9 +200,8 @@ class MemoryTracker {
   inline v8::EmbedderGraph* graph() { return graph_; }
   inline v8::Isolate* isolate() { return isolate_; }
 
-  inline explicit MemoryTracker(v8::Isolate* isolate,
-                                v8::EmbedderGraph* graph)
-    : isolate_(isolate), graph_(graph) {}
+  inline explicit MemoryTracker(v8::Isolate* isolate, v8::EmbedderGraph* graph)
+      : isolate_(isolate), graph_(graph) {}
 
  private:
   typedef std::unordered_map<const MemoryRetainer*, MemoryRetainerNode*>

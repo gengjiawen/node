@@ -7,11 +7,8 @@ namespace node {
 
 namespace per_process {
 const char* const llhttp_version =
-    NODE_STRINGIFY(LLHTTP_VERSION_MAJOR)
-    "."
-    NODE_STRINGIFY(LLHTTP_VERSION_MINOR)
-    "."
-    NODE_STRINGIFY(LLHTTP_VERSION_PATCH);
+    NODE_STRINGIFY(LLHTTP_VERSION_MAJOR) "." NODE_STRINGIFY(
+        LLHTTP_VERSION_MINOR) "." NODE_STRINGIFY(LLHTTP_VERSION_PATCH);
 }  // namespace per_process
 }  // namespace node
 

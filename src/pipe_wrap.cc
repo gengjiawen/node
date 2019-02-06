@@ -22,12 +22,12 @@
 #include "pipe_wrap.h"
 
 #include "async_wrap.h"
+#include "connect_wrap.h"
 #include "connection_wrap.h"
 #include "env-inl.h"
 #include "handle_wrap.h"
 #include "node.h"
 #include "node_buffer.h"
-#include "connect_wrap.h"
 #include "stream_base-inl.h"
 #include "stream_wrap.h"
 #include "util-inl.h"
@@ -64,7 +64,6 @@ MaybeLocal<Object> PipeWrap::Instantiate(Environment* env,
       constructor->NewInstance(env->context(), 1, &type_value));
 }
 
-
 void PipeWrap::Initialize(Local<Object> target,
                           Local<Value> unused,
                           Local<Context> context,
@@ -89,9 +88,11 @@ void PipeWrap::Initialize(Local<Object> target,
 
   env->SetProtoMethod(t, "fchmod", Fchmod);
 
-  target->Set(env->context(),
-              pipeString,
-              t->GetFunction(env->context()).ToLocalChecked()).FromJust();
+  target
+      ->Set(env->context(),
+            pipeString,
+            t->GetFunction(env->context()).ToLocalChecked())
+      .FromJust();
   env->set_pipe_constructor_template(t);
 
   // Create FunctionTemplate for PipeConnectWrap.
@@ -100,9 +101,11 @@ void PipeWrap::Initialize(Local<Object> target,
   Local<String> wrapString =
       FIXED_ONE_BYTE_STRING(env->isolate(), "PipeConnectWrap");
   cwt->SetClassName(wrapString);
-  target->Set(env->context(),
-              wrapString,
-              cwt->GetFunction(env->context()).ToLocalChecked()).FromJust();
+  target
+      ->Set(env->context(),
+            wrapString,
+            cwt->GetFunction(env->context()).ToLocalChecked())
+      .FromJust();
 
   // Define constants
   Local<Object> constants = Object::New(env->isolate());
@@ -111,11 +114,8 @@ void PipeWrap::Initialize(Local<Object> target,
   NODE_DEFINE_CONSTANT(constants, IPC);
   NODE_DEFINE_CONSTANT(constants, UV_READABLE);
   NODE_DEFINE_CONSTANT(constants, UV_WRITABLE);
-  target->Set(context,
-              env->constants_string(),
-              constants).FromJust();
+  target->Set(context, env->constants_string(), constants).FromJust();
 }
-
 
 void PipeWrap::New(const FunctionCallbackInfo<Value>& args) {
   // This constructor should not be exposed to public javascript.
@@ -150,7 +150,6 @@ void PipeWrap::New(const FunctionCallbackInfo<Value>& args) {
   new PipeWrap(env, args.This(), provider, ipc);
 }
 
-
 PipeWrap::PipeWrap(Environment* env,
                    Local<Object> object,
                    ProviderType provider,
@@ -161,7 +160,6 @@ PipeWrap::PipeWrap(Environment* env,
                    // Suggestion: uv_pipe_init() returns void.
 }
 
-
 void PipeWrap::Bind(const FunctionCallbackInfo<Value>& args) {
   PipeWrap* wrap;
   ASSIGN_OR_RETURN_UNWRAP(&wrap, args.Holder());
@@ -169,7 +167,6 @@ void PipeWrap::Bind(const FunctionCallbackInfo<Value>& args) {
   int err = uv_pipe_bind(&wrap->handle_, *name);
   args.GetReturnValue().Set(err);
 }
-
 
 #ifdef _WIN32
 void PipeWrap::SetPendingInstances(const FunctionCallbackInfo<Value>& args) {
@@ -181,17 +178,14 @@ void PipeWrap::SetPendingInstances(const FunctionCallbackInfo<Value>& args) {
 }
 #endif
 
-
 void PipeWrap::Fchmod(const v8::FunctionCallbackInfo<v8::Value>& args) {
   PipeWrap* wrap;
   ASSIGN_OR_RETURN_UNWRAP(&wrap, args.Holder());
   CHECK(args[0]->IsInt32());
   int mode = args[0].As<Int32>()->Value();
-  int err = uv_pipe_chmod(reinterpret_cast<uv_pipe_t*>(&wrap->handle_),
-                          mode);
+  int err = uv_pipe_chmod(reinterpret_cast<uv_pipe_t*>(&wrap->handle_), mode);
   args.GetReturnValue().Set(err);
 }
-
 
 void PipeWrap::Listen(const FunctionCallbackInfo<Value>& args) {
   PipeWrap* wrap;
@@ -199,12 +193,10 @@ void PipeWrap::Listen(const FunctionCallbackInfo<Value>& args) {
   Environment* env = wrap->env();
   int backlog;
   if (!args[0]->Int32Value(env->context()).To(&backlog)) return;
-  int err = uv_listen(reinterpret_cast<uv_stream_t*>(&wrap->handle_),
-                      backlog,
-                      OnConnection);
+  int err = uv_listen(
+      reinterpret_cast<uv_stream_t*>(&wrap->handle_), backlog, OnConnection);
   args.GetReturnValue().Set(err);
 }
-
 
 void PipeWrap::Open(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
@@ -222,7 +214,6 @@ void PipeWrap::Open(const FunctionCallbackInfo<Value>& args) {
     env->isolate()->ThrowException(UVException(err, "uv_pipe_open"));
 }
 
-
 void PipeWrap::Connect(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
 
@@ -237,14 +228,10 @@ void PipeWrap::Connect(const FunctionCallbackInfo<Value>& args) {
 
   ConnectWrap* req_wrap =
       new ConnectWrap(env, req_wrap_obj, AsyncWrap::PROVIDER_PIPECONNECTWRAP);
-  req_wrap->Dispatch(uv_pipe_connect,
-                     &wrap->handle_,
-                     *name,
-                     AfterConnect);
+  req_wrap->Dispatch(uv_pipe_connect, &wrap->handle_, *name, AfterConnect);
 
   args.GetReturnValue().Set(0);  // uv_pipe_connect() doesn't return errors.
 }
-
 
 }  // namespace node
 

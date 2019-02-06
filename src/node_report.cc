@@ -48,12 +48,12 @@ extern char** environ;
 #endif
 
 #ifdef __POSIX__
-# include <netdb.h>         // MAXHOSTNAMELEN on Solaris.
-# include <sys/param.h>     // MAXHOSTNAMELEN on Linux and the BSDs.
-#endif  // __POSIX__
+#include <netdb.h>      // MAXHOSTNAMELEN on Solaris.
+#include <sys/param.h>  // MAXHOSTNAMELEN on Linux and the BSDs.
+#endif                  // __POSIX__
 
 #ifndef MAXHOSTNAMELEN
-# define MAXHOSTNAMELEN 256
+#define MAXHOSTNAMELEN 256
 #endif  // MAXHOSTNAMELEN
 
 namespace report {
@@ -458,30 +458,27 @@ static void PrintGCStatistics(JSONWriter* writer, Isolate* isolate) {
     isolate->GetHeapSpaceStatistics(&v8_heap_space_stats, i);
     writer->json_objectstart(v8_heap_space_stats.space_name());
     writer->json_keyvalue("memorySize", v8_heap_space_stats.space_size());
-    writer->json_keyvalue(
-        "committedMemory",
-        v8_heap_space_stats.physical_space_size());
-    writer->json_keyvalue(
-        "capacity",
-        v8_heap_space_stats.space_used_size() +
-            v8_heap_space_stats.space_available_size());
+    writer->json_keyvalue("committedMemory",
+                          v8_heap_space_stats.physical_space_size());
+    writer->json_keyvalue("capacity",
+                          v8_heap_space_stats.space_used_size() +
+                              v8_heap_space_stats.space_available_size());
     writer->json_keyvalue("used", v8_heap_space_stats.space_used_size());
-    writer->json_keyvalue(
-        "available", v8_heap_space_stats.space_available_size());
+    writer->json_keyvalue("available",
+                          v8_heap_space_stats.space_available_size());
     writer->json_objectend();
   }
   isolate->GetHeapSpaceStatistics(&v8_heap_space_stats, i);
   writer->json_objectstart(v8_heap_space_stats.space_name());
   writer->json_keyvalue("memorySize", v8_heap_space_stats.space_size());
-  writer->json_keyvalue(
-      "committedMemory", v8_heap_space_stats.physical_space_size());
-  writer->json_keyvalue(
-      "capacity",
-      v8_heap_space_stats.space_used_size() +
-          v8_heap_space_stats.space_available_size());
+  writer->json_keyvalue("committedMemory",
+                        v8_heap_space_stats.physical_space_size());
+  writer->json_keyvalue("capacity",
+                        v8_heap_space_stats.space_used_size() +
+                            v8_heap_space_stats.space_available_size());
   writer->json_keyvalue("used", v8_heap_space_stats.space_used_size());
-  writer->json_keyvalue(
-      "available", v8_heap_space_stats.space_available_size());
+  writer->json_keyvalue("available",
+                        v8_heap_space_stats.space_available_size());
   writer->json_objectend();
   writer->json_objectend();
   writer->json_objectend();

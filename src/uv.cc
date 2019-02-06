@@ -63,12 +63,13 @@ void ErrName(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   if (env->options()->pending_deprecation && env->EmitErrNameWarning()) {
     if (ProcessEmitDeprecationWarning(
-        env,
-        "Directly calling process.binding('uv').errname(<val>) is being"
-        " deprecated. "
-        "Please make sure to use util.getSystemErrorName() instead.",
-        "DEP0119").IsNothing())
-    return;
+            env,
+            "Directly calling process.binding('uv').errname(<val>) is being"
+            " deprecated. "
+            "Please make sure to use util.getSystemErrorName() instead.",
+            "DEP0119")
+            .IsNothing())
+      return;
   }
   int err;
   if (!args[0]->Int32Value(env->context()).To(&err)) return;
@@ -107,11 +108,13 @@ void Initialize(Local<Object> target,
                 void* priv) {
   Environment* env = Environment::GetCurrent(context);
   Isolate* isolate = env->isolate();
-  target->Set(env->context(),
-              FIXED_ONE_BYTE_STRING(isolate, "errname"),
-              env->NewFunctionTemplate(ErrName)
-                  ->GetFunction(env->context())
-                  .ToLocalChecked()).FromJust();
+  target
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(isolate, "errname"),
+            env->NewFunctionTemplate(ErrName)
+                ->GetFunction(env->context())
+                .ToLocalChecked())
+      .FromJust();
 
   // TODO(joyeecheung): This should be deprecated in user land in favor of
   // `util.getSystemErrorName(err)`.

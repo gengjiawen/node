@@ -35,9 +35,7 @@ using v8::String;
 using v8::Value;
 
 template <typename T>
-static void MakeUtf8String(Isolate* isolate,
-                           Local<Value> value,
-                           T* target) {
+static void MakeUtf8String(Isolate* isolate, Local<Value> value, T* target) {
   Local<String> string;
   if (!value->ToString(isolate->GetCurrentContext()).ToLocal(&string)) return;
 
@@ -45,20 +43,17 @@ static void MakeUtf8String(Isolate* isolate,
   if (!StringBytes::StorageSize(isolate, string, UTF8).To(&storage)) return;
   storage += 1;
   target->AllocateSufficientStorage(storage);
-  const int flags =
-      String::NO_NULL_TERMINATION | String::REPLACE_INVALID_UTF8;
+  const int flags = String::NO_NULL_TERMINATION | String::REPLACE_INVALID_UTF8;
   const int length =
       string->WriteUtf8(isolate, target->out(), storage, 0, flags);
   target->SetLengthAndZeroTerminate(length);
 }
 
 Utf8Value::Utf8Value(Isolate* isolate, Local<Value> value) {
-  if (value.IsEmpty())
-    return;
+  if (value.IsEmpty()) return;
 
   MakeUtf8String(isolate, value, this);
 }
-
 
 TwoByteValue::TwoByteValue(Isolate* isolate, Local<Value> value) {
   if (value.IsEmpty()) {
@@ -124,8 +119,7 @@ void GetHumanReadableProcessName(char (*name)[1024]) {
 
 std::vector<std::string> SplitString(const std::string& in, char delim) {
   std::vector<std::string> out;
-  if (in.empty())
-    return out;
+  if (in.empty()) return out;
   std::istringstream in_stream(in);
   while (in_stream.good()) {
     std::string item;

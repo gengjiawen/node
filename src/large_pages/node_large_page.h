@@ -25,7 +25,6 @@
 
 #if defined(NODE_WANT_INTERNALS) && NODE_WANT_INTERNALS
 
-
 namespace node {
 bool IsLargePagesEnabled();
 int MapStaticCodeToLargePages();

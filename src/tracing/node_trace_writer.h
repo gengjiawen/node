@@ -1,8 +1,8 @@
 #ifndef SRC_TRACING_NODE_TRACE_WRITER_H_
 #define SRC_TRACING_NODE_TRACE_WRITER_H_
 
-#include <sstream>
 #include <queue>
+#include <sstream>
 
 #include "libplatform/v8-tracing.h"
 #include "tracing/agent.h"

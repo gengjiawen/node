@@ -167,7 +167,7 @@ void AppendExceptionLine(Environment* env,
   ABORT_NO_BACKTRACE();
 }
 
-[[noreturn]] void Assert(const AssertionInfo& info) {
+    [[noreturn]] void Assert(const AssertionInfo& info) {
   char name[1024];
   GetHumanReadableProcessName(&name);
 
@@ -717,8 +717,8 @@ void FatalException(Isolate* isolate,
   Local<Object> process_object = env->process_object();
   Local<String> fatal_exception_string = env->fatal_exception_string();
   Local<Value> fatal_exception_function =
-      process_object->Get(env->context(),
-                          fatal_exception_string).ToLocalChecked();
+      process_object->Get(env->context(), fatal_exception_string)
+          .ToLocalChecked();
 
   if (!fatal_exception_function->IsFunction()) {
     // Failed before the process._fatalException function was added!

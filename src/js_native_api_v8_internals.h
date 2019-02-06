@@ -13,18 +13,17 @@
 // are bridged to remove references to the `node` namespace. `node_version.h`,
 // included below, defines `NAPI_VERSION`.
 
-#include "node_version.h"
 #include "env.h"
 #include "node_internals.h"
+#include "node_version.h"
 
-#define NAPI_ARRAYSIZE(array) \
-  node::arraysize((array))
+#define NAPI_ARRAYSIZE(array) node::arraysize((array))
 
-#define NAPI_FIXED_ONE_BYTE_STRING(isolate, string) \
+#define NAPI_FIXED_ONE_BYTE_STRING(isolate, string)                            \
   node::FIXED_ONE_BYTE_STRING((isolate), (string))
 
-#define NAPI_PRIVATE_KEY(context, suffix) \
-  (node::Environment::GetCurrent((context))->napi_ ## suffix())
+#define NAPI_PRIVATE_KEY(context, suffix)                                      \
+  (node::Environment::GetCurrent((context))->napi_##suffix())
 
 namespace v8impl {
 

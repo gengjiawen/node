@@ -21,21 +21,21 @@
 // SPDX-License-Identifier: MIT
 
 #include <errno.h>
-#include <fcntl.h>  // _O_RDWR
+#include <fcntl.h>   // _O_RDWR
 #include <limits.h>  // PATH_MAX
 #include <locale.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/mman.h>
-#include <string>
+#include <sys/types.h>
+#include <unistd.h>  // readlink
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <unistd.h>  // readlink
+#include <string>
 
 // The functions in this file map the text segment of node into 2M pages.
 // The algorithm is simple
@@ -60,8 +60,8 @@ namespace node {
 struct text_region {
   char* from;
   char* to;
-  int   total_hugepages;
-  bool  found_text_region;
+  int total_hugepages;
+  bool found_text_region;
 };
 
 static const size_t hps = 2L * 1024 * 1024;
@@ -72,11 +72,11 @@ static void PrintSystemError(int error) {
 }
 
 inline int64_t hugepage_align_up(int64_t addr) {
-  return (((addr) + (hps) - 1) & ~((hps) - 1));
+  return (((addr) + (hps)-1) & ~((hps)-1));
 }
 
 inline int64_t hugepage_align_down(int64_t addr) {
-  return ((addr) & ~((hps) - 1));
+  return ((addr) & ~((hps)-1));
 }
 
 // The format of the maps file is the following
@@ -90,7 +90,7 @@ static struct text_region FindNodeTextRegion() {
   std::string permission;
   std::string dev;
   char dash;
-  int64_t  start, end, offset, inode;
+  int64_t start, end, offset, inode;
   struct text_region nregion;
 
   nregion.found_text_region = false;
@@ -103,9 +103,9 @@ static struct text_region FindNodeTextRegion() {
 
   std::string exename;
   {
-      char selfexe[PATH_MAX];
-      ssize_t count = readlink("/proc/self/exe", selfexe, PATH_MAX);
-      exename = std::string(selfexe, count);
+    char selfexe[PATH_MAX];
+    ssize_t count = readlink("/proc/self/exe", selfexe, PATH_MAX);
+    exename = std::string(selfexe, count);
   }
 
   while (std::getline(ifs, map_line)) {
@@ -146,14 +146,16 @@ static bool IsTransparentHugePagesEnabled() {
 
   ifs.open("/sys/kernel/mm/transparent_hugepage/enabled");
   if (!ifs) {
-    fprintf(stderr, "Could not open file: " \
-                    "/sys/kernel/mm/transparent_hugepage/enabled\n");
+    fprintf(stderr,
+            "Could not open file: "
+            "/sys/kernel/mm/transparent_hugepage/enabled\n");
     return false;
   }
 
   std::string always, madvise, never;
   if (ifs.is_open()) {
-    while (ifs >> always >> madvise >> never) {}
+    while (ifs >> always >> madvise >> never) {
+    }
   }
 
   int ret_status = false;
@@ -181,11 +183,8 @@ static bool IsTransparentHugePagesEnabled() {
 //    the same virtual address
 // c. madvise with MADV_HUGE_PAGE
 // d. If successful copy the code there and unmap the original region
-int
-__attribute__((__section__(".lpstub")))
-__attribute__((__aligned__(hps)))
-__attribute__((__noinline__))
-MoveTextRegionToLargePages(const text_region& r) {
+int __attribute__((__section__(".lpstub"))) __attribute__((__aligned__(hps)))
+__attribute__((__noinline__)) MoveTextRegionToLargePages(const text_region& r) {
   void* nmem = nullptr;
   void* tmem = nullptr;
   int ret = 0;
@@ -194,8 +193,12 @@ MoveTextRegionToLargePages(const text_region& r) {
   void* start = r.from;
 
   // Allocate temporary region preparing for copy
-  nmem = mmap(nullptr, size,
-              PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+  nmem = mmap(nullptr,
+              size,
+              PROT_READ | PROT_WRITE,
+              MAP_PRIVATE | MAP_ANONYMOUS,
+              -1,
+              0);
   if (nmem == MAP_FAILED) {
     PrintSystemError(errno);
     return -1;
@@ -203,13 +206,16 @@ MoveTextRegionToLargePages(const text_region& r) {
 
   memcpy(nmem, r.from, size);
 
-// We already know the original page is r-xp
-// (PROT_READ, PROT_EXEC, MAP_PRIVATE)
-// We want PROT_WRITE because we are writing into it.
-// We want it at the fixed address and we use MAP_FIXED.
-  tmem = mmap(start, size,
+  // We already know the original page is r-xp
+  // (PROT_READ, PROT_EXEC, MAP_PRIVATE)
+  // We want PROT_WRITE because we are writing into it.
+  // We want it at the fixed address and we use MAP_FIXED.
+  tmem = mmap(start,
+              size,
               PROT_READ | PROT_WRITE | PROT_EXEC,
-              MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED, -1 , 0);
+              MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED,
+              -1,
+              0);
   if (tmem == MAP_FAILED) {
     PrintSystemError(errno);
     munmap(nmem, size);

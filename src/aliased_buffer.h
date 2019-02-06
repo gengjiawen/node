@@ -3,8 +3,8 @@
 
 #if defined(NODE_WANT_INTERNALS) && NODE_WANT_INTERNALS
 
-#include "v8.h"
 #include "util-inl.h"
+#include "v8.h"
 
 namespace node {
 
@@ -22,16 +22,14 @@ namespace node {
  * The encapsulation herein provides a placeholder where such writes can be
  * observed. Any notification APIs will be left as a future exercise.
  */
-template <class NativeT, class V8T,
+template <class NativeT,
+          class V8T,
           // SFINAE NativeT to be scalar
           typename = std::enable_if_t<std::is_scalar<NativeT>::value>>
 class AliasedBuffer {
  public:
   AliasedBuffer(v8::Isolate* isolate, const size_t count)
-      : isolate_(isolate),
-        count_(count),
-        byte_offset_(0),
-        free_buffer_(true) {
+      : isolate_(isolate), count_(count), byte_offset_(0), free_buffer_(true) {
     CHECK_GT(count, 0);
     const v8::HandleScope handle_scope(isolate_);
 
@@ -41,8 +39,8 @@ class AliasedBuffer {
     buffer_ = Calloc<NativeT>(count);
 
     // allocate v8 ArrayBuffer
-    v8::Local<v8::ArrayBuffer> ab = v8::ArrayBuffer::New(
-        isolate_, buffer_, size_in_bytes);
+    v8::Local<v8::ArrayBuffer> ab =
+        v8::ArrayBuffer::New(isolate_, buffer_, size_in_bytes);
 
     // allocate v8 TypedArray
     v8::Local<V8T> js_array = V8T::New(ab, byte_offset_, count);
@@ -61,8 +59,7 @@ class AliasedBuffer {
   AliasedBuffer(v8::Isolate* isolate,
                 const size_t byte_offset,
                 const size_t count,
-                const AliasedBuffer<uint8_t,
-                v8::Uint8Array>& backing_buffer)
+                const AliasedBuffer<uint8_t, v8::Uint8Array>& backing_buffer)
       : isolate_(isolate),
         count_(count),
         byte_offset_(byte_offset),
@@ -74,7 +71,7 @@ class AliasedBuffer {
     // validate that the byte_offset is aligned with sizeof(NativeT)
     CHECK_EQ(byte_offset & (sizeof(NativeT) - 1), 0);
     // validate this fits inside the backing buffer
-    CHECK_LE(sizeof(NativeT) * count,  ab->ByteLength() - byte_offset);
+    CHECK_LE(sizeof(NativeT) * count, ab->ByteLength() - byte_offset);
 
     buffer_ = reinterpret_cast<NativeT*>(
         const_cast<uint8_t*>(backing_buffer.GetNativeBuffer() + byte_offset));
@@ -121,14 +118,10 @@ class AliasedBuffer {
   class Reference {
    public:
     Reference(AliasedBuffer<NativeT, V8T>* aliased_buffer, size_t index)
-        : aliased_buffer_(aliased_buffer),
-          index_(index) {
-    }
+        : aliased_buffer_(aliased_buffer), index_(index) {}
 
     Reference(const Reference& that)
-        : aliased_buffer_(that.aliased_buffer_),
-          index_(that.index_) {
-    }
+        : aliased_buffer_(that.aliased_buffer_), index_(that.index_) {}
 
     inline Reference& operator=(const NativeT& val) {
       aliased_buffer_->SetValue(index_, val);
@@ -139,9 +132,7 @@ class AliasedBuffer {
       return *this = static_cast<NativeT>(val);
     }
 
-    operator NativeT() const {
-      return aliased_buffer_->GetValue(index_);
-    }
+    operator NativeT() const { return aliased_buffer_->GetValue(index_); }
 
     inline Reference& operator+=(const NativeT& val) {
       const NativeT current = aliased_buffer_->GetValue(index_);
@@ -167,14 +158,12 @@ class AliasedBuffer {
   /**
    *  Get the underlying v8 TypedArray overlayed on top of the native buffer
    */
-  v8::Local<V8T> GetJSArray() const {
-    return js_array_.Get(isolate_);
-  }
+  v8::Local<V8T> GetJSArray() const { return js_array_.Get(isolate_); }
 
   /**
-  *  Get the underlying v8::ArrayBuffer underlying the TypedArray and
-  *  overlaying the native buffer
-  */
+   *  Get the underlying v8::ArrayBuffer underlying the TypedArray and
+   *  overlaying the native buffer
+   */
   v8::Local<v8::ArrayBuffer> GetArrayBuffer() const {
     return GetJSArray()->Buffer();
   }
@@ -183,16 +172,12 @@ class AliasedBuffer {
    *  Get the underlying native buffer. Note that all reads/writes should occur
    *  through the GetValue/SetValue/operator[] methods
    */
-  inline const NativeT* GetNativeBuffer() const {
-    return buffer_;
-  }
+  inline const NativeT* GetNativeBuffer() const { return buffer_; }
 
   /**
    *  Synonym for GetBuffer()
    */
-  inline const NativeT* operator * () const {
-    return GetNativeBuffer();
-  }
+  inline const NativeT* operator*() const { return GetNativeBuffer(); }
 
   /**
    *  Set position index to given value.
@@ -213,17 +198,11 @@ class AliasedBuffer {
   /**
    *  Effectively, a synonym for GetValue/SetValue
    */
-  Reference operator[](size_t index) {
-    return Reference(this, index);
-  }
+  Reference operator[](size_t index) { return Reference(this, index); }
 
-  NativeT operator[](size_t index) const {
-    return GetValue(index);
-  }
+  NativeT operator[](size_t index) const { return GetValue(index); }
 
-  size_t Length() const {
-    return count_;
-  }
+  size_t Length() const { return count_; }
 
   // Should only be used to extend the array.
   // Should only be used on an owning array, not one created as a sub array of
@@ -243,8 +222,8 @@ class AliasedBuffer {
     memcpy(new_buffer, buffer_, old_size_in_bytes);
 
     // allocate v8 new ArrayBuffer
-    v8::Local<v8::ArrayBuffer> ab = v8::ArrayBuffer::New(
-        isolate_, new_buffer, new_size_in_bytes);
+    v8::Local<v8::ArrayBuffer> ab =
+        v8::ArrayBuffer::New(isolate_, new_buffer, new_size_in_bytes);
 
     // allocate v8 TypedArray
     v8::Local<V8T> js_array = V8T::New(ab, byte_offset_, new_capacity);

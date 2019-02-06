@@ -55,9 +55,8 @@ Local<Value> ErrnoException(Isolate* isolate,
   e = Exception::Error(cons);
 
   Local<Object> obj = e.As<Object>();
-  obj->Set(env->context(),
-           env->errno_string(),
-           Integer::New(isolate, errorno)).FromJust();
+  obj->Set(env->context(), env->errno_string(), Integer::New(isolate, errorno))
+      .FromJust();
   obj->Set(env->context(), env->code_string(), estring).FromJust();
 
   if (path_string.IsEmpty() == false) {
@@ -67,7 +66,8 @@ Local<Value> ErrnoException(Isolate* isolate,
   if (syscall != nullptr) {
     obj->Set(env->context(),
              env->syscall_string(),
-             OneByteString(isolate, syscall)).FromJust();
+             OneByteString(isolate, syscall))
+        .FromJust();
   }
 
   return e;
@@ -91,7 +91,6 @@ static Local<String> StringFromPath(Isolate* isolate, const char* path) {
       .ToLocalChecked();
 }
 
-
 Local<Value> UVException(Isolate* isolate,
                          int errorno,
                          const char* syscall,
@@ -100,8 +99,7 @@ Local<Value> UVException(Isolate* isolate,
                          const char* dest) {
   Environment* env = Environment::GetCurrent(isolate);
 
-  if (!msg || !msg[0])
-    msg = uv_strerror(errorno);
+  if (!msg || !msg[0]) msg = uv_strerror(errorno);
 
   Local<String> js_code = OneByteString(isolate, uv_err_name(errorno));
   Local<String> js_syscall = OneByteString(isolate, syscall);
@@ -136,13 +134,12 @@ Local<Value> UVException(Isolate* isolate,
         String::Concat(isolate, js_msg, FIXED_ONE_BYTE_STRING(isolate, "'"));
   }
 
-  Local<Object> e =
-    Exception::Error(js_msg)->ToObject(isolate->GetCurrentContext())
-      .ToLocalChecked();
+  Local<Object> e = Exception::Error(js_msg)
+                        ->ToObject(isolate->GetCurrentContext())
+                        .ToLocalChecked();
 
-  e->Set(env->context(),
-         env->errno_string(),
-         Integer::New(isolate, errorno)).FromJust();
+  e->Set(env->context(), env->errno_string(), Integer::New(isolate, errorno))
+      .FromJust();
   e->Set(env->context(), env->code_string(), js_code).FromJust();
   e->Set(env->context(), env->syscall_string(), js_syscall).FromJust();
   if (!js_path.IsEmpty())
@@ -160,15 +157,21 @@ static const char* winapi_strerror(const int errorno, bool* must_free) {
   char* errmsg = nullptr;
 
   FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, errorno,
-      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&errmsg, 0, nullptr);
+                    FORMAT_MESSAGE_IGNORE_INSERTS,
+                nullptr,
+                errorno,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                (LPTSTR)&errmsg,
+                0,
+                nullptr);
 
   if (errmsg) {
     *must_free = true;
 
     // Remove trailing newlines
     for (int i = strlen(errmsg) - 1;
-        i >= 0 && (errmsg[i] == '\n' || errmsg[i] == '\r'); i--) {
+         i >= 0 && (errmsg[i] == '\n' || errmsg[i] == '\r');
+         i--) {
       errmsg[i] = '\0';
     }
 
@@ -179,7 +182,6 @@ static const char* winapi_strerror(const int errorno, bool* must_free) {
     return "Unknown error";
   }
 }
-
 
 Local<Value> WinapiErrnoException(Isolate* isolate,
                                   int errorno,
@@ -222,8 +224,7 @@ Local<Value> WinapiErrnoException(Isolate* isolate,
     obj->Set(env->syscall_string(), OneByteString(isolate, syscall));
   }
 
-  if (must_free)
-    LocalFree((HLOCAL)msg);
+  if (must_free) LocalFree((HLOCAL)msg);
 
   return e;
 }

@@ -60,16 +60,20 @@ void PromiseRejectCallback(PromiseRejectMessage message) {
     value = message.GetValue();
     unhandledRejections++;
     TRACE_COUNTER2(TRACING_CATEGORY_NODE2(promises, rejections),
-                  "rejections",
-                  "unhandled", unhandledRejections,
-                  "handledAfter", rejectionsHandledAfter);
+                   "rejections",
+                   "unhandled",
+                   unhandledRejections,
+                   "handledAfter",
+                   rejectionsHandledAfter);
   } else if (event == kPromiseHandlerAddedAfterReject) {
     value = Undefined(isolate);
     rejectionsHandledAfter++;
     TRACE_COUNTER2(TRACING_CATEGORY_NODE2(promises, rejections),
-                  "rejections",
-                  "unhandled", unhandledRejections,
-                  "handledAfter", rejectionsHandledAfter);
+                   "rejections",
+                   "unhandled",
+                   unhandledRejections,
+                   "handledAfter",
+                   rejectionsHandledAfter);
   } else if (event == kPromiseResolveAfterResolved) {
     value = message.GetValue();
   } else if (event == kPromiseRejectAfterResolved) {
@@ -82,13 +86,12 @@ void PromiseRejectCallback(PromiseRejectMessage message) {
     value = Undefined(isolate);
   }
 
-  Local<Value> args[] = { type, promise, value };
+  Local<Value> args[] = {type, promise, value};
   USE(callback->Call(
       env->context(), Undefined(isolate), arraysize(args), args));
 }
 
-static void SetPromiseRejectCallback(
-    const FunctionCallbackInfo<Value>& args) {
+static void SetPromiseRejectCallback(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
 
   CHECK(args[0]->IsFunction());
@@ -104,9 +107,11 @@ static void Initialize(Local<Object> target,
 
   env->SetMethod(target, "setTickCallback", SetTickCallback);
   env->SetMethod(target, "runMicrotasks", RunMicrotasks);
-  target->Set(env->context(),
-              FIXED_ONE_BYTE_STRING(isolate, "tickInfo"),
-              env->tick_info()->fields().GetJSArray()).FromJust();
+  target
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(isolate, "tickInfo"),
+            env->tick_info()->fields().GetJSArray())
+      .FromJust();
 
   Local<Object> events = Object::New(isolate);
   NODE_DEFINE_CONSTANT(events, kPromiseRejectWithNoHandler);
@@ -114,12 +119,12 @@ static void Initialize(Local<Object> target,
   NODE_DEFINE_CONSTANT(events, kPromiseResolveAfterResolved);
   NODE_DEFINE_CONSTANT(events, kPromiseRejectAfterResolved);
 
-  target->Set(env->context(),
-              FIXED_ONE_BYTE_STRING(isolate, "promiseRejectEvents"),
-              events).FromJust();
-  env->SetMethod(target,
-                 "setPromiseRejectCallback",
-                 SetPromiseRejectCallback);
+  target
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(isolate, "promiseRejectEvents"),
+            events)
+      .FromJust();
+  env->SetMethod(target, "setPromiseRejectCallback", SetPromiseRejectCallback);
 }
 
 }  // namespace task_queue

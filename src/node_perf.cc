@@ -1,5 +1,5 @@
-#include "node_internals.h"
 #include "node_perf.h"
+#include "node_internals.h"
 
 #ifdef __POSIX__
 #include <sys/time.h>  // gettimeofday
@@ -43,13 +43,12 @@ const double timeOriginTimestamp = GetCurrentTimeInMicroseconds();
 uint64_t performance_node_start;
 uint64_t performance_v8_start;
 
-void performance_state::Mark(enum PerformanceMilestone milestone,
-                             uint64_t ts) {
+void performance_state::Mark(enum PerformanceMilestone milestone, uint64_t ts) {
   this->milestones[milestone] = ts;
-  TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
-      TRACING_CATEGORY_NODE1(bootstrap),
-      GetPerformanceMilestoneName(milestone),
-      TRACE_EVENT_SCOPE_THREAD, ts / 1000);
+  TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(TRACING_CATEGORY_NODE1(bootstrap),
+                                      GetPerformanceMilestoneName(milestone),
+                                      TRACE_EVENT_SCOPE_THREAD,
+                                      ts / 1000);
 }
 
 double GetCurrentTimeInMicroseconds() {
@@ -58,8 +57,8 @@ double GetCurrentTimeInMicroseconds() {
 #define TICKS_TO_UNIX_EPOCH 116444736000000000LL
   FILETIME ft;
   GetSystemTimeAsFileTime(&ft);
-  uint64_t filetime_int = static_cast<uint64_t>(ft.dwHighDateTime) << 32 |
-                          ft.dwLowDateTime;
+  uint64_t filetime_int =
+      static_cast<uint64_t>(ft.dwHighDateTime) << 32 | ft.dwLowDateTime;
   // FILETIME is measured in terms of 100 ns. Convert that to 1 us (1000 ns).
   return (filetime_int - TICKS_TO_UNIX_EPOCH) / 10.;
 #else
@@ -76,30 +75,32 @@ inline void InitObject(const PerformanceEntry& entry, Local<Object> obj) {
   Local<Context> context = env->context();
   PropertyAttribute attr =
       static_cast<PropertyAttribute>(ReadOnly | DontDelete);
-  obj->DefineOwnProperty(context,
-                         env->name_string(),
-                         String::NewFromUtf8(isolate,
-                                             entry.name().c_str(),
-                                             NewStringType::kNormal)
-                             .ToLocalChecked(),
-                         attr)
+  obj->DefineOwnProperty(
+         context,
+         env->name_string(),
+         String::NewFromUtf8(
+             isolate, entry.name().c_str(), NewStringType::kNormal)
+             .ToLocalChecked(),
+         attr)
       .FromJust();
-  obj->DefineOwnProperty(context,
-                         env->entry_type_string(),
-                         String::NewFromUtf8(isolate,
-                                             entry.type().c_str(),
-                                             NewStringType::kNormal)
-                             .ToLocalChecked(),
-                         attr)
+  obj->DefineOwnProperty(
+         context,
+         env->entry_type_string(),
+         String::NewFromUtf8(
+             isolate, entry.type().c_str(), NewStringType::kNormal)
+             .ToLocalChecked(),
+         attr)
       .FromJust();
   obj->DefineOwnProperty(context,
                          env->start_time_string(),
                          Number::New(isolate, entry.startTime()),
-                         attr).FromJust();
+                         attr)
+      .FromJust();
   obj->DefineOwnProperty(context,
                          env->duration_string(),
                          Number::New(isolate, entry.duration()),
-                         attr).FromJust();
+                         attr)
+      .FromJust();
 }
 
 // Create a new PerformanceEntry object
@@ -134,12 +135,12 @@ void PerformanceEntry::Notify(Environment* env,
   Context::Scope scope(env->context());
   AliasedBuffer<uint32_t, Uint32Array>& observers =
       env->performance_state()->observers;
-  if (type != NODE_PERFORMANCE_ENTRY_TYPE_INVALID &&
-      observers[type]) {
+  if (type != NODE_PERFORMANCE_ENTRY_TYPE_INVALID && observers[type]) {
     node::MakeCallback(env->isolate(),
                        object.As<Object>(),
                        env->performance_entry_callback(),
-                       1, &object,
+                       1,
+                       &object,
                        node::async_context{0, 0});
   }
 }
@@ -154,8 +155,7 @@ void Mark(const FunctionCallbackInfo<Value>& args) {
   (*marks)[*name] = now;
 
   TRACE_EVENT_COPY_MARK_WITH_TIMESTAMP(
-      TRACING_CATEGORY_NODE2(perf, usertiming),
-      *name, now / 1000);
+      TRACING_CATEGORY_NODE2(perf, usertiming), *name, now / 1000);
 
   PerformanceEntry entry(env, *name, "mark", now, now);
   Local<Object> obj;
@@ -211,15 +211,18 @@ void Measure(const FunctionCallbackInfo<Value>& args) {
       endTimestamp = milestones[milestone];
   }
 
-  if (endTimestamp < startTimestamp)
-    endTimestamp = startTimestamp;
+  if (endTimestamp < startTimestamp) endTimestamp = startTimestamp;
 
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
       TRACING_CATEGORY_NODE2(perf, usertiming),
-      *name, *name, startTimestamp / 1000);
+      *name,
+      *name,
+      startTimestamp / 1000);
   TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       TRACING_CATEGORY_NODE2(perf, usertiming),
-      *name, *name, endTimestamp / 1000);
+      *name,
+      *name,
+      endTimestamp / 1000);
 
   PerformanceEntry entry(env, *name, "measure", startTimestamp, endTimestamp);
   Local<Object> obj;
@@ -232,13 +235,11 @@ void Measure(const FunctionCallbackInfo<Value>& args) {
 void MarkMilestone(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   Local<Context> context = env->context();
-  PerformanceMilestone milestone =
-      static_cast<PerformanceMilestone>(
-          args[0]->Int32Value(context).ToChecked());
+  PerformanceMilestone milestone = static_cast<PerformanceMilestone>(
+      args[0]->Int32Value(context).ToChecked());
   if (milestone != NODE_PERFORMANCE_MILESTONE_INVALID)
     env->performance_state()->Mark(milestone);
 }
-
 
 void SetupPerformanceObservers(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
@@ -263,7 +264,8 @@ void PerformanceGCCallback(Environment* env, void* ptr) {
     obj->DefineOwnProperty(context,
                            env->kind_string(),
                            Integer::New(env->isolate(), entry->gckind()),
-                           attr).FromJust();
+                           attr)
+        .FromJust();
     PerformanceEntry::Notify(env, entry->kind(), obj);
   }
 }
@@ -285,28 +287,29 @@ void MarkGarbageCollectionEnd(Isolate* isolate,
   Environment* env = static_cast<Environment*>(data);
   performance_state* state = env->performance_state();
   // If no one is listening to gc performance entries, do not create them.
-  if (!state->observers[NODE_PERFORMANCE_ENTRY_TYPE_GC])
-    return;
+  if (!state->observers[NODE_PERFORMANCE_ENTRY_TYPE_GC]) return;
   GCPerformanceEntry* entry =
       new GCPerformanceEntry(env,
                              static_cast<PerformanceGCKind>(type),
                              state->performance_last_gc_start_mark,
                              PERFORMANCE_NOW());
-  env->SetUnrefImmediate(PerformanceGCCallback,
-                         entry);
+  env->SetUnrefImmediate(PerformanceGCCallback, entry);
 }
-
 
 inline void SetupGarbageCollectionTracking(Environment* env) {
   env->isolate()->AddGCPrologueCallback(MarkGarbageCollectionStart,
                                         static_cast<void*>(env));
   env->isolate()->AddGCEpilogueCallback(MarkGarbageCollectionEnd,
                                         static_cast<void*>(env));
-  env->AddCleanupHook([](void* data) {
-    Environment* env = static_cast<Environment*>(data);
-    env->isolate()->RemoveGCPrologueCallback(MarkGarbageCollectionStart, data);
-    env->isolate()->RemoveGCEpilogueCallback(MarkGarbageCollectionEnd, data);
-  }, env);
+  env->AddCleanupHook(
+      [](void* data) {
+        Environment* env = static_cast<Environment*>(data);
+        env->isolate()->RemoveGCPrologueCallback(MarkGarbageCollectionStart,
+                                                 data);
+        env->isolate()->RemoveGCEpilogueCallback(MarkGarbageCollectionEnd,
+                                                 data);
+      },
+      env);
 }
 
 // Gets the name of a function
@@ -339,30 +342,26 @@ void TimerFunctionCall(const FunctionCallbackInfo<Value>& args) {
 
   uint64_t start = PERFORMANCE_NOW();
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      TRACING_CATEGORY_NODE2(perf, timerify),
-      *name, *name, start / 1000);
+      TRACING_CATEGORY_NODE2(perf, timerify), *name, *name, start / 1000);
   v8::MaybeLocal<Value> ret;
 
   if (is_construct_call) {
     ret = fn->NewInstance(context, call_args.length(), call_args.out())
-        .FromMaybe(Local<Object>());
+              .FromMaybe(Local<Object>());
   } else {
     ret = fn->Call(context, args.This(), call_args.length(), call_args.out());
   }
 
   uint64_t end = PERFORMANCE_NOW();
   TRACE_EVENT_COPY_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      TRACING_CATEGORY_NODE2(perf, timerify),
-      *name, *name, end / 1000);
+      TRACING_CATEGORY_NODE2(perf, timerify), *name, *name, end / 1000);
 
-  if (ret.IsEmpty())
-    return;
+  if (ret.IsEmpty()) return;
   args.GetReturnValue().Set(ret.ToLocalChecked());
 
   AliasedBuffer<uint32_t, Uint32Array>& observers =
       env->performance_state()->observers;
-  if (!observers[NODE_PERFORMANCE_ENTRY_TYPE_FUNCTION])
-    return;
+  if (!observers[NODE_PERFORMANCE_ENTRY_TYPE_FUNCTION]) return;
 
   PerformanceEntry entry(env, *name, "function", start, end);
   Local<Object> obj;
@@ -385,7 +384,6 @@ void Timerify(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(wrap);
 }
 
-
 void Initialize(Local<Object> target,
                 Local<Value> unused,
                 Local<Context> context,
@@ -394,12 +392,16 @@ void Initialize(Local<Object> target,
   Isolate* isolate = env->isolate();
   performance_state* state = env->performance_state();
 
-  target->Set(context,
-              FIXED_ONE_BYTE_STRING(isolate, "observerCounts"),
-              state->observers.GetJSArray()).FromJust();
-  target->Set(context,
-              FIXED_ONE_BYTE_STRING(isolate, "milestones"),
-              state->milestones.GetJSArray()).FromJust();
+  target
+      ->Set(context,
+            FIXED_ONE_BYTE_STRING(isolate, "observerCounts"),
+            state->observers.GetJSArray())
+      .FromJust();
+  target
+      ->Set(context,
+            FIXED_ONE_BYTE_STRING(isolate, "milestones"),
+            state->milestones.GetJSArray())
+      .FromJust();
 
   Local<String> performanceEntryString =
       FIXED_ONE_BYTE_STRING(isolate, "PerformanceEntry");
@@ -424,12 +426,12 @@ void Initialize(Local<Object> target,
   NODE_DEFINE_CONSTANT(constants, NODE_PERFORMANCE_GC_INCREMENTAL);
   NODE_DEFINE_CONSTANT(constants, NODE_PERFORMANCE_GC_WEAKCB);
 
-#define V(name, _)                                                            \
+#define V(name, _)                                                             \
   NODE_DEFINE_HIDDEN_CONSTANT(constants, NODE_PERFORMANCE_ENTRY_TYPE_##name);
   NODE_PERFORMANCE_ENTRY_TYPES(V)
 #undef V
 
-#define V(name, _)                                                            \
+#define V(name, _)                                                             \
   NODE_DEFINE_HIDDEN_CONSTANT(constants, NODE_PERFORMANCE_MILESTONE_##name);
   NODE_PERFORMANCE_MILESTONES(V)
 #undef V
@@ -437,21 +439,23 @@ void Initialize(Local<Object> target,
   PropertyAttribute attr =
       static_cast<PropertyAttribute>(ReadOnly | DontDelete);
 
-  target->DefineOwnProperty(context,
-                            FIXED_ONE_BYTE_STRING(isolate, "timeOrigin"),
-                            Number::New(isolate, timeOrigin / 1e6),
-                            attr).ToChecked();
+  target
+      ->DefineOwnProperty(context,
+                          FIXED_ONE_BYTE_STRING(isolate, "timeOrigin"),
+                          Number::New(isolate, timeOrigin / 1e6),
+                          attr)
+      .ToChecked();
 
-  target->DefineOwnProperty(
-      context,
-      FIXED_ONE_BYTE_STRING(isolate, "timeOriginTimestamp"),
-      Number::New(isolate, timeOriginTimestamp / MICROS_PER_MILLIS),
-      attr).ToChecked();
+  target
+      ->DefineOwnProperty(
+          context,
+          FIXED_ONE_BYTE_STRING(isolate, "timeOriginTimestamp"),
+          Number::New(isolate, timeOriginTimestamp / MICROS_PER_MILLIS),
+          attr)
+      .ToChecked();
 
-  target->DefineOwnProperty(context,
-                            env->constants_string(),
-                            constants,
-                            attr).ToChecked();
+  target->DefineOwnProperty(context, env->constants_string(), constants, attr)
+      .ToChecked();
 
   SetupGarbageCollectionTracking(env);
 }

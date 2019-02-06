@@ -25,8 +25,8 @@
 #include "node_file.h"
 #include "util.h"
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 namespace node {
 
@@ -41,7 +41,6 @@ using v8::String;
 using v8::Uint32;
 using v8::Value;
 
-
 void StatWatcher::Initialize(Environment* env, Local<Object> target) {
   HandleScope scope(env->isolate());
 
@@ -54,14 +53,14 @@ void StatWatcher::Initialize(Environment* env, Local<Object> target) {
 
   env->SetProtoMethod(t, "start", StatWatcher::Start);
 
-  target->Set(env->context(), statWatcherString,
-              t->GetFunction(env->context()).ToLocalChecked()).FromJust();
+  target
+      ->Set(env->context(),
+            statWatcherString,
+            t->GetFunction(env->context()).ToLocalChecked())
+      .FromJust();
 }
 
-
-StatWatcher::StatWatcher(Environment* env,
-                         Local<Object> wrap,
-                         bool use_bigint)
+StatWatcher::StatWatcher(Environment* env, Local<Object> wrap, bool use_bigint)
     : HandleWrap(env,
                  wrap,
                  reinterpret_cast<uv_handle_t*>(&watcher_),
@@ -69,7 +68,6 @@ StatWatcher::StatWatcher(Environment* env,
       use_bigint_(use_bigint) {
   CHECK_EQ(0, uv_fs_poll_init(env->event_loop(), &watcher_));
 }
-
 
 void StatWatcher::Callback(uv_fs_poll_t* handle,
                            int status,
@@ -83,10 +81,9 @@ void StatWatcher::Callback(uv_fs_poll_t* handle,
   Local<Value> arr = fs::FillGlobalStatsArray(env, wrap->use_bigint_, curr);
   USE(fs::FillGlobalStatsArray(env, wrap->use_bigint_, prev, true));
 
-  Local<Value> argv[2] = { Integer::New(env->isolate(), status), arr };
+  Local<Value> argv[2] = {Integer::New(env->isolate(), status), arr};
   wrap->MakeCallback(env->onchange_string(), arraysize(argv), argv);
 }
-
 
 void StatWatcher::New(const FunctionCallbackInfo<Value>& args) {
   CHECK(args.IsConstructCall());

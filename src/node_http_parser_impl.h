@@ -51,7 +51,6 @@
 // No copying is performed when slicing the buffer, only small reference
 // allocations.
 
-
 namespace node {
 namespace {  // NOLINT(build/namespaces)
 
@@ -89,11 +88,7 @@ struct StringPtr {
     Reset();
   }
 
-
-  ~StringPtr() {
-    Reset();
-  }
-
+  ~StringPtr() { Reset(); }
 
   // If str_ does not point to a heap string yet, this function makes it do
   // so. This is called at the end of each http_parser_execute() so as not
@@ -107,7 +102,6 @@ struct StringPtr {
     }
   }
 
-
   void Reset() {
     if (on_heap_) {
       delete[] str_;
@@ -117,7 +111,6 @@ struct StringPtr {
     str_ = nullptr;
     size_ = 0;
   }
-
 
   void Update(const char* str, size_t size) {
     if (str_ == nullptr) {
@@ -139,7 +132,6 @@ struct StringPtr {
     size_ += size;
   }
 
-
   Local<String> ToString(Environment* env) const {
     if (str_)
       return OneByteString(env->isolate(), str_, size_);
@@ -147,12 +139,10 @@ struct StringPtr {
       return String::Empty(env->isolate());
   }
 
-
   const char* str_;
   bool on_heap_;
   size_t size_;
 };
-
 
 class Parser : public AsyncWrap, public StreamListener {
  public:
@@ -162,7 +152,6 @@ class Parser : public AsyncWrap, public StreamListener {
         current_buffer_data_(nullptr) {
     Init(type);
   }
-
 
   void MemoryInfo(MemoryTracker* tracker) const override {
     tracker->TrackField("current_buffer", current_buffer_);
@@ -178,7 +167,6 @@ class Parser : public AsyncWrap, public StreamListener {
     return 0;
   }
 
-
   int on_url(const char* at, size_t length) {
     int rv = TrackHeader(length);
     if (rv != 0) {
@@ -189,7 +177,6 @@ class Parser : public AsyncWrap, public StreamListener {
     return 0;
   }
 
-
   int on_status(const char* at, size_t length) {
     int rv = TrackHeader(length);
     if (rv != 0) {
@@ -199,7 +186,6 @@ class Parser : public AsyncWrap, public StreamListener {
     status_message_.Update(at, length);
     return 0;
   }
-
 
   int on_header_field(const char* at, size_t length) {
     int rv = TrackHeader(length);
@@ -227,7 +213,6 @@ class Parser : public AsyncWrap, public StreamListener {
     return 0;
   }
 
-
   int on_header_value(const char* at, size_t length) {
     int rv = TrackHeader(length);
     if (rv != 0) {
@@ -248,11 +233,10 @@ class Parser : public AsyncWrap, public StreamListener {
     return 0;
   }
 
-
   int on_headers_complete() {
 #ifdef NODE_EXPERIMENTAL_HTTP
     header_nread_ = 0;
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
 
     // Arguments for the on-headers-complete javascript callback. This
     // list needs to be kept in sync with the actual argument list for
@@ -272,15 +256,13 @@ class Parser : public AsyncWrap, public StreamListener {
 
     Local<Value> argv[A_MAX];
     Local<Object> obj = object();
-    Local<Value> cb = obj->Get(env()->context(),
-                               kOnHeadersComplete).ToLocalChecked();
+    Local<Value> cb =
+        obj->Get(env()->context(), kOnHeadersComplete).ToLocalChecked();
 
-    if (!cb->IsFunction())
-      return 0;
+    if (!cb->IsFunction()) return 0;
 
     Local<Value> undefined = Undefined(env()->isolate());
-    for (size_t i = 0; i < arraysize(argv); i++)
-      argv[i] = undefined;
+    for (size_t i = 0; i < arraysize(argv); i++) argv[i] = undefined;
 
     if (have_flushed_) {
       // Slow case, flush remaining headers.
@@ -288,8 +270,7 @@ class Parser : public AsyncWrap, public StreamListener {
     } else {
       // Fast case, pass headers and URL to JS land.
       argv[A_HEADERS] = CreateHeaders();
-      if (parser_.type == HTTP_REQUEST)
-        argv[A_URL] = url_.ToString(env());
+      if (parser_.type == HTTP_REQUEST) argv[A_URL] = url_.ToString(env());
     }
 
     num_fields_ = 0;
@@ -303,8 +284,7 @@ class Parser : public AsyncWrap, public StreamListener {
 
     // STATUS
     if (parser_.type == HTTP_RESPONSE) {
-      argv[A_STATUS_CODE] =
-          Integer::New(env()->isolate(), parser_.status_code);
+      argv[A_STATUS_CODE] = Integer::New(env()->isolate(), parser_.status_code);
       argv[A_STATUS_MESSAGE] = status_message_.ToString(env());
     }
 
@@ -317,7 +297,7 @@ class Parser : public AsyncWrap, public StreamListener {
     should_keep_alive = llhttp_should_keep_alive(&parser_);
 #else  /* !NODE_EXPERIMENTAL_HTTP */
     should_keep_alive = http_should_keep_alive(&parser_);
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
 
     argv[A_SHOULD_KEEP_ALIVE] =
         Boolean::New(env()->isolate(), should_keep_alive);
@@ -341,59 +321,52 @@ class Parser : public AsyncWrap, public StreamListener {
     return val;
   }
 
-
   int on_body(const char* at, size_t length) {
     EscapableHandleScope scope(env()->isolate());
 
     Local<Object> obj = object();
     Local<Value> cb = obj->Get(env()->context(), kOnBody).ToLocalChecked();
 
-    if (!cb->IsFunction())
-      return 0;
+    if (!cb->IsFunction()) return 0;
 
     // We came from consumed stream
     if (current_buffer_.IsEmpty()) {
       // Make sure Buffer will be in parent HandleScope
-      current_buffer_ = scope.Escape(Buffer::Copy(
-          env()->isolate(),
-          current_buffer_data_,
-          current_buffer_len_).ToLocalChecked());
+      current_buffer_ = scope.Escape(Buffer::Copy(env()->isolate(),
+                                                  current_buffer_data_,
+                                                  current_buffer_len_)
+                                         .ToLocalChecked());
     }
 
     Local<Value> argv[3] = {
-      current_buffer_,
-      Integer::NewFromUnsigned(env()->isolate(), at - current_buffer_data_),
-      Integer::NewFromUnsigned(env()->isolate(), length)
-    };
+        current_buffer_,
+        Integer::NewFromUnsigned(env()->isolate(), at - current_buffer_data_),
+        Integer::NewFromUnsigned(env()->isolate(), length)};
 
-    MaybeLocal<Value> r = MakeCallback(cb.As<Function>(),
-                                       arraysize(argv),
-                                       argv);
+    MaybeLocal<Value> r =
+        MakeCallback(cb.As<Function>(), arraysize(argv), argv);
 
     if (r.IsEmpty()) {
       got_exception_ = true;
 #ifdef NODE_EXPERIMENTAL_HTTP
       llhttp_set_error_reason(&parser_, "HPE_JS_EXCEPTION:JS Exception");
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
       return HPE_USER;
     }
 
     return 0;
   }
 
-
   int on_message_complete() {
     HandleScope scope(env()->isolate());
 
-    if (num_fields_)
-      Flush();  // Flush trailing HTTP headers.
+    if (num_fields_) Flush();  // Flush trailing HTTP headers.
 
     Local<Object> obj = object();
-    Local<Value> cb = obj->Get(env()->context(),
-                               kOnMessageComplete).ToLocalChecked();
+    Local<Value> cb =
+        obj->Get(env()->context(), kOnMessageComplete).ToLocalChecked();
 
-    if (!cb->IsFunction())
-      return 0;
+    if (!cb->IsFunction()) return 0;
 
     Environment::AsyncCallbackScope callback_scope(env());
 
@@ -414,14 +387,12 @@ class Parser : public AsyncWrap, public StreamListener {
     return 0;
   }
 
-
   // Reset nread for the next chunk
   int on_chunk_complete() {
     header_nread_ = 0;
     return 0;
   }
-#endif  /* NODE_EXPERIMENTAL_HTTP */
-
+#endif /* NODE_EXPERIMENTAL_HTTP */
 
   static void New(const FunctionCallbackInfo<Value>& args) {
     Environment* env = Environment::GetCurrent(args);
@@ -432,14 +403,12 @@ class Parser : public AsyncWrap, public StreamListener {
     new Parser(env, args.This(), type);
   }
 
-
   static void Close(const FunctionCallbackInfo<Value>& args) {
     Parser* parser;
     ASSIGN_OR_RETURN_UNWRAP(&parser, args.Holder());
 
     delete parser;
   }
-
 
   static void Free(const FunctionCallbackInfo<Value>& args) {
     Environment* env = Environment::GetCurrent(args);
@@ -451,7 +420,6 @@ class Parser : public AsyncWrap, public StreamListener {
     parser->EmitTraceEventDestroy();
     parser->EmitDestroy(env, parser->get_async_id());
   }
-
 
   void Save() {
     url_.Save();
@@ -465,7 +433,6 @@ class Parser : public AsyncWrap, public StreamListener {
       values_[i].Save();
     }
   }
-
 
   // var bytesParsed = parser->execute(buffer);
   static void Execute(const FunctionCallbackInfo<Value>& args) {
@@ -487,10 +454,8 @@ class Parser : public AsyncWrap, public StreamListener {
 
     Local<Value> ret = parser->Execute(buffer_data, buffer_len);
 
-    if (!ret.IsEmpty())
-      args.GetReturnValue().Set(ret);
+    if (!ret.IsEmpty()) args.GetReturnValue().Set(ret);
   }
-
 
   static void Finish(const FunctionCallbackInfo<Value>& args) {
     Parser* parser;
@@ -499,10 +464,8 @@ class Parser : public AsyncWrap, public StreamListener {
     CHECK(parser->current_buffer_.IsEmpty());
     Local<Value> ret = parser->Execute(nullptr, 0);
 
-    if (!ret.IsEmpty())
-      args.GetReturnValue().Set(ret);
+    if (!ret.IsEmpty()) args.GetReturnValue().Set(ret);
   }
-
 
   static void Reinitialize(const FunctionCallbackInfo<Value>& args) {
     Environment* env = Environment::GetCurrent(args);
@@ -527,7 +490,6 @@ class Parser : public AsyncWrap, public StreamListener {
     parser->Init(type);
   }
 
-
   template <bool should_pause>
   static void Pause(const FunctionCallbackInfo<Value>& args) {
     Environment* env = Environment::GetCurrent(args);
@@ -549,9 +511,8 @@ class Parser : public AsyncWrap, public StreamListener {
     }
 #else  /* !NODE_EXPERIMENTAL_HTTP */
     http_parser_pause(&parser->parser_, should_pause);
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
   }
-
 
   static void Consume(const FunctionCallbackInfo<Value>& args) {
     Parser* parser;
@@ -563,27 +524,24 @@ class Parser : public AsyncWrap, public StreamListener {
     stream->PushStreamListener(parser);
   }
 
-
   static void Unconsume(const FunctionCallbackInfo<Value>& args) {
     Parser* parser;
     ASSIGN_OR_RETURN_UNWRAP(&parser, args.Holder());
 
     // Already unconsumed
-    if (parser->stream_ == nullptr)
-      return;
+    if (parser->stream_ == nullptr) return;
 
     parser->stream_->RemoveStreamListener(parser);
   }
-
 
   static void GetCurrentBuffer(const FunctionCallbackInfo<Value>& args) {
     Parser* parser;
     ASSIGN_OR_RETURN_UNWRAP(&parser, args.Holder());
 
-    Local<Object> ret = Buffer::Copy(
-        parser->env(),
-        parser->current_buffer_data_,
-        parser->current_buffer_len_).ToLocalChecked();
+    Local<Object> ret = Buffer::Copy(parser->env(),
+                                     parser->current_buffer_data_,
+                                     parser->current_buffer_len_)
+                            .ToLocalChecked();
 
     args.GetReturnValue().Set(ret);
   }
@@ -606,7 +564,6 @@ class Parser : public AsyncWrap, public StreamListener {
     return uv_buf_init(env()->http_parser_buffer(), kAllocBufferSize);
   }
 
-
   void OnStreamRead(ssize_t nread, const uv_buf_t& buf) override {
     HandleScope scope(env()->isolate());
     // Once we’re done here, either indicate that the HTTP parser buffer
@@ -625,21 +582,18 @@ class Parser : public AsyncWrap, public StreamListener {
     }
 
     // Ignore, empty reads have special meaning in http parser
-    if (nread == 0)
-      return;
+    if (nread == 0) return;
 
     current_buffer_.Clear();
     Local<Value> ret = Execute(buf.base, nread);
 
     // Exception
-    if (ret.IsEmpty())
-      return;
+    if (ret.IsEmpty()) return;
 
     Local<Value> cb =
         object()->Get(env()->context(), kOnExecute).ToLocalChecked();
 
-    if (!cb->IsFunction())
-      return;
+    if (!cb->IsFunction()) return;
 
     // Hooks for GetCurrentBuffer
     current_buffer_len_ = nread;
@@ -650,7 +604,6 @@ class Parser : public AsyncWrap, public StreamListener {
     current_buffer_len_ = 0;
     current_buffer_data_ = nullptr;
   }
-
 
   Local<Value> Execute(char* data, size_t len) {
     EscapableHandleScope scope(env()->isolate());
@@ -711,11 +664,11 @@ class Parser : public AsyncWrap, public StreamListener {
           UNREACHABLE();
       }
 
-    // Regular Execute()
+      // Regular Execute()
     } else {
       Save();
     }
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
 
     // Unassign the 'buffer_' variable
     current_buffer_.Clear();
@@ -723,8 +676,7 @@ class Parser : public AsyncWrap, public StreamListener {
     current_buffer_data_ = nullptr;
 
     // If there was an exception in one of the callbacks
-    if (got_exception_)
-      return scope.Escape(Local<Value>());
+    if (got_exception_) return scope.Escape(Local<Value>());
 
     Local<Integer> nread_obj = Integer::New(env()->isolate(), nread);
 
@@ -732,11 +684,10 @@ class Parser : public AsyncWrap, public StreamListener {
     // TODO(bnoordhuis) What if there is an error on EOF?
     if (!parser_.upgrade && err != HPE_OK) {
       Local<Value> e = Exception::Error(env()->parse_error_string());
-      Local<Object> obj = e->ToObject(env()->isolate()->GetCurrentContext())
-        .ToLocalChecked();
-      obj->Set(env()->context(),
-               env()->bytes_parsed_string(),
-               nread_obj).FromJust();
+      Local<Object> obj =
+          e->ToObject(env()->isolate()->GetCurrentContext()).ToLocalChecked();
+      obj->Set(env()->context(), env()->bytes_parsed_string(), nread_obj)
+          .FromJust();
 #ifdef NODE_EXPERIMENTAL_HTTP
       const char* errno_reason = llhttp_get_error_reason(&parser_);
 
@@ -745,8 +696,8 @@ class Parser : public AsyncWrap, public StreamListener {
       if (err == HPE_USER) {
         const char* colon = strchr(errno_reason, ':');
         CHECK_NE(colon, nullptr);
-        code = OneByteString(env()->isolate(), errno_reason,
-                             colon - errno_reason);
+        code =
+            OneByteString(env()->isolate(), errno_reason, colon - errno_reason);
         reason = OneByteString(env()->isolate(), colon + 1);
       } else {
         code = OneByteString(env()->isolate(), llhttp_errno_name(err));
@@ -758,9 +709,9 @@ class Parser : public AsyncWrap, public StreamListener {
 #else  /* !NODE_EXPERIMENTAL_HTTP */
       obj->Set(env()->context(),
                env()->code_string(),
-               OneByteString(env()->isolate(),
-                             http_errno_name(err))).FromJust();
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+               OneByteString(env()->isolate(), http_errno_name(err)))
+          .FromJust();
+#endif /* NODE_EXPERIMENTAL_HTTP */
       return scope.Escape(e);
     }
 
@@ -783,7 +734,6 @@ class Parser : public AsyncWrap, public StreamListener {
     return Array::New(env()->isolate(), headers_v, num_values_ * 2);
   }
 
-
   // spill headers and request path to JS land
   void Flush() {
     HandleScope scope(env()->isolate());
@@ -791,25 +741,18 @@ class Parser : public AsyncWrap, public StreamListener {
     Local<Object> obj = object();
     Local<Value> cb = obj->Get(env()->context(), kOnHeaders).ToLocalChecked();
 
-    if (!cb->IsFunction())
-      return;
+    if (!cb->IsFunction()) return;
 
-    Local<Value> argv[2] = {
-      CreateHeaders(),
-      url_.ToString(env())
-    };
+    Local<Value> argv[2] = {CreateHeaders(), url_.ToString(env())};
 
-    MaybeLocal<Value> r = MakeCallback(cb.As<Function>(),
-                                       arraysize(argv),
-                                       argv);
+    MaybeLocal<Value> r =
+        MakeCallback(cb.As<Function>(), arraysize(argv), argv);
 
-    if (r.IsEmpty())
-      got_exception_ = true;
+    if (r.IsEmpty()) got_exception_ = true;
 
     url_.Reset();
     have_flushed_ = true;
   }
-
 
   void Init(parser_type_t type) {
 #ifdef NODE_EXPERIMENTAL_HTTP
@@ -817,7 +760,7 @@ class Parser : public AsyncWrap, public StreamListener {
     header_nread_ = 0;
 #else  /* !NODE_EXPERIMENTAL_HTTP */
     http_parser_init(&parser_, type);
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
     url_.Reset();
     status_message_.Reset();
     num_fields_ = 0;
@@ -826,7 +769,6 @@ class Parser : public AsyncWrap, public StreamListener {
     got_exception_ = false;
   }
 
-
   int TrackHeader(size_t len) {
 #ifdef NODE_EXPERIMENTAL_HTTP
     header_nread_ += len;
@@ -834,10 +776,9 @@ class Parser : public AsyncWrap, public StreamListener {
       llhttp_set_error_reason(&parser_, "HPE_HEADER_OVERFLOW:Header overflow");
       return HPE_USER;
     }
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
     return 0;
   }
-
 
   int MaybePause() {
 #ifdef NODE_EXPERIMENTAL_HTTP
@@ -852,7 +793,7 @@ class Parser : public AsyncWrap, public StreamListener {
     return HPE_PAUSED;
 #else  /* !NODE_EXPERIMENTAL_HTTP */
     return 0;
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
   }
 
   parser_t parser_;
@@ -871,14 +812,15 @@ class Parser : public AsyncWrap, public StreamListener {
   unsigned int execute_depth_ = 0;
   bool pending_pause_ = false;
   uint64_t header_nread_ = 0;
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
 
   // These are helper functions for filling `http_parser_settings`, which turn
   // a member function of Parser into a C-style HTTP parser callback.
-  template <typename Parser, Parser> struct Proxy;
-  template <typename Parser, typename ...Args, int (Parser::*Member)(Args...)>
+  template <typename Parser, Parser>
+  struct Proxy;
+  template <typename Parser, typename... Args, int (Parser::*Member)(Args...)>
   struct Proxy<int (Parser::*)(Args...), Member> {
-    static int Raw(parser_t* p, Args ... args) {
+    static int Raw(parser_t* p, Args... args) {
       Parser* parser = ContainerOf(&Parser::parser_, p);
       int rv = (parser->*Member)(std::forward<Args>(args)...);
       if (rv == 0) {
@@ -895,23 +837,22 @@ class Parser : public AsyncWrap, public StreamListener {
 };
 
 const parser_settings_t Parser::settings = {
-  Proxy<Call, &Parser::on_message_begin>::Raw,
-  Proxy<DataCall, &Parser::on_url>::Raw,
-  Proxy<DataCall, &Parser::on_status>::Raw,
-  Proxy<DataCall, &Parser::on_header_field>::Raw,
-  Proxy<DataCall, &Parser::on_header_value>::Raw,
-  Proxy<Call, &Parser::on_headers_complete>::Raw,
-  Proxy<DataCall, &Parser::on_body>::Raw,
-  Proxy<Call, &Parser::on_message_complete>::Raw,
+    Proxy<Call, &Parser::on_message_begin>::Raw,
+    Proxy<DataCall, &Parser::on_url>::Raw,
+    Proxy<DataCall, &Parser::on_status>::Raw,
+    Proxy<DataCall, &Parser::on_header_field>::Raw,
+    Proxy<DataCall, &Parser::on_header_value>::Raw,
+    Proxy<Call, &Parser::on_headers_complete>::Raw,
+    Proxy<DataCall, &Parser::on_body>::Raw,
+    Proxy<Call, &Parser::on_message_complete>::Raw,
 #ifdef NODE_EXPERIMENTAL_HTTP
-  Proxy<Call, &Parser::on_chunk_header>::Raw,
-  Proxy<Call, &Parser::on_chunk_complete>::Raw,
+    Proxy<Call, &Parser::on_chunk_header>::Raw,
+    Proxy<Call, &Parser::on_chunk_complete>::Raw,
 #else  /* !NODE_EXPERIMENTAL_HTTP */
-  nullptr,
-  nullptr,
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+    nullptr,
+    nullptr,
+#endif /* NODE_EXPERIMENTAL_HTTP */
 };
-
 
 #ifndef NODE_EXPERIMENTAL_HTTP
 void InitMaxHttpHeaderSizeOnce() {
@@ -919,8 +860,7 @@ void InitMaxHttpHeaderSizeOnce() {
       per_process::cli_options->max_http_header_size;
   http_parser_set_max_header_size(max_http_header_size);
 }
-#endif  /* NODE_EXPERIMENTAL_HTTP */
-
+#endif /* NODE_EXPERIMENTAL_HTTP */
 
 void InitializeHttpParser(Local<Object> target,
                           Local<Value> unused,
@@ -947,14 +887,18 @@ void InitializeHttpParser(Local<Object> target,
          Integer::NewFromUnsigned(env->isolate(), kOnExecute));
 
   Local<Array> methods = Array::New(env->isolate());
-#define V(num, name, string)                                                  \
-    methods->Set(env->context(),                                              \
-        num, FIXED_ONE_BYTE_STRING(env->isolate(), #string)).FromJust();
+#define V(num, name, string)                                                   \
+  methods                                                                      \
+      ->Set(                                                                   \
+          env->context(), num, FIXED_ONE_BYTE_STRING(env->isolate(), #string)) \
+      .FromJust();
   HTTP_METHOD_MAP(V)
 #undef V
-  target->Set(env->context(),
-              FIXED_ONE_BYTE_STRING(env->isolate(), "methods"),
-              methods).FromJust();
+  target
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(env->isolate(), "methods"),
+            methods)
+      .FromJust();
 
   t->Inherit(AsyncWrap::GetConstructorTemplate(env));
   env->SetProtoMethod(t, "close", Parser::Close);
@@ -968,14 +912,16 @@ void InitializeHttpParser(Local<Object> target,
   env->SetProtoMethod(t, "unconsume", Parser::Unconsume);
   env->SetProtoMethod(t, "getCurrentBuffer", Parser::GetCurrentBuffer);
 
-  target->Set(env->context(),
-              FIXED_ONE_BYTE_STRING(env->isolate(), "HTTPParser"),
-              t->GetFunction(env->context()).ToLocalChecked()).FromJust();
+  target
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(env->isolate(), "HTTPParser"),
+            t->GetFunction(env->context()).ToLocalChecked())
+      .FromJust();
 
 #ifndef NODE_EXPERIMENTAL_HTTP
   static uv_once_t init_once = UV_ONCE_INIT;
   uv_once(&init_once, InitMaxHttpHeaderSizeOnce);
-#endif  /* NODE_EXPERIMENTAL_HTTP */
+#endif /* NODE_EXPERIMENTAL_HTTP */
 }
 
 }  // anonymous namespace

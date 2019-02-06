@@ -8,11 +8,8 @@
 namespace node {
 namespace per_process {
 const char* const http_parser_version =
-  NODE_STRINGIFY(HTTP_PARSER_VERSION_MAJOR)
-  "."
-  NODE_STRINGIFY(HTTP_PARSER_VERSION_MINOR)
-  "."
-  NODE_STRINGIFY(HTTP_PARSER_VERSION_PATCH);
+    NODE_STRINGIFY(HTTP_PARSER_VERSION_MAJOR) "." NODE_STRINGIFY(
+        HTTP_PARSER_VERSION_MINOR) "." NODE_STRINGIFY(HTTP_PARSER_VERSION_PATCH);
 }  // namespace per_process
 }  // namespace node
 

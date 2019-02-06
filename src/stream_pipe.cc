@@ -1,6 +1,6 @@
 #include "stream_pipe.h"
-#include "stream_base-inl.h"
 #include "node_buffer.h"
+#include "stream_base-inl.h"
 
 using v8::Context;
 using v8::External;
@@ -13,9 +13,7 @@ using v8::Value;
 
 namespace node {
 
-StreamPipe::StreamPipe(StreamBase* source,
-                       StreamBase* sink,
-                       Local<Object> obj)
+StreamPipe::StreamPipe(StreamBase* source, StreamBase* sink, Local<Object> obj)
     : AsyncWrap(source->stream_env(), obj, AsyncWrap::PROVIDER_STREAMPIPE) {
   MakeWeak();
 
@@ -33,11 +31,13 @@ StreamPipe::StreamPipe(StreamBase* source,
   // weak references).
   obj->Set(env()->context(), env()->source_string(), source->GetObject())
       .FromJust();
-  source->GetObject()->Set(env()->context(), env()->pipe_target_string(), obj)
+  source->GetObject()
+      ->Set(env()->context(), env()->pipe_target_string(), obj)
       .FromJust();
   obj->Set(env()->context(), env()->sink_string(), sink->GetObject())
       .FromJust();
-  sink->GetObject()->Set(env()->context(), env()->pipe_source_string(), obj)
+  sink->GetObject()
+      ->Set(env()->context(), env()->pipe_source_string(), obj)
       .FromJust();
 }
 
@@ -54,14 +54,12 @@ StreamBase* StreamPipe::sink() {
 }
 
 void StreamPipe::Unpipe() {
-  if (is_closed_)
-    return;
+  if (is_closed_) return;
 
   // Note that we possibly cannot use virtual methods on `source` and `sink`
   // here, because this function can be called from their destructors via
   // `OnStreamDestroy()`.
-  if (!source_destroyed_)
-    source()->ReadStop();
+  if (!source_destroyed_) source()->ReadStop();
 
   is_closed_ = true;
   is_reading_ = false;
@@ -71,43 +69,49 @@ void StreamPipe::Unpipe() {
   // Delay the JS-facing part with SetImmediate, because this might be from
   // inside the garbage collector, so we can’t run JS here.
   HandleScope handle_scope(env()->isolate());
-  env()->SetImmediate([](Environment* env, void* data) {
-    StreamPipe* pipe = static_cast<StreamPipe*>(data);
+  env()->SetImmediate(
+      [](Environment* env, void* data) {
+        StreamPipe* pipe = static_cast<StreamPipe*>(data);
 
-    HandleScope handle_scope(env->isolate());
-    Context::Scope context_scope(env->context());
-    Local<Object> object = pipe->object();
+        HandleScope handle_scope(env->isolate());
+        Context::Scope context_scope(env->context());
+        Local<Object> object = pipe->object();
 
-    Local<Value> onunpipe;
-    if (!object->Get(env->context(), env->onunpipe_string()).ToLocal(&onunpipe))
-      return;
-    if (onunpipe->IsFunction() &&
-        pipe->MakeCallback(onunpipe.As<Function>(), 0, nullptr).IsEmpty()) {
-      return;
-    }
+        Local<Value> onunpipe;
+        if (!object->Get(env->context(), env->onunpipe_string())
+                 .ToLocal(&onunpipe))
+          return;
+        if (onunpipe->IsFunction() &&
+            pipe->MakeCallback(onunpipe.As<Function>(), 0, nullptr).IsEmpty()) {
+          return;
+        }
 
-    // Set all the links established in the constructor to `null`.
-    Local<Value> null = Null(env->isolate());
+        // Set all the links established in the constructor to `null`.
+        Local<Value> null = Null(env->isolate());
 
-    Local<Value> source_v;
-    Local<Value> sink_v;
-    if (!object->Get(env->context(), env->source_string()).ToLocal(&source_v) ||
-        !object->Get(env->context(), env->sink_string()).ToLocal(&sink_v) ||
-        !source_v->IsObject() || !sink_v->IsObject()) {
-      return;
-    }
+        Local<Value> source_v;
+        Local<Value> sink_v;
+        if (!object->Get(env->context(), env->source_string())
+                 .ToLocal(&source_v) ||
+            !object->Get(env->context(), env->sink_string()).ToLocal(&sink_v) ||
+            !source_v->IsObject() || !sink_v->IsObject()) {
+          return;
+        }
 
-    if (object->Set(env->context(), env->source_string(), null).IsNothing() ||
-        object->Set(env->context(), env->sink_string(), null).IsNothing() ||
-        source_v.As<Object>()
-            ->Set(env->context(), env->pipe_target_string(), null)
-            .IsNothing() ||
-        sink_v.As<Object>()
-            ->Set(env->context(), env->pipe_source_string(), null)
-            .IsNothing()) {
-      return;
-    }
-  }, static_cast<void*>(this), object());
+        if (object->Set(env->context(), env->source_string(), null)
+                .IsNothing() ||
+            object->Set(env->context(), env->sink_string(), null).IsNothing() ||
+            source_v.As<Object>()
+                ->Set(env->context(), env->pipe_target_string(), null)
+                .IsNothing() ||
+            sink_v.As<Object>()
+                ->Set(env->context(), env->pipe_source_string(), null)
+                .IsNothing()) {
+          return;
+        }
+      },
+      static_cast<void*>(this),
+      object());
 }
 
 uv_buf_t StreamPipe::ReadableListener::OnStreamAlloc(size_t suggested_size) {
@@ -151,8 +155,7 @@ void StreamPipe::ProcessData(size_t nread, const uv_buf_t& buf) {
     is_writing_ = true;
     is_reading_ = false;
     res.wrap->SetAllocatedStorage(buf.base, buf.len);
-    if (source() != nullptr)
-      source()->ReadStop();
+    if (source() != nullptr) source()->ReadStop();
   }
 }
 
@@ -207,8 +210,7 @@ void StreamPipe::WritableListener::OnStreamDestroy() {
 void StreamPipe::WritableListener::OnStreamWantsWrite(size_t suggested_size) {
   StreamPipe* pipe = ContainerOf(&StreamPipe::writable_listener_, this);
   pipe->wanted_data_ = suggested_size;
-  if (pipe->is_reading_ || pipe->is_closed_)
-    return;
+  if (pipe->is_reading_ || pipe->is_closed_) return;
   AsyncScope async_scope(pipe);
   pipe->is_reading_ = true;
   pipe->source()->ReadStart();
@@ -267,7 +269,8 @@ void InitializeStreamPipe(Local<Object> target,
   pipe->SetClassName(stream_pipe_string);
   pipe->InstanceTemplate()->SetInternalFieldCount(1);
   target
-      ->Set(context, stream_pipe_string,
+      ->Set(context,
+            stream_pipe_string,
             pipe->GetFunction(context).ToLocalChecked())
       .FromJust();
 }
@@ -276,5 +279,4 @@ void InitializeStreamPipe(Local<Object> target,
 
 }  // namespace node
 
-NODE_MODULE_CONTEXT_AWARE_INTERNAL(stream_pipe,
-                                   node::InitializeStreamPipe)
+NODE_MODULE_CONTEXT_AWARE_INTERNAL(stream_pipe, node::InitializeStreamPipe)

@@ -49,8 +49,7 @@ Local<Object> MapToObject(Local<Context> context,
   return out;
 }
 
-Local<Set> ToJsSet(Local<Context> context,
-                   const std::set<std::string>& in) {
+Local<Set> ToJsSet(Local<Context> context, const std::set<std::string>& in) {
   Isolate* isolate = context->GetIsolate();
   Local<Set> out = Set::New(isolate);
   for (auto const& x : in) {
@@ -305,8 +304,7 @@ void NativeModuleLoader::Initialize(Local<Object> target,
                           SideEffectType::kHasNoSideEffect)
             .FromJust());
 
-  env->SetMethod(
-      target, "getCacheUsage", NativeModuleLoader::GetCacheUsage);
+  env->SetMethod(target, "getCacheUsage", NativeModuleLoader::GetCacheUsage);
   env->SetMethod(
       target, "compileFunction", NativeModuleLoader::CompileFunction);
   env->SetMethod(target, "getCodeCache", NativeModuleLoader::GetCodeCache);

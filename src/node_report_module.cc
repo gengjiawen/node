@@ -229,8 +229,7 @@ void SyncConfig(const FunctionCallbackInfo<Value>& info) {
     Local<Value> path_value;
     std::string signal = options->report_signal;
     if (signal.empty()) signal = "SIGUSR2";
-    if (!node::ToV8Value(context, signal).ToLocal(&signal_value))
-      return;
+    if (!node::ToV8Value(context, signal).ToLocal(&signal_value)) return;
     if (!obj->Set(context, signalkey, signal_value).FromJust()) return;
 
     if (!node::ToV8Value(context, options->report_filename)

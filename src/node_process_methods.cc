@@ -26,7 +26,7 @@ typedef int mode_t;
 #else
 #include <pthread.h>
 #include <sys/resource.h>  // getrlimit, setrlimit
-#include <termios.h>  // tcgetattr, tcsetattr
+#include <termios.h>       // tcgetattr, tcsetattr
 #endif
 
 namespace node {
@@ -52,7 +52,7 @@ using v8::Value;
 
 namespace per_process {
 Mutex umask_mutex;
-}   // namespace per_process
+}  // namespace per_process
 
 // Microseconds in a second, as a float, used in CPUUsage() below
 #define MICROS_PER_SEC 1e6
@@ -121,16 +121,13 @@ static void Cwd(const FunctionCallbackInfo<Value>& args) {
   char buf[CHDIR_BUFSIZE];
   size_t cwd_len = sizeof(buf);
   int err = uv_cwd(buf, &cwd_len);
-  if (err)
-    return env->ThrowUVException(err, "uv_cwd");
+  if (err) return env->ThrowUVException(err, "uv_cwd");
 
-  Local<String> cwd = String::NewFromUtf8(env->isolate(),
-                                          buf,
-                                          NewStringType::kNormal,
-                                          cwd_len).ToLocalChecked();
+  Local<String> cwd =
+      String::NewFromUtf8(env->isolate(), buf, NewStringType::kNormal, cwd_len)
+          .ToLocalChecked();
   args.GetReturnValue().Set(cwd);
 }
-
 
 // Hrtime exposes libuv's uv_hrtime() high-resolution timer.
 
@@ -164,8 +161,7 @@ static void Kill(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   Local<Context> context = env->context();
 
-  if (args.Length() != 2)
-    return env->ThrowError("Bad argument.");
+  if (args.Length() != 2) return env->ThrowError("Bad argument.");
 
   int pid;
   if (!args[0]->Int32Value(context).To(&pid)) return;
@@ -180,8 +176,7 @@ static void MemoryUsage(const FunctionCallbackInfo<Value>& args) {
 
   size_t rss;
   int err = uv_resident_set_memory(&rss);
-  if (err)
-    return env->ThrowUVException(err, "uv_resident_set_memory");
+  if (err) return env->ThrowUVException(err, "uv_resident_set_memory");
 
   Isolate* isolate = env->isolate();
   // V8 memory usage
@@ -252,8 +247,7 @@ static void GetActiveRequests(const FunctionCallbackInfo<Value>& args) {
 
   std::vector<Local<Value>> request_v;
   for (auto w : *env->req_wrap_queue()) {
-    if (w->persistent().IsEmpty())
-      continue;
+    if (w->persistent().IsEmpty()) continue;
     request_v.push_back(w->GetOwner());
   }
 
@@ -268,8 +262,7 @@ void GetActiveHandles(const FunctionCallbackInfo<Value>& args) {
 
   std::vector<Local<Value>> handle_v;
   for (auto w : *env->handle_wrap_queue()) {
-    if (!HandleWrap::HasRef(w))
-      continue;
+    if (!HandleWrap::HasRef(w)) continue;
     handle_v.push_back(w->GetOwner());
   }
   args.GetReturnValue().Set(

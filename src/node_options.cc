@@ -56,8 +56,7 @@ void PerProcessOptions::CheckOptions(std::vector<std::string>* errors) {
 void PerIsolateOptions::CheckOptions(std::vector<std::string>* errors) {
   per_env->CheckOptions(errors);
 #ifdef NODE_REPORT
-  if (per_env->experimental_report)
-    return;
+  if (per_env->experimental_report) return;
 
   if (!report_directory.empty()) {
     errors->push_back("--diagnostic-report-directory option is valid only when "
@@ -147,25 +146,25 @@ DebugOptionsParser::DebugOptionsParser() {
             "activate inspector on host:port (default: 127.0.0.1:9229)",
             &DebugOptions::inspector_enabled,
             kAllowedInEnvironment);
-  AddAlias("--inspect=", { "--inspect-port", "--inspect" });
+  AddAlias("--inspect=", {"--inspect-port", "--inspect"});
 
   AddOption("--debug", "", &DebugOptions::deprecated_debug);
-  AddAlias("--debug=", { "--inspect-port", "--debug" });
+  AddAlias("--debug=", {"--inspect-port", "--debug"});
 
   AddOption("--inspect-brk",
             "activate inspector on host:port and break at start of user script",
             &DebugOptions::break_first_line,
             kAllowedInEnvironment);
   Implies("--inspect-brk", "--inspect");
-  AddAlias("--inspect-brk=", { "--inspect-port", "--inspect-brk" });
+  AddAlias("--inspect-brk=", {"--inspect-port", "--inspect-brk"});
 
   AddOption("--inspect-brk-node", "", &DebugOptions::break_node_first_line);
   Implies("--inspect-brk-node", "--inspect");
-  AddAlias("--inspect-brk-node=", { "--inspect-port", "--inspect-brk-node" });
+  AddAlias("--inspect-brk-node=", {"--inspect-port", "--inspect-brk-node"});
 
   AddOption("--debug-brk", "", &DebugOptions::break_first_line);
   Implies("--debug-brk", "--debug");
-  AddAlias("--debug-brk=", { "--inspect-port", "--debug-brk" });
+  AddAlias("--debug-brk=", {"--inspect-port", "--debug-brk"});
 }
 
 EnvironmentOptionsParser::EnvironmentOptionsParser() {
@@ -230,7 +229,7 @@ EnvironmentOptionsParser::EnvironmentOptionsParser() {
             "process V8 profiler output generated using --prof",
             &EnvironmentOptions::prof_process);
   // Options after --prof-process are passed through to the prof processor.
-  AddAlias("--prof-process", { "--prof-process", "--" });
+  AddAlias("--prof-process", {"--prof-process", "--"});
   AddOption("--redirect-warnings",
             "write warnings to file instead of stderr",
             &EnvironmentOptions::redirect_warnings,
@@ -271,7 +270,7 @@ EnvironmentOptionsParser::EnvironmentOptionsParser() {
             &EnvironmentOptions::print_eval);
   AddAlias("-e", "--eval");
   AddAlias("--print <arg>", "-pe");
-  AddAlias("-pe", { "--print", "--eval" });
+  AddAlias("-pe", {"--print", "--eval"});
   AddAlias("-p", "--print");
   AddOption("--require",
             "module to preload (option can be repeated)",
@@ -298,8 +297,7 @@ EnvironmentOptionsParser::EnvironmentOptionsParser() {
 #endif
 
 #if HAVE_INSPECTOR
-  Insert(&DebugOptionsParser::instance,
-         &EnvironmentOptions::get_debug_options);
+  Insert(&DebugOptionsParser::instance, &EnvironmentOptions::get_debug_options);
 #endif  // HAVE_INSPECTOR
 }
 
@@ -374,8 +372,8 @@ PerProcessOptionsParser::PerProcessOptionsParser() {
             "data, it supports ${rotation} and ${pid}.",
             &PerProcessOptions::trace_event_file_pattern,
             kAllowedInEnvironment);
-  AddAlias("--trace-events-enabled", {
-    "--trace-event-categories", "v8,node,node.async_hooks" });
+  AddAlias("--trace-events-enabled",
+           {"--trace-event-categories", "v8,node,node.async_hooks"});
   AddOption("--max-http-header-size",
             "set the maximum size of HTTP headers (default: 8KB)",
             &PerProcessOptions::max_http_header_size,
@@ -478,15 +476,15 @@ inline int ParseAndValidatePort(const std::string& port,
   char* endptr;
   errno = 0;
   const long result = strtol(port.c_str(), &endptr, 10);  // NOLINT(runtime/int)
-  if (errno != 0 || *endptr != '\0'||
-      (result != 0 && result < 1024) || result > 65535) {
+  if (errno != 0 || *endptr != '\0' || (result != 0 && result < 1024) ||
+      result > 65535) {
     errors->push_back(" must be 0 or in range 1024 to 65535.");
   }
   return static_cast<int>(result);
 }
 
 HostPort SplitHostPort(const std::string& arg,
-                      std::vector<std::string>* errors) {
+                       std::vector<std::string>* errors) {
   // remove_brackets only works if no port is specified
   // so if it has an effect only an IPv6 address was specified.
   std::string host = RemoveBrackets(arg);
@@ -502,11 +500,11 @@ HostPort SplitHostPort(const std::string& arg,
         return HostPort{arg, DebugOptions::kDefaultInspectorPort};
       }
     }
-    return HostPort { "", ParseAndValidatePort(arg, errors) };
+    return HostPort{"", ParseAndValidatePort(arg, errors)};
   }
   // Host and port found:
-  return HostPort { RemoveBrackets(arg.substr(0, colon)),
-                    ParseAndValidatePort(arg.substr(colon + 1), errors) };
+  return HostPort{RemoveBrackets(arg.substr(0, colon)),
+                  ParseAndValidatePort(arg.substr(colon + 1), errors)};
 }
 
 // Return a map containing all the options and their metadata as well

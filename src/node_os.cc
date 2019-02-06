@@ -23,24 +23,24 @@
 #include "string_bytes.h"
 #include "util.h"
 
-#include <array>
 #include <errno.h>
 #include <string.h>
+#include <array>
 
 #ifdef __MINGW32__
-# include <io.h>
+#include <io.h>
 #endif  // __MINGW32__
 
 #ifdef __POSIX__
-# include <limits.h>        // PATH_MAX on Solaris.
-# include <netdb.h>         // MAXHOSTNAMELEN on Solaris.
-# include <unistd.h>        // gethostname, sysconf
-# include <sys/param.h>     // MAXHOSTNAMELEN on Linux and the BSDs.
-#endif  // __POSIX__
+#include <limits.h>     // PATH_MAX on Solaris.
+#include <netdb.h>      // MAXHOSTNAMELEN on Solaris.
+#include <sys/param.h>  // MAXHOSTNAMELEN on Linux and the BSDs.
+#include <unistd.h>     // gethostname, sysconf
+#endif                  // __POSIX__
 
 // Add Windows fallback.
 #ifndef MAXHOSTNAMELEN
-# define MAXHOSTNAMELEN 256
+#define MAXHOSTNAMELEN 256
 #endif  // MAXHOSTNAMELEN
 
 namespace node {
@@ -63,7 +63,6 @@ using v8::Object;
 using v8::String;
 using v8::Value;
 
-
 static void GetHostname(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   char buf[MAXHOSTNAMELEN + 1];
@@ -72,14 +71,13 @@ static void GetHostname(const FunctionCallbackInfo<Value>& args) {
 
   if (r != 0) {
     CHECK_GE(args.Length(), 1);
-    env->CollectUVExceptionInfo(args[args.Length() - 1], r,
-                                "uv_os_gethostname");
+    env->CollectUVExceptionInfo(
+        args[args.Length() - 1], r, "uv_os_gethostname");
     return args.GetReturnValue().SetUndefined();
   }
 
   args.GetReturnValue().Set(OneByteString(env->isolate(), buf));
 }
-
 
 static void GetOSType(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
@@ -95,7 +93,6 @@ static void GetOSType(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(OneByteString(env->isolate(), info.sysname));
 }
 
-
 static void GetOSRelease(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   uv_utsname_t info;
@@ -110,7 +107,6 @@ static void GetOSRelease(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(OneByteString(env->isolate(), info.release));
 }
 
-
 static void GetCPUInfo(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   Isolate* isolate = env->isolate();
@@ -119,8 +115,7 @@ static void GetCPUInfo(const FunctionCallbackInfo<Value>& args) {
   int count;
 
   int err = uv_cpu_info(&cpu_infos, &count);
-  if (err)
-    return;
+  if (err) return;
 
   // It's faster to create an array packed with all the data and
   // assemble them into objects in JS than to call Object::Set() repeatedly
@@ -142,30 +137,23 @@ static void GetCPUInfo(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(Array::New(isolate, result.data(), result.size()));
 }
 
-
 static void GetFreeMemory(const FunctionCallbackInfo<Value>& args) {
   double amount = uv_get_free_memory();
-  if (amount < 0)
-    return;
+  if (amount < 0) return;
   args.GetReturnValue().Set(amount);
 }
-
 
 static void GetTotalMemory(const FunctionCallbackInfo<Value>& args) {
   double amount = uv_get_total_memory();
-  if (amount < 0)
-    return;
+  if (amount < 0) return;
   args.GetReturnValue().Set(amount);
 }
-
 
 static void GetUptime(const FunctionCallbackInfo<Value>& args) {
   double uptime;
   int err = uv_uptime(&uptime);
-  if (err == 0)
-    args.GetReturnValue().Set(uptime);
+  if (err == 0) args.GetReturnValue().Set(uptime);
 }
-
 
 static void GetLoadAvg(const FunctionCallbackInfo<Value>& args) {
   CHECK(args[0]->IsFloat64Array());
@@ -175,7 +163,6 @@ static void GetLoadAvg(const FunctionCallbackInfo<Value>& args) {
   double* loadavg = static_cast<double*>(ab->GetContents().Data());
   uv_loadavg(loadavg);
 }
-
 
 static void GetInterfaceAddresses(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
@@ -189,13 +176,12 @@ static void GetInterfaceAddresses(const FunctionCallbackInfo<Value>& args) {
 
   int err = uv_interface_addresses(&interfaces, &count);
 
-  if (err == UV_ENOSYS)
-    return args.GetReturnValue().SetUndefined();
+  if (err == UV_ENOSYS) return args.GetReturnValue().SetUndefined();
 
   if (err) {
     CHECK_GE(args.Length(), 1);
-    env->CollectUVExceptionInfo(args[args.Length() - 1], errno,
-                                "uv_interface_addresses");
+    env->CollectUVExceptionInfo(
+        args[args.Length() - 1], errno, "uv_interface_addresses");
     return args.GetReturnValue().SetUndefined();
   }
 
@@ -209,8 +195,8 @@ static void GetInterfaceAddresses(const FunctionCallbackInfo<Value>& args) {
     // to assume UTF8 as the default as well. It’s what people will expect if
     // they name the interface from any input that uses UTF-8, which should be
     // the most frequent case by far these days.)
-    name = String::NewFromUtf8(isolate, raw_name,
-        v8::NewStringType::kNormal).ToLocalChecked();
+    name = String::NewFromUtf8(isolate, raw_name, v8::NewStringType::kNormal)
+               .ToLocalChecked();
 
     snprintf(mac.data(),
              mac.size(),
@@ -241,7 +227,7 @@ static void GetInterfaceAddresses(const FunctionCallbackInfo<Value>& args) {
     result[i * 7 + 3] = family;
     result[i * 7 + 4] = FIXED_ONE_BYTE_STRING(isolate, mac);
     result[i * 7 + 5] =
-      interfaces[i].is_internal ? True(isolate) : False(isolate);
+        interfaces[i].is_internal ? True(isolate) : False(isolate);
     if (interfaces[i].address.address4.sin_family == AF_INET6) {
       uint32_t scopeid = interfaces[i].address.address6.sin6_scope_id;
       result[i * 7 + 6] = Integer::NewFromUnsigned(isolate, scopeid);
@@ -253,7 +239,6 @@ static void GetInterfaceAddresses(const FunctionCallbackInfo<Value>& args) {
   uv_free_interface_addresses(interfaces, count);
   args.GetReturnValue().Set(Array::New(isolate, result.data(), result.size()));
 }
-
 
 static void GetHomeDirectory(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
@@ -268,13 +253,11 @@ static void GetHomeDirectory(const FunctionCallbackInfo<Value>& args) {
     return args.GetReturnValue().SetUndefined();
   }
 
-  Local<String> home = String::NewFromUtf8(env->isolate(),
-                                           buf,
-                                           v8::NewStringType::kNormal,
-                                           len).ToLocalChecked();
+  Local<String> home =
+      String::NewFromUtf8(env->isolate(), buf, v8::NewStringType::kNormal, len)
+          .ToLocalChecked();
   args.GetReturnValue().Set(home);
 }
-
 
 static void GetUserInfo(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
@@ -283,10 +266,9 @@ static void GetUserInfo(const FunctionCallbackInfo<Value>& args) {
 
   if (args[0]->IsObject()) {
     Local<Object> options = args[0].As<Object>();
-    MaybeLocal<Value> maybe_encoding = options->Get(env->context(),
-                                                    env->encoding_string());
-    if (maybe_encoding.IsEmpty())
-      return;
+    MaybeLocal<Value> maybe_encoding =
+        options->Get(env->context(), env->encoding_string());
+    if (maybe_encoding.IsEmpty()) return;
 
     Local<Value> encoding_opt = maybe_encoding.ToLocalChecked();
     encoding = ParseEncoding(env->isolate(), encoding_opt, UTF8);
@@ -298,8 +280,8 @@ static void GetUserInfo(const FunctionCallbackInfo<Value>& args) {
 
   if (err) {
     CHECK_GE(args.Length(), 2);
-    env->CollectUVExceptionInfo(args[args.Length() - 1], err,
-                                "uv_os_get_passwd");
+    env->CollectUVExceptionInfo(
+        args[args.Length() - 1], err, "uv_os_get_passwd");
     return args.GetReturnValue().SetUndefined();
   }
 
@@ -309,14 +291,10 @@ static void GetUserInfo(const FunctionCallbackInfo<Value>& args) {
 
   Local<Value> uid = Number::New(env->isolate(), pwd.uid);
   Local<Value> gid = Number::New(env->isolate(), pwd.gid);
-  MaybeLocal<Value> username = StringBytes::Encode(env->isolate(),
-                                                   pwd.username,
-                                                   encoding,
-                                                   &error);
-  MaybeLocal<Value> homedir = StringBytes::Encode(env->isolate(),
-                                                  pwd.homedir,
-                                                  encoding,
-                                                  &error);
+  MaybeLocal<Value> username =
+      StringBytes::Encode(env->isolate(), pwd.username, encoding, &error);
+  MaybeLocal<Value> homedir =
+      StringBytes::Encode(env->isolate(), pwd.homedir, encoding, &error);
   MaybeLocal<Value> shell;
 
   if (pwd.shell == nullptr)
@@ -334,19 +312,15 @@ static void GetUserInfo(const FunctionCallbackInfo<Value>& args) {
 
   entry->Set(env->context(), env->uid_string(), uid).FromJust();
   entry->Set(env->context(), env->gid_string(), gid).FromJust();
-  entry->Set(env->context(),
-             env->username_string(),
-             username.ToLocalChecked()).FromJust();
-  entry->Set(env->context(),
-             env->homedir_string(),
-             homedir.ToLocalChecked()).FromJust();
-  entry->Set(env->context(),
-             env->shell_string(),
-             shell.ToLocalChecked()).FromJust();
+  entry->Set(env->context(), env->username_string(), username.ToLocalChecked())
+      .FromJust();
+  entry->Set(env->context(), env->homedir_string(), homedir.ToLocalChecked())
+      .FromJust();
+  entry->Set(env->context(), env->shell_string(), shell.ToLocalChecked())
+      .FromJust();
 
   args.GetReturnValue().Set(entry);
 }
-
 
 static void SetPriority(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
@@ -367,7 +341,6 @@ static void SetPriority(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(err);
 }
 
-
 static void GetPriority(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
 
@@ -387,7 +360,6 @@ static void GetPriority(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(priority);
 }
 
-
 void Initialize(Local<Object> target,
                 Local<Value> unused,
                 Local<Context> context,
@@ -406,9 +378,11 @@ void Initialize(Local<Object> target,
   env->SetMethod(target, "getUserInfo", GetUserInfo);
   env->SetMethod(target, "setPriority", SetPriority);
   env->SetMethod(target, "getPriority", GetPriority);
-  target->Set(env->context(),
-              FIXED_ONE_BYTE_STRING(env->isolate(), "isBigEndian"),
-              Boolean::New(env->isolate(), IsBigEndian())).FromJust();
+  target
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(env->isolate(), "isBigEndian"),
+            Boolean::New(env->isolate(), IsBigEndian()))
+      .FromJust();
 }
 
 }  // namespace os

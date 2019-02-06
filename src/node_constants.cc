@@ -30,16 +30,16 @@
 #endif
 #include <fcntl.h>
 #include <signal.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <limits>
 
 #if HAVE_OPENSSL
-# include <openssl/ec.h>
-# include <openssl/ssl.h>
-# ifndef OPENSSL_NO_ENGINE
-#  include <openssl/engine.h>
-# endif  // !OPENSSL_NO_ENGINE
+#include <openssl/ec.h>
+#include <openssl/ssl.h>
+#ifndef OPENSSL_NO_ENGINE
+#include <openssl/engine.h>
+#endif  // !OPENSSL_NO_ENGINE
 #endif
 
 #if defined(__POSIX__)
@@ -676,7 +676,6 @@ void DefineSignalConstants(Local<Object> target) {
   NODE_DEFINE_CONSTANT(target, SIGSTKFLT);
 #endif
 
-
 #ifdef SIGCONT
   NODE_DEFINE_CONSTANT(target, SIGCONT);
 #endif
@@ -756,286 +755,286 @@ void DefineSignalConstants(Local<Object> target) {
 
 void DefinePriorityConstants(Local<Object> target) {
 #ifdef UV_PRIORITY_LOW
-# define PRIORITY_LOW UV_PRIORITY_LOW
+#define PRIORITY_LOW UV_PRIORITY_LOW
   NODE_DEFINE_CONSTANT(target, PRIORITY_LOW);
-# undef PRIORITY_LOW
+#undef PRIORITY_LOW
 #endif
 
 #ifdef UV_PRIORITY_BELOW_NORMAL
-# define PRIORITY_BELOW_NORMAL UV_PRIORITY_BELOW_NORMAL
+#define PRIORITY_BELOW_NORMAL UV_PRIORITY_BELOW_NORMAL
   NODE_DEFINE_CONSTANT(target, PRIORITY_BELOW_NORMAL);
-# undef PRIORITY_BELOW_NORMAL
+#undef PRIORITY_BELOW_NORMAL
 #endif
 
 #ifdef UV_PRIORITY_NORMAL
-# define PRIORITY_NORMAL UV_PRIORITY_NORMAL
+#define PRIORITY_NORMAL UV_PRIORITY_NORMAL
   NODE_DEFINE_CONSTANT(target, PRIORITY_NORMAL);
-# undef PRIORITY_NORMAL
+#undef PRIORITY_NORMAL
 #endif
 
 #ifdef UV_PRIORITY_ABOVE_NORMAL
-# define PRIORITY_ABOVE_NORMAL UV_PRIORITY_ABOVE_NORMAL
+#define PRIORITY_ABOVE_NORMAL UV_PRIORITY_ABOVE_NORMAL
   NODE_DEFINE_CONSTANT(target, PRIORITY_ABOVE_NORMAL);
-# undef PRIORITY_ABOVE_NORMAL
+#undef PRIORITY_ABOVE_NORMAL
 #endif
 
 #ifdef UV_PRIORITY_HIGH
-# define PRIORITY_HIGH UV_PRIORITY_HIGH
+#define PRIORITY_HIGH UV_PRIORITY_HIGH
   NODE_DEFINE_CONSTANT(target, PRIORITY_HIGH);
-# undef PRIORITY_HIGH
+#undef PRIORITY_HIGH
 #endif
 
 #ifdef UV_PRIORITY_HIGHEST
-# define PRIORITY_HIGHEST UV_PRIORITY_HIGHEST
+#define PRIORITY_HIGHEST UV_PRIORITY_HIGHEST
   NODE_DEFINE_CONSTANT(target, PRIORITY_HIGHEST);
-# undef PRIORITY_HIGHEST
+#undef PRIORITY_HIGHEST
 #endif
 }
 
 void DefineOpenSSLConstants(Local<Object> target) {
 #ifdef OPENSSL_VERSION_NUMBER
-    NODE_DEFINE_CONSTANT(target, OPENSSL_VERSION_NUMBER);
+  NODE_DEFINE_CONSTANT(target, OPENSSL_VERSION_NUMBER);
 #endif
 
 #ifdef SSL_OP_ALL
-    NODE_DEFINE_CONSTANT(target, SSL_OP_ALL);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_ALL);
 #endif
 
 #ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
-    NODE_DEFINE_CONSTANT(target, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION);
 #endif
 
 #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
-    NODE_DEFINE_CONSTANT(target, SSL_OP_CIPHER_SERVER_PREFERENCE);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_CIPHER_SERVER_PREFERENCE);
 #endif
 
 #ifdef SSL_OP_CISCO_ANYCONNECT
-    NODE_DEFINE_CONSTANT(target, SSL_OP_CISCO_ANYCONNECT);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_CISCO_ANYCONNECT);
 #endif
 
 #ifdef SSL_OP_COOKIE_EXCHANGE
-    NODE_DEFINE_CONSTANT(target, SSL_OP_COOKIE_EXCHANGE);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_COOKIE_EXCHANGE);
 #endif
 
 #ifdef SSL_OP_CRYPTOPRO_TLSEXT_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_CRYPTOPRO_TLSEXT_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_CRYPTOPRO_TLSEXT_BUG);
 #endif
 
 #ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
-    NODE_DEFINE_CONSTANT(target, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS);
 #endif
 
 #ifdef SSL_OP_EPHEMERAL_RSA
-    NODE_DEFINE_CONSTANT(target, SSL_OP_EPHEMERAL_RSA);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_EPHEMERAL_RSA);
 #endif
 
 #ifdef SSL_OP_LEGACY_SERVER_CONNECT
-    NODE_DEFINE_CONSTANT(target, SSL_OP_LEGACY_SERVER_CONNECT);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_LEGACY_SERVER_CONNECT);
 #endif
 
 #ifdef SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER
-    NODE_DEFINE_CONSTANT(target, SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER);
 #endif
 
 #ifdef SSL_OP_MICROSOFT_SESS_ID_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_MICROSOFT_SESS_ID_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_MICROSOFT_SESS_ID_BUG);
 #endif
 
 #ifdef SSL_OP_MSIE_SSLV2_RSA_PADDING
-    NODE_DEFINE_CONSTANT(target, SSL_OP_MSIE_SSLV2_RSA_PADDING);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_MSIE_SSLV2_RSA_PADDING);
 #endif
 
 #ifdef SSL_OP_NETSCAPE_CA_DN_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NETSCAPE_CA_DN_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NETSCAPE_CA_DN_BUG);
 #endif
 
 #ifdef SSL_OP_NETSCAPE_CHALLENGE_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NETSCAPE_CHALLENGE_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NETSCAPE_CHALLENGE_BUG);
 #endif
 
 #ifdef SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NETSCAPE_DEMO_CIPHER_CHANGE_BUG);
 #endif
 
 #ifdef SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG);
 #endif
 
 #ifdef SSL_OP_NO_COMPRESSION
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_COMPRESSION);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_COMPRESSION);
 #endif
 
 #ifdef SSL_OP_NO_QUERY_MTU
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_QUERY_MTU);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_QUERY_MTU);
 #endif
 
 #ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
 #endif
 
 #ifdef SSL_OP_NO_SSLv2
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_SSLv2);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_SSLv2);
 #endif
 
 #ifdef SSL_OP_NO_SSLv3
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_SSLv3);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_SSLv3);
 #endif
 
 #ifdef SSL_OP_NO_TICKET
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_TICKET);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_TICKET);
 #endif
 
 #ifdef SSL_OP_NO_TLSv1
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_TLSv1);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_TLSv1);
 #endif
 
 #ifdef SSL_OP_NO_TLSv1_1
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_TLSv1_1);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_TLSv1_1);
 #endif
 
 #ifdef SSL_OP_NO_TLSv1_2
-    NODE_DEFINE_CONSTANT(target, SSL_OP_NO_TLSv1_2);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_NO_TLSv1_2);
 #endif
 
 #ifdef SSL_OP_PKCS1_CHECK_1
-    NODE_DEFINE_CONSTANT(target, SSL_OP_PKCS1_CHECK_1);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_PKCS1_CHECK_1);
 #endif
 
 #ifdef SSL_OP_PKCS1_CHECK_2
-    NODE_DEFINE_CONSTANT(target, SSL_OP_PKCS1_CHECK_2);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_PKCS1_CHECK_2);
 #endif
 
 #ifdef SSL_OP_SINGLE_DH_USE
-    NODE_DEFINE_CONSTANT(target, SSL_OP_SINGLE_DH_USE);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_SINGLE_DH_USE);
 #endif
 
 #ifdef SSL_OP_SINGLE_ECDH_USE
-    NODE_DEFINE_CONSTANT(target, SSL_OP_SINGLE_ECDH_USE);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_SINGLE_ECDH_USE);
 #endif
 
 #ifdef SSL_OP_SSLEAY_080_CLIENT_DH_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_SSLEAY_080_CLIENT_DH_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_SSLEAY_080_CLIENT_DH_BUG);
 #endif
 
 #ifdef SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG);
 #endif
 
 #ifdef SSL_OP_TLS_BLOCK_PADDING_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_TLS_BLOCK_PADDING_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_TLS_BLOCK_PADDING_BUG);
 #endif
 
 #ifdef SSL_OP_TLS_D5_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_TLS_D5_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_TLS_D5_BUG);
 #endif
 
 #ifdef SSL_OP_TLS_ROLLBACK_BUG
-    NODE_DEFINE_CONSTANT(target, SSL_OP_TLS_ROLLBACK_BUG);
+  NODE_DEFINE_CONSTANT(target, SSL_OP_TLS_ROLLBACK_BUG);
 #endif
 
-# ifndef OPENSSL_NO_ENGINE
+#ifndef OPENSSL_NO_ENGINE
 
-# ifdef ENGINE_METHOD_RSA
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_RSA);
-# endif
+#ifdef ENGINE_METHOD_RSA
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_RSA);
+#endif
 
-# ifdef ENGINE_METHOD_DSA
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_DSA);
-# endif
+#ifdef ENGINE_METHOD_DSA
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_DSA);
+#endif
 
-# ifdef ENGINE_METHOD_DH
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_DH);
-# endif
+#ifdef ENGINE_METHOD_DH
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_DH);
+#endif
 
-# ifdef ENGINE_METHOD_RAND
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_RAND);
-# endif
+#ifdef ENGINE_METHOD_RAND
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_RAND);
+#endif
 
-# ifdef ENGINE_METHOD_EC
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_EC);
-# endif
+#ifdef ENGINE_METHOD_EC
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_EC);
+#endif
 
-# ifdef ENGINE_METHOD_CIPHERS
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_CIPHERS);
-# endif
+#ifdef ENGINE_METHOD_CIPHERS
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_CIPHERS);
+#endif
 
-# ifdef ENGINE_METHOD_DIGESTS
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_DIGESTS);
-# endif
+#ifdef ENGINE_METHOD_DIGESTS
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_DIGESTS);
+#endif
 
-# ifdef ENGINE_METHOD_PKEY_METHS
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_PKEY_METHS);
-# endif
+#ifdef ENGINE_METHOD_PKEY_METHS
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_PKEY_METHS);
+#endif
 
-# ifdef ENGINE_METHOD_PKEY_ASN1_METHS
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_PKEY_ASN1_METHS);
-# endif
+#ifdef ENGINE_METHOD_PKEY_ASN1_METHS
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_PKEY_ASN1_METHS);
+#endif
 
-# ifdef ENGINE_METHOD_ALL
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_ALL);
-# endif
+#ifdef ENGINE_METHOD_ALL
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_ALL);
+#endif
 
-# ifdef ENGINE_METHOD_NONE
-    NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_NONE);
-# endif
+#ifdef ENGINE_METHOD_NONE
+  NODE_DEFINE_CONSTANT(target, ENGINE_METHOD_NONE);
+#endif
 
-# endif  // !OPENSSL_NO_ENGINE
+#endif  // !OPENSSL_NO_ENGINE
 
 #ifdef DH_CHECK_P_NOT_SAFE_PRIME
-    NODE_DEFINE_CONSTANT(target, DH_CHECK_P_NOT_SAFE_PRIME);
+  NODE_DEFINE_CONSTANT(target, DH_CHECK_P_NOT_SAFE_PRIME);
 #endif
 
 #ifdef DH_CHECK_P_NOT_PRIME
-    NODE_DEFINE_CONSTANT(target, DH_CHECK_P_NOT_PRIME);
+  NODE_DEFINE_CONSTANT(target, DH_CHECK_P_NOT_PRIME);
 #endif
 
 #ifdef DH_UNABLE_TO_CHECK_GENERATOR
-    NODE_DEFINE_CONSTANT(target, DH_UNABLE_TO_CHECK_GENERATOR);
+  NODE_DEFINE_CONSTANT(target, DH_UNABLE_TO_CHECK_GENERATOR);
 #endif
 
 #ifdef DH_NOT_SUITABLE_GENERATOR
-    NODE_DEFINE_CONSTANT(target, DH_NOT_SUITABLE_GENERATOR);
+  NODE_DEFINE_CONSTANT(target, DH_NOT_SUITABLE_GENERATOR);
 #endif
 
 #ifdef TLSEXT_TYPE_application_layer_protocol_negotiation
 #define ALPN_ENABLED 1
-    NODE_DEFINE_CONSTANT(target, ALPN_ENABLED);
+  NODE_DEFINE_CONSTANT(target, ALPN_ENABLED);
 #endif
 
 #ifdef RSA_PKCS1_PADDING
-    NODE_DEFINE_CONSTANT(target, RSA_PKCS1_PADDING);
+  NODE_DEFINE_CONSTANT(target, RSA_PKCS1_PADDING);
 #endif
 
 #ifdef RSA_SSLV23_PADDING
-    NODE_DEFINE_CONSTANT(target, RSA_SSLV23_PADDING);
+  NODE_DEFINE_CONSTANT(target, RSA_SSLV23_PADDING);
 #endif
 
 #ifdef RSA_NO_PADDING
-    NODE_DEFINE_CONSTANT(target, RSA_NO_PADDING);
+  NODE_DEFINE_CONSTANT(target, RSA_NO_PADDING);
 #endif
 
 #ifdef RSA_PKCS1_OAEP_PADDING
-    NODE_DEFINE_CONSTANT(target, RSA_PKCS1_OAEP_PADDING);
+  NODE_DEFINE_CONSTANT(target, RSA_PKCS1_OAEP_PADDING);
 #endif
 
 #ifdef RSA_X931_PADDING
-    NODE_DEFINE_CONSTANT(target, RSA_X931_PADDING);
+  NODE_DEFINE_CONSTANT(target, RSA_X931_PADDING);
 #endif
 
 #ifdef RSA_PKCS1_PSS_PADDING
-    NODE_DEFINE_CONSTANT(target, RSA_PKCS1_PSS_PADDING);
+  NODE_DEFINE_CONSTANT(target, RSA_PKCS1_PSS_PADDING);
 #endif
 
 #ifdef RSA_PSS_SALTLEN_DIGEST
-    NODE_DEFINE_CONSTANT(target, RSA_PSS_SALTLEN_DIGEST);
+  NODE_DEFINE_CONSTANT(target, RSA_PSS_SALTLEN_DIGEST);
 #endif
 
 #ifdef RSA_PSS_SALTLEN_MAX_SIGN
-    NODE_DEFINE_CONSTANT(target, RSA_PSS_SALTLEN_MAX_SIGN);
+  NODE_DEFINE_CONSTANT(target, RSA_PSS_SALTLEN_MAX_SIGN);
 #endif
 
 #ifdef RSA_PSS_SALTLEN_AUTO
-    NODE_DEFINE_CONSTANT(target, RSA_PSS_SALTLEN_AUTO);
+  NODE_DEFINE_CONSTANT(target, RSA_PSS_SALTLEN_AUTO);
 #endif
 
 #if HAVE_OPENSSL
@@ -1130,7 +1129,6 @@ void DefineSystemConstants(Local<Object> target) {
   NODE_DEFINE_CONSTANT(target, O_DSYNC);
 #endif
 
-
 #ifdef O_SYMLINK
   NODE_DEFINE_CONSTANT(target, O_SYMLINK);
 #endif
@@ -1208,32 +1206,31 @@ void DefineSystemConstants(Local<Object> target) {
 #endif
 
 #ifdef UV_FS_COPYFILE_EXCL
-# define COPYFILE_EXCL UV_FS_COPYFILE_EXCL
+#define COPYFILE_EXCL UV_FS_COPYFILE_EXCL
   NODE_DEFINE_CONSTANT(target, UV_FS_COPYFILE_EXCL);
   NODE_DEFINE_CONSTANT(target, COPYFILE_EXCL);
-# undef COPYFILE_EXCL
+#undef COPYFILE_EXCL
 #endif
 
 #ifdef UV_FS_COPYFILE_FICLONE
-# define COPYFILE_FICLONE UV_FS_COPYFILE_FICLONE
+#define COPYFILE_FICLONE UV_FS_COPYFILE_FICLONE
   NODE_DEFINE_CONSTANT(target, UV_FS_COPYFILE_FICLONE);
   NODE_DEFINE_CONSTANT(target, COPYFILE_FICLONE);
-# undef COPYFILE_FICLONE
+#undef COPYFILE_FICLONE
 #endif
 
 #ifdef UV_FS_COPYFILE_FICLONE_FORCE
-# define COPYFILE_FICLONE_FORCE UV_FS_COPYFILE_FICLONE_FORCE
+#define COPYFILE_FICLONE_FORCE UV_FS_COPYFILE_FICLONE_FORCE
   NODE_DEFINE_CONSTANT(target, UV_FS_COPYFILE_FICLONE_FORCE);
   NODE_DEFINE_CONSTANT(target, COPYFILE_FICLONE_FORCE);
-# undef COPYFILE_FICLONE_FORCE
+#undef COPYFILE_FICLONE_FORCE
 #endif
 }
 
 void DefineCryptoConstants(Local<Object> target) {
 #if HAVE_OPENSSL
-  NODE_DEFINE_STRING_CONSTANT(target,
-                              "defaultCoreCipherList",
-                              DEFAULT_CIPHER_LIST_CORE);
+  NODE_DEFINE_STRING_CONSTANT(
+      target, "defaultCoreCipherList", DEFAULT_CIPHER_LIST_CORE);
   NODE_DEFINE_STRING_CONSTANT(
       target,
       "defaultCipherList",
@@ -1303,40 +1300,40 @@ void DefineConstants(v8::Isolate* isolate, Local<Object> target) {
   Environment* env = Environment::GetCurrent(isolate);
 
   Local<Object> os_constants = Object::New(isolate);
-  CHECK(os_constants->SetPrototype(env->context(),
-                                   Null(env->isolate())).FromJust());
+  CHECK(os_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   Local<Object> err_constants = Object::New(isolate);
-  CHECK(err_constants->SetPrototype(env->context(),
-                                    Null(env->isolate())).FromJust());
+  CHECK(err_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   Local<Object> sig_constants = Object::New(isolate);
-  CHECK(sig_constants->SetPrototype(env->context(),
-                                    Null(env->isolate())).FromJust());
+  CHECK(sig_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   Local<Object> priority_constants = Object::New(isolate);
-  CHECK(priority_constants->SetPrototype(env->context(),
-                                         Null(env->isolate())).FromJust());
+  CHECK(priority_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   Local<Object> fs_constants = Object::New(isolate);
-  CHECK(fs_constants->SetPrototype(env->context(),
-                                   Null(env->isolate())).FromJust());
+  CHECK(fs_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   Local<Object> crypto_constants = Object::New(isolate);
-  CHECK(crypto_constants->SetPrototype(env->context(),
-                                       Null(env->isolate())).FromJust());
+  CHECK(crypto_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   Local<Object> zlib_constants = Object::New(isolate);
-  CHECK(zlib_constants->SetPrototype(env->context(),
-                                     Null(env->isolate())).FromJust());
+  CHECK(zlib_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   Local<Object> dlopen_constants = Object::New(isolate);
-  CHECK(dlopen_constants->SetPrototype(env->context(),
-                                       Null(env->isolate())).FromJust());
+  CHECK(dlopen_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   Local<Object> trace_constants = Object::New(isolate);
-  CHECK(trace_constants->SetPrototype(env->context(),
-                                      Null(env->isolate())).FromJust());
+  CHECK(trace_constants->SetPrototype(env->context(), Null(env->isolate()))
+            .FromJust());
 
   DefineErrnoConstants(err_constants);
   DefineWindowsErrorConstants(err_constants);
@@ -1352,33 +1349,31 @@ void DefineConstants(v8::Isolate* isolate, Local<Object> target) {
   // Define libuv constants.
   NODE_DEFINE_CONSTANT(os_constants, UV_UDP_REUSEADDR);
 
-  os_constants->Set(env->context(),
-                    OneByteString(isolate, "dlopen"),
-                    dlopen_constants).FromJust();
-  os_constants->Set(env->context(),
-                    OneByteString(isolate, "errno"),
-                    err_constants).FromJust();
-  os_constants->Set(env->context(),
-                    OneByteString(isolate, "signals"),
-                    sig_constants).FromJust();
-  os_constants->Set(env->context(),
-                    OneByteString(isolate, "priority"),
-                    priority_constants).FromJust();
-  target->Set(env->context(),
-              OneByteString(isolate, "os"),
-              os_constants).FromJust();
-  target->Set(env->context(),
-              OneByteString(isolate, "fs"),
-              fs_constants).FromJust();
-  target->Set(env->context(),
-              OneByteString(isolate, "crypto"),
-              crypto_constants).FromJust();
-  target->Set(env->context(),
-              OneByteString(isolate, "zlib"),
-              zlib_constants).FromJust();
-  target->Set(env->context(),
-              OneByteString(isolate, "trace"),
-              trace_constants).FromJust();
+  os_constants
+      ->Set(env->context(), OneByteString(isolate, "dlopen"), dlopen_constants)
+      .FromJust();
+  os_constants
+      ->Set(env->context(), OneByteString(isolate, "errno"), err_constants)
+      .FromJust();
+  os_constants
+      ->Set(env->context(), OneByteString(isolate, "signals"), sig_constants)
+      .FromJust();
+  os_constants
+      ->Set(env->context(),
+            OneByteString(isolate, "priority"),
+            priority_constants)
+      .FromJust();
+  target->Set(env->context(), OneByteString(isolate, "os"), os_constants)
+      .FromJust();
+  target->Set(env->context(), OneByteString(isolate, "fs"), fs_constants)
+      .FromJust();
+  target
+      ->Set(env->context(), OneByteString(isolate, "crypto"), crypto_constants)
+      .FromJust();
+  target->Set(env->context(), OneByteString(isolate, "zlib"), zlib_constants)
+      .FromJust();
+  target->Set(env->context(), OneByteString(isolate, "trace"), trace_constants)
+      .FromJust();
 }
 
 }  // namespace node

@@ -4,7 +4,6 @@
 #include "node/inspector/protocol/NodeWorker.h"
 #include "v8.h"
 
-
 namespace node {
 namespace inspector {
 class WorkerManagerEventHandle;

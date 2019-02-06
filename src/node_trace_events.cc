@@ -23,9 +23,9 @@ using v8::Value;
 class NodeCategorySet : public BaseObject {
  public:
   static void Initialize(Local<Object> target,
-                  Local<Value> unused,
-                  Local<Context> context,
-                  void* priv);
+                         Local<Value> unused,
+                         Local<Context> context,
+                         void* priv);
 
   static void New(const FunctionCallbackInfo<Value>& args);
   static void Enable(const FunctionCallbackInfo<Value>& args);
@@ -43,8 +43,8 @@ class NodeCategorySet : public BaseObject {
  private:
   NodeCategorySet(Environment* env,
                   Local<Object> wrap,
-                  std::set<std::string>&& categories) :
-        BaseObject(env, wrap), categories_(std::move(categories)) {
+                  std::set<std::string>&& categories)
+      : BaseObject(env, wrap), categories_(std::move(categories)) {
     MakeWeak();
   }
 
@@ -95,11 +95,11 @@ void GetEnabledCategories(const FunctionCallbackInfo<Value>& args) {
   std::string categories =
       GetTracingAgentWriter()->agent()->GetEnabledCategories();
   if (!categories.empty()) {
-    args.GetReturnValue().Set(
-      String::NewFromUtf8(env->isolate(),
-                          categories.c_str(),
-                          NewStringType::kNormal,
-                          categories.size()).ToLocalChecked());
+    args.GetReturnValue().Set(String::NewFromUtf8(env->isolate(),
+                                                  categories.c_str(),
+                                                  NewStringType::kNormal,
+                                                  categories.size())
+                                  .ToLocalChecked());
   }
 }
 
@@ -111,15 +111,15 @@ static void SetTraceCategoryStateUpdateHandler(
 }
 
 void NodeCategorySet::Initialize(Local<Object> target,
-                Local<Value> unused,
-                Local<Context> context,
-                void* priv) {
+                                 Local<Value> unused,
+                                 Local<Context> context,
+                                 void* priv) {
   Environment* env = Environment::GetCurrent(context);
 
   env->SetMethod(target, "getEnabledCategories", GetEnabledCategories);
-  env->SetMethod(
-      target, "setTraceCategoryStateUpdateHandler",
-      SetTraceCategoryStateUpdateHandler);
+  env->SetMethod(target,
+                 "setTraceCategoryStateUpdateHandler",
+                 SetTraceCategoryStateUpdateHandler);
 
   Local<FunctionTemplate> category_set =
       env->NewFunctionTemplate(NodeCategorySet::New);
@@ -127,10 +127,11 @@ void NodeCategorySet::Initialize(Local<Object> target,
   env->SetProtoMethod(category_set, "enable", NodeCategorySet::Enable);
   env->SetProtoMethod(category_set, "disable", NodeCategorySet::Disable);
 
-  target->Set(env->context(),
-              FIXED_ONE_BYTE_STRING(env->isolate(), "CategorySet"),
-              category_set->GetFunction(env->context()).ToLocalChecked())
-              .FromJust();
+  target
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(env->isolate(), "CategorySet"),
+            category_set->GetFunction(env->context()).ToLocalChecked())
+      .FromJust();
 
   Local<String> isTraceCategoryEnabled =
       FIXED_ONE_BYTE_STRING(env->isolate(), "isTraceCategoryEnabled");
@@ -139,15 +140,19 @@ void NodeCategorySet::Initialize(Local<Object> target,
   // Grab the trace and isTraceCategoryEnabled intrinsics from the binding
   // object and expose those to our binding layer.
   Local<Object> binding = context->GetExtrasBindingObject();
-  target->Set(context, isTraceCategoryEnabled,
-              binding->Get(context, isTraceCategoryEnabled).ToLocalChecked())
-                  .FromJust();
-  target->Set(context, trace,
-              binding->Get(context, trace).ToLocalChecked()).FromJust();
+  target
+      ->Set(context,
+            isTraceCategoryEnabled,
+            binding->Get(context, isTraceCategoryEnabled).ToLocalChecked())
+      .FromJust();
+  target->Set(context, trace, binding->Get(context, trace).ToLocalChecked())
+      .FromJust();
 
-  target->Set(context,
-              FIXED_ONE_BYTE_STRING(env->isolate(), "traceCategoryState"),
-              env->trace_category_state().GetJSArray()).FromJust();
+  target
+      ->Set(context,
+            FIXED_ONE_BYTE_STRING(env->isolate(), "traceCategoryState"),
+            env->trace_category_state().GetJSArray())
+      .FromJust();
 }
 
 }  // namespace node

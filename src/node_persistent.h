@@ -30,8 +30,7 @@ class PersistentToLocal {
   // reference to the object.
   template <class TypeName>
   static inline v8::Local<TypeName> Default(
-      v8::Isolate* isolate,
-      const Persistent<TypeName>& persistent) {
+      v8::Isolate* isolate, const Persistent<TypeName>& persistent) {
     if (persistent.IsWeak()) {
       return PersistentToLocal::Weak(isolate, persistent);
     } else {
@@ -53,8 +52,7 @@ class PersistentToLocal {
 
   template <class TypeName>
   static inline v8::Local<TypeName> Weak(
-      v8::Isolate* isolate,
-      const Persistent<TypeName>& persistent) {
+      v8::Isolate* isolate, const Persistent<TypeName>& persistent) {
     return v8::Local<TypeName>::New(isolate, persistent);
   }
 };

@@ -3,19 +3,16 @@
 
 #if defined(NODE_WANT_INTERNALS) && NODE_WANT_INTERNALS
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 #include <vector>
-#include "node_url.h"
 #include "base_object-inl.h"
+#include "node_url.h"
 
 namespace node {
 namespace loader {
 
-enum PackageMainCheck : bool {
-    CheckMain = true,
-    IgnoreMain = false
-};
+enum PackageMainCheck : bool { CheckMain = true, IgnoreMain = false };
 
 enum ScriptType : int {
   kScript,

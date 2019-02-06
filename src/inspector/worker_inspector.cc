@@ -31,9 +31,9 @@ class WorkerStartedRequest : public Request {
   bool waiting_;
 };
 
-
 void Report(const std::unique_ptr<WorkerDelegate>& delegate,
-            const WorkerInfo& info, bool waiting) {
+            const WorkerInfo& info,
+            bool waiting) {
   if (info.worker_thread)
     delegate->WorkerCreated(info.title, info.url, waiting, info.worker_thread);
 }
@@ -51,11 +51,14 @@ class WorkerFinishedRequest : public Request {
 };
 }  // namespace
 
-
 ParentInspectorHandle::ParentInspectorHandle(
-    int id, const std::string& url,
-    std::shared_ptr<MainThreadHandle> parent_thread, bool wait_for_connect)
-    : id_(id), url_(url), parent_thread_(parent_thread),
+    int id,
+    const std::string& url,
+    std::shared_ptr<MainThreadHandle> parent_thread,
+    bool wait_for_connect)
+    : id_(id),
+      url_(url),
+      parent_thread_(parent_thread),
       wait_(wait_for_connect) {}
 
 ParentInspectorHandle::~ParentInspectorHandle() {
@@ -77,16 +80,15 @@ void WorkerManager::WorkerFinished(int session_id) {
 void WorkerManager::WorkerStarted(int session_id,
                                   const WorkerInfo& info,
                                   bool waiting) {
-  if (info.worker_thread->Expired())
-    return;
+  if (info.worker_thread->Expired()) return;
   children_.emplace(session_id, info);
   for (const auto& delegate : delegates_) {
     Report(delegate.second, info, waiting);
   }
 }
 
-std::unique_ptr<ParentInspectorHandle>
-WorkerManager::NewParentHandle(int thread_id, const std::string& url) {
+std::unique_ptr<ParentInspectorHandle> WorkerManager::NewParentHandle(
+    int thread_id, const std::string& url) {
   bool wait = !delegates_waiting_on_start_.empty();
   return std::unique_ptr<ParentInspectorHandle>(
       new ParentInspectorHandle(thread_id, url, thread_, wait));
@@ -118,7 +120,7 @@ void WorkerManager::SetWaitOnStartForDelegate(int id, bool wait) {
 }
 
 void WorkerManagerEventHandle::SetWaitOnStart(bool wait_on_start) {
-    manager_->SetWaitOnStartForDelegate(id_, wait_on_start);
+  manager_->SetWaitOnStartForDelegate(id_, wait_on_start);
 }
 
 WorkerManagerEventHandle::~WorkerManagerEventHandle() {

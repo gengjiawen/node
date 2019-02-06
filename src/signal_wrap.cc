@@ -57,9 +57,11 @@ class SignalWrap : public HandleWrap {
     env->SetProtoMethod(constructor, "start", Start);
     env->SetProtoMethod(constructor, "stop", Stop);
 
-    target->Set(env->context(), signalString,
-                constructor->GetFunction(env->context()).ToLocalChecked())
-                .FromJust();
+    target
+        ->Set(env->context(),
+              signalString,
+              constructor->GetFunction(env->context()).ToLocalChecked())
+        .FromJust();
   }
 
   SET_NO_MEMORY_INFO()
@@ -125,9 +127,7 @@ class SignalWrap : public HandleWrap {
   uv_signal_t handle_;
 };
 
-
 }  // anonymous namespace
 }  // namespace node
-
 
 NODE_MODULE_CONTEXT_AWARE_INTERNAL(signal_wrap, node::SignalWrap::Initialize)

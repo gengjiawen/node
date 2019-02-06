@@ -30,8 +30,7 @@ using v8::String;
 using v8::Uint32;
 using v8::Value;
 
-static void GetOwnNonIndexProperties(
-    const FunctionCallbackInfo<Value>& args) {
+static void GetOwnNonIndexProperties(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   Local<Context> context = env->context();
 
@@ -43,13 +42,14 @@ static void GetOwnNonIndexProperties(
   Local<Array> properties;
 
   PropertyFilter filter =
-    static_cast<PropertyFilter>(args[1].As<Uint32>()->Value());
+      static_cast<PropertyFilter>(args[1].As<Uint32>()->Value());
 
-  if (!object->GetPropertyNames(
-        context, KeyCollectionMode::kOwnOnly,
-        filter,
-        IndexFilter::kSkipIndices)
-          .ToLocal(&properties)) {
+  if (!object
+           ->GetPropertyNames(context,
+                              KeyCollectionMode::kOwnOnly,
+                              filter,
+                              IndexFilter::kSkipIndices)
+           .ToLocal(&properties)) {
     return;
   }
   args.GetReturnValue().Set(properties);
@@ -57,15 +57,14 @@ static void GetOwnNonIndexProperties(
 
 static void GetPromiseDetails(const FunctionCallbackInfo<Value>& args) {
   // Return undefined if it's not a Promise.
-  if (!args[0]->IsPromise())
-    return;
+  if (!args[0]->IsPromise()) return;
 
   auto isolate = args.GetIsolate();
 
   Local<Promise> promise = args[0].As<Promise>();
 
   int state = promise->State();
-  Local<Value> values[2] = { Integer::New(isolate, state) };
+  Local<Value> values[2] = {Integer::New(isolate, state)};
   size_t number_of_values = 1;
   if (state != Promise::PromiseState::kPending)
     values[number_of_values++] = promise->Result();
@@ -75,23 +74,17 @@ static void GetPromiseDetails(const FunctionCallbackInfo<Value>& args) {
 
 static void GetProxyDetails(const FunctionCallbackInfo<Value>& args) {
   // Return undefined if it's not a proxy.
-  if (!args[0]->IsProxy())
-    return;
+  if (!args[0]->IsProxy()) return;
 
   Local<Proxy> proxy = args[0].As<Proxy>();
 
-  Local<Value> ret[] = {
-    proxy->GetTarget(),
-    proxy->GetHandler()
-  };
+  Local<Value> ret[] = {proxy->GetTarget(), proxy->GetHandler()};
 
-  args.GetReturnValue().Set(
-      Array::New(args.GetIsolate(), ret, arraysize(ret)));
+  args.GetReturnValue().Set(Array::New(args.GetIsolate(), ret, arraysize(ret)));
 }
 
 static void PreviewEntries(const FunctionCallbackInfo<Value>& args) {
-  if (!args[0]->IsObject())
-    return;
+  if (!args[0]->IsObject()) return;
 
   Environment* env = Environment::GetCurrent(args);
   bool is_key_value;
@@ -99,13 +92,9 @@ static void PreviewEntries(const FunctionCallbackInfo<Value>& args) {
   if (!args[0].As<Object>()->PreviewEntries(&is_key_value).ToLocal(&entries))
     return;
   // Fast path for WeakMap, WeakSet and Set iterators.
-  if (args.Length() == 1)
-    return args.GetReturnValue().Set(entries);
+  if (args.Length() == 1) return args.GetReturnValue().Set(entries);
 
-  Local<Value> ret[] = {
-    entries,
-    Boolean::New(env->isolate(), is_key_value)
-  };
+  Local<Value> ret[] = {entries, Boolean::New(env->isolate(), is_key_value)};
   return args.GetReturnValue().Set(
       Array::New(env->isolate(), ret, arraysize(ret)));
 }
@@ -118,9 +107,8 @@ static void SafeToString(const FunctionCallbackInfo<Value>& args) {
 
 inline Local<Private> IndexToPrivateSymbol(Environment* env, uint32_t index) {
 #define V(name, _) &Environment::name,
-  static Local<Private> (Environment::*const methods[])() const = {
-    PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(V)
-  };
+  static Local<Private> (Environment::*const methods[])()
+      const = {PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(V)};
 #undef V
   CHECK_LT(index, arraysize(methods));
   return (env->*methods[index])();
@@ -154,18 +142,15 @@ static void SetHiddenValue(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(maybe_value.FromJust());
 }
 
-
 void StartSigintWatchdog(const FunctionCallbackInfo<Value>& args) {
   int ret = SigintWatchdogHelper::GetInstance()->Start();
   args.GetReturnValue().Set(ret == 0);
 }
 
-
 void StopSigintWatchdog(const FunctionCallbackInfo<Value>& args) {
   bool had_pending_signals = SigintWatchdogHelper::GetInstance()->Stop();
   args.GetReturnValue().Set(had_pending_signals);
 }
-
 
 void WatchdogHasPendingSigint(const FunctionCallbackInfo<Value>& args) {
   bool ret = SigintWatchdogHelper::GetInstance()->HasPendingSignal();
@@ -187,21 +172,24 @@ void Initialize(Local<Object> target,
                 void* priv) {
   Environment* env = Environment::GetCurrent(context);
 
-#define V(name, _)                                                            \
-  target->Set(context,                                                        \
-              FIXED_ONE_BYTE_STRING(env->isolate(), #name),                   \
-              Integer::NewFromUnsigned(env->isolate(), index++)).FromJust();
+#define V(name, _)                                                             \
+  target                                                                       \
+      ->Set(context,                                                           \
+            FIXED_ONE_BYTE_STRING(env->isolate(), #name),                      \
+            Integer::NewFromUnsigned(env->isolate(), index++))                 \
+      .FromJust();
   {
     uint32_t index = 0;
     PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(V)
   }
 #undef V
 
-#define V(name)                                                               \
-  target->Set(context,                                                        \
-              FIXED_ONE_BYTE_STRING(env->isolate(), #name),                   \
-              Integer::New(env->isolate(), Promise::PromiseState::name))      \
-    .FromJust()
+#define V(name)                                                                \
+  target                                                                       \
+      ->Set(context,                                                           \
+            FIXED_ONE_BYTE_STRING(env->isolate(), #name),                      \
+            Integer::New(env->isolate(), Promise::PromiseState::name))         \
+      .FromJust()
   V(kPending);
   V(kFulfilled);
   V(kRejected);
@@ -213,13 +201,13 @@ void Initialize(Local<Object> target,
   env->SetMethodNoSideEffect(target, "getProxyDetails", GetProxyDetails);
   env->SetMethodNoSideEffect(target, "safeToString", SafeToString);
   env->SetMethodNoSideEffect(target, "previewEntries", PreviewEntries);
-  env->SetMethodNoSideEffect(target, "getOwnNonIndexProperties",
-                                     GetOwnNonIndexProperties);
+  env->SetMethodNoSideEffect(
+      target, "getOwnNonIndexProperties", GetOwnNonIndexProperties);
 
   env->SetMethod(target, "startSigintWatchdog", StartSigintWatchdog);
   env->SetMethod(target, "stopSigintWatchdog", StopSigintWatchdog);
-  env->SetMethodNoSideEffect(target, "watchdogHasPendingSigint",
-                             WatchdogHasPendingSigint);
+  env->SetMethodNoSideEffect(
+      target, "watchdogHasPendingSigint", WatchdogHasPendingSigint);
 
   env->SetMethod(target, "enqueueMicrotask", EnqueueMicrotask);
   env->SetMethod(target, "triggerFatalException", FatalException);
@@ -230,9 +218,11 @@ void Initialize(Local<Object> target,
   NODE_DEFINE_CONSTANT(constants, ONLY_CONFIGURABLE);
   NODE_DEFINE_CONSTANT(constants, SKIP_STRINGS);
   NODE_DEFINE_CONSTANT(constants, SKIP_SYMBOLS);
-  target->Set(context,
-              FIXED_ONE_BYTE_STRING(env->isolate(), "propertyFilter"),
-              constants).FromJust();
+  target
+      ->Set(context,
+            FIXED_ONE_BYTE_STRING(env->isolate(), "propertyFilter"),
+            constants)
+      .FromJust();
 
   Local<String> should_abort_on_uncaught_toggle =
       FIXED_ONE_BYTE_STRING(env->isolate(), "shouldAbortOnUncaughtToggle");

@@ -1,7 +1,7 @@
 #include "tracing/node_trace_writer.h"
 
-#include <string.h>
 #include <fcntl.h>
+#include <string.h>
 
 #include "util-inl.h"
 
@@ -16,12 +16,12 @@ void NodeTraceWriter::InitializeOnThread(uv_loop_t* loop) {
   tracing_loop_ = loop;
 
   flush_signal_.data = this;
-  int err = uv_async_init(tracing_loop_, &flush_signal_,
-                          [](uv_async_t* signal) {
-    NodeTraceWriter* trace_writer =
-        ContainerOf(&NodeTraceWriter::flush_signal_, signal);
-    trace_writer->FlushPrivate();
-  });
+  int err =
+      uv_async_init(tracing_loop_, &flush_signal_, [](uv_async_t* signal) {
+        NodeTraceWriter* trace_writer =
+            ContainerOf(&NodeTraceWriter::flush_signal_, signal);
+        trace_writer->FlushPrivate();
+      });
   CHECK_EQ(err, 0);
 
   exit_signal_.data = this;
@@ -85,13 +85,18 @@ void NodeTraceWriter::OpenNewFileForStreaming() {
     uv_fs_req_cleanup(&req);
   }
 
-  fd_ = uv_fs_open(nullptr, &req, filepath.c_str(),
-      O_CREAT | O_WRONLY | O_TRUNC, 0644, nullptr);
+  fd_ = uv_fs_open(nullptr,
+                   &req,
+                   filepath.c_str(),
+                   O_CREAT | O_WRONLY | O_TRUNC,
+                   0644,
+                   nullptr);
   uv_fs_req_cleanup(&req);
   if (fd_ < 0) {
-    fprintf(stderr, "Could not open trace file %s: %s\n",
-                    filepath.c_str(),
-                    uv_strerror(fd_));
+    fprintf(stderr,
+            "Could not open trace file %s: %s\n",
+            filepath.c_str(),
+            uv_strerror(fd_));
     fd_ = -1;
   }
 }
@@ -143,8 +148,7 @@ void NodeTraceWriter::Flush(bool blocking) {
     // protects json_trace_writer_, and without request_mutex_ there might be
     // a time window in which the stream state changes?
     Mutex::ScopedLock stream_mutex_lock(stream_mutex_);
-    if (!json_trace_writer_)
-      return;
+    if (!json_trace_writer_) return;
   }
   int request_id = ++num_write_requests_;
   int err = uv_async_send(&flush_signal_);
@@ -165,13 +169,10 @@ void NodeTraceWriter::WriteToFile(std::string&& str, int highest_request_id) {
   uv_buf_t buf = uv_buf_init(nullptr, 0);
   {
     Mutex::ScopedLock lock(request_mutex_);
-    write_req_queue_.emplace(WriteRequest {
-      std::move(str), highest_request_id
-    });
+    write_req_queue_.emplace(WriteRequest{std::move(str), highest_request_id});
     if (write_req_queue_.size() == 1) {
-      buf = uv_buf_init(
-          const_cast<char*>(write_req_queue_.front().str.c_str()),
-          write_req_queue_.front().str.length());
+      buf = uv_buf_init(const_cast<char*>(write_req_queue_.front().str.c_str()),
+                        write_req_queue_.front().str.length());
     }
   }
   // Only one write request for the same file descriptor should be active at
@@ -183,8 +184,7 @@ void NodeTraceWriter::WriteToFile(std::string&& str, int highest_request_id) {
 
 void NodeTraceWriter::StartWrite(uv_buf_t buf) {
   int err = uv_fs_write(
-      tracing_loop_, &write_req_, fd_, &buf, 1, -1,
-      [](uv_fs_t* req) {
+      tracing_loop_, &write_req_, fd_, &buf, 1, -1, [](uv_fs_t* req) {
         NodeTraceWriter* writer =
             ContainerOf(&NodeTraceWriter::write_req_, req);
         writer->AfterWrite();
@@ -204,9 +204,8 @@ void NodeTraceWriter::AfterWrite() {
     highest_request_id_completed_ = highest_request_id;
     request_cond_.Broadcast(scoped_lock);
     if (!write_req_queue_.empty()) {
-      buf = uv_buf_init(
-          const_cast<char*>(write_req_queue_.front().str.c_str()),
-          write_req_queue_.front().str.length());
+      buf = uv_buf_init(const_cast<char*>(write_req_queue_.front().str.c_str()),
+                        write_req_queue_.front().str.length());
     }
   }
   if (buf.base != nullptr && fd_ != -1) {

@@ -73,12 +73,9 @@ Metadata::Versions::Versions() {
   llhttp = per_process::llhttp_version;
   http_parser = per_process::http_parser_version;
 
-  brotli =
-    std::to_string(BrotliEncoderVersion() >> 24) +
-    "." +
-    std::to_string((BrotliEncoderVersion() & 0xFFF000) >> 12) +
-    "." +
-    std::to_string(BrotliEncoderVersion() & 0xFFF);
+  brotli = std::to_string(BrotliEncoderVersion() >> 24) + "." +
+           std::to_string((BrotliEncoderVersion() & 0xFFF000) >> 12) + "." +
+           std::to_string(BrotliEncoderVersion() & 0xFFF);
 
 #if HAVE_OPENSSL
   openssl = GetOpenSSLVersion();
@@ -103,8 +100,8 @@ Metadata::Release::Release() : name(NODE_RELEASE) {
   headers_url = NODE_RELEASE_URLFPFX "-headers.tar.gz";
 #ifdef _WIN32
   lib_url = strcmp(NODE_ARCH, "ia32") ? NODE_RELEASE_URLPFX "win-" NODE_ARCH
-                                                           "/node.lib"
-                                     : NODE_RELEASE_URLPFX "win-x86/node.lib";
+                                                            "/node.lib"
+                                      : NODE_RELEASE_URLPFX "win-x86/node.lib";
 #endif  // _WIN32
 
 #endif  // NODE_HAS_RELEASE_URLS

@@ -43,7 +43,7 @@ class WriteWrap;
 namespace crypto {
 class SecureContext;
 class NodeBIO;
-}
+}  // namespace crypto
 
 class TLSWrap : public AsyncWrap,
                 public crypto::SSLWrap<TLSWrap>,
@@ -66,7 +66,6 @@ class TLSWrap : public AsyncWrap,
       v8::Local<v8::Object> req_wrap_object) override;
   AsyncWrap* GetAsyncWrap() override;
 
-
   // Implement StreamResource:
   int ReadStart() override;  // Exposed to JS
   int ReadStop() override;   // Exposed to JS
@@ -79,7 +78,6 @@ class TLSWrap : public AsyncWrap,
   const char* Error() const override;
   // Reset error_ string to empty. Not related to "clear text".
   void ClearError() override;
-
 
   // Called by the done() callback of the 'newSession' event.
   void NewSessionDoneCb();
@@ -120,8 +118,8 @@ class TLSWrap : public AsyncWrap,
   //
   // EncIn() doesn't exist. Encrypted data is pushed from underlying stream into
   // enc_in_ via the stream listener's OnStreamAlloc()/OnStreamRead() interface.
-  void EncOut();  // Write encrypted data from enc_out_ to underlying stream.
-  void ClearIn();  // SSL_write() clear data "in" to SSL.
+  void EncOut();    // Write encrypted data from enc_out_ to underlying stream.
+  void ClearIn();   // SSL_write() clear data "in" to SSL.
   void ClearOut();  // SSL_read() clear text "out" from SSL.
 
   // Call Done() on outstanding WriteWrap request.
@@ -132,8 +130,7 @@ class TLSWrap : public AsyncWrap,
   // underlying stream even if there is no clear text to read or write.
   inline void Cycle() {
     // Prevent recursion
-    if (++cycle_depth_ > 1)
-      return;
+    if (++cycle_depth_ > 1) return;
 
     for (; cycle_depth_ > 0; cycle_depth_--) {
       ClearIn();

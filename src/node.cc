@@ -72,7 +72,7 @@
 #endif
 
 #include <errno.h>
-#include <fcntl.h>  // _O_RDWR
+#include <fcntl.h>   // _O_RDWR
 #include <limits.h>  // PATH_MAX
 #include <signal.h>
 #include <stdio.h>
@@ -167,8 +167,7 @@ static void WaitForInspectorDisconnect(Environment* env) {
     struct sigaction act;
     memset(&act, 0, sizeof(act));
     for (unsigned nr = 1; nr < kMaxSignal; nr += 1) {
-      if (nr == SIGKILL || nr == SIGSTOP || nr == SIGPROF)
-        continue;
+      if (nr == SIGKILL || nr == SIGSTOP || nr == SIGPROF) continue;
       act.sa_handler = (nr == SIGPIPE) ? SIG_IGN : SIG_DFL;
       CHECK_EQ(0, sigaction(nr, &act, nullptr));
     }
@@ -257,14 +256,12 @@ MaybeLocal<Value> RunBootstrapping(Environment* env) {
   // Store primordials
   env->set_primordials(Object::New(isolate));
   std::vector<Local<String>> primordials_params = {
-    FIXED_ONE_BYTE_STRING(isolate, "breakAtBootstrap"),
-    env->primordials_string()
-  };
+      FIXED_ONE_BYTE_STRING(isolate, "breakAtBootstrap"),
+      env->primordials_string()};
   std::vector<Local<Value>> primordials_args = {
-    Boolean::New(isolate,
-                  env->options()->debug_options().break_node_first_line),
-    env->primordials()
-  };
+      Boolean::New(isolate,
+                   env->options()->debug_options().break_node_first_line),
+      env->primordials()};
   MaybeLocal<Value> primordials_ret =
       ExecuteBootstrapper(env,
                           "internal/bootstrap/primordials",
@@ -428,7 +425,6 @@ void LoadEnvironment(Environment* env) {
   }
 }
 
-
 #ifdef __POSIX__
 void RegisterSignalHandler(int signal,
                            void (*handler)(int signal),
@@ -460,14 +456,11 @@ inline void PlatformInit() {
   // Make sure file descriptors 0-2 are valid before we start logging anything.
   for (int fd = STDIN_FILENO; fd <= STDERR_FILENO; fd += 1) {
     struct stat ignored;
-    if (fstat(fd, &ignored) == 0)
-      continue;
+    if (fstat(fd, &ignored) == 0) continue;
     // Anything but EBADF means something is seriously wrong.  We don't
     // have to special-case EINTR, fstat() is not interruptible.
-    if (errno != EBADF)
-      ABORT();
-    if (fd != open("/dev/null", O_RDWR))
-      ABORT();
+    if (errno != EBADF) ABORT();
+    if (fd != open("/dev/null", O_RDWR)) ABORT();
   }
 
 #if HAVE_INSPECTOR
@@ -483,8 +476,7 @@ inline void PlatformInit() {
   // it evaluates to 32, 34 or 64, depending on whether RT signals are enabled.
   // Counting up to SIGRTMIN doesn't work for the same reason.
   for (unsigned nr = 1; nr < kMaxSignal; nr += 1) {
-    if (nr == SIGKILL || nr == SIGSTOP)
-      continue;
+    if (nr == SIGKILL || nr == SIGSTOP) continue;
     act.sa_handler = (nr == SIGPIPE) ? SIG_IGN : SIG_DFL;
     CHECK_EQ(0, sigaction(nr, &act, nullptr));
   }
@@ -522,8 +514,7 @@ inline void PlatformInit() {
       // Ignore _close result. If it fails or not depends on used Windows
       // version. We will just check _open result.
       _close(fd);
-      if (fd != _open("nul", _O_RDWR))
-        ABORT();
+      if (fd != _open("nul", _O_RDWR)) ABORT();
     }
   }
 #endif  // _WIN32
@@ -557,9 +548,11 @@ int ProcessGlobalArgs(std::vector<std::string>* args,
   }
 
   auto env_opts = per_process::cli_options->per_isolate->per_env;
-  if (std::find(v8_args.begin(), v8_args.end(),
+  if (std::find(v8_args.begin(),
+                v8_args.end(),
                 "--abort-on-uncaught-exception") != v8_args.end() ||
-      std::find(v8_args.begin(), v8_args.end(),
+      std::find(v8_args.begin(),
+                v8_args.end(),
                 "--abort_on_uncaught_exception") != v8_args.end()) {
     env_opts->abort_on_uncaught_exception = true;
   }
@@ -737,18 +730,17 @@ void Init(int* argc,
   *exec_argv = Malloc<const char*>(*exec_argc);
   for (int i = 0; i < *exec_argc; ++i)
     (*exec_argv)[i] = strdup(exec_argv_[i].c_str());
-  for (int i = 0; i < *argc; ++i)
-    argv[i] = strdup(argv_[i].c_str());
+  for (int i = 0; i < *argc; ++i) argv[i] = strdup(argv_[i].c_str());
 }
 
 void RunBeforeExit(Environment* env) {
   env->RunBeforeExitCallbacks();
 
-  if (!uv_loop_alive(env->event_loop()))
-    EmitBeforeExit(env);
+  if (!uv_loop_alive(env->event_loop())) EmitBeforeExit(env);
 }
 
-inline int Start(Isolate* isolate, IsolateData* isolate_data,
+inline int Start(Isolate* isolate,
+                 IsolateData* isolate_data,
                  const std::vector<std::string>& args,
                  const std::vector<std::string>& exec_args) {
   HandleScope handle_scope(isolate);
@@ -800,8 +792,7 @@ inline int Start(Isolate* isolate, IsolateData* isolate_data,
       per_process::v8_platform.DrainVMTasks(isolate);
 
       more = uv_loop_alive(env.event_loop());
-      if (more)
-        continue;
+      if (more) continue;
 
       RunBeforeExit(&env);
 
@@ -840,8 +831,7 @@ inline int Start(uv_loop_t* event_loop,
   std::unique_ptr<ArrayBufferAllocator, decltype(&FreeArrayBufferAllocator)>
       allocator(CreateArrayBufferAllocator(), &FreeArrayBufferAllocator);
   Isolate* const isolate = NewIsolate(allocator.get(), event_loop);
-  if (isolate == nullptr)
-    return 12;  // Signal internal error.
+  if (isolate == nullptr) return 12;  // Signal internal error.
 
   if (per_process::cli_options->print_version) {
     printf("%s\n", NODE_VERSION);
@@ -869,8 +859,7 @@ inline int Start(uv_loop_t* event_loop,
     if (isolate_data->options()->track_heap_objects) {
       isolate->GetHeapProfiler()->StartTrackingHeapObjects(true);
     }
-    exit_code =
-        Start(isolate, isolate_data.get(), args, exec_args);
+    exit_code = Start(isolate, isolate_data.get(), args, exec_args);
   }
 
   isolate->Dispose();
@@ -880,7 +869,7 @@ inline int Start(uv_loop_t* event_loop,
 }
 
 int Start(int argc, char** argv) {
-  atexit([] () { uv_tty_reset_mode(); });
+  atexit([]() { uv_tty_reset_mode(); });
   PlatformInit();
   performance::performance_node_start = PERFORMANCE_NOW();
 
@@ -928,8 +917,7 @@ int Start(int argc, char** argv) {
   V8::Initialize();
   performance::performance_v8_start = PERFORMANCE_NOW();
   per_process::v8_initialized = true;
-  const int exit_code =
-      Start(uv_default_loop(), args, exec_args);
+  const int exit_code = Start(uv_default_loop(), args, exec_args);
   per_process::v8_initialized = false;
   V8::Dispose();
 

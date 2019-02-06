@@ -32,14 +32,12 @@
 namespace node {
 
 BaseObject::BaseObject(Environment* env, v8::Local<v8::Object> object)
-    : persistent_handle_(env->isolate(), object),
-      env_(env) {
+    : persistent_handle_(env->isolate(), object), env_(env) {
   CHECK_EQ(false, object.IsEmpty());
   CHECK_GT(object->InternalFieldCount(), 0);
   object->SetAlignedPointerInInternalField(0, static_cast<void*>(this));
   env_->AddCleanupHook(DeleteMe, static_cast<void*>(this));
 }
-
 
 BaseObject::~BaseObject() {
   env_->RemoveCleanupHook(DeleteMe, static_cast<void*>(this));
@@ -55,11 +53,9 @@ BaseObject::~BaseObject() {
   }
 }
 
-
 Persistent<v8::Object>& BaseObject::persistent() {
   return persistent_handle_;
 }
-
 
 v8::Local<v8::Object> BaseObject::object() const {
   return PersistentToLocal::Default(env_->isolate(), persistent_handle_);
@@ -78,18 +74,15 @@ Environment* BaseObject::env() const {
   return env_;
 }
 
-
 BaseObject* BaseObject::FromJSObject(v8::Local<v8::Object> obj) {
   CHECK_GT(obj->InternalFieldCount(), 0);
   return static_cast<BaseObject*>(obj->GetAlignedPointerFromInternalField(0));
 }
 
-
 template <typename T>
 T* BaseObject::FromJSObject(v8::Local<v8::Object> object) {
   return static_cast<T*>(FromJSObject(object));
 }
-
 
 void BaseObject::MakeWeak() {
   persistent_handle_.SetWeak(
@@ -101,17 +94,16 @@ void BaseObject::MakeWeak() {
         // transitioned into an invalid state.
         // Refs: https://github.com/nodejs/node/issues/18897
         obj->persistent_handle_.Reset();
-      }, v8::WeakCallbackType::kParameter);
+      },
+      v8::WeakCallbackType::kParameter);
 }
-
 
 void BaseObject::ClearWeak() {
   persistent_handle_.ClearWeak();
 }
 
-
-v8::Local<v8::FunctionTemplate>
-BaseObject::MakeLazilyInitializedJSTemplate(Environment* env) {
+v8::Local<v8::FunctionTemplate> BaseObject::MakeLazilyInitializedJSTemplate(
+    Environment* env) {
   auto constructor = [](const v8::FunctionCallbackInfo<v8::Value>& args) {
     DCHECK(args.IsConstructCall());
     DCHECK_GT(args.This()->InternalFieldCount(), 0);

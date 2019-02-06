@@ -27,12 +27,12 @@
 #include "aliased_buffer.h"
 #include "env.h"
 #include "node.h"
+#include "node_context_data.h"
+#include "node_perf_common.h"
+#include "node_worker.h"
 #include "util-inl.h"
 #include "uv.h"
 #include "v8.h"
-#include "node_perf_common.h"
-#include "node_context_data.h"
-#include "node_worker.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -81,14 +81,14 @@ inline Environment::AsyncHooks::AsyncHooks()
   // Create all the provider strings that will be passed to JS. Place them in
   // an array so the array index matches the PROVIDER id offset. This way the
   // strings can be retrieved quickly.
-#define V(Provider)                                                           \
-  providers_[AsyncWrap::PROVIDER_ ## Provider].Set(                           \
-      env()->isolate(),                                                       \
-      v8::String::NewFromOneByte(                                             \
-        env()->isolate(),                                                     \
-        reinterpret_cast<const uint8_t*>(#Provider),                          \
-        v8::NewStringType::kInternalized,                                     \
-        sizeof(#Provider) - 1).ToLocalChecked());
+#define V(Provider)                                                            \
+  providers_[AsyncWrap::PROVIDER_##Provider].Set(                              \
+      env()->isolate(),                                                        \
+      v8::String::NewFromOneByte(env()->isolate(),                             \
+                                 reinterpret_cast<const uint8_t*>(#Provider),  \
+                                 v8::NewStringType::kInternalized,             \
+                                 sizeof(#Provider) - 1)                        \
+          .ToLocalChecked());
   NODE_ASYNC_PROVIDER_TYPES(V)
 #undef V
 }
@@ -131,8 +131,7 @@ inline void Environment::AsyncHooks::push_async_ids(double async_id,
   }
 
   uint32_t offset = fields_[kStackLength];
-  if (offset * 2 >= async_ids_stack_.Length())
-    grow_async_ids_stack();
+  if (offset * 2 >= async_ids_stack_.Length()) grow_async_ids_stack();
   async_ids_stack_[2 * offset] = async_id_fields_[kExecutionAsyncId];
   async_ids_stack_[2 * offset + 1] = async_id_fields_[kTriggerAsyncId];
   fields_[kStackLength] += 1;
@@ -158,8 +157,7 @@ inline bool Environment::AsyncHooks::pop_async_id(double async_id) {
             async_id);
     DumpBacktrace(stderr);
     fflush(stderr);
-    if (!env()->abort_on_uncaught_exception())
-      exit(1);
+    if (!env()->abort_on_uncaught_exception()) exit(1);
     fprintf(stderr, "\n");
     fflush(stderr);
     ABORT_NO_BACKTRACE();
@@ -183,8 +181,8 @@ inline void Environment::AsyncHooks::clear_async_id_stack() {
 // The DefaultTriggerAsyncIdScope(AsyncWrap*) constructor is defined in
 // async_wrap-inl.h to avoid a circular dependency.
 
-inline Environment::AsyncHooks::DefaultTriggerAsyncIdScope
-  ::DefaultTriggerAsyncIdScope(Environment* env,
+inline Environment::AsyncHooks::DefaultTriggerAsyncIdScope ::
+    DefaultTriggerAsyncIdScope(Environment* env,
                                double default_trigger_async_id)
     : async_hooks_(env->async_hooks()) {
   if (env->async_hooks()->fields()[AsyncHooks::kCheck] > 0) {
@@ -192,22 +190,20 @@ inline Environment::AsyncHooks::DefaultTriggerAsyncIdScope
   }
 
   old_default_trigger_async_id_ =
-    async_hooks_->async_id_fields()[AsyncHooks::kDefaultTriggerAsyncId];
+      async_hooks_->async_id_fields()[AsyncHooks::kDefaultTriggerAsyncId];
   async_hooks_->async_id_fields()[AsyncHooks::kDefaultTriggerAsyncId] =
-    default_trigger_async_id;
+      default_trigger_async_id;
 }
 
-inline Environment::AsyncHooks::DefaultTriggerAsyncIdScope
-  ::~DefaultTriggerAsyncIdScope() {
+inline Environment::AsyncHooks::DefaultTriggerAsyncIdScope ::
+    ~DefaultTriggerAsyncIdScope() {
   async_hooks_->async_id_fields()[AsyncHooks::kDefaultTriggerAsyncId] =
-    old_default_trigger_async_id_;
+      old_default_trigger_async_id_;
 }
-
 
 Environment* Environment::ForAsyncHooks(AsyncHooks* hooks) {
   return ContainerOf(&Environment::async_hooks_, hooks);
 }
-
 
 inline Environment::AsyncCallbackScope::AsyncCallbackScope(Environment* env)
     : env_(env) {
@@ -226,7 +222,7 @@ inline Environment::ImmediateInfo::ImmediateInfo(v8::Isolate* isolate)
     : fields_(isolate, kFieldsCount) {}
 
 inline AliasedBuffer<uint32_t, v8::Uint32Array>&
-    Environment::ImmediateInfo::fields() {
+Environment::ImmediateInfo::fields() {
   return fields_;
 }
 
@@ -275,11 +271,11 @@ inline bool Environment::TickInfo::has_rejection_to_warn() const {
 
 inline void Environment::AssignToContext(v8::Local<v8::Context> context,
                                          const ContextInfo& info) {
-  context->SetAlignedPointerInEmbedderData(
-      ContextEmbedderIndex::kEnvironment, this);
+  context->SetAlignedPointerInEmbedderData(ContextEmbedderIndex::kEnvironment,
+                                           this);
   // Used by EnvPromiseHook to know that we are on a node context.
-  context->SetAlignedPointerInEmbedderData(
-    ContextEmbedderIndex::kContextTag, Environment::kNodeContextTagPtr);
+  context->SetAlignedPointerInEmbedderData(ContextEmbedderIndex::kContextTag,
+                                           Environment::kNodeContextTagPtr);
 #if HAVE_INSPECTOR
   inspector_agent()->ContextCreated(context, info);
 #endif  // HAVE_INSPECTOR
@@ -291,17 +287,16 @@ inline Environment* Environment::GetCurrent(v8::Isolate* isolate) {
 
 inline Environment* Environment::GetCurrent(v8::Local<v8::Context> context) {
   if (UNLIKELY(context.IsEmpty() ||
-      context->GetNumberOfEmbedderDataFields() <
-          ContextEmbedderIndex::kContextTag ||
-      context->GetAlignedPointerFromEmbedderData(
-          ContextEmbedderIndex::kContextTag) !=
-          Environment::kNodeContextTagPtr)) {
+               context->GetNumberOfEmbedderDataFields() <
+                   ContextEmbedderIndex::kContextTag ||
+               context->GetAlignedPointerFromEmbedderData(
+                   ContextEmbedderIndex::kContextTag) !=
+                   Environment::kNodeContextTagPtr)) {
     return nullptr;
   }
 
-  return static_cast<Environment*>(
-      context->GetAlignedPointerFromEmbedderData(
-          ContextEmbedderIndex::kEnvironment));
+  return static_cast<Environment*>(context->GetAlignedPointerFromEmbedderData(
+      ContextEmbedderIndex::kEnvironment));
 }
 
 inline Environment* Environment::GetCurrent(
@@ -370,9 +365,9 @@ inline void Environment::CloseHandle(T* handle, OnCloseCallback callback) {
     OnCloseCallback callback;
     void* original_data;
   };
-  handle->data = new CloseData { this, callback, handle->data };
+  handle->data = new CloseData{this, callback, handle->data};
   uv_close(reinterpret_cast<uv_handle_t*>(handle), [](uv_handle_t* handle) {
-    std::unique_ptr<CloseData> data { static_cast<CloseData*>(handle->data) };
+    std::unique_ptr<CloseData> data{static_cast<CloseData*>(handle->data)};
     data->env->handle_cleanup_waiting_--;
     handle->data = data->original_data;
     data->callback(reinterpret_cast<T*>(handle));
@@ -500,7 +495,7 @@ inline double Environment::trigger_async_id() {
 
 inline double Environment::get_default_trigger_async_id() {
   double default_trigger_async_id =
-    async_hooks()->async_id_fields()[AsyncHooks::kDefaultTriggerAsyncId];
+      async_hooks()->async_id_fields()[AsyncHooks::kDefaultTriggerAsyncId];
   // If defaultTriggerAsyncId isn't set, use the executionAsyncId
   if (default_trigger_async_id < 0)
     default_trigger_async_id = execution_async_id();
@@ -557,14 +552,14 @@ inline void Environment::set_http2_state(
 bool Environment::debug_enabled(DebugCategory category) const {
   DCHECK_GE(static_cast<int>(category), 0);
   DCHECK_LT(static_cast<int>(category),
-           static_cast<int>(DebugCategory::CATEGORY_COUNT));
+            static_cast<int>(DebugCategory::CATEGORY_COUNT));
   return debug_enabled_[static_cast<int>(category)];
 }
 
 void Environment::set_debug_enabled(DebugCategory category, bool enabled) {
   DCHECK_GE(static_cast<int>(category), 0);
   DCHECK_LT(static_cast<int>(category),
-           static_cast<int>(DebugCategory::CATEGORY_COUNT));
+            static_cast<int>(DebugCategory::CATEGORY_COUNT));
   debug_enabled_[static_cast<int>(category)] = enabled;
 }
 
@@ -604,13 +599,12 @@ void Environment::CreateImmediate(native_immediate_callback cb,
                                   void* data,
                                   v8::Local<v8::Object> obj,
                                   bool ref) {
-  native_immediate_callbacks_.push_back({
-    cb,
-    data,
-    std::unique_ptr<Persistent<v8::Object>>(obj.IsEmpty() ?
-        nullptr : new Persistent<v8::Object>(isolate_, obj)),
-    ref
-  });
+  native_immediate_callbacks_.push_back(
+      {cb,
+       data,
+       std::unique_ptr<Persistent<v8::Object>>(
+           obj.IsEmpty() ? nullptr : new Persistent<v8::Object>(isolate_, obj)),
+       ref});
   immediate_info()->count_inc(1);
 }
 
@@ -619,8 +613,7 @@ void Environment::SetImmediate(native_immediate_callback cb,
                                v8::Local<v8::Object> obj) {
   CreateImmediate(cb, data, obj, true);
 
-  if (immediate_info()->ref_count() == 0)
-    ToggleImmediateRef(true);
+  if (immediate_info()->ref_count() == 0) ToggleImmediateRef(true);
   immediate_info()->ref_count_inc(1);
 }
 
@@ -689,7 +682,7 @@ inline performance::performance_state* Environment::performance_state() {
 }
 
 inline std::unordered_map<std::string, uint64_t>*
-    Environment::performance_marks() {
+Environment::performance_marks() {
   return &performance_marks_;
 }
 
@@ -710,8 +703,7 @@ inline void Environment::ThrowRangeError(const char* errmsg) {
 }
 
 inline void Environment::ThrowError(
-    v8::Local<v8::Value> (*fun)(v8::Local<v8::String>),
-    const char* errmsg) {
+    v8::Local<v8::Value> (*fun)(v8::Local<v8::String>), const char* errmsg) {
   v8::HandleScope handle_scope(isolate());
   isolate()->ThrowException(fun(OneByteString(isolate(), errmsg)));
 }
@@ -733,14 +725,14 @@ inline void Environment::ThrowUVException(int errorno,
       UVException(isolate(), errorno, syscall, message, path, dest));
 }
 
-inline v8::Local<v8::FunctionTemplate>
-    Environment::NewFunctionTemplate(v8::FunctionCallback callback,
-                                     v8::Local<v8::Signature> signature,
-                                     v8::ConstructorBehavior behavior,
-                                     v8::SideEffectType side_effect_type) {
+inline v8::Local<v8::FunctionTemplate> Environment::NewFunctionTemplate(
+    v8::FunctionCallback callback,
+    v8::Local<v8::Signature> signature,
+    v8::ConstructorBehavior behavior,
+    v8::SideEffectType side_effect_type) {
   v8::Local<v8::External> external = as_external();
-  return v8::FunctionTemplate::New(isolate(), callback, external,
-                                   signature, 0, behavior, side_effect_type);
+  return v8::FunctionTemplate::New(
+      isolate(), callback, external, signature, 0, behavior, side_effect_type);
 }
 
 inline void Environment::SetMethod(v8::Local<v8::Object> that,
@@ -748,7 +740,8 @@ inline void Environment::SetMethod(v8::Local<v8::Object> that,
                                    v8::FunctionCallback callback) {
   v8::Local<v8::Context> context = isolate()->GetCurrentContext();
   v8::Local<v8::Function> function =
-      NewFunctionTemplate(callback, v8::Local<v8::Signature>(),
+      NewFunctionTemplate(callback,
+                          v8::Local<v8::Signature>(),
                           // TODO(TimothyGu): Investigate if SetMethod is ever
                           // used for constructors.
                           v8::ConstructorBehavior::kAllow,
@@ -768,7 +761,8 @@ inline void Environment::SetMethodNoSideEffect(v8::Local<v8::Object> that,
                                                v8::FunctionCallback callback) {
   v8::Local<v8::Context> context = isolate()->GetCurrentContext();
   v8::Local<v8::Function> function =
-      NewFunctionTemplate(callback, v8::Local<v8::Signature>(),
+      NewFunctionTemplate(callback,
+                          v8::Local<v8::Signature>(),
                           // TODO(TimothyGu): Investigate if SetMethod is ever
                           // used for constructors.
                           v8::ConstructorBehavior::kAllow,
@@ -788,7 +782,9 @@ inline void Environment::SetProtoMethod(v8::Local<v8::FunctionTemplate> that,
                                         v8::FunctionCallback callback) {
   v8::Local<v8::Signature> signature = v8::Signature::New(isolate(), that);
   v8::Local<v8::FunctionTemplate> t =
-      NewFunctionTemplate(callback, signature, v8::ConstructorBehavior::kThrow,
+      NewFunctionTemplate(callback,
+                          signature,
+                          v8::ConstructorBehavior::kThrow,
                           v8::SideEffectType::kHasSideEffect);
   // kInternalized strings are created in the old space.
   const v8::NewStringType type = v8::NewStringType::kInternalized;
@@ -804,7 +800,9 @@ inline void Environment::SetProtoMethodNoSideEffect(
     v8::FunctionCallback callback) {
   v8::Local<v8::Signature> signature = v8::Signature::New(isolate(), that);
   v8::Local<v8::FunctionTemplate> t =
-      NewFunctionTemplate(callback, signature, v8::ConstructorBehavior::kThrow,
+      NewFunctionTemplate(callback,
+                          signature,
+                          v8::ConstructorBehavior::kThrow,
                           v8::SideEffectType::kHasNoSideEffect);
   // kInternalized strings are created in the old space.
   const v8::NewStringType type = v8::NewStringType::kInternalized;
@@ -818,7 +816,8 @@ inline void Environment::SetTemplateMethod(v8::Local<v8::FunctionTemplate> that,
                                            const char* name,
                                            v8::FunctionCallback callback) {
   v8::Local<v8::FunctionTemplate> t =
-      NewFunctionTemplate(callback, v8::Local<v8::Signature>(),
+      NewFunctionTemplate(callback,
+                          v8::Local<v8::Signature>(),
                           v8::ConstructorBehavior::kAllow,
                           v8::SideEffectType::kHasSideEffect);
   // kInternalized strings are created in the old space.
@@ -834,7 +833,8 @@ inline void Environment::SetTemplateMethodNoSideEffect(
     const char* name,
     v8::FunctionCallback callback) {
   v8::Local<v8::FunctionTemplate> t =
-      NewFunctionTemplate(callback, v8::Local<v8::Signature>(),
+      NewFunctionTemplate(callback,
+                          v8::Local<v8::Signature>(),
                           v8::ConstructorBehavior::kAllow,
                           v8::SideEffectType::kHasNoSideEffect);
   // kInternalized strings are created in the old space.
@@ -846,15 +846,14 @@ inline void Environment::SetTemplateMethodNoSideEffect(
 }
 
 void Environment::AddCleanupHook(void (*fn)(void*), void* arg) {
-  auto insertion_info = cleanup_hooks_.emplace(CleanupHookCallback {
-    fn, arg, cleanup_hook_counter_++
-  });
+  auto insertion_info = cleanup_hooks_.emplace(
+      CleanupHookCallback{fn, arg, cleanup_hook_counter_++});
   // Make sure there was no existing element with these values.
   CHECK_EQ(insertion_info.second, true);
 }
 
 void Environment::RemoveCleanupHook(void (*fn)(void*), void* arg) {
-  CleanupHookCallback search { fn, arg, 0 };
+  CleanupHookCallback search{fn, arg, 0};
   cleanup_hooks_.erase(search);
 }
 
@@ -879,23 +878,22 @@ template <typename T>
 void Environment::ForEachBaseObject(T&& iterator) {
   for (const auto& hook : cleanup_hooks_) {
     BaseObject* obj = hook.GetBaseObject();
-    if (obj != nullptr)
-      iterator(obj);
+    if (obj != nullptr) iterator(obj);
   }
 }
 
 #define VP(PropertyName, StringValue) V(v8::Private, PropertyName)
 #define VY(PropertyName, StringValue) V(v8::Symbol, PropertyName)
 #define VS(PropertyName, StringValue) V(v8::String, PropertyName)
-#define V(TypeName, PropertyName)                                             \
-  inline                                                                      \
-  v8::Local<TypeName> IsolateData::PropertyName(v8::Isolate* isolate) const { \
-    /* Strings are immutable so casting away const-ness here is okay. */      \
-    return const_cast<IsolateData*>(this)->PropertyName ## _.Get(isolate);    \
+#define V(TypeName, PropertyName)                                              \
+  inline v8::Local<TypeName> IsolateData::PropertyName(v8::Isolate* isolate)   \
+      const {                                                                  \
+    /* Strings are immutable so casting away const-ness here is okay. */       \
+    return const_cast<IsolateData*>(this)->PropertyName##_.Get(isolate);       \
   }
-  PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(VP)
-  PER_ISOLATE_SYMBOL_PROPERTIES(VY)
-  PER_ISOLATE_STRING_PROPERTIES(VS)
+PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(VP)
+PER_ISOLATE_SYMBOL_PROPERTIES(VY)
+PER_ISOLATE_STRING_PROPERTIES(VS)
 #undef V
 #undef VS
 #undef VY
@@ -904,26 +902,26 @@ void Environment::ForEachBaseObject(T&& iterator) {
 #define VP(PropertyName, StringValue) V(v8::Private, PropertyName)
 #define VY(PropertyName, StringValue) V(v8::Symbol, PropertyName)
 #define VS(PropertyName, StringValue) V(v8::String, PropertyName)
-#define V(TypeName, PropertyName)                                             \
-  inline v8::Local<TypeName> Environment::PropertyName() const {              \
-    return isolate_data()->PropertyName(isolate());                           \
+#define V(TypeName, PropertyName)                                              \
+  inline v8::Local<TypeName> Environment::PropertyName() const {               \
+    return isolate_data()->PropertyName(isolate());                            \
   }
-  PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(VP)
-  PER_ISOLATE_SYMBOL_PROPERTIES(VY)
-  PER_ISOLATE_STRING_PROPERTIES(VS)
+PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(VP)
+PER_ISOLATE_SYMBOL_PROPERTIES(VY)
+PER_ISOLATE_STRING_PROPERTIES(VS)
 #undef V
 #undef VS
 #undef VY
 #undef VP
 
-#define V(PropertyName, TypeName)                                             \
-  inline v8::Local<TypeName> Environment::PropertyName() const {              \
-    return PersistentToLocal::Strong(PropertyName ## _);                      \
-  }                                                                           \
-  inline void Environment::set_ ## PropertyName(v8::Local<TypeName> value) {  \
-    PropertyName ## _.Reset(isolate(), value);                                \
+#define V(PropertyName, TypeName)                                              \
+  inline v8::Local<TypeName> Environment::PropertyName() const {               \
+    return PersistentToLocal::Strong(PropertyName##_);                         \
+  }                                                                            \
+  inline void Environment::set_##PropertyName(v8::Local<TypeName> value) {     \
+    PropertyName##_.Reset(isolate(), value);                                   \
   }
-  ENVIRONMENT_STRONG_PERSISTENT_PROPERTIES(V)
+ENVIRONMENT_STRONG_PERSISTENT_PROPERTIES(V)
 #undef V
 
 }  // namespace node

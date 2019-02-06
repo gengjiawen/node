@@ -103,22 +103,22 @@ constexpr size_t kFsStatsBufferLength = kFsStatsFieldsNumber * 2;
 // Private symbols are per-isolate primitives but Environment proxies them
 // for the sake of convenience.  Strings should be ASCII-only and have a
 // "node:" prefix to avoid name clashes with third-party code.
-#define PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(V)                              \
-  V(alpn_buffer_private_symbol, "node:alpnBuffer")                            \
-  V(arrow_message_private_symbol, "node:arrowMessage")                        \
-  V(contextify_context_private_symbol, "node:contextify:context")             \
-  V(contextify_global_private_symbol, "node:contextify:global")               \
-  V(decorated_private_symbol, "node:decorated")                               \
-  V(napi_env, "node:napi:env")                                                \
-  V(napi_wrapper, "node:napi:wrapper")                                        \
-  V(sab_lifetimepartner_symbol, "node:sharedArrayBufferLifetimePartner")      \
+#define PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(V)                               \
+  V(alpn_buffer_private_symbol, "node:alpnBuffer")                             \
+  V(arrow_message_private_symbol, "node:arrowMessage")                         \
+  V(contextify_context_private_symbol, "node:contextify:context")              \
+  V(contextify_global_private_symbol, "node:contextify:global")                \
+  V(decorated_private_symbol, "node:decorated")                                \
+  V(napi_env, "node:napi:env")                                                 \
+  V(napi_wrapper, "node:napi:wrapper")                                         \
+  V(sab_lifetimepartner_symbol, "node:sharedArrayBufferLifetimePartner")
 
 // Symbols are per-isolate primitives but Environment proxies them
 // for the sake of convenience.
-#define PER_ISOLATE_SYMBOL_PROPERTIES(V)                                      \
-  V(handle_onclose_symbol, "handle_onclose")                                  \
-  V(oninit_symbol, "oninit")                                                  \
-  V(owner_symbol, "owner")                                                    \
+#define PER_ISOLATE_SYMBOL_PROPERTIES(V)                                       \
+  V(handle_onclose_symbol, "handle_onclose")                                   \
+  V(oninit_symbol, "oninit")                                                   \
+  V(owner_symbol, "owner")
 
 // Strings are per-isolate primitives but Environment proxies them
 // for the sake of convenience.  Strings should be ASCII-only.
@@ -389,7 +389,8 @@ class Environment;
 
 class IsolateData {
  public:
-  IsolateData(v8::Isolate* isolate, uv_loop_t* event_loop,
+  IsolateData(v8::Isolate* isolate,
+              uv_loop_t* event_loop,
               MultiIsolatePlatform* platform = nullptr,
               uint32_t* zero_fill_field = nullptr);
   ~IsolateData();
@@ -402,7 +403,7 @@ class IsolateData {
 #define VP(PropertyName, StringValue) V(v8::Private, PropertyName)
 #define VY(PropertyName, StringValue) V(v8::Symbol, PropertyName)
 #define VS(PropertyName, StringValue) V(v8::String, PropertyName)
-#define V(TypeName, PropertyName)                                             \
+#define V(TypeName, PropertyName)                                              \
   inline v8::Local<TypeName> PropertyName(v8::Isolate* isolate) const;
   PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(VP)
   PER_ISOLATE_SYMBOL_PROPERTIES(VY)
@@ -419,8 +420,7 @@ class IsolateData {
 #define VP(PropertyName, StringValue) V(v8::Private, PropertyName)
 #define VY(PropertyName, StringValue) V(v8::Symbol, PropertyName)
 #define VS(PropertyName, StringValue) V(v8::String, PropertyName)
-#define V(TypeName, PropertyName)                                             \
-  v8::Eternal<TypeName> PropertyName ## _;
+#define V(TypeName, PropertyName) v8::Eternal<TypeName> PropertyName##_;
   PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(VP)
   PER_ISOLATE_SYMBOL_PROPERTIES(VY)
   PER_ISOLATE_STRING_PROPERTIES(VS)
@@ -447,15 +447,15 @@ struct ContextInfo {
 
 // Listing the AsyncWrap provider types first enables us to cast directly
 // from a provider type to a debug category.
-#define DEBUG_CATEGORY_NAMES(V) \
-    NODE_ASYNC_PROVIDER_TYPES(V) \
-    V(INSPECTOR_SERVER)
+#define DEBUG_CATEGORY_NAMES(V)                                                \
+  NODE_ASYNC_PROVIDER_TYPES(V)                                                 \
+  V(INSPECTOR_SERVER)
 
 enum class DebugCategory {
 #define V(name) name,
   DEBUG_CATEGORY_NAMES(V)
 #undef V
-  CATEGORY_COUNT
+      CATEGORY_COUNT
 };
 
 class Environment {
@@ -514,7 +514,6 @@ class Environment {
       DISALLOW_COPY_AND_ASSIGN(DefaultTriggerAsyncIdScope);
     };
 
-
    private:
     friend class Environment;  // So we can call the constructor.
     inline AsyncHooks();
@@ -564,12 +563,7 @@ class Environment {
     friend class Environment;  // So we can call the constructor.
     inline explicit ImmediateInfo(v8::Isolate* isolate);
 
-    enum Fields {
-      kCount,
-      kRefCount,
-      kHasOutstanding,
-      kFieldsCount
-    };
+    enum Fields { kCount, kRefCount, kHasOutstanding, kFieldsCount };
 
     AliasedBuffer<uint32_t, v8::Uint32Array> fields_;
 
@@ -586,11 +580,7 @@ class Environment {
     friend class Environment;  // So we can call the constructor.
     inline explicit TickInfo(v8::Isolate* isolate);
 
-    enum Fields {
-      kHasTickScheduled = 0,
-      kHasRejectionToWarn,
-      kFieldsCount
-    };
+    enum Fields { kHasTickScheduled = 0, kHasRejectionToWarn, kFieldsCount };
 
     AliasedBuffer<uint8_t, v8::Uint8Array> fields_;
 
@@ -710,8 +700,7 @@ class Environment {
 
   std::unordered_multimap<int, loader::ModuleWrap*> hash_to_module_map;
   std::unordered_map<uint32_t, loader::ModuleWrap*> id_to_module_map;
-  std::unordered_map<uint32_t, contextify::ContextifyScript*>
-      id_to_script_map;
+  std::unordered_map<uint32_t, contextify::ContextifyScript*> id_to_script_map;
 
   inline uint32_t get_next_module_id();
   inline uint32_t get_next_script_id();
@@ -739,10 +728,10 @@ class Environment {
 
   inline AliasedBuffer<double, v8::Float64Array>* fs_stats_field_array();
   inline AliasedBuffer<uint64_t, v8::BigUint64Array>*
-      fs_stats_field_bigint_array();
+  fs_stats_field_bigint_array();
 
   inline std::vector<std::unique_ptr<fs::FileHandleReadWrap>>&
-      file_handle_read_wrap_freelist();
+  file_handle_read_wrap_freelist();
 
   inline performance::performance_state* performance_state();
   inline std::unordered_map<std::string, uint64_t>* performance_marks();
@@ -793,14 +782,11 @@ class Environment {
                                const char* path = nullptr,
                                const char* dest = nullptr);
 
-  inline v8::Local<v8::FunctionTemplate>
-      NewFunctionTemplate(v8::FunctionCallback callback,
-                          v8::Local<v8::Signature> signature =
-                              v8::Local<v8::Signature>(),
-                          v8::ConstructorBehavior behavior =
-                              v8::ConstructorBehavior::kAllow,
-                          v8::SideEffectType side_effect =
-                              v8::SideEffectType::kHasSideEffect);
+  inline v8::Local<v8::FunctionTemplate> NewFunctionTemplate(
+      v8::FunctionCallback callback,
+      v8::Local<v8::Signature> signature = v8::Local<v8::Signature>(),
+      v8::ConstructorBehavior behavior = v8::ConstructorBehavior::kAllow,
+      v8::SideEffectType side_effect = v8::SideEffectType::kHasSideEffect);
 
   // Convenience methods for NewFunctionTemplate().
   inline void SetMethod(v8::Local<v8::Object> that,
@@ -836,7 +822,7 @@ class Environment {
 #define VP(PropertyName, StringValue) V(v8::Private, PropertyName)
 #define VY(PropertyName, StringValue) V(v8::Symbol, PropertyName)
 #define VS(PropertyName, StringValue) V(v8::String, PropertyName)
-#define V(TypeName, PropertyName)                                             \
+#define V(TypeName, PropertyName)                                              \
   inline v8::Local<TypeName> PropertyName() const;
   PER_ISOLATE_PRIVATE_SYMBOL_PROPERTIES(VP)
   PER_ISOLATE_SYMBOL_PROPERTIES(VY)
@@ -846,9 +832,9 @@ class Environment {
 #undef VY
 #undef VP
 
-#define V(PropertyName, TypeName)                                             \
-  inline v8::Local<TypeName> PropertyName() const;                            \
-  inline void set_ ## PropertyName(v8::Local<TypeName> value);
+#define V(PropertyName, TypeName)                                              \
+  inline v8::Local<TypeName> PropertyName() const;                             \
+  inline void set_##PropertyName(v8::Local<TypeName> value);
   ENVIRONMENT_STRONG_PERSISTENT_PROPERTIES(V)
 #undef V
 
@@ -860,7 +846,7 @@ class Environment {
 
   typedef ListHead<HandleWrap, &HandleWrap::handle_wrap_queue_> HandleWrapQueue;
   typedef ListHead<ReqWrap<uv_req_t>, &ReqWrap<uv_req_t>::req_wrap_queue_>
-          ReqWrapQueue;
+      ReqWrapQueue;
 
   inline HandleWrapQueue* handle_wrap_queue() { return &handle_wrap_queue_; }
   inline ReqWrapQueue* req_wrap_queue() { return &req_wrap_queue_; }
@@ -885,25 +871,21 @@ class Environment {
   inline void SetImmediate(native_immediate_callback cb,
                            void* data,
                            v8::Local<v8::Object> obj = v8::Local<v8::Object>());
-  inline void SetUnrefImmediate(native_immediate_callback cb,
-                                void* data,
-                                v8::Local<v8::Object> obj =
-                                    v8::Local<v8::Object>());
+  inline void SetUnrefImmediate(
+      native_immediate_callback cb,
+      void* data,
+      v8::Local<v8::Object> obj = v8::Local<v8::Object>());
   // This needs to be available for the JS-land setImmediate().
   void ToggleImmediateRef(bool ref);
 
-  class TrackingTraceStateObserver :
-      public v8::TracingController::TraceStateObserver {
+  class TrackingTraceStateObserver
+      : public v8::TracingController::TraceStateObserver {
    public:
     explicit TrackingTraceStateObserver(Environment* env) : env_(env) {}
 
-    void OnTraceEnabled() override {
-      UpdateTraceCategoryState();
-    }
+    void OnTraceEnabled() override { UpdateTraceCategoryState(); }
 
-    void OnTraceDisabled() override {
-      UpdateTraceCategoryState();
-    }
+    void OnTraceDisabled() override { UpdateTraceCategoryState(); }
 
    private:
     void UpdateTraceCategoryState();
@@ -1109,7 +1091,8 @@ class Environment {
   // Use an unordered_set, so that we have efficient insertion and removal.
   std::unordered_set<CleanupHookCallback,
                      CleanupHookCallback::Hash,
-                     CleanupHookCallback::Equal> cleanup_hooks_;
+                     CleanupHookCallback::Equal>
+      cleanup_hooks_;
   uint64_t cleanup_hook_counter_ = 0;
 
   static void EnvPromiseHook(v8::PromiseHookType type,
@@ -1119,7 +1102,7 @@ class Environment {
   template <typename T>
   void ForEachBaseObject(T&& iterator);
 
-#define V(PropertyName, TypeName) Persistent<TypeName> PropertyName ## _;
+#define V(PropertyName, TypeName) Persistent<TypeName> PropertyName##_;
   ENVIRONMENT_STRONG_PERSISTENT_PROPERTIES(V)
 #undef V
 

@@ -133,7 +133,7 @@ class EnvironmentOptions : public Options {
 
 class PerIsolateOptions : public Options {
  public:
-  std::shared_ptr<EnvironmentOptions> per_env { new EnvironmentOptions() };
+  std::shared_ptr<EnvironmentOptions> per_env{new EnvironmentOptions()};
   bool track_heap_objects = false;
 
 #ifdef NODE_REPORT
@@ -151,7 +151,7 @@ class PerIsolateOptions : public Options {
 
 class PerProcessOptions : public Options {
  public:
-  std::shared_ptr<PerIsolateOptions> per_isolate { new PerIsolateOptions() };
+  std::shared_ptr<PerIsolateOptions> per_isolate{new PerIsolateOptions()};
 
   std::string title;
   std::string trace_event_categories;
@@ -200,13 +200,10 @@ class PerProcessOptions : public Options {
 namespace options_parser {
 
 HostPort SplitHostPort(const std::string& arg,
-    std::vector<std::string>* errors);
+                       std::vector<std::string>* errors);
 void GetOptions(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-enum OptionEnvvarSettings {
-  kAllowedInEnvironment,
-  kDisallowedInEnvironment
-};
+enum OptionEnvvarSettings { kAllowedInEnvironment, kDisallowedInEnvironment };
 
 enum OptionType {
   kNoOp,
@@ -238,27 +235,27 @@ class OptionsParser {
   // sources (i.e. NODE_OPTIONS).
   void AddOption(const std::string& name,
                  const std::string& help_text,
-                 bool Options::* field,
+                 bool Options::*field,
                  OptionEnvvarSettings env_setting = kDisallowedInEnvironment);
   void AddOption(const std::string& name,
                  const std::string& help_text,
-                 uint64_t Options::* field,
+                 uint64_t Options::*field,
                  OptionEnvvarSettings env_setting = kDisallowedInEnvironment);
   void AddOption(const std::string& name,
                  const std::string& help_text,
-                 int64_t Options::* field,
+                 int64_t Options::*field,
                  OptionEnvvarSettings env_setting = kDisallowedInEnvironment);
   void AddOption(const std::string& name,
                  const std::string& help_text,
-                 std::string Options::* field,
+                 std::string Options::*field,
                  OptionEnvvarSettings env_setting = kDisallowedInEnvironment);
   void AddOption(const std::string& name,
                  const std::string& help_text,
-                 std::vector<std::string> Options::* field,
+                 std::vector<std::string> Options::*field,
                  OptionEnvvarSettings env_setting = kDisallowedInEnvironment);
   void AddOption(const std::string& name,
                  const std::string& help_text,
-                 HostPort Options::* field,
+                 HostPort Options::*field,
                  OptionEnvvarSettings env_setting = kDisallowedInEnvironment);
   void AddOption(const std::string& name,
                  const std::string& help_text,
@@ -291,7 +288,7 @@ class OptionsParser {
   // type.
   template <typename ChildOptions>
   void Insert(const OptionsParser<ChildOptions>* child_options_parser,
-              ChildOptions* (Options::* get_child)());
+              ChildOptions* (Options::*get_child)());
 
   // Parse a sequence of options into an options struct, a list of
   // arguments that were parsed as options, a list of unknown/JS engine options,
@@ -344,13 +341,13 @@ class OptionsParser {
   template <typename T>
   class SimpleOptionField : public OptionField<T> {
    public:
-    explicit SimpleOptionField(T Options::* field) : field_(field) {}
+    explicit SimpleOptionField(T Options::*field) : field_(field) {}
     void* LookupImpl(Options* options) const override {
       return static_cast<void*>(&(options->*field_));
     }
 
    private:
-    T Options::* field_;
+    T Options::*field_;
   };
 
   template <typename T>
@@ -380,17 +377,15 @@ class OptionsParser {
   // These are helpers that make `Insert()` support properties of other
   // options structs, if we know how to access them.
   template <typename OriginalField, typename ChildOptions>
-  static auto Convert(
-      std::shared_ptr<OriginalField> original,
-      ChildOptions* (Options::* get_child)());
+  static auto Convert(std::shared_ptr<OriginalField> original,
+                      ChildOptions* (Options::*get_child)());
   template <typename ChildOptions>
-  static auto Convert(
-      typename OptionsParser<ChildOptions>::OptionInfo original,
-      ChildOptions* (Options::* get_child)());
+  static auto Convert(typename OptionsParser<ChildOptions>::OptionInfo original,
+                      ChildOptions* (Options::*get_child)());
   template <typename ChildOptions>
   static auto Convert(
       typename OptionsParser<ChildOptions>::Implication original,
-      ChildOptions* (Options::* get_child)());
+      ChildOptions* (Options::*get_child)());
 
   std::unordered_map<std::string, OptionInfo> options_;
   std::unordered_map<std::string, std::vector<std::string>> aliases_;

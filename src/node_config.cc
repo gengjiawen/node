@@ -72,9 +72,8 @@ static void Initialize(Local<Object> target,
   if (env->abort_on_uncaught_exception())
     READONLY_TRUE_PROPERTY(target, "shouldAbortOnUncaughtException");
 
-  READONLY_PROPERTY(target,
-                    "bits",
-                    Number::New(env->isolate(), 8 * sizeof(intptr_t)));
+  READONLY_PROPERTY(
+      target, "bits", Number::New(env->isolate(), 8 * sizeof(intptr_t)));
 
   Local<Object> debug_options_obj = Object::New(isolate);
   READONLY_PROPERTY(target, "debugOptions", debug_options_obj);

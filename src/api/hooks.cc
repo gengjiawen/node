@@ -1,7 +1,7 @@
+#include "async_wrap.h"
 #include "env-inl.h"
 #include "node.h"
 #include "node_process.h"
-#include "async_wrap.h"
 
 namespace node {
 
@@ -10,10 +10,10 @@ using v8::HandleScope;
 using v8::Integer;
 using v8::Isolate;
 using v8::Local;
+using v8::NewStringType;
 using v8::Object;
 using v8::String;
 using v8::Value;
-using v8::NewStringType;
 
 void RunAtExit(Environment* env) {
   env->RunAtExitCallbacks();
@@ -103,7 +103,6 @@ async_id AsyncHooksGetTriggerAsyncId(Isolate* isolate) {
   return env->trigger_async_id();
 }
 
-
 async_context EmitAsyncInit(Isolate* isolate,
                             Local<Object> resource,
                             const char* name,
@@ -128,13 +127,13 @@ async_context EmitAsyncInit(Isolate* isolate,
     trigger_async_id = env->get_default_trigger_async_id();
 
   async_context context = {
-    env->new_async_id(),  // async_id_
-    trigger_async_id  // trigger_async_id_
+      env->new_async_id(),  // async_id_
+      trigger_async_id      // trigger_async_id_
   };
 
   // Run init hooks
-  AsyncWrap::EmitAsyncInit(env, resource, name, context.async_id,
-                           context.trigger_async_id);
+  AsyncWrap::EmitAsyncInit(
+      env, resource, name, context.async_id, context.trigger_async_id);
 
   return context;
 }
@@ -142,8 +141,8 @@ async_context EmitAsyncInit(Isolate* isolate,
 void EmitAsyncDestroy(Isolate* isolate, async_context asyncContext) {
   // Environment::GetCurrent() allocates a Local<> handle.
   HandleScope handle_scope(isolate);
-  AsyncWrap::EmitDestroy(
-      Environment::GetCurrent(isolate), asyncContext.async_id);
+  AsyncWrap::EmitDestroy(Environment::GetCurrent(isolate),
+                         asyncContext.async_id);
 }
 
 }  // namespace node

@@ -5,7 +5,6 @@
 #include "tracing/agent.h"
 #include "v8.h"
 
-
 namespace node {
 class Environment;
 
@@ -36,7 +35,6 @@ class TracingAgent : public NodeTracing::Backend {
   int frontend_object_id_;
   std::shared_ptr<NodeTracing::Frontend> frontend_;
 };
-
 
 }  // namespace protocol
 }  // namespace inspector

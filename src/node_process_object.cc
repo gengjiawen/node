@@ -2,8 +2,8 @@
 
 #include "env-inl.h"
 #include "node_internals.h"
-#include "node_options-inl.h"
 #include "node_metadata.h"
+#include "node_options-inl.h"
 #include "node_process.h"
 #include "node_revert.h"
 #include "util-inl.h"
@@ -99,9 +99,8 @@ MaybeLocal<Object> CreateProcessObject(
             .FromJust());
 
   // process.version
-  READONLY_PROPERTY(process,
-                    "version",
-                    FIXED_ONE_BYTE_STRING(env->isolate(), NODE_VERSION));
+  READONLY_PROPERTY(
+      process, "version", FIXED_ONE_BYTE_STRING(env->isolate(), NODE_VERSION));
 
   // process.versions
   Local<Object> versions = Object::New(env->isolate());
@@ -141,15 +140,18 @@ MaybeLocal<Object> CreateProcessObject(
 #endif  // NODE_HAS_RELEASE_URLS
 
   // process.argv
-  process->Set(env->context(),
-               FIXED_ONE_BYTE_STRING(env->isolate(), "argv"),
-               ToV8Value(env->context(), args).ToLocalChecked()).FromJust();
+  process
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(env->isolate(), "argv"),
+            ToV8Value(env->context(), args).ToLocalChecked())
+      .FromJust();
 
   // process.execArgv
-  process->Set(env->context(),
-               FIXED_ONE_BYTE_STRING(env->isolate(), "execArgv"),
-               ToV8Value(env->context(), exec_args)
-                   .ToLocalChecked()).FromJust();
+  process
+      ->Set(env->context(),
+            FIXED_ONE_BYTE_STRING(env->isolate(), "execArgv"),
+            ToV8Value(env->context(), exec_args).ToLocalChecked())
+      .FromJust();
 
   Local<Object> env_var_proxy;
   if (!CreateEnvVarProxy(context, isolate, env->as_external())
@@ -163,12 +165,14 @@ MaybeLocal<Object> CreateProcessObject(
             env_var_proxy)
       .FromJust();
 
-  READONLY_PROPERTY(process, "pid",
-                    Integer::New(env->isolate(), uv_os_getpid()));
+  READONLY_PROPERTY(
+      process, "pid", Integer::New(env->isolate(), uv_os_getpid()));
 
-  CHECK(process->SetAccessor(env->context(),
-                             FIXED_ONE_BYTE_STRING(env->isolate(), "ppid"),
-                             GetParentProcessId).FromJust());
+  CHECK(process
+            ->SetAccessor(env->context(),
+                          FIXED_ONE_BYTE_STRING(env->isolate(), "ppid"),
+                          GetParentProcessId)
+            .FromJust());
 
   // TODO(joyeecheung): the following process properties that are set using
   // parsed CLI flags should be migrated to `internal/options` in JS land.
@@ -178,10 +182,10 @@ MaybeLocal<Object> CreateProcessObject(
   if (env->options()->has_eval_string) {
     READONLY_PROPERTY(process,
                       "_eval",
-                      String::NewFromUtf8(
-                          env->isolate(),
-                          env->options()->eval_string.c_str(),
-                          NewStringType::kNormal).ToLocalChecked());
+                      String::NewFromUtf8(env->isolate(),
+                                          env->options()->eval_string.c_str(),
+                                          NewStringType::kNormal)
+                          .ToLocalChecked());
   }
 
   // -p, --print
@@ -207,10 +211,10 @@ MaybeLocal<Object> CreateProcessObject(
   const std::vector<std::string>& preload_modules =
       env->options()->preload_modules;
   if (!preload_modules.empty()) {
-    READONLY_PROPERTY(process,
-                      "_preload_modules",
-                      ToV8Value(env->context(), preload_modules)
-                          .ToLocalChecked());
+    READONLY_PROPERTY(
+        process,
+        "_preload_modules",
+        ToV8Value(env->context(), preload_modules).ToLocalChecked());
   }
 
   // --no-deprecation
@@ -251,22 +255,22 @@ MaybeLocal<Object> CreateProcessObject(
 
   // --inspect-brk
   if (env->options()->debug_options().wait_for_connect()) {
-    READONLY_DONT_ENUM_PROPERTY(process,
-                                "_breakFirstLine", True(env->isolate()));
+    READONLY_DONT_ENUM_PROPERTY(
+        process, "_breakFirstLine", True(env->isolate()));
   }
 
   // --inspect-brk-node
   if (env->options()->debug_options().break_node_first_line) {
-    READONLY_DONT_ENUM_PROPERTY(process,
-                                "_breakNodeFirstLine", True(env->isolate()));
+    READONLY_DONT_ENUM_PROPERTY(
+        process, "_breakNodeFirstLine", True(env->isolate()));
   }
 
   // --security-revert flags
-#define V(code, _, __)                                                        \
-  do {                                                                        \
-    if (IsReverted(SECURITY_REVERT_ ## code)) {                               \
-      READONLY_PROPERTY(process, "REVERT_" #code, True(env->isolate()));      \
-    }                                                                         \
+#define V(code, _, __)                                                         \
+  do {                                                                         \
+    if (IsReverted(SECURITY_REVERT_##code)) {                                  \
+      READONLY_PROPERTY(process, "REVERT_" #code, True(env->isolate()));       \
+    }                                                                          \
   } while (0);
   SECURITY_REVERSIONS(V)
 #undef V
@@ -280,14 +284,19 @@ MaybeLocal<Object> CreateProcessObject(
       exec_path_value = String::NewFromUtf8(env->isolate(),
                                             exec_path.data(),
                                             NewStringType::kInternalized,
-                                            exec_path_len).ToLocalChecked();
+                                            exec_path_len)
+                            .ToLocalChecked();
     } else {
-      exec_path_value = String::NewFromUtf8(env->isolate(), args[0].c_str(),
-          NewStringType::kInternalized).ToLocalChecked();
+      exec_path_value =
+          String::NewFromUtf8(
+              env->isolate(), args[0].c_str(), NewStringType::kInternalized)
+              .ToLocalChecked();
     }
-    process->Set(env->context(),
-                 FIXED_ONE_BYTE_STRING(env->isolate(), "execPath"),
-                 exec_path_value).FromJust();
+    process
+        ->Set(env->context(),
+              FIXED_ONE_BYTE_STRING(env->isolate(), "execPath"),
+              exec_path_value)
+        .FromJust();
   }
 
   // process.debugPort

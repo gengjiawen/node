@@ -8,8 +8,8 @@
 #include "node_internals.h"
 
 struct node_napi_env__ : public napi_env__ {
-  explicit node_napi_env__(v8::Local<v8::Context> context):
-      napi_env__(context) {
+  explicit node_napi_env__(v8::Local<v8::Context> context)
+      : napi_env__(context) {
     CHECK_NOT_NULL(node_env());
   }
   inline node::Environment* node_env() const {
@@ -23,17 +23,16 @@ namespace v8impl {
 
 namespace {
 
-class BufferFinalizer: private Finalizer {
+class BufferFinalizer : private Finalizer {
  public:
   // node::Buffer::FreeCallback
   static void FinalizeBufferCallback(char* data, void* hint) {
     BufferFinalizer* finalizer = static_cast<BufferFinalizer*>(hint);
     if (finalizer->_finalize_callback != nullptr) {
-      NAPI_CALL_INTO_MODULE_THROW(finalizer->_env,
-        finalizer->_finalize_callback(
+      NAPI_CALL_INTO_MODULE_THROW(
           finalizer->_env,
-          data,
-          finalizer->_finalize_hint));
+          finalizer->_finalize_callback(
+              finalizer->_env, data, finalizer->_finalize_hint));
     }
 
     Delete(finalizer);
@@ -52,7 +51,7 @@ static inline napi_env GetEnv(v8::Local<v8::Context> context) {
   //
   // Re https://github.com/nodejs/node/pull/14217#discussion_r128775149
   auto value = global->GetPrivate(context, NAPI_PRIVATE_KEY(context, env))
-      .ToLocalChecked();
+                   .ToLocalChecked();
 
   if (value->IsExternal()) {
     result = static_cast<node_napi_env>(value.As<v8::External>()->Value());
@@ -63,7 +62,7 @@ static inline napi_env GetEnv(v8::Local<v8::Context> context) {
     // We must also stop hard if the result of assigning the env to the global
     // is either nothing or false.
     CHECK(global->SetPrivate(context, NAPI_PRIVATE_KEY(context, env), external)
-        .FromJust());
+              .FromJust());
 
     // TODO(addaleax): There was previously code that tried to delete the
     // napi_env when its v8::Context was garbage collected;
@@ -73,29 +72,27 @@ static inline napi_env GetEnv(v8::Local<v8::Context> context) {
     // once all N-API addons using this napi_env are unloaded.
     // For now, a per-Environment cleanup hook is the best we can do.
     result->node_env()->AddCleanupHook(
-        [](void* arg) {
-          static_cast<napi_env>(arg)->Unref();
-        },
+        [](void* arg) { static_cast<napi_env>(arg)->Unref(); },
         static_cast<void*>(result));
   }
 
   return result;
 }
 
-static inline napi_callback_scope
-JsCallbackScopeFromV8CallbackScope(node::CallbackScope* s) {
+static inline napi_callback_scope JsCallbackScopeFromV8CallbackScope(
+    node::CallbackScope* s) {
   return reinterpret_cast<napi_callback_scope>(s);
 }
 
-static inline node::CallbackScope*
-V8CallbackScopeFromJsCallbackScope(napi_callback_scope s) {
+static inline node::CallbackScope* V8CallbackScopeFromJsCallbackScope(
+    napi_callback_scope s) {
   return reinterpret_cast<node::CallbackScope*>(s);
 }
 
-static inline void trigger_fatal_exception(
-    napi_env env, v8::Local<v8::Value> local_err) {
+static inline void trigger_fatal_exception(napi_env env,
+                                           v8::Local<v8::Value> local_err) {
   v8::Local<v8::Message> local_msg =
-    v8::Exception::CreateMessage(env->isolate, local_err);
+      v8::Exception::CreateMessage(env->isolate, local_err);
   node::FatalException(env->isolate, local_err, local_msg);
 }
 
@@ -110,19 +107,19 @@ class ThreadSafeFunction : public node::AsyncResource {
                      node_napi_env env_,
                      void* finalize_data_,
                      napi_finalize finalize_cb_,
-                     napi_threadsafe_function_call_js call_js_cb_):
-                     AsyncResource(env_->isolate,
-                                   resource,
-                                   *v8::String::Utf8Value(env_->isolate, name)),
-      thread_count(thread_count_),
-      is_closing(false),
-      context(context_),
-      max_queue_size(max_queue_size_),
-      env(env_),
-      finalize_data(finalize_data_),
-      finalize_cb(finalize_cb_),
-      call_js_cb(call_js_cb_ == nullptr ? CallJs : call_js_cb_),
-      handles_closing(false) {
+                     napi_threadsafe_function_call_js call_js_cb_)
+      : AsyncResource(env_->isolate,
+                      resource,
+                      *v8::String::Utf8Value(env_->isolate, name)),
+        thread_count(thread_count_),
+        is_closing(false),
+        context(context_),
+        max_queue_size(max_queue_size_),
+        env(env_),
+        finalize_data(finalize_data_),
+        finalize_cb(finalize_cb_),
+        call_js_cb(call_js_cb_ == nullptr ? CallJs : call_js_cb_),
+        handles_closing(false) {
     ref.Reset(env->isolate, func);
     node::AddEnvironmentCleanupHook(env->isolate, Cleanup, this);
     env->Ref();
@@ -138,9 +135,8 @@ class ThreadSafeFunction : public node::AsyncResource {
   napi_status Push(void* data, napi_threadsafe_function_call_mode mode) {
     node::Mutex::ScopedLock lock(this->mutex);
 
-    while (queue.size() >= max_queue_size &&
-        max_queue_size > 0 &&
-        !is_closing) {
+    while (queue.size() >= max_queue_size && max_queue_size > 0 &&
+           !is_closing) {
       if (mode == napi_tsfn_nonblocking) {
         return napi_queue_full;
       }
@@ -200,7 +196,7 @@ class ThreadSafeFunction : public node::AsyncResource {
   }
 
   void EmptyQueueAndDelete() {
-    for (; !queue.empty() ; queue.pop()) {
+    for (; !queue.empty(); queue.pop()) {
       call_js_cb(nullptr, nullptr, context, queue.front());
     }
     delete this;
@@ -302,10 +298,7 @@ class ThreadSafeFunction : public node::AsyncResource {
       } else {
         v8::Local<v8::Function> js_cb =
             v8::Local<v8::Function>::New(env->isolate, ref);
-        call_js_cb(env,
-                   v8impl::JsValueFromV8LocalValue(js_cb),
-                   context,
-                   data);
+        call_js_cb(env, v8impl::JsValueFromV8LocalValue(js_cb), context, data);
       }
     }
   }
@@ -329,9 +322,7 @@ class ThreadSafeFunction : public node::AsyncResource {
     EmptyQueueAndDelete();
   }
 
-  inline void* Context() {
-    return context;
-  }
+  inline void* Context() { return context; }
 
   void CloseHandlesAndMaybeDelete(bool set_closing = false) {
     v8::HandleScope scope(env->isolate);
@@ -373,15 +364,16 @@ class ThreadSafeFunction : public node::AsyncResource {
 
       status = napi_get_undefined(env, &recv);
       if (status != napi_ok) {
-        napi_throw_error(env, "ERR_NAPI_TSFN_GET_UNDEFINED",
-            "Failed to retrieve undefined value");
+        napi_throw_error(env,
+                         "ERR_NAPI_TSFN_GET_UNDEFINED",
+                         "Failed to retrieve undefined value");
         return;
       }
 
       status = napi_call_function(env, recv, cb, 0, nullptr, nullptr);
       if (status != napi_ok && status != napi_pending_exception) {
-        napi_throw_error(env, "ERR_NAPI_TSFN_CALL_JS",
-            "Failed to call JS callback");
+        napi_throw_error(
+            env, "ERR_NAPI_TSFN_CALL_JS", "Failed to call JS callback");
         return;
       }
     }
@@ -400,8 +392,8 @@ class ThreadSafeFunction : public node::AsyncResource {
   }
 
   static void Cleanup(void* data) {
-    reinterpret_cast<ThreadSafeFunction*>(data)
-        ->CloseHandlesAndMaybeDelete(true);
+    reinterpret_cast<ThreadSafeFunction*>(data)->CloseHandlesAndMaybeDelete(
+        true);
   }
 
  private:
@@ -439,7 +431,10 @@ static void napi_module_register_cb(v8::Local<v8::Object> exports,
                                     v8::Local<v8::Value> module,
                                     v8::Local<v8::Context> context,
                                     void* priv) {
-  napi_module_register_by_symbol(exports, module, context,
+  napi_module_register_by_symbol(
+      exports,
+      module,
+      context,
       static_cast<napi_module*>(priv)->nm_register_func);
 }
 
@@ -450,8 +445,7 @@ void napi_module_register_by_symbol(v8::Local<v8::Object> exports,
   if (init == nullptr) {
     node::Environment* node_env = node::Environment::GetCurrent(context);
     CHECK_NOT_NULL(node_env);
-    node_env->ThrowError(
-        "Module has no declared entry point.");
+    node_env->ThrowError("Module has no declared entry point.");
     return;
   }
 
@@ -460,8 +454,8 @@ void napi_module_register_by_symbol(v8::Local<v8::Object> exports,
   napi_env env = v8impl::GetEnv(context);
 
   napi_value _exports;
-  NAPI_CALL_INTO_MODULE_THROW(env,
-      _exports = init(env, v8impl::JsValueFromV8LocalValue(exports)));
+  NAPI_CALL_INTO_MODULE_THROW(
+      env, _exports = init(env, v8impl::JsValueFromV8LocalValue(exports)));
 
   // If register function returned a non-null exports object different from
   // the exports object we passed it, set that as the "exports" property of
@@ -475,16 +469,16 @@ void napi_module_register_by_symbol(v8::Local<v8::Object> exports,
 
 // Registers a NAPI module.
 void napi_module_register(napi_module* mod) {
-  node::node_module* nm = new node::node_module {
-    -1,
-    mod->nm_flags,
-    nullptr,
-    mod->nm_filename,
-    nullptr,
-    napi_module_register_cb,
-    mod->nm_modname,
-    mod,  // priv
-    nullptr,
+  node::node_module* nm = new node::node_module{
+      -1,
+      mod->nm_flags,
+      nullptr,
+      mod->nm_filename,
+      nullptr,
+      napi_module_register_cb,
+      mod->nm_modname,
+      mod,  // priv
+      nullptr,
   };
   node::node_module_register(nm);
 }
@@ -529,19 +523,15 @@ NAPI_NO_RETURN void napi_fatal_error(const char* location,
   std::string message_string;
 
   if (location_len != NAPI_AUTO_LENGTH) {
-    location_string.assign(
-        const_cast<char*>(location), location_len);
+    location_string.assign(const_cast<char*>(location), location_len);
   } else {
-    location_string.assign(
-        const_cast<char*>(location), strlen(location));
+    location_string.assign(const_cast<char*>(location), strlen(location));
   }
 
   if (message_len != NAPI_AUTO_LENGTH) {
-    message_string.assign(
-        const_cast<char*>(message), message_len);
+    message_string.assign(const_cast<char*>(message), message_len);
   } else {
-    message_string.assign(
-        const_cast<char*>(message), strlen(message));
+    message_string.assign(const_cast<char*>(message), strlen(message));
   }
 
   node::FatalError(location_string.c_str(), message_string.c_str());
@@ -565,9 +555,7 @@ napi_status napi_open_callback_scope(napi_env env,
   CHECK_TO_OBJECT(env, context, resource, resource_object);
 
   *result = v8impl::JsCallbackScopeFromV8CallbackScope(
-      new node::CallbackScope(env->isolate,
-                              resource,
-                              *node_async_context));
+      new node::CallbackScope(env->isolate, resource, *node_async_context));
 
   env->open_callback_scopes++;
   return napi_clear_last_error(env);
@@ -618,8 +606,7 @@ napi_status napi_async_init(napi_env env,
   return napi_clear_last_error(env);
 }
 
-napi_status napi_async_destroy(napi_env env,
-                               napi_async_context async_context) {
+napi_status napi_async_destroy(napi_env env, napi_async_context async_context) {
   CHECK_ENV(env);
   CHECK_ARG(env, async_context);
 
@@ -655,14 +642,17 @@ napi_status napi_make_callback(napi_env env,
   CHECK_TO_FUNCTION(env, v8func, func);
 
   node::async_context* node_async_context =
-    reinterpret_cast<node::async_context*>(async_context);
+      reinterpret_cast<node::async_context*>(async_context);
   if (node_async_context == nullptr) {
-    static node::async_context empty_context = { 0, 0 };
+    static node::async_context empty_context = {0, 0};
     node_async_context = &empty_context;
   }
 
   v8::MaybeLocal<v8::Value> callback_result = node::MakeCallback(
-      env->isolate, v8recv, v8func, argc,
+      env->isolate,
+      v8recv,
+      v8func,
+      argc,
       reinterpret_cast<v8::Local<v8::Value>*>(const_cast<napi_value*>(argv)),
       *node_async_context);
 
@@ -671,8 +661,8 @@ napi_status napi_make_callback(napi_env env,
   } else {
     CHECK_MAYBE_EMPTY(env, callback_result, napi_generic_failure);
     if (result != nullptr) {
-      *result = v8impl::JsValueFromV8LocalValue(
-          callback_result.ToLocalChecked());
+      *result =
+          v8impl::JsValueFromV8LocalValue(callback_result.ToLocalChecked());
     }
   }
 
@@ -713,14 +703,15 @@ napi_status napi_create_external_buffer(napi_env env,
   v8::Isolate* isolate = env->isolate;
 
   // The finalizer object will delete itself after invoking the callback.
-  v8impl::Finalizer* finalizer = v8impl::Finalizer::New(
-    env, finalize_cb, nullptr, finalize_hint);
+  v8impl::Finalizer* finalizer =
+      v8impl::Finalizer::New(env, finalize_cb, nullptr, finalize_hint);
 
-  auto maybe = node::Buffer::New(isolate,
-                                static_cast<char*>(data),
-                                length,
-                                v8impl::BufferFinalizer::FinalizeBufferCallback,
-                                finalizer);
+  auto maybe =
+      node::Buffer::New(isolate,
+                        static_cast<char*>(data),
+                        length,
+                        v8impl::BufferFinalizer::FinalizeBufferCallback,
+                        finalizer);
 
   CHECK_MAYBE_EMPTY(env, maybe, napi_generic_failure);
 
@@ -740,8 +731,8 @@ napi_status napi_create_buffer_copy(napi_env env,
   NAPI_PREAMBLE(env);
   CHECK_ARG(env, result);
 
-  auto maybe = node::Buffer::Copy(env->isolate,
-    static_cast<const char*>(data), length);
+  auto maybe =
+      node::Buffer::Copy(env->isolate, static_cast<const char*>(data), length);
 
   CHECK_MAYBE_EMPTY(env, maybe, napi_generic_failure);
 
@@ -788,11 +779,7 @@ napi_status napi_get_node_version(napi_env env,
   CHECK_ENV(env);
   CHECK_ARG(env, result);
   static const napi_node_version version = {
-    NODE_MAJOR_VERSION,
-    NODE_MINOR_VERSION,
-    NODE_PATCH_VERSION,
-    NODE_RELEASE
-  };
+      NODE_MAJOR_VERSION, NODE_MINOR_VERSION, NODE_PATCH_VERSION, NODE_RELEASE};
   *result = &version;
   return napi_clear_last_error(env);
 }
@@ -802,12 +789,12 @@ namespace uvimpl {
 
 static napi_status ConvertUVErrorCode(int code) {
   switch (code) {
-  case 0:
-    return napi_ok;
-  case UV_EINVAL:
-    return napi_invalid_arg;
-  case UV_ECANCELED:
-    return napi_cancelled;
+    case 0:
+      return napi_ok;
+    case UV_EINVAL:
+      return napi_invalid_arg;
+    case UV_ECANCELED:
+      return napi_cancelled;
   }
 
   return napi_generic_failure;
@@ -822,17 +809,17 @@ class Work : public node::AsyncResource, public node::ThreadPoolWork {
                 napi_async_execute_callback execute,
                 napi_async_complete_callback complete = nullptr,
                 void* data = nullptr)
-    : AsyncResource(env->isolate,
-                    async_resource,
-                    *v8::String::Utf8Value(env->isolate, async_resource_name)),
-      ThreadPoolWork(env->node_env()),
-      _env(env),
-      _data(data),
-      _execute(execute),
-      _complete(complete) {
-  }
+      : AsyncResource(
+            env->isolate,
+            async_resource,
+            *v8::String::Utf8Value(env->isolate, async_resource_name)),
+        ThreadPoolWork(env->node_env()),
+        _env(env),
+        _data(data),
+        _execute(execute),
+        _complete(complete) {}
 
-  virtual ~Work() { }
+  virtual ~Work() {}
 
  public:
   static Work* New(node_napi_env env,
@@ -841,21 +828,16 @@ class Work : public node::AsyncResource, public node::ThreadPoolWork {
                    napi_async_execute_callback execute,
                    napi_async_complete_callback complete,
                    void* data) {
-    return new Work(env, async_resource, async_resource_name,
-                    execute, complete, data);
+    return new Work(
+        env, async_resource, async_resource_name, execute, complete, data);
   }
 
-  static void Delete(Work* work) {
-    delete work;
-  }
+  static void Delete(Work* work) { delete work; }
 
-  void DoThreadPoolWork() override {
-    _execute(_env, _data);
-  }
+  void DoThreadPoolWork() override { _execute(_env, _data); }
 
   void AfterThreadPoolWork(int status) override {
-    if (_complete == nullptr)
-      return;
+    if (_complete == nullptr) return;
 
     // Establish a handle scope here so that every callback doesn't have to.
     // Also it is needed for the exception-handling below.
@@ -870,13 +852,14 @@ class Work : public node::AsyncResource, public node::ThreadPoolWork {
     napi_env env = _env;
 
     NAPI_CALL_INTO_MODULE(env,
-        _complete(_env, ConvertUVErrorCode(status), _data),
-        [env] (v8::Local<v8::Value> local_err) {
-          // If there was an unhandled exception in the complete callback,
-          // report it as a fatal exception. (There is no JavaScript on the
-          // callstack that can possibly handle it.)
-          v8impl::trigger_fatal_exception(env, local_err);
-        });
+                          _complete(_env, ConvertUVErrorCode(status), _data),
+                          [env](v8::Local<v8::Value> local_err) {
+                            // If there was an unhandled exception in the
+                            // complete callback, report it as a fatal
+                            // exception. (There is no JavaScript on the
+                            // callstack that can possibly handle it.)
+                            v8impl::trigger_fatal_exception(env, local_err);
+                          });
 
     // Note: Don't access `work` after this point because it was
     // likely deleted by the complete callback.
@@ -892,13 +875,13 @@ class Work : public node::AsyncResource, public node::ThreadPoolWork {
 }  // end of namespace uvimpl
 }  // end of anonymous namespace
 
-#define CALL_UV(env, condition)                                         \
-  do {                                                                  \
-    int result = (condition);                                           \
-    napi_status status = uvimpl::ConvertUVErrorCode(result);            \
-    if (status != napi_ok) {                                            \
-      return napi_set_last_error(env, status, result);                  \
-    }                                                                   \
+#define CALL_UV(env, condition)                                                \
+  do {                                                                         \
+    int result = (condition);                                                  \
+    napi_status status = uvimpl::ConvertUVErrorCode(result);                   \
+    if (status != napi_ok) {                                                   \
+      return napi_set_last_error(env, status, result);                         \
+    }                                                                          \
   } while (0)
 
 napi_status napi_create_async_work(napi_env env,
@@ -959,8 +942,7 @@ napi_status napi_queue_async_work(napi_env env, napi_async_work work) {
   napi_status status;
   uv_loop_t* event_loop = nullptr;
   status = napi_get_uv_event_loop(env, &event_loop);
-  if (status != napi_ok)
-    return napi_set_last_error(env, status);
+  if (status != napi_ok) return napi_set_last_error(env, status);
 
   uvimpl::Work* w = reinterpret_cast<uvimpl::Work*>(work);
 
@@ -980,18 +962,18 @@ napi_status napi_cancel_async_work(napi_env env, napi_async_work work) {
   return napi_clear_last_error(env);
 }
 
-napi_status
-napi_create_threadsafe_function(napi_env env,
-                                napi_value func,
-                                napi_value async_resource,
-                                napi_value async_resource_name,
-                                size_t max_queue_size,
-                                size_t initial_thread_count,
-                                void* thread_finalize_data,
-                                napi_finalize thread_finalize_cb,
-                                void* context,
-                                napi_threadsafe_function_call_js call_js_cb,
-                                napi_threadsafe_function* result) {
+napi_status napi_create_threadsafe_function(
+    napi_env env,
+    napi_value func,
+    napi_value async_resource,
+    napi_value async_resource_name,
+    size_t max_queue_size,
+    size_t initial_thread_count,
+    void* thread_finalize_data,
+    napi_finalize thread_finalize_cb,
+    void* context,
+    napi_threadsafe_function_call_js call_js_cb,
+    napi_threadsafe_function* result) {
   CHECK_ENV(env);
   CHECK_ARG(env, func);
   CHECK_ARG(env, async_resource_name);
@@ -1040,9 +1022,8 @@ napi_create_threadsafe_function(napi_env env,
   return napi_set_last_error(env, status);
 }
 
-napi_status
-napi_get_threadsafe_function_context(napi_threadsafe_function func,
-                                     void** result) {
+napi_status napi_get_threadsafe_function_context(napi_threadsafe_function func,
+                                                 void** result) {
   CHECK(func != nullptr);
   CHECK(result != nullptr);
 
@@ -1050,36 +1031,34 @@ napi_get_threadsafe_function_context(napi_threadsafe_function func,
   return napi_ok;
 }
 
-napi_status
-napi_call_threadsafe_function(napi_threadsafe_function func,
-                              void* data,
-                              napi_threadsafe_function_call_mode is_blocking) {
+napi_status napi_call_threadsafe_function(
+    napi_threadsafe_function func,
+    void* data,
+    napi_threadsafe_function_call_mode is_blocking) {
   CHECK(func != nullptr);
   return reinterpret_cast<v8impl::ThreadSafeFunction*>(func)->Push(data,
                                                                    is_blocking);
 }
 
-napi_status
-napi_acquire_threadsafe_function(napi_threadsafe_function func) {
+napi_status napi_acquire_threadsafe_function(napi_threadsafe_function func) {
   CHECK(func != nullptr);
   return reinterpret_cast<v8impl::ThreadSafeFunction*>(func)->Acquire();
 }
 
-napi_status
-napi_release_threadsafe_function(napi_threadsafe_function func,
-                                 napi_threadsafe_function_release_mode mode) {
+napi_status napi_release_threadsafe_function(
+    napi_threadsafe_function func, napi_threadsafe_function_release_mode mode) {
   CHECK(func != nullptr);
   return reinterpret_cast<v8impl::ThreadSafeFunction*>(func)->Release(mode);
 }
 
-napi_status
-napi_unref_threadsafe_function(napi_env env, napi_threadsafe_function func) {
+napi_status napi_unref_threadsafe_function(napi_env env,
+                                           napi_threadsafe_function func) {
   CHECK(func != nullptr);
   return reinterpret_cast<v8impl::ThreadSafeFunction*>(func)->Unref();
 }
 
-napi_status
-napi_ref_threadsafe_function(napi_env env, napi_threadsafe_function func) {
+napi_status napi_ref_threadsafe_function(napi_env env,
+                                         napi_threadsafe_function func) {
   CHECK(func != nullptr);
   return reinterpret_cast<v8impl::ThreadSafeFunction*>(func)->Ref();
 }

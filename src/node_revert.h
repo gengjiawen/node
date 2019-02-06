@@ -29,7 +29,9 @@ extern unsigned int reverted_cve;
 }
 
 inline const char* RevertMessage(const reversion cve) {
-#define V(code, label, msg) case SECURITY_REVERT_##code: return label ": " msg;
+#define V(code, label, msg)                                                    \
+  case SECURITY_REVERT_##code:                                                 \
+    return label ": " msg;
   switch (cve) {
     SECURITY_REVERSIONS(V)
     default:
@@ -44,7 +46,7 @@ inline void Revert(const reversion cve) {
 }
 
 inline void Revert(const char* cve, std::string* error) {
-#define V(code, label, _)                                                     \
+#define V(code, label, _)                                                      \
   if (strcmp(cve, label) == 0) return Revert(SECURITY_REVERT_##code);
   SECURITY_REVERSIONS(V)
 #undef V
@@ -58,7 +60,7 @@ inline bool IsReverted(const reversion cve) {
 }
 
 inline bool IsReverted(const char* cve) {
-#define V(code, label, _)                                                     \
+#define V(code, label, _)                                                      \
   if (strcmp(cve, label) == 0) return IsReverted(SECURITY_REVERT_##code);
   SECURITY_REVERSIONS(V)
   return false;

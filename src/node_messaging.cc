@@ -58,8 +58,7 @@ class DeserializerDelegate : public ValueDeserializer::Delegate {
     // Currently, only MessagePort hosts objects are supported, so identifying
     // by the index in the message's MessagePort array is sufficient.
     uint32_t id;
-    if (!deserializer->ReadUint32(&id))
-      return MaybeLocal<Object>();
+    if (!deserializer->ReadUint32(&id)) return MaybeLocal<Object>();
     CHECK_LE(id, message_ports_.size());
     return message_ports_[id]->object(isolate);
   };
@@ -95,14 +94,11 @@ MaybeLocal<Value> Message::Deserialize(Environment* env,
   // Create all necessary MessagePort handles.
   std::vector<MessagePort*> ports(message_ports_.size());
   for (uint32_t i = 0; i < message_ports_.size(); ++i) {
-    ports[i] = MessagePort::New(env,
-                                context,
-                                std::move(message_ports_[i]));
+    ports[i] = MessagePort::New(env, context, std::move(message_ports_[i]));
     if (ports[i] == nullptr) {
       for (MessagePort* port : ports) {
         // This will eventually release the MessagePort object itself.
-        if (port != nullptr)
-          port->Close();
+        if (port != nullptr) port->Close();
       }
       return MaybeLocal<Value>();
     }
@@ -113,8 +109,9 @@ MaybeLocal<Value> Message::Deserialize(Environment* env,
   // Attach all transferred SharedArrayBuffers to their new Isolate.
   for (uint32_t i = 0; i < shared_array_buffers_.size(); ++i) {
     Local<SharedArrayBuffer> sab;
-    if (!shared_array_buffers_[i]->GetSharedArrayBuffer(env, context)
-            .ToLocal(&sab))
+    if (!shared_array_buffers_[i]
+             ->GetSharedArrayBuffer(env, context)
+             .ToLocal(&sab))
       return MaybeLocal<Value>();
     shared_array_buffers.push_back(sab);
   }
@@ -140,8 +137,7 @@ MaybeLocal<Value> Message::Deserialize(Environment* env,
   }
   array_buffer_contents_.clear();
 
-  if (deserializer.ReadHeader(context).IsNothing())
-    return MaybeLocal<Value>();
+  if (deserializer.ReadHeader(context).IsNothing()) return MaybeLocal<Value>();
   return handle_scope.Escape(
       deserializer.ReadValue(context).FromMaybe(Local<Value>()));
 }
@@ -164,14 +160,12 @@ namespace {
 
 void ThrowDataCloneException(Environment* env, Local<String> message) {
   Local<Value> argv[] = {
-    message,
-    FIXED_ONE_BYTE_STRING(env->isolate(), "DataCloneError")
-  };
+      message, FIXED_ONE_BYTE_STRING(env->isolate(), "DataCloneError")};
   Local<Value> exception;
   Local<Function> domexception_ctor = env->domexception_function();
   CHECK(!domexception_ctor.IsEmpty());
   if (!domexception_ctor->NewInstance(env->context(), arraysize(argv), argv)
-          .ToLocal(&exception)) {
+           .ToLocal(&exception)) {
     return;
   }
   env->isolate()->ThrowException(exception);
@@ -199,18 +193,14 @@ class SerializerDelegate : public ValueSerializer::Delegate {
   }
 
   Maybe<uint32_t> GetSharedArrayBufferId(
-      Isolate* isolate,
-      Local<SharedArrayBuffer> shared_array_buffer) override {
+      Isolate* isolate, Local<SharedArrayBuffer> shared_array_buffer) override {
     uint32_t i;
     for (i = 0; i < seen_shared_array_buffers_.size(); ++i) {
-      if (seen_shared_array_buffers_[i] == shared_array_buffer)
-        return Just(i);
+      if (seen_shared_array_buffers_[i] == shared_array_buffer) return Just(i);
     }
 
     auto reference = SharedArrayBufferMetadata::ForSharedArrayBuffer(
-        env_,
-        context_,
-        shared_array_buffer);
+        env_, context_, shared_array_buffer);
     if (!reference) {
       return Nothing<uint32_t>();
     }
@@ -287,8 +277,7 @@ Maybe<bool> Message::Serialize(Environment* env,
         Local<ArrayBuffer> ab = entry.As<ArrayBuffer>();
         // If we cannot render the ArrayBuffer unusable in this Isolate and
         // take ownership of its memory, copying the buffer will have to do.
-        if (!ab->IsNeuterable() || ab->IsExternal())
-          continue;
+        if (!ab->IsNeuterable() || ab->IsExternal()) continue;
         if (std::find(array_buffers.begin(), array_buffers.end(), ab) !=
             array_buffers.end()) {
           ThrowDataCloneException(
@@ -304,8 +293,7 @@ Maybe<bool> Message::Serialize(Environment* env,
         array_buffers.push_back(ab);
         serializer.TransferArrayBuffer(id, ab);
         continue;
-      } else if (env->message_port_constructor_template()
-                    ->HasInstance(entry)) {
+      } else if (env->message_port_constructor_template()->HasInstance(entry)) {
         // Check if the source MessagePort is being transferred.
         if (!source_port.IsEmpty() && entry == source_port) {
           ThrowDataCloneException(
@@ -352,9 +340,8 @@ Maybe<bool> Message::Serialize(Environment* env,
     // it inaccessible in this Isolate.
     ArrayBuffer::Contents contents = ab->Externalize();
     ab->Neuter();
-    array_buffer_contents_.push_back(
-        MallocedBuffer<char> { static_cast<char*>(contents.Data()),
-                               contents.ByteLength() });
+    array_buffer_contents_.push_back(MallocedBuffer<char>{
+        static_cast<char*>(contents.Data()), contents.ByteLength()});
   }
 
   delegate.Finish();
@@ -368,12 +355,13 @@ Maybe<bool> Message::Serialize(Environment* env,
 
 void Message::MemoryInfo(MemoryTracker* tracker) const {
   tracker->TrackField("array_buffer_contents", array_buffer_contents_);
-  tracker->TrackFieldWithSize("shared_array_buffers",
+  tracker->TrackFieldWithSize(
+      "shared_array_buffers",
       shared_array_buffers_.size() * sizeof(shared_array_buffers_[0]));
   tracker->TrackField("message_ports", message_ports_);
 }
 
-MessagePortData::MessagePortData(MessagePort* owner) : owner_(owner) { }
+MessagePortData::MessagePortData(MessagePort* owner) : owner_(owner) {}
 
 MessagePortData::~MessagePortData() {
   CHECK_EQ(owner_, nullptr);
@@ -411,8 +399,7 @@ void MessagePortData::Entangle(MessagePortData* a, MessagePortData* b) {
 
 void MessagePortData::PingOwnerAfterDisentanglement() {
   Mutex::ScopedLock lock(mutex_);
-  if (owner_ != nullptr)
-    owner_->TriggerAsync();
+  if (owner_ != nullptr) owner_->TriggerAsync();
 }
 
 void MessagePortData::Disentangle() {
@@ -437,31 +424,27 @@ void MessagePortData::Disentangle() {
 }
 
 MessagePort::~MessagePort() {
-  if (data_)
-    data_->owner_ = nullptr;
+  if (data_) data_->owner_ = nullptr;
 }
 
 MessagePort::MessagePort(Environment* env,
                          Local<Context> context,
                          Local<Object> wrap)
-  : HandleWrap(env,
-               wrap,
-               reinterpret_cast<uv_handle_t*>(new uv_async_t()),
-               AsyncWrap::PROVIDER_MESSAGEPORT),
-    data_(new MessagePortData(this)) {
+    : HandleWrap(env,
+                 wrap,
+                 reinterpret_cast<uv_handle_t*>(new uv_async_t()),
+                 AsyncWrap::PROVIDER_MESSAGEPORT),
+      data_(new MessagePortData(this)) {
   auto onmessage = [](uv_async_t* handle) {
     // Called when data has been put into the queue.
     MessagePort* channel = static_cast<MessagePort*>(handle->data);
     channel->OnMessage();
   };
-  CHECK_EQ(uv_async_init(env->event_loop(),
-                         async(),
-                         onmessage), 0);
+  CHECK_EQ(uv_async_init(env->event_loop(), async(), onmessage), 0);
   async()->data = static_cast<void*>(this);
 
   Local<Value> fn;
-  if (!wrap->Get(context, env->oninit_symbol()).ToLocal(&fn))
-    return;
+  if (!wrap->Get(context, env->oninit_symbol()).ToLocal(&fn)) return;
 
   if (fn->IsFunction()) {
     Local<Function> init = fn.As<Function>();
@@ -514,20 +497,17 @@ void MessagePort::New(const FunctionCallbackInfo<Value>& args) {
   new MessagePort(env, context, args.This());
 }
 
-MessagePort* MessagePort::New(
-    Environment* env,
-    Local<Context> context,
-    std::unique_ptr<MessagePortData> data) {
+MessagePort* MessagePort::New(Environment* env,
+                              Local<Context> context,
+                              std::unique_ptr<MessagePortData> data) {
   Context::Scope context_scope(context);
   Local<Function> ctor;
-  if (!GetMessagePortConstructor(env, context).ToLocal(&ctor))
-    return nullptr;
+  if (!GetMessagePortConstructor(env, context).ToLocal(&ctor)) return nullptr;
 
   // Construct a new instance, then assign the listener instance and possibly
   // the MessagePortData to it.
   Local<Object> instance;
-  if (!ctor->NewInstance(context).ToLocal(&instance))
-    return nullptr;
+  if (!ctor->NewInstance(context).ToLocal(&instance)) return nullptr;
   MessagePort* port = Unwrap<MessagePort>(instance);
   CHECK_NOT_NULL(port);
   if (data) {
@@ -568,13 +548,12 @@ void MessagePort::OnMessage() {
         break;
       }
 
-      Debug(this, "MessagePort has message, receiving = %d",
+      Debug(this,
+            "MessagePort has message, receiving = %d",
             static_cast<int>(data_->receiving_messages_));
 
-      if (!data_->receiving_messages_)
-        break;
-      if (data_->incoming_messages_.empty())
-        break;
+      if (!data_->receiving_messages_) break;
+      if (data_->incoming_messages_.empty()) break;
       received = std::move(data_->incoming_messages_.front());
       data_->incoming_messages_.pop_front();
     }
@@ -590,14 +569,12 @@ void MessagePort::OnMessage() {
       HandleScope handle_scope(env()->isolate());
       Context::Scope context_scope(context);
       Local<Value> args[] = {
-        received.Deserialize(env(), context).FromMaybe(Local<Value>())
-      };
+          received.Deserialize(env(), context).FromMaybe(Local<Value>())};
 
       if (args[0].IsEmpty() ||
           MakeCallback(env()->onmessage_string(), 1, args).IsEmpty()) {
         // Re-schedule OnMessage() execution in case of failure.
-        if (data_)
-          TriggerAsync();
+        if (data_) TriggerAsync();
         return;
       }
     }
@@ -630,7 +607,6 @@ std::unique_ptr<MessagePortData> MessagePort::Detach() {
   return std::move(data_);
 }
 
-
 Maybe<bool> MessagePort::PostMessage(Environment* env,
                                      Local<Value> message_v,
                                      Local<Value> transfer_v) {
@@ -660,15 +636,15 @@ Maybe<bool> MessagePort::PostMessage(Environment* env,
     for (const auto& port_data : msg.message_ports()) {
       if (data_->sibling_ == port_data.get()) {
         doomed = true;
-        ProcessEmitWarning(env, "The target port was posted to itself, and "
-                                "the communication channel was lost");
+        ProcessEmitWarning(env,
+                           "The target port was posted to itself, and "
+                           "the communication channel was lost");
         break;
       }
     }
   }
 
-  if (data_->sibling_ == nullptr || doomed)
-    return Just(true);
+  if (data_->sibling_ == nullptr || doomed) return Just(true);
 
   data_->sibling_->AddToIncomingQueue(std::move(msg));
   return Just(true);
@@ -677,8 +653,9 @@ Maybe<bool> MessagePort::PostMessage(Environment* env,
 void MessagePort::PostMessage(const FunctionCallbackInfo<Value>& args) {
   Environment* env = Environment::GetCurrent(args);
   if (args.Length() == 0) {
-    return THROW_ERR_MISSING_ARGS(env, "Not enough arguments to "
-                                       "MessagePort.postMessage");
+    return THROW_ERR_MISSING_ARGS(env,
+                                  "Not enough arguments to "
+                                  "MessagePort.postMessage");
   }
 
   MessagePort* port = Unwrap<MessagePort>(args.This());
@@ -700,8 +677,7 @@ void MessagePort::Start() {
   Mutex::ScopedLock lock(data_->mutex_);
   Debug(this, "Start receiving messages");
   data_->receiving_messages_ = true;
-  if (!data_->incoming_messages_.empty())
-    TriggerAsync();
+  if (!data_->incoming_messages_.empty()) TriggerAsync();
 }
 
 void MessagePort::Stop() {
@@ -755,13 +731,12 @@ void MessagePort::Entangle(MessagePort* a, MessagePortData* b) {
   MessagePortData::Entangle(a->data_.get(), b);
 }
 
-MaybeLocal<Function> GetMessagePortConstructor(
-    Environment* env, Local<Context> context) {
+MaybeLocal<Function> GetMessagePortConstructor(Environment* env,
+                                               Local<Context> context) {
   // Factor generating the MessagePort JS constructor into its own piece
   // of code, because it is needed early on in the child environment setup.
   Local<FunctionTemplate> templ = env->message_port_constructor_template();
-  if (!templ.IsEmpty())
-    return templ->GetFunction(context);
+  if (!templ.IsEmpty()) return templ->GetFunction(context);
 
   {
     Local<FunctionTemplate> m = env->NewFunctionTemplate(MessagePort::New);
@@ -796,9 +771,11 @@ static void MessageChannel(const FunctionCallbackInfo<Value>& args) {
   MessagePort* port2 = MessagePort::New(env, context);
   MessagePort::Entangle(port1, port2);
 
-  args.This()->Set(env->context(), env->port1_string(), port1->object())
+  args.This()
+      ->Set(env->context(), env->port1_string(), port1->object())
       .FromJust();
-  args.This()->Set(env->context(), env->port2_string(), port2->object())
+  args.This()
+      ->Set(env->context(), env->port2_string(), port2->object())
       .FromJust();
 }
 
@@ -820,15 +797,18 @@ static void InitMessaging(Local<Object> target,
         FIXED_ONE_BYTE_STRING(env->isolate(), "MessageChannel");
     Local<FunctionTemplate> templ = env->NewFunctionTemplate(MessageChannel);
     templ->SetClassName(message_channel_string);
-    target->Set(env->context(),
-                message_channel_string,
-                templ->GetFunction(context).ToLocalChecked()).FromJust();
+    target
+        ->Set(env->context(),
+              message_channel_string,
+              templ->GetFunction(context).ToLocalChecked())
+        .FromJust();
   }
 
-  target->Set(context,
-              env->message_port_constructor_string(),
-              GetMessagePortConstructor(env, context).ToLocalChecked())
-                  .FromJust();
+  target
+      ->Set(context,
+            env->message_port_constructor_string(),
+            GetMessagePortConstructor(env, context).ToLocalChecked())
+      .FromJust();
 
   env->SetMethod(target, "registerDOMException", RegisterDOMException);
 }

@@ -3,27 +3,27 @@
 #include "node_mutex.h"
 #include "v8-inspector.h"
 
-#include <functional>
 #include <unicode/unistr.h>
+#include <functional>
 #include "util-inl.h"
 
 namespace node {
 namespace inspector {
 namespace {
 
-using v8_inspector::StringView;
 using v8_inspector::StringBuffer;
+using v8_inspector::StringView;
 
 template <typename T>
 class DeletableWrapper : public Deletable {
  public:
   explicit DeletableWrapper(std::unique_ptr<T> object)
-                        : object_(std::move(object)) {}
+      : object_(std::move(object)) {}
   ~DeletableWrapper() override = default;
 
   static T* get(MainThreadInterface* thread, int id) {
-    return
-        static_cast<DeletableWrapper<T>*>(thread->GetObject(id))->object_.get();
+    return static_cast<DeletableWrapper<T>*>(thread->GetObject(id))
+        ->object_.get();
   }
 
  private:
@@ -40,7 +40,7 @@ template <typename Factory>
 class CreateObjectRequest : public Request {
  public:
   CreateObjectRequest(int object_id, Factory factory)
-                      : object_id_(object_id), factory_(std::move(factory)) {}
+      : object_id_(object_id), factory_(std::move(factory)) {}
 
   void Call(MainThreadInterface* thread) {
     thread->AddObject(object_id_, WrapInDeletable(factory_(thread)));
@@ -86,11 +86,9 @@ class CallRequest : public Request {
 class DispatchMessagesTask : public v8::Task {
  public:
   explicit DispatchMessagesTask(MainThreadInterface* thread)
-                                : thread_(thread) {}
+      : thread_(thread) {}
 
-  void Run() override {
-    thread_->DispatchMessages();
-  }
+  void Run() override { thread_->DispatchMessages(); }
 
  private:
   MainThreadInterface* thread_;
@@ -106,13 +104,13 @@ void DisposePairCallback(uv_handle_t* ref) {
 template <typename T>
 class AnotherThreadObjectReference {
  public:
-  AnotherThreadObjectReference(
-      std::shared_ptr<MainThreadHandle> thread, int object_id)
+  AnotherThreadObjectReference(std::shared_ptr<MainThreadHandle> thread,
+                               int object_id)
       : thread_(thread), object_id_(object_id) {}
 
   template <typename Factory>
-  AnotherThreadObjectReference(
-      std::shared_ptr<MainThreadHandle> thread, Factory factory)
+  AnotherThreadObjectReference(std::shared_ptr<MainThreadHandle> thread,
+                               Factory factory)
       : AnotherThreadObjectReference(thread, thread->newObjectId()) {
     thread_->Post(NewCreateRequest(object_id_, std::move(factory)));
   }
@@ -127,8 +125,8 @@ class AnotherThreadObjectReference {
   template <typename Fn>
   void Call(Fn fn) const {
     using Request = CallRequest<T, Fn>;
-    thread_->Post(std::unique_ptr<Request>(
-        new Request(object_id_, std::move(fn))));
+    thread_->Post(
+        std::unique_ptr<Request>(new Request(object_id_, std::move(fn))));
   }
 
   template <typename Arg>
@@ -140,8 +138,9 @@ class AnotherThreadObjectReference {
   // This has to use non-const reference to support std::bind with non-copyable
   // types
   template <typename Argument>
-  static void Apply(T* target, void (T::*fn)(Argument),
-    /* NOLINT (runtime/references) */ Argument& argument) {
+  static void Apply(T* target,
+                    void (T::*fn)(Argument),
+                    /* NOLINT (runtime/references) */ Argument& argument) {
     (target->*fn)(std::move(argument));
   }
 
@@ -152,8 +151,7 @@ class AnotherThreadObjectReference {
 class MainThreadSessionState {
  public:
   MainThreadSessionState(MainThreadInterface* thread, bool prevent_shutdown)
-                         : thread_(thread),
-                           prevent_shutdown_(prevent_shutdown) {}
+      : thread_(thread), prevent_shutdown_(prevent_shutdown) {}
 
   static std::unique_ptr<MainThreadSessionState> Create(
       MainThreadInterface* thread, bool prevent_shutdown) {
@@ -184,9 +182,10 @@ class CrossThreadInspectorSession : public InspectorSession {
       std::shared_ptr<MainThreadHandle> thread,
       std::unique_ptr<InspectorSessionDelegate> delegate,
       bool prevent_shutdown)
-      : state_(thread, std::bind(MainThreadSessionState::Create,
-                                 std::placeholders::_1,
-                                 prevent_shutdown)) {
+      : state_(thread,
+               std::bind(MainThreadSessionState::Create,
+                         std::placeholders::_1,
+                         prevent_shutdown)) {
     state_.Call(&MainThreadSessionState::Connect, std::move(delegate));
   }
 
@@ -202,12 +201,11 @@ class CrossThreadInspectorSession : public InspectorSession {
 class ThreadSafeDelegate : public InspectorSessionDelegate {
  public:
   ThreadSafeDelegate(std::shared_ptr<MainThreadHandle> thread, int object_id)
-                     : thread_(thread), delegate_(thread, object_id) {}
+      : thread_(thread), delegate_(thread, object_id) {}
 
   void SendMessageToFrontend(const v8_inspector::StringView& message) override {
-    delegate_.Call(
-        [m = StringBuffer::create(message)]
-        (InspectorSessionDelegate* delegate) {
+    delegate_.Call([m = StringBuffer::create(message)](
+                       InspectorSessionDelegate* delegate) {
       delegate->SendMessageToFrontend(m->string());
     });
   }
@@ -218,22 +216,22 @@ class ThreadSafeDelegate : public InspectorSessionDelegate {
 };
 }  // namespace
 
-
-MainThreadInterface::MainThreadInterface(Agent* agent, uv_loop_t* loop,
+MainThreadInterface::MainThreadInterface(Agent* agent,
+                                         uv_loop_t* loop,
                                          v8::Isolate* isolate,
                                          v8::Platform* platform)
-                                         : agent_(agent), isolate_(isolate),
-                                           platform_(platform) {
+    : agent_(agent), isolate_(isolate), platform_(platform) {
   main_thread_request_.reset(new AsyncAndInterface(uv_async_t(), this));
-  CHECK_EQ(0, uv_async_init(loop, &main_thread_request_->first,
-                            DispatchMessagesAsyncCallback));
+  CHECK_EQ(
+      0,
+      uv_async_init(
+          loop, &main_thread_request_->first, DispatchMessagesAsyncCallback));
   // Inspector uv_async_t should not prevent main loop shutdown.
   uv_unref(reinterpret_cast<uv_handle_t*>(&main_thread_request_->first));
 }
 
 MainThreadInterface::~MainThreadInterface() {
-  if (handle_)
-    handle_->Reset();
+  if (handle_) handle_->Reset();
 }
 
 // static
@@ -256,11 +254,13 @@ void MainThreadInterface::Post(std::unique_ptr<Request> request) {
     CHECK_EQ(0, uv_async_send(&main_thread_request_->first));
     if (isolate_ != nullptr && platform_ != nullptr) {
       std::shared_ptr<v8::TaskRunner> taskrunner =
-        platform_->GetForegroundTaskRunner(isolate_);
+          platform_->GetForegroundTaskRunner(isolate_);
       taskrunner->PostTask(std::make_unique<DispatchMessagesTask>(this));
-      isolate_->RequestInterrupt([](v8::Isolate* isolate, void* thread) {
-        static_cast<MainThreadInterface*>(thread)->DispatchMessages();
-      }, this);
+      isolate_->RequestInterrupt(
+          [](v8::Isolate* isolate, void* thread) {
+            static_cast<MainThreadInterface*>(thread)->DispatchMessages();
+          },
+          this);
     }
   }
   incoming_message_cond_.Broadcast(scoped_lock);
@@ -279,8 +279,7 @@ bool MainThreadInterface::WaitForFrontendEvent() {
 }
 
 void MainThreadInterface::DispatchMessages() {
-  if (dispatching_messages_)
-    return;
+  if (dispatching_messages_) return;
   dispatching_messages_ = true;
   bool had_messages = false;
   do {
@@ -300,13 +299,11 @@ void MainThreadInterface::DispatchMessages() {
 }
 
 std::shared_ptr<MainThreadHandle> MainThreadInterface::GetHandle() {
-  if (handle_ == nullptr)
-    handle_ = std::make_shared<MainThreadHandle>(this);
+  if (handle_ == nullptr) handle_ = std::make_shared<MainThreadHandle>(this);
   return handle_;
 }
 
-void MainThreadInterface::AddObject(int id,
-                                    std::unique_ptr<Deletable> object) {
+void MainThreadInterface::AddObject(int id, std::unique_ptr<Deletable> object) {
   CHECK_NE(nullptr, object);
   managed_objects_[id] = std::move(object);
 }
@@ -340,8 +337,7 @@ std::unique_ptr<StringBuffer> Utf8ToStringView(const std::string& message) {
 }
 
 std::unique_ptr<InspectorSession> MainThreadHandle::Connect(
-    std::unique_ptr<InspectorSessionDelegate> delegate,
-    bool prevent_shutdown) {
+    std::unique_ptr<InspectorSessionDelegate> delegate, bool prevent_shutdown) {
   return std::unique_ptr<InspectorSession>(
       new CrossThreadInspectorSession(++next_session_id_,
                                       shared_from_this(),
@@ -351,8 +347,7 @@ std::unique_ptr<InspectorSession> MainThreadHandle::Connect(
 
 bool MainThreadHandle::Post(std::unique_ptr<Request> request) {
   Mutex::ScopedLock scoped_lock(block_lock_);
-  if (!main_thread_)
-    return false;
+  if (!main_thread_) return false;
   main_thread_->Post(std::move(request));
   return true;
 }

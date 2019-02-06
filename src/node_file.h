@@ -4,8 +4,8 @@
 #if defined(NODE_WANT_INTERNALS) && NODE_WANT_INTERNALS
 
 #include "node.h"
-#include "stream_base.h"
 #include "req_wrap-inl.h"
+#include "stream_base.h"
 
 namespace node {
 
@@ -25,20 +25,15 @@ namespace fs {
 class FSContinuationData : public MemoryRetainer {
  public:
   FSContinuationData(uv_fs_t* req, int mode, uv_fs_cb done_cb)
-      : req(req), mode(mode), done_cb(done_cb) {
-  }
+      : req(req), mode(mode), done_cb(done_cb) {}
 
   uv_fs_t* req;
   int mode;
   std::vector<std::string> paths{};
 
-  void PushPath(std::string&& path) {
-    paths.emplace_back(std::move(path));
-  }
+  void PushPath(std::string&& path) { paths.emplace_back(std::move(path)); }
 
-  void PushPath(const std::string& path) {
-    paths.push_back(path);
-  }
+  void PushPath(const std::string& path) { paths.push_back(path); }
 
   std::string PopPath() {
     CHECK_GT(paths.size(), 0);
@@ -68,10 +63,11 @@ class FSReqBase : public ReqWrap<uv_fs_t> {
   typedef MaybeStackBuffer<char, 64> FSReqBuffer;
   std::unique_ptr<FSContinuationData> continuation_data = nullptr;
 
-  FSReqBase(Environment* env, Local<Object> req, AsyncWrap::ProviderType type,
+  FSReqBase(Environment* env,
+            Local<Object> req,
+            AsyncWrap::ProviderType type,
             bool use_bigint)
-      : ReqWrap(env, req, type), use_bigint_(use_bigint) {
-  }
+      : ReqWrap(env, req, type), use_bigint_(use_bigint) {}
 
   void Init(const char* syscall,
             const char* data,
@@ -89,8 +85,7 @@ class FSReqBase : public ReqWrap<uv_fs_t> {
     }
   }
 
-  FSReqBuffer& Init(const char* syscall, size_t len,
-                    enum encoding encoding) {
+  FSReqBuffer& Init(const char* syscall, size_t len, enum encoding encoding) {
     syscall_ = syscall;
     encoding_ = encoding;
 
@@ -130,7 +125,7 @@ class FSReqBase : public ReqWrap<uv_fs_t> {
 class FSReqCallback : public FSReqBase {
  public:
   FSReqCallback(Environment* env, Local<Object> req, bool use_bigint)
-      : FSReqBase(env, req, AsyncWrap::PROVIDER_FSREQCALLBACK, use_bigint) { }
+      : FSReqBase(env, req, AsyncWrap::PROVIDER_FSREQCALLBACK, use_bigint) {}
 
   void Reject(Local<Value> reject) override;
   void Resolve(Local<Value> value) override;
@@ -152,7 +147,7 @@ class FSReqCallback : public FSReqBase {
 // Refs: https://www.gnu.org/software/gcc/projects/cxx-status.html#cxx14
 // Refs: https://isocpp.org/files/papers/N3652.html
 #if __cpp_constexpr < 201304
-#  define constexpr inline
+#define constexpr inline
 #endif
 
 template <typename NativeT,
@@ -192,7 +187,8 @@ constexpr uint64_t ToNative(uv_timespec_t ts) {
 
 template <typename NativeT, typename V8T>
 constexpr void FillStatsArray(AliasedBuffer<NativeT, V8T>* fields,
-                              const uv_stat_t* s, const size_t offset = 0) {
+                              const uv_stat_t* s,
+                              const size_t offset = 0) {
   fields->SetValue(offset + 0, s->st_dev);
   fields->SetValue(offset + 1, s->st_mode);
   fields->SetValue(offset + 2, s->st_nlink);
@@ -211,7 +207,7 @@ constexpr void FillStatsArray(AliasedBuffer<NativeT, V8T>* fields,
 #else
   fields->SetValue(offset + 9, 0);
 #endif
-// Dates.
+  // Dates.
   fields->SetValue(offset + 10, ToNative<NativeT>(s->st_atim));
   fields->SetValue(offset + 11, ToNative<NativeT>(s->st_mtim));
   fields->SetValue(offset + 12, ToNative<NativeT>(s->st_ctim));
@@ -240,14 +236,16 @@ class FSReqPromise : public FSReqBase {
   explicit FSReqPromise(Environment* env, bool use_bigint)
       : FSReqBase(env,
                   env->fsreqpromise_constructor_template()
-                      ->NewInstance(env->context()).ToLocalChecked(),
+                      ->NewInstance(env->context())
+                      .ToLocalChecked(),
                   AsyncWrap::PROVIDER_FSREQPROMISE,
                   use_bigint),
         stats_field_array_(env->isolate(), kFsStatsFieldsNumber) {
     const auto resolver =
-      Promise::Resolver::New(env->context()).ToLocalChecked();
-    USE(object()->Set(env->context(), env->promise_string(),
-                      resolver).FromJust());
+        Promise::Resolver::New(env->context()).ToLocalChecked();
+    USE(object()
+            ->Set(env->context(), env->promise_string(), resolver)
+            .FromJust());
   }
 
   ~FSReqPromise() override {
@@ -259,9 +257,9 @@ class FSReqPromise : public FSReqBase {
     finished_ = true;
     HandleScope scope(env()->isolate());
     InternalCallbackScope callback_scope(this);
-    Local<Value> value =
-        object()->Get(env()->context(),
-                      env()->promise_string()).ToLocalChecked();
+    Local<Value> value = object()
+                             ->Get(env()->context(), env()->promise_string())
+                             .ToLocalChecked();
     Local<Promise::Resolver> resolver = value.As<Promise::Resolver>();
     USE(resolver->Reject(env()->context(), reject).FromJust());
   }
@@ -270,9 +268,9 @@ class FSReqPromise : public FSReqBase {
     finished_ = true;
     HandleScope scope(env()->isolate());
     InternalCallbackScope callback_scope(this);
-    Local<Value> val =
-        object()->Get(env()->context(),
-                      env()->promise_string()).ToLocalChecked();
+    Local<Value> val = object()
+                           ->Get(env()->context(), env()->promise_string())
+                           .ToLocalChecked();
     Local<Promise::Resolver> resolver = val.As<Promise::Resolver>();
     USE(resolver->Resolve(env()->context(), value).FromJust());
   }
@@ -283,9 +281,9 @@ class FSReqPromise : public FSReqBase {
   }
 
   void SetReturnValue(const FunctionCallbackInfo<Value>& args) override {
-    Local<Value> val =
-        object()->Get(env()->context(),
-                      env()->promise_string()).ToLocalChecked();
+    Local<Value> val = object()
+                           ->Get(env()->context(), env()->promise_string())
+                           .ToLocalChecked();
     Local<Promise::Resolver> resolver = val.As<Promise::Resolver>();
     args.GetReturnValue().Set(resolver->GetPromise());
   }
@@ -410,12 +408,11 @@ class FileHandle : public AsyncWrap, public StreamBase {
 
   class CloseReq : public ReqWrap<uv_fs_t> {
    public:
-    CloseReq(Environment* env,
-             Local<Promise> promise,
-             Local<Value> ref)
+    CloseReq(Environment* env, Local<Promise> promise, Local<Value> ref)
         : ReqWrap(env,
                   env->fdclose_constructor_template()
-                      ->NewInstance(env->context()).ToLocalChecked(),
+                      ->NewInstance(env->context())
+                      .ToLocalChecked(),
                   AsyncWrap::PROVIDER_FILEHANDLECLOSEREQ) {
       promise_.Reset(env->isolate(), promise);
       ref_.Reset(env->isolate(), ref);
