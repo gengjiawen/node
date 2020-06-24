@@ -673,15 +673,15 @@ def _ValidateSourcesForOSX(spec, all_sources):
     basename = os.path.basename(name)  # Don't include extension.
     basenames.setdefault(basename, []).append(source)
 
-  error = ''
-  for basename, files in basenames.items():
-    if len(files) > 1:
-      error += '  %s: %s\n' % (basename, ' '.join(files))
+#  error = ''
+#  for basename, files in basenames.items():
+#    if len(files) > 1:
+#      error += '  %s: %s\n' % (basename, ' '.join(files))
 
-  if error:
-    print(('static library %s has several files with the same basename:\n' % spec['target_name'])
-           + error + 'libtool on OS X will generate' + ' warnings for them.')
-    raise GypError('Duplicate basenames in sources section, see list above')
+#  if error:
+#    print(('static library %s has several files with the same basename:\n' % spec['target_name'])
+#           + error + 'libtool on OS X will generate' + ' warnings for them.')
+#    raise GypError('Duplicate basenames in sources section, see list above')
 
 
 # Map from qualified target to path to output.

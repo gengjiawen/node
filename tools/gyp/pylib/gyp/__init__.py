@@ -342,7 +342,7 @@ def gyp_main(args):
   # deprecated.
   parser.add_argument('--no-duplicate-basename-check',
                     dest='duplicate_basename_check', action='store_false',
-                    default=True, regenerate=False,
+                    default=False, regenerate=False,
                     help="don't check for duplicate basenames")
   parser.add_argument('--no-parallel', action='store_true', default=False,
                     help='Disable multiprocessing')
