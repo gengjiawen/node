@@ -13,6 +13,7 @@
 #include "src/base/atomicops.h"
 #include "src/heap/heap-write-barrier.h"
 #include "src/heap/heap.h"
+#include "src/heap/base-space.h"
 #include "src/heap/third-party/heap-api.h"
 
 #include "src/base/atomic-utils.h"
