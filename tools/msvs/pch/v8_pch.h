@@ -2,6 +2,7 @@
 #include "src/ast/ast.h"
 #include "src/builtins/builtins-definitions.h"
 #include "src/common/globals.h"
+#include "src/heap/base-space.h"
 #include "src/objects/objects-inl.h"
 #include "src/objects/dictionary-inl.h"
 #include "src/objects/js-objects-inl.h"
