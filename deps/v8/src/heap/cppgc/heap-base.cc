@@ -7,6 +7,7 @@
 #include "src/base/bounded-page-allocator.h"
 #include "src/base/platform/platform.h"
 #include "src/heap/base/stack.h"
+#include "src/heap/base-space.h"
 #include "src/heap/cppgc/globals.h"
 #include "src/heap/cppgc/heap-object-header-inl.h"
 #include "src/heap/cppgc/heap-page-inl.h"

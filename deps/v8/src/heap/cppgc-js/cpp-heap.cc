@@ -10,6 +10,7 @@
 #include "src/base/macros.h"
 #include "src/base/platform/time.h"
 #include "src/flags/flags.h"
+#include "src/heap/base-space.h"
 #include "src/heap/cppgc/gc-info-table.h"
 #include "src/heap/cppgc/heap-base.h"
 #include "src/heap/cppgc/heap-object-header-inl.h"

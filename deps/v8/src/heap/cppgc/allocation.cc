@@ -6,6 +6,7 @@
 
 #include "src/base/logging.h"
 #include "src/base/macros.h"
+#include "src/heap/base-space.h"
 #include "src/heap/cppgc/object-allocator-inl.h"
 
 namespace cppgc {
