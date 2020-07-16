@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/heap/cppgc/free-list.h"
-
 #include <memory>
 #include <numeric>
 #include <vector>
 
 #include "src/base/bits.h"
+#include "src/heap/cppgc/cppgc-free-list.h"
 #include "src/heap/cppgc/globals.h"
 #include "src/heap/cppgc/heap-object-header.h"
 #include "testing/gtest/include/gtest/gtest.h"

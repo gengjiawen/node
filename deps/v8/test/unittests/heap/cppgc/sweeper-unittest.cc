@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/heap/cppgc/sweeper.h"
-
 #include <algorithm>
 
 #include "include/cppgc/allocation.h"
 #include "include/cppgc/persistent.h"
+#include "src/heap/cppgc/cppgc-heap.h"
+#include "src/heap/cppgc/cppgc-sweeper.h"
 #include "src/heap/cppgc/globals.h"
 #include "src/heap/cppgc/heap-object-header-inl.h"
 #include "src/heap/cppgc/heap-object-header.h"
 #include "src/heap/cppgc/heap-page-inl.h"
 #include "src/heap/cppgc/heap-visitor.h"
-#include "src/heap/cppgc/heap.h"
 #include "src/heap/cppgc/page-memory-inl.h"
 #include "src/heap/cppgc/page-memory.h"
 #include "src/heap/cppgc/stats-collector.h"

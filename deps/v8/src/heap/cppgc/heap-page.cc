@@ -8,10 +8,10 @@
 
 #include "include/cppgc/internal/api-constants.h"
 #include "src/base/logging.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "src/heap/cppgc/globals.h"
 #include "src/heap/cppgc/heap-object-header-inl.h"
 #include "src/heap/cppgc/heap-space.h"
-#include "src/heap/cppgc/heap.h"
 #include "src/heap/cppgc/object-start-bitmap-inl.h"
 #include "src/heap/cppgc/object-start-bitmap.h"
 #include "src/heap/cppgc/page-memory-inl.h"

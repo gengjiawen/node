@@ -5,7 +5,7 @@
 #include "src/heap/cppgc/gc-invoker.h"
 
 #include "include/cppgc/platform.h"
-#include "src/heap/cppgc/heap.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

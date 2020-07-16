@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "include/cppgc/platform.h"
-#include "src/heap/cppgc/heap.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "src/heap/cppgc/task-handle.h"
 
 namespace cppgc {

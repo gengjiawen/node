@@ -10,8 +10,8 @@
 #include "include/v8config.h"
 #include "src/base/macros.h"
 #include "src/heap/base/stack.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "src/heap/cppgc/globals.h"
-#include "src/heap/cppgc/heap.h"
 #include "src/heap/cppgc/marker.h"
 #include "src/heap/cppgc/visitor.h"
 

@@ -5,8 +5,8 @@
 #ifndef V8_HEAP_CPPGC_GARBAGE_COLLECTOR_H_
 #define V8_HEAP_CPPGC_GARBAGE_COLLECTOR_H_
 
+#include "src/heap/cppgc/cppgc-sweeper.h"
 #include "src/heap/cppgc/marker.h"
-#include "src/heap/cppgc/sweeper.h"
 
 namespace cppgc {
 namespace internal {

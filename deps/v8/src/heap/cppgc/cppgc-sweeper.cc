@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/heap/cppgc/sweeper.h"
+#include "src/heap/cppgc/cppgc-sweeper.h"
 
 #include <atomic>
 #include <memory>
@@ -11,7 +11,7 @@
 #include "include/cppgc/platform.h"
 #include "src/base/optional.h"
 #include "src/base/platform/mutex.h"
-#include "src/heap/cppgc/free-list.h"
+#include "src/heap/cppgc/cppgc-free-list.h"
 #include "src/heap/cppgc/globals.h"
 #include "src/heap/cppgc/heap-object-header-inl.h"
 #include "src/heap/cppgc/heap-object-header.h"
