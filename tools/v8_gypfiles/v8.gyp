@@ -727,7 +727,7 @@
       'type': 'static_library',
       'dependencies': [
         # Code generators that only need to be build for the host.
-        'cppgc_base',
+        # 'cppgc_base',
         'torque_generated_definitions',
         'v8_headers',
         'v8_libbase',
@@ -757,6 +757,7 @@
         '<!@pymod_do_main(GN-scraper "<(V8_ROOT)/BUILD.gn"  "\\"v8_base_without_compiler.*?sources = ")',
 
         '<@(inspector_all_sources)',
+        '<!@pymod_do_main(GN-scraper "<(V8_ROOT)/BUILD.gn"  "v8_source_set.\\"cppgc_base.*?sources = ")',
       ],
       'conditions': [
         ['v8_enable_third_party_heap==1', {
