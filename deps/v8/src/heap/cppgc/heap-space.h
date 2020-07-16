@@ -10,7 +10,7 @@
 #include "src/base/logging.h"
 #include "src/base/macros.h"
 #include "src/base/platform/mutex.h"
-#include "src/heap/cppgc/free-list.h"
+#include "src/heap/cppgc/cppgc-free-list.h"
 
 namespace cppgc {
 namespace internal {
