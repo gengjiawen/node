@@ -8,6 +8,7 @@
 #include "src/base/macros.h"
 #include "src/heap/cppgc/cppgc-free-list.h"
 #include "src/heap/cppgc/cppgc-heap.h"
+#include "src/heap/cppgc/cppgc-sweeper.h"
 #include "src/heap/cppgc/globals.h"
 #include "src/heap/cppgc/heap-object-header-inl.h"
 #include "src/heap/cppgc/heap-object-header.h"
@@ -18,7 +19,6 @@
 #include "src/heap/cppgc/object-start-bitmap.h"
 #include "src/heap/cppgc/page-memory.h"
 #include "src/heap/cppgc/stats-collector.h"
-#include "src/heap/cppgc/sweeper.h"
 
 namespace cppgc {
 namespace internal {
