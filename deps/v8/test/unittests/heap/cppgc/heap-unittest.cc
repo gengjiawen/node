@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/heap/cppgc/heap.h"
-
 #include <algorithm>
 #include <iterator>
 #include <numeric>
 
 #include "include/cppgc/allocation.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "src/heap/cppgc/globals.h"
 #include "test/unittests/heap/cppgc/tests.h"
 #include "testing/gtest/include/gtest/gtest.h"

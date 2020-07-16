@@ -7,7 +7,7 @@
 
 #include "include/cppgc/heap.h"
 #include "include/cppgc/platform.h"
-#include "src/heap/cppgc/heap.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "test/unittests/heap/cppgc/test-platform.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

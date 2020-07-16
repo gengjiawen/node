@@ -8,7 +8,7 @@
 #include "include/cppgc/garbage-collected.h"
 #include "include/cppgc/trace-trait.h"
 #include "src/base/macros.h"
-#include "src/heap/cppgc/heap.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "test/unittests/heap/cppgc/tests.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

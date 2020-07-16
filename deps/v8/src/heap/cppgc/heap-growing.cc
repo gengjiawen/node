@@ -8,8 +8,8 @@
 
 #include "include/cppgc/platform.h"
 #include "src/base/macros.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "src/heap/cppgc/globals.h"
-#include "src/heap/cppgc/heap.h"
 #include "src/heap/cppgc/stats-collector.h"
 #include "src/heap/cppgc/task-handle.h"
 

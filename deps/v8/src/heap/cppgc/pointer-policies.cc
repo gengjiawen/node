@@ -6,8 +6,8 @@
 
 #include "include/cppgc/internal/persistent-node.h"
 #include "src/base/macros.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "src/heap/cppgc/heap-page-inl.h"
-#include "src/heap/cppgc/heap.h"
 
 namespace cppgc {
 namespace internal {

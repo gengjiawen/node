@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "src/heap/cppgc/heap.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 
 #include "src/heap/base/stack.h"
 #include "src/heap/cppgc/garbage-collector.h"

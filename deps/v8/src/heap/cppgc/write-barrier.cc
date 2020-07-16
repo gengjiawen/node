@@ -5,11 +5,11 @@
 #include "include/cppgc/internal/write-barrier.h"
 
 #include "include/cppgc/internal/pointer-policies.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "src/heap/cppgc/globals.h"
 #include "src/heap/cppgc/heap-object-header-inl.h"
 #include "src/heap/cppgc/heap-object-header.h"
 #include "src/heap/cppgc/heap-page-inl.h"
-#include "src/heap/cppgc/heap.h"
 #include "src/heap/cppgc/marker.h"
 #include "src/heap/cppgc/marking-visitor.h"
 

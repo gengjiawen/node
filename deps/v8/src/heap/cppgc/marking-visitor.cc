@@ -5,9 +5,9 @@
 #include "src/heap/cppgc/marking-visitor.h"
 
 #include "include/cppgc/garbage-collected.h"
+#include "src/heap/cppgc/cppgc-heap.h"
 #include "src/heap/cppgc/heap-object-header-inl.h"
 #include "src/heap/cppgc/heap-page-inl.h"
-#include "src/heap/cppgc/heap.h"
 
 namespace cppgc {
 namespace internal {
