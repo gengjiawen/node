@@ -4152,7 +4152,7 @@ v8_source_set("cppgc_base") {
   visibility = [ ":*" ]
 
   sources = [
-    "include/cppgc/allocation.h",
+    "include/cppgc/cppgc-allocation.h",
     "include/cppgc/common.h",
     "include/cppgc/custom-space.h",
     "include/cppgc/garbage-collected.h",
@@ -4179,7 +4179,7 @@ v8_source_set("cppgc_base") {
     "include/cppgc/type-traits.h",
     "include/cppgc/visitor.h",
     "include/v8config.h",
-    "src/heap/cppgc/allocation.cc",
+    "src/heap/cppgc/cppgc-allocation.cc",
     "src/heap/cppgc/free-list.cc",
     "src/heap/cppgc/free-list.h",
     "src/heap/cppgc/garbage-collector.h",

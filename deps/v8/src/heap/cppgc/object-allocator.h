@@ -5,7 +5,7 @@
 #ifndef V8_HEAP_CPPGC_OBJECT_ALLOCATOR_H_
 #define V8_HEAP_CPPGC_OBJECT_ALLOCATOR_H_
 
-#include "include/cppgc/allocation.h"
+#include "include/cppgc/cppgc-allocation.h"
 #include "include/cppgc/internal/gc-info.h"
 #include "include/cppgc/macros.h"
 #include "src/heap/cppgc/heap-space.h"
