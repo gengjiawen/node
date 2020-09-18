@@ -84,7 +84,6 @@ generator_additional_non_configuration_keys = [
     "msvs_enable_winrt",
     "msvs_requires_importlibrary",
     "msvs_enable_winphone",
-    "msvs_enable_marmasm",
     "msvs_application_type_revision",
     "msvs_target_platform_version",
     "msvs_target_platform_minversion",
@@ -3684,6 +3683,7 @@ def _GenerateMSBuildProject(project, options, version, generator_flags, spec):
     rule_dependencies = set()
     extension_to_rule_name = {}
     list_excluded = generator_flags.get("msvs_list_excluded_files", True)
+    platforms = _GetUniquePlatforms(spec)
 
     # Don't generate rules if we are using an external builder like ninja.
     if not spec.get("msvs_external_builder"):
@@ -3726,7 +3726,7 @@ def _GenerateMSBuildProject(project, options, version, generator_flags, spec):
         sources,
         rule_dependencies,
         extension_to_rule_name,
-        _GetUniquePlatforms(spec),
+        platforms,
     )
     missing_sources = _VerifySourcesExist(sources, project_dir)
 
@@ -3779,7 +3779,7 @@ def _GenerateMSBuildProject(project, options, version, generator_flags, spec):
         content += _GetMSBuildLocalProperties(project.msbuild_toolset)
     content += import_cpp_props_section
     content += import_masm_props_section
-    if spec.get("msvs_enable_marmasm"):
+    if "arm64" in platforms:
         content += import_marmasm_props_section
     content += _GetMSBuildExtensions(props_files_of_rules)
     content += _GetMSBuildPropertySheets(configurations, spec)
@@ -3801,7 +3801,7 @@ def _GenerateMSBuildProject(project, options, version, generator_flags, spec):
     content += _GetMSBuildProjectReferences(project)
     content += import_cpp_targets_section
     content += import_masm_targets_section
-    if spec.get("msvs_enable_marmasm"):
+    if "arm64" in platforms:
         content += import_marmasm_targets_section
     content += _GetMSBuildExtensionTargets(targets_files_of_rules)
 
