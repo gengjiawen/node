@@ -3779,7 +3779,7 @@ def _GenerateMSBuildProject(project, options, version, generator_flags, spec):
         content += _GetMSBuildLocalProperties(project.msbuild_toolset)
     content += import_cpp_props_section
     content += import_masm_props_section
-    if "arm64" in platforms:
+    if "arm64" in platforms and not project_file_name.endswith("_host.vcxproj"):
         content += import_marmasm_props_section
     content += _GetMSBuildExtensions(props_files_of_rules)
     content += _GetMSBuildPropertySheets(configurations, spec)
@@ -3801,7 +3801,7 @@ def _GenerateMSBuildProject(project, options, version, generator_flags, spec):
     content += _GetMSBuildProjectReferences(project)
     content += import_cpp_targets_section
     content += import_masm_targets_section
-    if "arm64" in platforms:
+    if "arm64" in platforms and not project_file_name.endswith("_host.vcxproj"):
         content += import_marmasm_targets_section
     content += _GetMSBuildExtensionTargets(targets_files_of_rules)
 
