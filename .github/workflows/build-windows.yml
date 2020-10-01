@@ -22,4 +22,6 @@ jobs:
       - name: Environment Information
         run: npx envinfo
       - name: Build
-        run: ./vcbuild.bat arm64
+        run: |
+          ./vcbuild.bat
+          ./vcbuild.bat arm64
