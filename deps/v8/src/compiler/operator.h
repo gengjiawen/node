@@ -193,7 +193,7 @@ class Operator1 : public Operator {
   // printing of a parameter.
 
   virtual void PrintParameter(std::ostream& os, PrintVerbosity verbose) const {
-    os << "[" << parameter() << "]";
+    // os << "[" << parameter() << "]";
   }
 
   void PrintToImpl(std::ostream& os, PrintVerbosity verbose) const override {
