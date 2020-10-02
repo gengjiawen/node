@@ -1550,17 +1550,11 @@ MachineType FloatConvertType(wasm::WasmOpcode opcode) {
 const Operator* ConvertOp(WasmGraphBuilder* builder, wasm::WasmOpcode opcode) {
   switch (opcode) {
     case wasm::kExprI32SConvertF32:
-      return builder->mcgraph()->machine()->TruncateFloat32ToInt32(
-          TruncateKind::kSetOverflowToMin);
     case wasm::kExprI32SConvertSatF32:
-      return builder->mcgraph()->machine()->TruncateFloat32ToInt32(
-          TruncateKind::kArchitectureDefault);
+      return builder->mcgraph()->machine()->TruncateFloat32ToInt32();
     case wasm::kExprI32UConvertF32:
-      return builder->mcgraph()->machine()->TruncateFloat32ToUint32(
-          TruncateKind::kSetOverflowToMin);
     case wasm::kExprI32UConvertSatF32:
-      return builder->mcgraph()->machine()->TruncateFloat32ToUint32(
-          TruncateKind::kArchitectureDefault);
+      return builder->mcgraph()->machine()->TruncateFloat32ToUint32();
     case wasm::kExprI32SConvertF64:
     case wasm::kExprI32SConvertSatF64:
       return builder->mcgraph()->machine()->ChangeFloat64ToInt32();
@@ -1757,9 +1751,6 @@ Node* WasmGraphBuilder::BuildIntConvertFloat(Node* input,
     } else {
       ZeroCheck64(wasm::kTrapFloatUnrepresentable, test, position);
     }
-    return converted_value;
-  }
-  if (mcgraph()->machine()->SatConversionIsSafe()) {
     return converted_value;
   }
   Node* test = ConvertSaturateTest(this, opcode, int_ty, float_ty, trunc,
