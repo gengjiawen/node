@@ -22,7 +22,7 @@ jobs:
       - name: Environment Information
         run: npx envinfo
       - name: Build
-        run: ./vcbuild.bat x86
+        run: ./vcbuild.bat arm64
 
   build-windows-debug:
     runs-on: windows-latest
