@@ -3,11 +3,6 @@ name: build-windows
 on:
   pull_request:
   push:
-    branches:
-      - master
-      - canary
-      - v[0-9]+.x-staging
-      - v[0-9]+.x
 
 env:
   PYTHON_VERSION: 3.8
@@ -17,7 +12,10 @@ jobs:
   build-windows-with-quic:
     runs-on: windows-latest
     steps:
+      - run: node -p "process.cwd()"
       - uses: actions/checkout@v2
+        with:
+          path: C:/nodejs
       - name: Set up Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v1
         with:
