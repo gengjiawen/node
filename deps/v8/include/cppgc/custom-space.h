@@ -20,6 +20,9 @@ struct CustomSpaceIndex {
  */
 class CustomSpaceBase {
  public:
+  CustomSpaceBase(const CustomSpaceBase&) = delete;
+  CustomSpaceBase& operator=(const CustomSpaceBase&) = delete;
+
   virtual ~CustomSpaceBase() = default;
   virtual CustomSpaceIndex GetCustomSpaceIndex() const = 0;
   virtual bool IsCompactable() const = 0;
