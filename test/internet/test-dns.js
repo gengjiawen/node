@@ -719,9 +719,9 @@ let getaddrinfoCallbackCalled = false;
 
 console.log(`looking up ${addresses.INET4_HOST}..`);
 
-const cares = internalBinding('cares_wrap');
-const req = new cares.GetAddrInfoReqWrap();
-cares.getaddrinfo(req, addresses.INET4_HOST, 4,
+const compat = require('internal/dns/compat');
+const req = new compat.GetAddrInfoReqWrap();
+compat.getaddrinfo(req, addresses.INET4_HOST, 4,
   /* hints */ 0, /* verbatim */ true);
 
 req.oncomplete = function(err, domains) {
