@@ -38,12 +38,10 @@ namespace node {
   V(ELDHISTOGRAM)                                                             \
   V(FILEHANDLE)                                                               \
   V(FILEHANDLECLOSEREQ)                                                       \
-  V(FIXEDSIZEBLOBCOPY)                                                       \
+  V(FIXEDSIZEBLOBCOPY)                                                        \
   V(FSEVENTWRAP)                                                              \
   V(FSREQCALLBACK)                                                            \
   V(FSREQPROMISE)                                                             \
-  V(GETADDRINFOREQWRAP)                                                       \
-  V(GETNAMEINFOREQWRAP)                                                       \
   V(HEAPSNAPSHOT)                                                             \
   V(HTTP2SESSION)                                                             \
   V(HTTP2STREAM)                                                              \
@@ -59,7 +57,6 @@ namespace node {
   V(PIPEWRAP)                                                                 \
   V(PROCESSWRAP)                                                              \
   V(PROMISE)                                                                  \
-  V(QUERYWRAP)                                                                \
   V(SHUTDOWNWRAP)                                                             \
   V(SIGNALWRAP)                                                               \
   V(STATWATCHER)                                                              \
