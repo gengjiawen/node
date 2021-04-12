@@ -255,7 +255,7 @@ void DNSWrap::GetHostnames(const FunctionCallbackInfo<Value>& args) {
 
   CHECK(args[0]->IsString());
   String::Utf8Value name(env->isolate(), args[0]);
-  getdns_dict* address = getdns_dict_create();
+  getdns_dict* address = getdns_dict_create_with_context(dns->context_);
   auto cleanup = OnScopeLeave([&]() {
     getdns_dict_destroy(address);
   });
@@ -310,13 +310,13 @@ void DNSWrap::SetUpstreamRecursiveServers(
   Local<Array> a = args[0].As<Array>();
   uint32_t length = a->Length();
 
-  getdns_list* list = getdns_list_create();
+  getdns_list* list = getdns_list_create_with_context(dns->context_);
   auto cleanup = OnScopeLeave([&]() {
     getdns_list_destroy(list);
   });
 
   for (uint32_t i = 0; i < length; i += 1) {
-    getdns_dict* dict = getdns_dict_create();
+    getdns_dict* dict = getdns_dict_create_with_context(dns->context_);
     auto cleanup = OnScopeLeave([&]() {
       getdns_dict_destroy(dict);
     });
