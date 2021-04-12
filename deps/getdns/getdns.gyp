@@ -40,6 +40,20 @@
             'getdns/src/compat/strlcpy.c',
           ],
         }],
+        [ 'OS=="freebsd"', {
+          'defines': [
+            '_POSIX_C_SOURCE=200112L',
+            '_XOPEN_SOURCE=600',
+          ],
+        }],
+        [ 'OS=="solaris"', {
+          'defines': [
+            '__EXTENSIONS_',
+          ],
+        }],
+        [ 'OS in "mac ios"', {
+          'defines': ['_DARWIN_C_SOURCE'],
+        }],
       ],
       'actions': [
         {

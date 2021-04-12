@@ -4,6 +4,12 @@ import re
 index = sys.argv.index('--target');
 inputs = sys.argv[1:index]
 outputs = sys.argv[index + 1:]
+assert len(inputs) == len(outputs)
+
+IS_MAC = sys.platform.startswith('darwin')
+IS_LINUX = sys.platform.startswith('linux')
+IS_WINDOWS = sys.platform.startswith('win32')
+IS_BSD = 'bsd' in sys.platform
 
 vars = {
   'prefix': '@prefix@',
@@ -48,12 +54,12 @@ vars = {
   'HAVE_SYS_SYSCTL_H': True,
   'HAVE_SYS_TIME_H': True,
   'HAVE_SYS_WAIT_H': True,
-  'HAVE_WINDOWS_H': False,
-  'HAVE_WINSOCK_H': False,
-  'HAVE_WINSOCK2_H': False,
-  'HAVE_WS2TCPIP_H': False,
-  'GETDNS_ON_WINDOWS': False,
-  'USE_WINSOCK': False,
+  'HAVE_WINDOWS_H': IS_WINDOWS,
+  'HAVE_WINSOCK_H': IS_WINDOWS,
+  'HAVE_WINSOCK2_H': IS_WINDOWS,
+  'HAVE_WS2TCPIP_H': IS_WINDOWS,
+  'GETDNS_ON_WINDOWS': IS_WINDOWS,
+  'USE_WINSOCK': IS_WINDOWS,
   'HAVE_SSL': True,
   'USE_DANESSL': False,
   'HAVE_OPENSSL_SSL_H': True,
@@ -93,8 +99,8 @@ vars = {
   'HAVE_DECL_SSL_SET_MIN_PROTO_VERSION': True,
   'HAVE_X509_GET_NOTAFTER': True,
   'HAVE_X509_GET0_NOTAFTER': True,
-  'HAVE_PTHREAD': True,
-  'HAVE_WINDOWS_THREADS': False,
+  'HAVE_PTHREAD': not IS_WINDOWS,
+  'HAVE_WINDOWS_THREADS': IS_WINDOWS,
   'RUNSTATEDIR': False,
   'TRUST_ANCHOR_FILE': '@PATH_TRUST_ANCHOR_FILE@',
   'PATH_TRUST_ANCHOR_FILE': '/usr/local/etc/unbound/getdns-root.key',
@@ -136,17 +142,17 @@ vars = {
   'HAVE_STRPTIME': True,
   'HAVE_SIGSET_T': True,
   'HAVE__SIGSET_T': False,
-  'HAVE_BSD_STDLIB_H': False,
-  'HAVE_BSD_STRING_H': False,
-  'HAVE_DECL_STRLCPY': False,
-  'HAVE_DECL_ARC4RANDOM': False,
-  'HAVE_DECL_ARC4RANDOM_UNIFORM': False,
-  'HAVE_BSD_DECL_STRLCPY': False,
-  'HAVE_BSD_DECL_ARC4RANDOM': False,
-  'HAVE_BSD_DECL_ARC4RANDOM_UNIFORM': False,
-  'HAVE_STRLCPY': False,
-  'HAVE_ARC4RANDOM': False,
-  'HAVE_ARC4RANDOM_UNIFORM': False,
+  'HAVE_BSD_STDLIB_H': IS_BSD,
+  'HAVE_BSD_STRING_H': IS_BSD,
+  'HAVE_DECL_STRLCPY': IS_BSD,
+  'HAVE_DECL_ARC4RANDOM': IS_BSD,
+  'HAVE_DECL_ARC4RANDOM_UNIFORM': IS_BSD,
+  'HAVE_BSD_DECL_STRLCPY': IS_BSD,
+  'HAVE_BSD_DECL_ARC4RANDOM': IS_BSD,
+  'HAVE_BSD_DECL_ARC4RANDOM_UNIFORM': IS_BSD,
+  'HAVE_STRLCPY': IS_BSD,
+  'HAVE_ARC4RANDOM': IS_BSD,
+  'HAVE_ARC4RANDOM_UNIFORM': IS_BSD,
   'HAVE_LIBUNBOUND': False,
   'HAVE_UNBOUND_EVENT_H': False,
   'HAVE_UNBOUND_EVENT_API': False,
@@ -162,7 +168,7 @@ vars = {
   'DEFAULT_EVENTLOOP': 'select_eventloop',
   'USE_POLL_DEFAULT_EVENTLOOP': False,
   'STRPTIME_WORKS': True,
-  'FD_SETSIZE': False,
+  'FD_SETSIZE': '',
   'REQ_DEBUG': False,
   'SCHED_DEBUG': False,
   'STUB_DEBUG': False,
@@ -178,10 +184,10 @@ vars = {
   'USE_DSA': True,
   'USE_ED25519': True,
   'USE_ED448': True,
-  'USE_OSX_TCP_FASTOPEN': False,
+  'USE_OSX_TCP_FASTOPEN': IS_MAC,
   'HAVE_NEW_UV_TIMER_CB': True,
   'HAVE_TARGET_ENDIANNESS': True,
-  'TARGET_IS_BIG_ENDIAN': False,
+  'TARGET_IS_BIG_ENDIAN': sys.byteorder == 'big',
   'HAVE___FUNC__': False,
 }
 
