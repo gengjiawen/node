@@ -139,8 +139,6 @@
         'getdns/src/openssl/tls.c',
         'getdns/src/openssl/pubkey-pinning-internal.c',
         'getdns/src/openssl/keyraw-internal.c',
-
-        'getdns/src/version.c',
       ]
     }
   ]
