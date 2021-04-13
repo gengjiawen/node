@@ -70,6 +70,7 @@
       'actions': [
         {
           'action_name': 'configure_file',
+          'process_outputs_as_sources': 1,
           'inputs': [
             # Put the code first so it's a dependency and can be used for invocation.
             'configure_file.py',
