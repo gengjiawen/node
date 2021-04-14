@@ -48,7 +48,6 @@ src/getdns/getdns.h
 *.log
 src/Doxyfile
 src/getdns/getdns_extra.h
-src/version.c
 aclocal.m4
 configure
 ltmain.sh
