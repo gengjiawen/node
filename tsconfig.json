@@ -24,7 +24,10 @@
     "allowJs": true,
     "checkJs": false,
     "noEmit": true,
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext",
+      "dom"
+    ],
     "target": "ESNext",
     "module": "CommonJS",
     "baseUrl": ".",
@@ -93,7 +96,7 @@
       "vm": ["./lib/vm.js"],
       "wasi": ["./lib/wasi.js"],
       "worker_threads": ["./lib/worker_threads.js"],
-      "zlib": ["./lib/zlib.js"],
+      "zlib": ["./lib/zlib.js"]
     }
   }
 }
