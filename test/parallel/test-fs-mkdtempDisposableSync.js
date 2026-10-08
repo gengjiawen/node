@@ -114,6 +114,49 @@ if (common.isLinux) {
   assert(!fs.existsSync(result.path));
 }
 
+// Relative Buffer path under a non-ASCII cwd
+// Can't use chdir in workers
+if (isMainThread) {
+  const originalCwd = process.cwd();
+  const nonAscii = fs.mkdtempSync(path.join(tmpdir.path, '\u7528\u6237-'));
+
+  process.chdir(nonAscii);
+  const result = fs.mkdtempDisposableSync(Buffer.from('buffer.'));
+  const fullPath = path.join(nonAscii, result.path.toString());
+
+  assert(fs.existsSync(fullPath));
+
+  process.chdir(originalCwd);
+  result.remove();
+
+  assert(!fs.existsSync(fullPath));
+  fs.rmSync(nonAscii, { recursive: true });
+}
+
+// `..` after a symlink is resolved by the OS at creation. remove() has to
+// use those bytes; lexical normalization points at a directory that was
+// never created. Windows normalizes `..` before following the symlink.
+if (!common.isWindows) {
+  const outside = fs.mkdtempSync(path.join(tmpdir.path, 'outside-'));
+  const parent = fs.mkdtempSync(path.join(tmpdir.path, 'parent-'));
+  const link = path.join(parent, 'link');
+  fs.symlinkSync(outside, link);
+
+  const prefix = Buffer.from(`${link}/../foo.`);
+  const result = fs.mkdtempDisposableSync(prefix);
+  const baseName = path.basename(result.path.toString());
+  const createdPath = path.join(path.dirname(outside), baseName);
+
+  assert(fs.existsSync(createdPath));
+  assert(!fs.existsSync(path.join(parent, baseName)));
+
+  result.remove();
+
+  assert(!fs.existsSync(createdPath));
+  fs.rmSync(outside, { recursive: true });
+  fs.rmSync(parent, { recursive: true });
+}
+
 // Errors from cleanup are thrown
 // It is difficult to arrange for rmdir to fail on windows
 if (!common.isWindows && process.getuid() !== 0) {
