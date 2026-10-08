@@ -66,6 +66,54 @@ if (isMainThread) {
   process.chdir(originalCwd);
 }
 
+// Buffer paths
+{
+  const prefix = tmpdir.resolve('foo.');
+  for (const result of [
+    fs.mkdtempDisposableSync(Buffer.from(prefix)),
+    fs.mkdtempDisposableSync(prefix, { encoding: 'buffer' }),
+  ]) {
+    assert(Buffer.isBuffer(result.path));
+    assert.strictEqual(path.dirname(result.path.toString()), tmpdir.path);
+    assert(fs.existsSync(result.path));
+
+    result.remove();
+
+    assert(!fs.existsSync(result.path));
+  }
+}
+
+// `chdir` does not affect removal of a relative Buffer path
+// Can't use chdir in workers
+if (isMainThread) {
+  const originalCwd = process.cwd();
+
+  process.chdir(tmpdir.path);
+  const result = fs.mkdtempDisposableSync(Buffer.from('buffer.'));
+  const fullPath = path.join(tmpdir.path, result.path.toString());
+
+  assert(fs.existsSync(fullPath));
+
+  process.chdir(originalCwd);
+  result.remove();
+
+  assert(!fs.existsSync(fullPath));
+}
+
+// Buffer paths that are not valid UTF-8 are removed as is
+// macOS rejects such file names, and Windows converts paths from UTF-8
+if (common.isLinux) {
+  const prefix = Buffer.concat([Buffer.from(tmpdir.resolve('foo')), Buffer.from([0xff, 0x2e])]);
+  const result = fs.mkdtempDisposableSync(prefix);
+
+  assert.deepStrictEqual(result.path.subarray(0, prefix.length), prefix);
+  assert(fs.existsSync(result.path));
+
+  result.remove();
+
+  assert(!fs.existsSync(result.path));
+}
+
 // Errors from cleanup are thrown
 // It is difficult to arrange for rmdir to fail on windows
 if (!common.isWindows && process.getuid() !== 0) {

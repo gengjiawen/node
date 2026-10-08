@@ -66,6 +66,54 @@ async function chdirDoesNotAffectRemoval() {
   process.chdir(originalCwd);
 }
 
+async function bufferPaths() {
+  const prefix = tmpdir.resolve('foo.');
+  for (const result of [
+    await fsPromises.mkdtempDisposable(Buffer.from(prefix)),
+    await fsPromises.mkdtempDisposable(prefix, { encoding: 'buffer' }),
+  ]) {
+    assert(Buffer.isBuffer(result.path));
+    assert.strictEqual(path.dirname(result.path.toString()), tmpdir.path);
+    assert(fs.existsSync(result.path));
+
+    await result.remove();
+
+    assert(!fs.existsSync(result.path));
+  }
+}
+
+async function chdirDoesNotAffectRemovalOfBufferPath() {
+  // Can't use chdir in workers
+  if (!isMainThread) return;
+
+  const originalCwd = process.cwd();
+
+  process.chdir(tmpdir.path);
+  const result = await fsPromises.mkdtempDisposable(Buffer.from('buffer.'));
+  const fullPath = path.join(tmpdir.path, result.path.toString());
+
+  assert(fs.existsSync(fullPath));
+
+  process.chdir(originalCwd);
+  await result.remove();
+
+  assert(!fs.existsSync(fullPath));
+}
+
+async function nonUtf8BufferPath() {
+  // macOS rejects such file names, and Windows converts paths from UTF-8
+  if (!common.isLinux) return;
+  const prefix = Buffer.concat([Buffer.from(tmpdir.resolve('foo')), Buffer.from([0xff, 0x2e])]);
+  const result = await fsPromises.mkdtempDisposable(prefix);
+
+  assert.deepStrictEqual(result.path.subarray(0, prefix.length), prefix);
+  assert(fs.existsSync(result.path));
+
+  await result.remove();
+
+  assert(!fs.existsSync(result.path));
+}
+
 async function errorsAreReThrown() {
   // It is difficult to arrange for rmdir to fail on windows
   if (common.isWindows || process.getuid() === 0) return;
@@ -93,5 +141,8 @@ async function errorsAreReThrown() {
   await basicUsage();
   await symbolAsyncDispose();
   await chdirDoesNotAffectRemoval();
+  await bufferPaths();
+  await chdirDoesNotAffectRemovalOfBufferPath();
+  await nonUtf8BufferPath();
   await errorsAreReThrown();
 })().then(common.mustCall());
